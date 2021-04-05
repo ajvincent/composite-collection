@@ -1,9 +1,10 @@
 {
   "name": "composite-collection",
   "version": "0.1.0",
-  "description": "Composing Maps, WeakMaps, Sets and WeakSets into compiled classes",
-  "main": "index.mjs",
+  "description": "Composing Maps, WeakMaps, Sets and WeakSets into generated classes",
+  "main": "Driver.mjs",
   "scripts": {
+    "debug": "node --inspect-brk ./node_modules/jasmine/bin/jasmine.js",
     "test": "jasmine"
   },
   "repository": {
@@ -26,6 +27,7 @@
     "jasmine": "^3.7.0"
   },
   "dependencies": {
-    "argparse": "^2.0.1"
+    "argparse": "^2.0.1",
+    "get-all-files": "^3.0.0"
   }
 }
