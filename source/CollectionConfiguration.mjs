@@ -54,9 +54,6 @@ export default class CollectionConfiguration {
   /** @type {string[]} */
   #argumentNames = new Set();
 
-  /** @type {string[]} */
-  #importedTypes = new Set();
-
   /** @type {string} */
   #className;
 
@@ -172,16 +169,6 @@ export default class CollectionConfiguration {
   }
 
   /**
-   * The list of imported types.
-   *
-   * @returns {Set<string>}
-   * @public
-   */
-  getImportedTypes() {
-    return new Set(this.#importedTypes);
-  }
-
-  /**
    * @typedef CollectionTypeOptions
    * @property {string?}   argumentType      A JSDoc-printable type for the argument.
    * @property {string?}   description       A JSDoc-printable description.
@@ -204,7 +191,6 @@ export default class CollectionConfiguration {
     } = options;
 
     this.#identifierArg("argumentName", argumentName);
-    this.#identifierArg("mapOrSetType", mapOrSetType);
     this.#jsdocField("argumentType", argumentType);
     this.#jsdocField("description",  description);
     if (argumentValidator !== null) {
@@ -216,6 +202,9 @@ export default class CollectionConfiguration {
 
     if (argumentName === "value")
       throw new Error(`The argument name "value" is reserved!`);
+
+    if (!CollectionConfiguration.#PREDEFINED_TYPES.has(mapOrSetType))
+      throw new Error(`The map or set type must be one of "Map", "Set", "WeakMap" or "WeakSet"!`);
 
     if (!mapOrSetType.endsWith("Map") && !mapOrSetType.endsWith("Set"))
       throw new Error(`The map or set type must end with "Map" or "Set"!`);
@@ -230,8 +219,6 @@ export default class CollectionConfiguration {
     this.#collectionTypes.push(collectionType);
 
     this.#argumentNames.add(argumentName);
-    if (!CollectionConfiguration.#PREDEFINED_TYPES.has(mapOrSetType))
-      this.#importedTypes.add(mapOrSetType);
   }
 
   getValueFilter() {

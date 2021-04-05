@@ -12,7 +12,6 @@ describe("CollectionConfiguration", () => {
       "fileOverview",
       "getCollectionTypes",
       "getArgumentNames",
-      "getImportedTypes",
       "addCollectionType",
       "getValueFilter",
       "setValueFilter",
@@ -132,19 +131,6 @@ describe("CollectionConfiguration", () => {
     expect(types2).not.toBe(types1);
   });
 
-  it(".getImportedTypes() returns an unique Set() every time", () => {
-    const config = new CollectionConfiguration("FooSet");
-
-    const types1 = config.getImportedTypes();
-    expect(types1 instanceof Set).toBe(true);
-    expect(types1.size).toBe(0);
-
-    const types2 = config.getImportedTypes();
-    expect(types2 instanceof Set).toBe(true);
-    expect(types2.size).toBe(0);
-    expect(types2).not.toBe(types1);
-  });
-
   describe(".addCollectionType()", () => {
     let config, options, type1Args;
     beforeEach(() => {
@@ -190,7 +176,6 @@ describe("CollectionConfiguration", () => {
       }
 
       expect(Array.from(config.getArgumentNames())).toEqual([type1Args[0]]);
-      expect(Array.from(config.getImportedTypes())).toEqual([]);
     });
 
     it("defines a collection type when called with an argument filter", () => {
@@ -218,7 +203,6 @@ describe("CollectionConfiguration", () => {
         expect(firstType.argumentValidator).toBe(argumentValidator);
 
         expect(Array.from(config.getArgumentNames())).toEqual([type1Args[0]]);
-        expect(Array.from(config.getImportedTypes())).toEqual([]);
 
         expect(argumentValidator).toHaveBeenCalledTimes(0);
       }
@@ -262,40 +246,6 @@ describe("CollectionConfiguration", () => {
       });
 
       expect(Array.from(config.getArgumentNames())).toEqual(argMatrix.map(row => row[0]));
-      expect(Array.from(config.getImportedTypes())).toEqual([]);
-
-      expect(argumentValidator).toHaveBeenCalledTimes(0);
-    });
-
-    it("adds an imported type for an unknown map or set type", () => {
-      const args = type1Args.slice();
-      args[1] = "BarMap";
-
-      config.addCollectionType(...args);
-
-      const types = config.getCollectionTypes();
-      expect(Array.isArray(types)).toBe(true);
-      expect(types.length).toBe(1);
-      if (types.length > 0) {
-        const firstType = types[0];
-        expect(Object.isFrozen(firstType)).toBe(true);
-        expect(Reflect.ownKeys(firstType)).toEqual([
-          "argumentName",
-          "mapOrSetType",
-          "argumentType",
-          "description",
-          "argumentValidator",
-        ]);
-
-        expect(firstType.argumentName).toBe(args[0]);
-        expect(firstType.mapOrSetType).toBe(args[1]);
-        expect(firstType.argumentType).toBe(options.argumentType);
-        expect(firstType.description).toBe(options.description);
-        expect(firstType.argumentValidator).toBe(null);
-      }
-
-      expect(Array.from(config.getArgumentNames())).toEqual([type1Args[0]]);
-      expect(Array.from(config.getImportedTypes())).toEqual([args[1]]);
 
       expect(argumentValidator).toHaveBeenCalledTimes(0);
     });
@@ -322,16 +272,21 @@ describe("CollectionConfiguration", () => {
         ).toThrowError(`The argument name "value" is reserved!`);
       });
 
-      it("a non-string map or set type", () => {
+      it(`a map or set type that isn't "Map", "WeakMap", "Set", or "WeakSet"`, () => {
         args[1] = Symbol("foo");
         expect(
           () => config.addCollectionType(...args)
-        ).toThrowError(`mapOrSetType must be a non-empty string!`);
+        ).toThrowError(`The map or set type must be one of "Map", "Set", "WeakMap" or "WeakSet"!`);
 
         args[1] = {};
         expect(
           () => config.addCollectionType(...args)
-        ).toThrowError(`mapOrSetType must be a non-empty string!`);
+        ).toThrowError(`The map or set type must be one of "Map", "Set", "WeakMap" or "WeakSet"!`);
+
+        args[1] = "WeakMultiMap";
+        expect(
+          () => config.addCollectionType(...args)
+        ).toThrowError(`The map or set type must be one of "Map", "Set", "WeakMap" or "WeakSet"!`);
       });
 
       it("a non-string argument type", () => {
@@ -375,13 +330,6 @@ describe("CollectionConfiguration", () => {
         expect(
           () => config.addCollectionType(...args)
         ).toThrowError(`Argument name "${args[0]}" has already been defined!`);
-      });
-
-      it(`a map or set type that doesn't end in "Map" or "Set"`, () => {
-        args[1] = "Foo";
-        expect(
-          () => config.addCollectionType(...args)
-        ).toThrowError(`The map or set type must end with "Map" or "Set"!`);
       });
 
       xdescribe("invalid identifiers:", () => {
