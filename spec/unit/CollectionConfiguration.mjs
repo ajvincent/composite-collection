@@ -146,18 +146,24 @@ describe("CollectionConfiguration", () => {
   });
 
   describe(".addCollectionType()", () => {
-    let config;
-    beforeEach(() => config = new CollectionConfiguration("FooSet"));
+    let config, options, type1Args;
+    beforeEach(() => {
+      config = new CollectionConfiguration("FooSet");
+      options = {
+        argumentType: "Cat",
+        description: "The other cat",
+      }
 
-    const type1Args = [
-      "mother",
-      "WeakMap",
-      "Cat",
-      "The mother cat"
-    ];
-    Object.freeze(type1Args);
+      type1Args = [
+        "mother",
+        "WeakMap",
+        options
+      ];
+      Object.freeze(type1Args);
+    });
 
-    const argumentFilter = jasmine.createSpy("argumentFilter");
+
+    const argumentValidator = jasmine.createSpy("argumentValidator");
 
     it("defines a collection type when called without an argument filter", () => {
       config.addCollectionType(...type1Args);
@@ -173,15 +179,14 @@ describe("CollectionConfiguration", () => {
           "mapOrSetType",
           "argumentType",
           "description",
-          "argumentFilter",
+          "argumentValidator",
         ]);
-        expect([
-          firstType.argumentName,
-          firstType.mapOrSetType,
-          firstType.argumentType,
-          firstType.description,
-          firstType.argumentFilter,
-        ]).toEqual(type1Args.concat(null));
+
+        expect(firstType.argumentName).toBe(type1Args[0]);
+        expect(firstType.mapOrSetType).toBe(type1Args[1]);
+        expect(firstType.argumentType).toBe(options.argumentType);
+        expect(firstType.description).toBe(options.description);
+        expect(firstType.argumentValidator).toBe(null);
       }
 
       expect(Array.from(config.getArgumentNames())).toEqual([type1Args[0]]);
@@ -189,8 +194,8 @@ describe("CollectionConfiguration", () => {
     });
 
     it("defines a collection type when called with an argument filter", () => {
-      const args = type1Args.concat(argumentFilter);
-      config.addCollectionType(...args);
+      options.argumentValidator = argumentValidator;
+      config.addCollectionType(...type1Args);
 
       const types = config.getCollectionTypes();
       expect(Array.isArray(types)).toBe(true);
@@ -203,20 +208,19 @@ describe("CollectionConfiguration", () => {
           "mapOrSetType",
           "argumentType",
           "description",
-          "argumentFilter",
+          "argumentValidator",
         ]);
-        expect([
-          firstType.argumentName,
-          firstType.mapOrSetType,
-          firstType.argumentType,
-          firstType.description,
-          firstType.argumentFilter,
-        ]).toEqual(args);
+
+        expect(firstType.argumentName).toBe(type1Args[0]);
+        expect(firstType.mapOrSetType).toBe(type1Args[1]);
+        expect(firstType.argumentType).toBe(options.argumentType);
+        expect(firstType.description).toBe(options.description);
+        expect(firstType.argumentValidator).toBe(argumentValidator);
 
         expect(Array.from(config.getArgumentNames())).toEqual([type1Args[0]]);
         expect(Array.from(config.getImportedTypes())).toEqual([]);
 
-        expect(argumentFilter).toHaveBeenCalledTimes(0);
+        expect(argumentValidator).toHaveBeenCalledTimes(0);
       }
     });
 
@@ -227,8 +231,9 @@ describe("CollectionConfiguration", () => {
     it("can be called more than once", () => {
       const argMatrix = [];
       const argCount = 20;
+      options.argumentValidator = argumentValidator;
       for (let i = 0; i < argCount; i++) {
-        const args = type1Args.concat(argumentFilter);
+        const args = type1Args.slice();
         args[0] += "_" + i;
         argMatrix.push(args);
 
@@ -245,22 +250,21 @@ describe("CollectionConfiguration", () => {
           "mapOrSetType",
           "argumentType",
           "description",
-          "argumentFilter",
+          "argumentValidator",
         ]);
+        const argRow = argMatrix[index];
 
-        expect([
-          t.argumentName,
-          t.mapOrSetType,
-          t.argumentType,
-          t.description,
-          t.argumentFilter,
-        ]).toEqual(argMatrix[index]);
+        expect(t.argumentName).toBe(argRow[0]);
+        expect(t.mapOrSetType).toBe(argRow[1]);
+        expect(t.argumentType).toBe(options.argumentType);
+        expect(t.description).toBe(options.description);
+        expect(t.argumentValidator).toBe(options.argumentValidator);
       });
 
       expect(Array.from(config.getArgumentNames())).toEqual(argMatrix.map(row => row[0]));
       expect(Array.from(config.getImportedTypes())).toEqual([]);
 
-      expect(argumentFilter).toHaveBeenCalledTimes(0);
+      expect(argumentValidator).toHaveBeenCalledTimes(0);
     });
 
     it("adds an imported type for an unknown map or set type", () => {
@@ -280,21 +284,20 @@ describe("CollectionConfiguration", () => {
           "mapOrSetType",
           "argumentType",
           "description",
-          "argumentFilter",
+          "argumentValidator",
         ]);
-        expect([
-          firstType.argumentName,
-          firstType.mapOrSetType,
-          firstType.argumentType,
-          firstType.description,
-          firstType.argumentFilter,
-        ]).toEqual(args.concat(null));
+
+        expect(firstType.argumentName).toBe(args[0]);
+        expect(firstType.mapOrSetType).toBe(args[1]);
+        expect(firstType.argumentType).toBe(options.argumentType);
+        expect(firstType.description).toBe(options.description);
+        expect(firstType.argumentValidator).toBe(null);
       }
 
       expect(Array.from(config.getArgumentNames())).toEqual([type1Args[0]]);
       expect(Array.from(config.getImportedTypes())).toEqual([args[1]]);
 
-      expect(argumentFilter).toHaveBeenCalledTimes(0);
+      expect(argumentValidator).toHaveBeenCalledTimes(0);
     });
 
     describe("throws for", () => {
@@ -344,7 +347,7 @@ describe("CollectionConfiguration", () => {
       });
 
       it("a non-string description", () => {
-        args[3] = Symbol("foo");
+        options.description = Symbol("foo");
         expect(
           () => config.addCollectionType(...args)
         ).toThrowError(`description must be a non-empty string!`);
@@ -356,15 +359,15 @@ describe("CollectionConfiguration", () => {
       });
 
       it("a non-function argument filter", () => {
-        args[4] = Symbol("foo");
+        options.argumentValidator = Symbol("foo");
         expect(
           () => config.addCollectionType(...args)
-        ).toThrowError(`argumentFilter must be a function or omitted!`);
+        ).toThrowError(`argumentValidator must be a function or omitted!`);
 
         args[4] = {};
         expect(
           () => config.addCollectionType(...args)
-        ).toThrowError(`argumentFilter must be a function or omitted!`);
+        ).toThrowError(`argumentValidator must be a function or omitted!`);
       });
 
       it("a known argument name being passed in twice", () => {
@@ -410,7 +413,7 @@ describe("CollectionConfiguration", () => {
         expect(config.getValueFilter()).toEqual([valueFilter, null]);
         expect(valueFilter).toHaveBeenCalledTimes(0);
       });
-  
+
       it("a jsdoc argument", () => {
         expect(() => config.setValueFilter(valueFilter, "foo")).not.toThrow();
         expect(config.getValueFilter()).toEqual([valueFilter, "foo"]);

@@ -1,18 +1,22 @@
 import CollectionConfiguration from "../../CollectionConfiguration.mjs";
 
-const WeakMultiMap = new CollectionConfiguration("WeakMultiMap");
-WeakMultiMap.addCollectionType(
+const WeakMultiMapSpec = new CollectionConfiguration("WeakMultiMap");
+WeakMultiMapSpec.addCollectionType(
   "weakKey",
   "WeakMap",
-  "Object",
-  "The weak key"
+  {
+    argumentType: "Object",
+    description: "The weak key",
+  }
 );
 
-WeakMultiMap.addCollectionType(
+WeakMultiMapSpec.addCollectionType(
   "strongSet",
   "Set",
-  "void",
-  "The set containing the value"
+  {
+    argumentType: "void",
+    description: "The set containing the value",
+  }
 );
 
-export default WeakMultiMap;
+export default WeakMultiMapSpec;

@@ -18,9 +18,9 @@ class CollectionType {
    *                                   Map, Set, WeakMap, WeakSet, or something that inherits from it.
    * @param {string}    argumentType   A JSDoc-printable type for the argument.
    * @param {string}    description    A JSDoc-printable description.
-   * @param {Function?} argumentFilter A method to use for testing the argument.
+   * @param {Function?} argumentValidator A method to use for testing the argument.
    */
-  constructor(argumentName, mapOrSetType, argumentType, description, argumentFilter) {
+  constructor(argumentName, mapOrSetType, argumentType, description, argumentValidator) {
     /** @public @readonly @type {string} */
     this.argumentName   = argumentName;
 
@@ -34,7 +34,7 @@ class CollectionType {
     this.description    = description;
 
     /** @public @readonly @type {Function?} */
-    this.argumentFilter = argumentFilter;
+    this.argumentValidator = argumentValidator;
 
     Object.freeze(this);
   }
@@ -182,22 +182,33 @@ export default class CollectionConfiguration {
   }
 
   /**
+   * @typedef CollectionTypeOptions
+   * @property {string?}   argumentType      A JSDoc-printable type for the argument.
+   * @property {string?}   description       A JSDoc-printable description.
+   * @property {Function?} argumentValidator A method to use for testing the argument.
+   */
+
+  /**
    * Add a collection type argument.
    *
-   * @param {string}    argumentName   The name of the argument.
-   * @param {string}    mapOrSetType   The name of the map or set type.
-   *                                   Map, Set, WeakMap, WeakSet, or something that inherits from it.
-   * @param {string}    argumentType   A JSDoc-printable type for the argument.
-   * @param {string}    description    A JSDoc-printable description.
-   * @param {function?} argumentFilter A method to use for testing the argument.
+   * @param {string}    argumentName        The name of the argument.
+   * @param {string}    mapOrSetType        The name of the map or set type.
+   *                                        Map, Set, WeakMap, WeakSet, or something inheriting from one of them.
+   * @param {CollectionTypeOptions} options Optional arguments providing more configuration
    */
-  addCollectionType(argumentName, mapOrSetType, argumentType, description, argumentFilter = null) {
+  addCollectionType(argumentName, mapOrSetType, options) {
+    const {
+      argumentType,
+      description,
+      argumentValidator = null
+    } = options;
+
     this.#identifierArg("argumentName", argumentName);
     this.#identifierArg("mapOrSetType", mapOrSetType);
     this.#jsdocField("argumentType", argumentType);
     this.#jsdocField("description",  description);
-    if (argumentFilter !== null) {
-      this.#functionArg("argumentFilter", argumentFilter, true);
+    if (argumentValidator !== null) {
+      this.#functionArg("argumentValidator", argumentValidator, true);
     }
 
     if (this.#argumentNames.has(argumentName))
@@ -214,7 +225,7 @@ export default class CollectionConfiguration {
       mapOrSetType,
       argumentType,
       description,
-      argumentFilter
+      argumentValidator
     );
     this.#collectionTypes.push(collectionType);
 
