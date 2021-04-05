@@ -1,6 +1,6 @@
 import CollectionConfiguration from "../../source/CollectionConfiguration.mjs";
 
-const WeakMatrixSpec = new CollectionConfiguration("WeakMultiMap");
+const WeakMatrixSpec = new CollectionConfiguration("WeakMatrixMap");
 WeakMatrixSpec.addCollectionType(
   "row",
   "WeakMap",

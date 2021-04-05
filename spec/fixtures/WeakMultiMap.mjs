@@ -1,4 +1,4 @@
-import CollectionConfiguration from "../../CollectionConfiguration.mjs";
+import CollectionConfiguration from "../../source/CollectionConfiguration.mjs";
 
 const WeakMultiMapSpec = new CollectionConfiguration("WeakMultiMap");
 WeakMultiMapSpec.addCollectionType(

@@ -3,7 +3,7 @@ import CollectionConfiguration from "../../source/CollectionConfiguration.mjs";
 const FunctionSetSpec = new CollectionConfiguration("FunctionSet");
 
 FunctionSetSpec.addCollectionType(
-  "functionSet",
+  "FunctionSet",
   "Set",
   {
     argumentType: "void",
