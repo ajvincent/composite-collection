@@ -1,0 +1,9 @@
+{
+  "spec_dir": "spec",
+  "spec_files": [
+    "**/*.mjs",
+    "!fixtures/**/*.mjs"
+  ],
+  "stopSpecOnExpectationFailure": false,
+  "random": true
+}

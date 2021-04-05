@@ -1,0 +1,31 @@
+{
+  "name": "composite-collection",
+  "version": "0.1.0",
+  "description": "Composing Maps, WeakMaps, Sets and WeakSets into compiled classes",
+  "main": "index.mjs",
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajvincent/composite-collection.git"
+  },
+  "keywords": [
+    "collection",
+    "codegenerator"
+  ],
+  "author": "Alexander J. Vincent",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/ajvincent/composite-collection/issues"
+  },
+  "homepage": "https://github.com/ajvincent/composite-collection#readme",
+  "devDependencies": {
+    "eslint": "^7.23.0",
+    "eslint-plugin-jasmine": "^4.1.2",
+    "jasmine": "^3.7.0"
+  },
+  "dependencies": {
+    "argparse": "^2.0.1"
+  }
+}
