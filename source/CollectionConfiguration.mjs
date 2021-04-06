@@ -48,21 +48,25 @@ Object.freeze(CollectionType.prototype);
  * @public
  */
 export default class CollectionConfiguration {
-  /** @type {string} @readonly */
-  #className;
-
   static #PREDEFINED_TYPES = new Set(["WeakMap", "Map", "WeakSet", "Set"]);
 
   static #STATE_TRANSITIONS = new Map([
-    ["empty", new Set([
+    ["start", new Set([
+      "startMap",
+      "startSet",
+    ])],
+
+    ["startMap", new Set([
       "mapKeys",
+    ])],
+
+    ["startSet", new Set([
       "setElements",
     ])],
 
     ["mapKeys", new Set([
       "mapKeys",
       "hasValueFilter",
-      "setElements",
       "locked",
     ])],
 
@@ -81,7 +85,10 @@ export default class CollectionConfiguration {
   ]);
 
   /** @type {string} */
-  #currentState = "empty";
+  #currentState = "start";
+
+  /** @type {string} @readonly */
+  #className;
 
   /** @type {Map<identifier, CollectionType>} @readonly */
   #parameterToTypeMap = new Map();
@@ -111,7 +118,7 @@ export default class CollectionConfiguration {
     const validStates = CollectionConfiguration.#STATE_TRANSITIONS.get(this.#currentState);
     const mayTransition = validStates.has(nextState);
     if (mayTransition)
-      this.#currentState = nextState
+      this.#currentState = nextState;
     return mayTransition;
   }
 
@@ -154,14 +161,25 @@ export default class CollectionConfiguration {
 
   /**
    * @param {string} className The name of the class to define.
+   * @param {string} collectionType The type of collection we're building.
    * @constructor
    */
-  constructor(className) {
+  constructor(className, collectionType) {
     this.#identifierArg("className", className);
     if (!className.endsWith("Map") && !className.endsWith("Set"))
       throw new Error(`The class name must end with "Map" or "Set"!`);
     if (CollectionConfiguration.#PREDEFINED_TYPES.has(className))
       throw new Error(`You can't override the ${className} primordial!`);
+
+    if (collectionType === "map") {
+      this.#doStateTransition("startMap");
+    }
+    else if (collectionType === "set") {
+      this.#doStateTransition("startSet");
+    }
+    else {
+      throw new Error(`collectionType must be one of "map", "set"!`);
+    }
 
     this.#className = className;
 
