@@ -6,7 +6,7 @@
   "scripts": {
     "dogfood": "node dogfood/build.mjs && jasmine",
     "debug": "node --inspect-brk ./node_modules/jasmine/bin/jasmine.js",
-    "test": "jasmine"
+    "test": "jasmine --config=test/support/jasmine.json"
   },
   "repository": {
     "type": "git",

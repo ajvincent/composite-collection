@@ -51,6 +51,8 @@ export default class CollectionConfiguration {
   /** @type {string} @readonly */
   #className;
 
+  static #PREDEFINED_TYPES = new Set(["WeakMap", "Map", "WeakSet", "Set"]);
+
   static #STATE_TRANSITIONS = new Map([
     ["empty", new Set([
       "mapKeys",
@@ -178,22 +180,6 @@ export default class CollectionConfiguration {
   }
 
   /**
-   * @returns {boolean}
-   * @public
-   */
-  get holdsWeak() {
-    return this.#holdsWeak;
-  }
-
-  /**
-   * @returns {number}
-   * @public
-   */
-  get setCount() {
-    return this.#setCount;
-  }
-
-  /**
    * A file overview to feed into the generated module.
    * @type {string?}
    * @public
@@ -211,11 +197,11 @@ export default class CollectionConfiguration {
   /**
    * The collection types this instance already has.
    *
-   * @returns {CollectionType[]}
+   * @returns {Map<identifier, CollectionType>}
    * @public
    */
   getCollectionTypes() {
-    return this.#collectionTypes.slice();
+    return new Map(this.#parameterToTypeMap);
   }
 
   /**
@@ -225,7 +211,7 @@ export default class CollectionConfiguration {
    * @public
    */
   getArgumentNames() {
-    return new Set(this.#argumentNames);
+    return Array.from(this.#parameterToTypeMap.keys())
   }
 
   /**
