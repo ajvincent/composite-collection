@@ -48,17 +48,53 @@ Object.freeze(CollectionType.prototype);
  * @public
  */
 export default class CollectionConfiguration {
-  /** @readonly */
-  static #PREDEFINED_TYPES = new Set(["Map", "Set", "WeakMap", "WeakSet"]);
-
-  /** @type {string[]} */
-  #argumentNames = new Set();
-
-  /** @type {string} */
+  /** @type {string} @readonly */
   #className;
 
-  /** @type {CollectionType[]} */
-  #collectionTypes = [];
+  static #STATE_TRANSITIONS = new Map([
+    ["empty", new Set([
+      "mapKeys",
+      "setElements",
+    ])],
+
+    ["mapKeys", new Set([
+      "mapKeys",
+      "hasValueFilter",
+      "setElements",
+      "locked",
+    ])],
+
+    ["setElements", new Set([
+      "setElements",
+      "locked",
+    ])],
+
+    ["hasValueFilter", new Set([
+      "locked",
+    ])],
+
+    ["locked", new Set([
+      "locked",
+    ])],
+  ]);
+
+  /** @type {string} */
+  #currentState = "empty";
+
+  /** @type {Map<identifier, CollectionType>} @readonly */
+  #parameterToTypeMap = new Map();
+
+  /** @type {identifier[]} */
+  #weakMapKeys = [];
+
+  /** @type {identifier[]} */
+  #strongMapKeys = [];
+
+  /** @type {identifier[]} */
+  #weakSetElements = [];
+
+  /** @type {identifier[]} */
+  #strongSetElements = [];
 
   /** @type {Function?} */
   #valueFilter = null;
@@ -69,11 +105,13 @@ export default class CollectionConfiguration {
   /** @type {string?} */
   #fileoverview = null;
 
-  /** @type {boolean} */
-  #holdsWeak = false;
-
-  /** @type {number} */
-  #setCount = 0;
+  #doStateTransition(nextState) {
+    const validStates = CollectionConfiguration.#STATE_TRANSITIONS.get(this.#currentState);
+    const mayTransition = validStates.has(nextState);
+    if (mayTransition)
+      this.#currentState = nextState
+    return mayTransition;
+  }
 
   /**
    * Validate a string argument.
@@ -206,6 +244,7 @@ export default class CollectionConfiguration {
    * @param {CollectionTypeOptions} options Optional arguments providing more configuration
    */
   addCollectionType(argumentName, mapOrSetType, options = {}) {
+    /*
     const {
       argumentType = null,
       description = null,
@@ -244,6 +283,27 @@ export default class CollectionConfiguration {
     this.#collectionTypes.push(collectionType);
 
     this.#argumentNames.add(argumentName);
+    */
+    throw new Error("Deprecated");
+  }
+
+  addMapKey(argumentName, holdWeak, options = {}) {
+    if (!this.#doStateTransition("mapKeys")) {
+      this.throwIfLocked();
+      throw new Error("You must define map keys before calling .addSetElement(), .setValueFilter() or .lock()!");
+    }
+  }
+
+  addSetElement(argumentName, holdWeak, options = {}) {
+    if (!this.#doStateTransition("setElements")) {
+      this.throwIfLocked();
+      if (this.#currentState === "hasValueFilter")
+        throw new Error("You cannot have a value argument and set elements!");
+      else {
+        // we should never get here!
+        throw new Error("addSetElement cannot be called from this state: " + this.#currentState);
+      }
+    }
   }
 
   getValueFilter() {
@@ -257,6 +317,12 @@ export default class CollectionConfiguration {
    * @param {string}   valueJSDoc
    */
   setValueFilter(valueFilter, valueJSDoc = null) {
+    if (!this.#doStateTransition("hasValueFilter")) {
+      this.throwIfLocked();
+
+      throw new Error("You can only call .setValueFilter() directly after calling .addMapKey()!");
+    }
+
     if (this.#valueFilter)
       throw new Error("You can only set the value filter once!");
     this.#functionArg("valueFilter", valueFilter);
@@ -265,6 +331,17 @@ export default class CollectionConfiguration {
 
     this.#valueFilter = valueFilter;
     this.#valueJSDoc = valueJSDoc;
+  }
+
+  lock() {
+    if (!this.#doStateTransition("locked"))
+      throw new Error("You must define a map key or set element first!");
+  }
+
+  throwIfLocked() {
+    if (this.#currentState === "locked") {
+      throw new Error("You have already locked this configuration!");
+    }
   }
 }
 Object.freeze(CollectionConfiguration);
