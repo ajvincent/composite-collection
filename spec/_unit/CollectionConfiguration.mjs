@@ -9,6 +9,8 @@ describe("CollectionConfiguration", () => {
     expect(Reflect.ownKeys(CollectionConfiguration.prototype)).toEqual([
       "constructor",
       "className",
+      "holdsWeak",
+      "setCount",
       "fileOverview",
       "getCollectionTypes",
       "getArgumentNames",
@@ -290,27 +292,27 @@ describe("CollectionConfiguration", () => {
       });
 
       it("a non-string argument type", () => {
-        args[2] = Symbol("foo");
+        options.argumentType = Symbol("foo");
         expect(
           () => config.addCollectionType(...args)
-        ).toThrowError(`argumentType must be a non-empty string!`);
+        ).toThrowError(`argumentType must be a non-empty string or omitted!`);
 
-        args[2] = {};
+        options.argumentType ={};
         expect(
           () => config.addCollectionType(...args)
-        ).toThrowError(`argumentType must be a non-empty string!`);
+        ).toThrowError(`argumentType must be a non-empty string or omitted!`);
       });
 
       it("a non-string description", () => {
         options.description = Symbol("foo");
         expect(
           () => config.addCollectionType(...args)
-        ).toThrowError(`description must be a non-empty string!`);
+        ).toThrowError(`description must be a non-empty string or omitted!`);
 
-        args[3] = {};
+        options.description = {};
         expect(
           () => config.addCollectionType(...args)
-        ).toThrowError(`description must be a non-empty string!`);
+        ).toThrowError(`description must be a non-empty string or omitted!`);
       });
 
       it("a non-function argument filter", () => {
@@ -319,7 +321,7 @@ describe("CollectionConfiguration", () => {
           () => config.addCollectionType(...args)
         ).toThrowError(`argumentValidator must be a function or omitted!`);
 
-        args[4] = {};
+        options.argumentValidator = {};
         expect(
           () => config.addCollectionType(...args)
         ).toThrowError(`argumentValidator must be a function or omitted!`);
