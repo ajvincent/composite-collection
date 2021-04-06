@@ -53,7 +53,9 @@ export default class CollectionConfiguration {
   static #STATE_TRANSITIONS = new Map([
     ["start", new Set([
       "startMap",
+      /* not yet implemented
       "startSet",
+      */
     ])],
 
     ["startMap", new Set([
@@ -187,24 +189,10 @@ export default class CollectionConfiguration {
   }
 
   /**
-   * The name of the class.
-   *
-   * @type {string}
-   * @public
-   * @readonly
-   */
-  get className() {
-    return this.#className;
-  }
-
-  /**
    * A file overview to feed into the generated module.
    * @type {string?}
    * @public
    */
-  get fileOverview() {
-    return this.#fileoverview;
-  }
   set fileOverview(fileoverview) {
     this.#stringArg("fileOverview", fileoverview);
     if (this.#fileoverview)
@@ -212,24 +200,18 @@ export default class CollectionConfiguration {
     this.#fileoverview = fileoverview;
   }
 
-  /**
-   * The collection types this instance already has.
-   *
-   * @returns {Map<identifier, CollectionType>}
-   * @public
-   */
-  getCollectionTypes() {
-    return new Map(this.#parameterToTypeMap);
-  }
-
-  /**
-   * The argument names this instance already has.
-   *
-   * @returns {Set<string>}
-   * @public
-   */
-  getArgumentNames() {
-    return Array.from(this.#parameterToTypeMap.keys())
+  cloneData() {
+    return {
+      className: this.#className,
+      parameterTypeData: new Map(this.#parameterToTypeMap),
+      weakMapKeys: this.#weakMapKeys.slice(),
+      strongMapKeys: this.#strongMapKeys.slice(),
+      weakSetElements: this.#weakSetElements.slice(),
+      strongSetElements: this.#strongSetElements.slice(),
+      valueFilter: this.#valueFilter,
+      valueJSDoc: this.#valueJSDoc,
+      fileOverview: this.#fileoverview,
+    };
   }
 
   /**
@@ -239,16 +221,12 @@ export default class CollectionConfiguration {
    * @property {Function?} argumentValidator A method to use for testing the argument.
    */
 
-  /**
-   * Add a collection type argument.
-   *
-   * @param {string}    argumentName        The name of the argument.
-   * @param {string}    mapOrSetType        The name of the map or set type.
-   *                                        Map, Set, WeakMap, WeakSet, or something inheriting from one of them.
-   * @param {CollectionTypeOptions} options Optional arguments providing more configuration
-   */
-  addCollectionType(argumentName, mapOrSetType, options = {}) {
-    /*
+  addMapKey(argumentName, holdWeak, options = {}) {
+    if (!this.#doStateTransition("mapKeys")) {
+      this.throwIfLocked();
+      throw new Error("You must define map keys before calling .addSetElement(), .setValueFilter() or .lock()!");
+    }
+
     const {
       argumentType = null,
       description = null,
@@ -269,17 +247,9 @@ export default class CollectionConfiguration {
     if (argumentName === "value")
       throw new Error(`The argument name "value" is reserved!`);
 
-    if (!CollectionConfiguration.#PREDEFINED_TYPES.has(mapOrSetType))
-      throw new Error(`The map or set type must be one of "Map", "Set", "WeakMap" or "WeakSet"!`);
-
-    if (mapOrSetType.startsWith("Weak"))
-      this.#holdsWeak = true;
-    if (mapOrSetType.endsWith("Set"))
-      this.#setCount++;
-
     const collectionType = new CollectionType(
       argumentName,
-      mapOrSetType,
+      holdWeak ? "WeakMap" : "Map",
       argumentType,
       description,
       argumentValidator
@@ -287,15 +257,10 @@ export default class CollectionConfiguration {
     this.#collectionTypes.push(collectionType);
 
     this.#argumentNames.add(argumentName);
-    */
-    throw new Error("Deprecated");
-  }
-
-  addMapKey(argumentName, holdWeak, options = {}) {
-    if (!this.#doStateTransition("mapKeys")) {
-      this.throwIfLocked();
-      throw new Error("You must define map keys before calling .addSetElement(), .setValueFilter() or .lock()!");
-    }
+    if (holdWeak)
+      this.#weakMapKeys.push(argumentName);
+    else
+      this.#strongMapKeys.push(argumentName);
   }
 
   addSetElement(argumentName, holdWeak, options = {}) {
