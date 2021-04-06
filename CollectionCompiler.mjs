@@ -36,7 +36,7 @@ export default class CollectionCompiler extends CompletionPromise {
       else {
         this.#sourcesPath = sourcesPath;
         this.#targetsPath = targetsPath;
-        this.start = resolve();
+        this.start = resolve;
       }
     }
     catch (ex) {
