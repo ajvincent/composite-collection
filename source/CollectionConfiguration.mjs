@@ -69,6 +69,12 @@ export default class CollectionConfiguration {
   /** @type {string?} */
   #fileoverview = null;
 
+  /** @type {boolean} */
+  #holdsWeak = false;
+
+  /** @type {number} */
+  #setCount = 0;
+
   /**
    * Validate a string argument.
    * @param {string}  argumentName The name of the argument.
@@ -134,6 +140,22 @@ export default class CollectionConfiguration {
   }
 
   /**
+   * @returns {boolean}
+   * @public
+   */
+  get holdsWeak() {
+    return this.#holdsWeak;
+  }
+
+  /**
+   * @returns {number}
+   * @public
+   */
+  get setCount() {
+    return this.#setCount;
+  }
+
+  /**
    * A file overview to feed into the generated module.
    * @type {string?}
    * @public
@@ -183,19 +205,20 @@ export default class CollectionConfiguration {
    *                                        Map, Set, WeakMap, WeakSet, or something inheriting from one of them.
    * @param {CollectionTypeOptions} options Optional arguments providing more configuration
    */
-  addCollectionType(argumentName, mapOrSetType, options) {
+  addCollectionType(argumentName, mapOrSetType, options = {}) {
     const {
-      argumentType,
-      description,
+      argumentType = null,
+      description = null,
       argumentValidator = null
     } = options;
 
     this.#identifierArg("argumentName", argumentName);
-    this.#jsdocField("argumentType", argumentType);
-    this.#jsdocField("description",  description);
-    if (argumentValidator !== null) {
+    if (argumentType !== null)
+      this.#jsdocField("argumentType", argumentType, true);
+    if (description !== null)
+      this.#jsdocField("description",  description, true);
+    if (argumentValidator !== null)
       this.#functionArg("argumentValidator", argumentValidator, true);
-    }
 
     if (this.#argumentNames.has(argumentName))
       throw new Error(`Argument name "${argumentName}" has already been defined!`);
@@ -206,8 +229,10 @@ export default class CollectionConfiguration {
     if (!CollectionConfiguration.#PREDEFINED_TYPES.has(mapOrSetType))
       throw new Error(`The map or set type must be one of "Map", "Set", "WeakMap" or "WeakSet"!`);
 
-    if (!mapOrSetType.endsWith("Map") && !mapOrSetType.endsWith("Set"))
-      throw new Error(`The map or set type must end with "Map" or "Set"!`);
+    if (mapOrSetType.startsWith("Weak"))
+      this.#holdsWeak = true;
+    if (mapOrSetType.endsWith("Set"))
+      this.#setCount++;
 
     const collectionType = new CollectionType(
       argumentName,
