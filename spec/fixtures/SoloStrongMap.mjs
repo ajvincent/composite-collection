@@ -1,4 +1,4 @@
-import CollectionConfiguration from "composite-collection/CollectionConfiguration";
+import CollectionConfiguration from "composite-collection/Configuration";
 
 const SoloStrongMapSpec = new CollectionConfiguration("SoloStrongMap");
 SoloStrongMapSpec.addCollectionType(

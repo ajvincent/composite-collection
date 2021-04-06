@@ -31,6 +31,7 @@
     "get-all-files": "^3.0.0"
   },
   "exports": {
-    "./CollectionConfiguration": "./source/CollectionConfiguration.mjs"
+    ".": "./CollectionCompiler.mjs",
+    "./Configuration": "./source/CollectionConfiguration.mjs"
   }
 }
