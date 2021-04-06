@@ -4,8 +4,8 @@
   "description": "Composing Maps, WeakMaps, Sets and WeakSets into generated classes",
   "main": "Driver.mjs",
   "scripts": {
-    "dogfood": "node dogfood/build.mjs && jasmine",
-    "debug": "node --inspect-brk ./node_modules/jasmine/bin/jasmine.js",
+    "dogfood": "node dogfood/build.mjs && jasmine --config=test/support/jasmine.json",
+    "debug": "node --inspect-brk ./node_modules/jasmine/bin/jasmine.js --config=test/support/jasmine.json",
     "test": "jasmine --config=test/support/jasmine.json"
   },
   "repository": {
