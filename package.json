@@ -6,7 +6,9 @@
   "scripts": {
     "dogfood": "node dogfood/build.mjs && jasmine --config=test/support/jasmine.json",
     "debug": "node --inspect-brk ./node_modules/jasmine/bin/jasmine.js --config=test/support/jasmine.json",
-    "test": "jasmine --config=test/support/jasmine.json"
+    "debug-weakref": "node --inspect-brk --expose-gc ./node_modules/jasmine/bin/jasmine.js --config=test/support/garbage.json",
+    "test": "jasmine --config=test/support/jasmine.json",
+    "test-weakref": "node --expose-gc ./node_modules/jasmine/bin/jasmine.js --config=test/support/garbage.json"
   },
   "repository": {
     "type": "git",
