@@ -1,18 +1,18 @@
 import CollectionConfiguration from "../../source/CollectionConfiguration.mjs";
 
 const WeakMatrixSpec = new CollectionConfiguration("WeakMatrixMap");
-WeakMatrixSpec.addCollectionType(
+WeakMatrixSpec.addMapKey(
   "row",
-  "WeakMap",
+  true,
   {
     argumentType: "Object",
     description: "The matrix row",
   }
 );
 
-WeakMatrixSpec.addCollectionType(
+WeakMatrixSpec.addMapKey(
   "column",
-  "WeakMap",
+  true,
   {
     argumentType: "Object",
     description: "The matrix column"

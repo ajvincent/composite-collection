@@ -163,25 +163,25 @@ export default class CollectionConfiguration {
 
   /**
    * @param {string} className The name of the class to define.
-   * @param {string} collectionType The type of collection we're building.
    * @constructor
+   *
+   * @note depending on how this develops, I may add a collectionType string argument.
    */
-  constructor(className, collectionType) {
+  constructor(className) {
     this.#identifierArg("className", className);
-    if (!className.endsWith("Map") && !className.endsWith("Set"))
-      throw new Error(`The class name must end with "Map" or "Set"!`);
     if (CollectionConfiguration.#PREDEFINED_TYPES.has(className))
       throw new Error(`You can't override the ${className} primordial!`);
 
-    if (collectionType === "map") {
+    if (className.endsWith("Map"))
       this.#doStateTransition("startMap");
-    }
-    else if (collectionType === "set") {
+    /*
+    else if (className.endsWith("Set"))
       this.#doStateTransition("startSet");
-    }
-    else {
-      throw new Error(`collectionType must be one of "map", "set"!`);
-    }
+    else
+      throw new Error(`The class name must end with "Map" or "Set"!`);
+    */
+    else
+      throw new Error(`The class name must end with "Map"!`);
 
     this.#className = className;
 
@@ -193,17 +193,17 @@ export default class CollectionConfiguration {
    * @type {string?}
    * @public
    */
-  set fileOverview(fileoverview) {
-    this.#stringArg("fileOverview", fileoverview);
+  setFileOverview(fileoverview) {
+    this.#stringArg("fileoverview", fileoverview);
     if (this.#fileoverview)
-      throw new Error("fileOverview has already been set!");
+      throw new Error("fileoverview has already been set!");
     this.#fileoverview = fileoverview;
   }
 
   cloneData() {
     return {
       className: this.#className,
-      parameterTypeData: new Map(this.#parameterToTypeMap),
+      parameterToTypeMap: new Map(this.#parameterToTypeMap),
       weakMapKeys: this.#weakMapKeys.slice(),
       strongMapKeys: this.#strongMapKeys.slice(),
       weakSetElements: this.#weakSetElements.slice(),
@@ -223,7 +223,7 @@ export default class CollectionConfiguration {
 
   addMapKey(argumentName, holdWeak, options = {}) {
     if (!this.#doStateTransition("mapKeys")) {
-      this.throwIfLocked();
+      this.#throwIfLocked();
       throw new Error("You must define map keys before calling .addSetElement(), .setValueFilter() or .lock()!");
     }
 
@@ -241,11 +241,13 @@ export default class CollectionConfiguration {
     if (argumentValidator !== null)
       this.#functionArg("argumentValidator", argumentValidator, true);
 
-    if (this.#argumentNames.has(argumentName))
+    if (this.#parameterToTypeMap.has(argumentName))
       throw new Error(`Argument name "${argumentName}" has already been defined!`);
 
     if (argumentName === "value")
       throw new Error(`The argument name "value" is reserved!`);
+    if (typeof holdWeak !== "boolean")
+      throw new Error("holdWeak must be true or false!");
 
     const collectionType = new CollectionType(
       argumentName,
@@ -254,18 +256,18 @@ export default class CollectionConfiguration {
       description,
       argumentValidator
     );
-    this.#collectionTypes.push(collectionType);
+    this.#parameterToTypeMap.set(argumentName, collectionType);
 
-    this.#argumentNames.add(argumentName);
     if (holdWeak)
       this.#weakMapKeys.push(argumentName);
     else
       this.#strongMapKeys.push(argumentName);
   }
 
+  /*
   addSetElement(argumentName, holdWeak, options = {}) {
     if (!this.#doStateTransition("setElements")) {
-      this.throwIfLocked();
+      this.#throwIfLocked();
       if (this.#currentState === "hasValueFilter")
         throw new Error("You cannot have a value argument and set elements!");
       else {
@@ -274,10 +276,7 @@ export default class CollectionConfiguration {
       }
     }
   }
-
-  getValueFilter() {
-    return [this.#valueFilter, this.#valueJSDoc];
-  }
+  */
 
   /**
    * Define a final value filter for .set(), .add() calls.
@@ -287,13 +286,13 @@ export default class CollectionConfiguration {
    */
   setValueFilter(valueFilter, valueJSDoc = null) {
     if (!this.#doStateTransition("hasValueFilter")) {
-      this.throwIfLocked();
+      this.#throwIfLocked();
 
+      if (this.#currentState === "hasValueFilter")
+        throw new Error("You can only set the value filter once!");
       throw new Error("You can only call .setValueFilter() directly after calling .addMapKey()!");
     }
 
-    if (this.#valueFilter)
-      throw new Error("You can only set the value filter once!");
     this.#functionArg("valueFilter", valueFilter);
     if (valueJSDoc !== null)
       this.#jsdocField("valueJSDoc", valueJSDoc, true);
@@ -307,7 +306,7 @@ export default class CollectionConfiguration {
       throw new Error("You must define a map key or set element first!");
   }
 
-  throwIfLocked() {
+  #throwIfLocked() {
     if (this.#currentState === "locked") {
       throw new Error("You have already locked this configuration!");
     }

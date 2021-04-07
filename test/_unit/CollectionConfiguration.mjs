@@ -8,15 +8,11 @@ describe("CollectionConfiguration", () => {
 
     expect(Reflect.ownKeys(CollectionConfiguration.prototype)).toEqual([
       "constructor",
-      "className",
-      "holdsWeak",
-      "setCount",
-      "fileOverview",
-      "getCollectionTypes",
-      "getArgumentNames",
-      "addCollectionType",
-      "getValueFilter",
+      "setFileOverview",
+      "cloneData",
+      "addMapKey",
       "setValueFilter",
+      "lock",
     ]);
   });
 
@@ -27,14 +23,14 @@ describe("CollectionConfiguration", () => {
       }).not.toThrow();
     });
 
-    it("accepts a custom set class name", () => {
+    xit("accepts a custom set class name", () => {
       expect(() => {
         void(new CollectionConfiguration("FooSet"));
       }).not.toThrow();
     });
 
     it("disallows setting undefined properties", () => {
-      const config = new CollectionConfiguration("FooSet");
+      const config = new CollectionConfiguration("FooMap");
       expect(Object.isSealed(config)).toBe(true);
       expect(Reflect.ownKeys(config)).toEqual([]);
     });
@@ -42,7 +38,7 @@ describe("CollectionConfiguration", () => {
     it("throws for a class name that doesn't end with 'Map' or 'Set'", () => {
       expect(() => {
         void(new CollectionConfiguration("Foo"))
-      }).toThrowError(`The class name must end with "Map" or "Set"!`);
+      }).toThrowError(`The class name must end with "Map"!`);
     });
 
     it(`throws for the names "Map", "WeakMap", "Set", and "WeakSet"`, () => {
@@ -64,15 +60,12 @@ describe("CollectionConfiguration", () => {
     });
   });
 
-  it(".className is read-only", () => {
-    const config = new CollectionConfiguration("FooSet");
-    expect(config.className).toBe("FooSet");
-    expect(() => {
-      config.className = "FooMap";
-    }).toThrow();
+  it("instances are frozen objects with no own properties", () => {
+    const config = new CollectionConfiguration("FooMap");
+    expect(Object.isFrozen(config)).toBe(true);
   });
 
-  describe(".fileOverview", () => {
+  describe(".setFileOverview()", () => {
     let config;
     const overview = `
     This is a FooSet.  There are none like it but this is mine!
@@ -80,63 +73,33 @@ describe("CollectionConfiguration", () => {
     This is still a FooSet!
     `.trim();
 
-    beforeEach(() => config = new CollectionConfiguration("FooSet"));
-    it("initially is null", () => {
-      expect(config.fileOverview).toBe(null);
-    });
-
+    beforeEach(() => config = new CollectionConfiguration("FooMap"));
     it("can be set once to a string", () => {
       expect(() => {
-        config.fileOverview = overview;
+        config.setFileOverview(overview);
       }).not.toThrow();
 
-      expect(config.fileOverview).toBe(overview);
+      expect(config.cloneData().fileOverview).toBe(overview);
     });
 
     it("throws for setting twice", () => {
-      config.fileOverview = overview;
+      config.setFileOverview(overview);
       expect(() => {
-        config.fileOverview = "foo";
-      }).toThrowError("fileOverview has already been set!");
+        config.setFileOverview("foo");
+      }).toThrowError("fileoverview has already been set!");
     });
 
     it("throws for setting to a non-string value", () => {
       expect(() => {
-        config.fileOverview = Symbol("foo");
-      }).toThrowError(`fileOverview must be a non-empty string!`);
+        config.setFileOverview(Symbol("foo"));
+      }).toThrowError(`fileoverview must be a non-empty string!`);
     });
   });
 
-  it(".getCollectionTypes() returns an unique array every time", () => {
-    const config = new CollectionConfiguration("FooSet")
-
-    const types1 = config.getCollectionTypes();
-    expect(Array.isArray(types1)).toBe(true);
-    expect(types1.length).toBe(0);
-
-    const types2 = config.getCollectionTypes();
-    expect(Array.isArray(types2)).toBe(true);
-    expect(types2.length).toBe(0);
-    expect(types2).not.toBe(types1);
-  });
-
-  it(".getArgumentNames() returns an unique Set() every time", () => {
-    const config = new CollectionConfiguration("FooSet");
-
-    const types1 = config.getArgumentNames();
-    expect(types1 instanceof Set).toBe(true);
-    expect(types1.size).toBe(0);
-
-    const types2 = config.getArgumentNames();
-    expect(types2 instanceof Set).toBe(true);
-    expect(types2.size).toBe(0);
-    expect(types2).not.toBe(types1);
-  });
-
-  describe(".addCollectionType()", () => {
+  describe(".addMapKey()", () => {
     let config, options, type1Args;
     beforeEach(() => {
-      config = new CollectionConfiguration("FooSet");
+      config = new CollectionConfiguration("FooMap");
       options = {
         argumentType: "Cat",
         description: "The other cat",
@@ -144,23 +107,22 @@ describe("CollectionConfiguration", () => {
 
       type1Args = [
         "mother",
-        "WeakMap",
+        true,
         options
       ];
       Object.freeze(type1Args);
     });
 
-
     const argumentValidator = jasmine.createSpy("argumentValidator");
 
     it("defines a collection type when called without an argument filter", () => {
-      config.addCollectionType(...type1Args);
+      config.addMapKey(...type1Args);
 
-      const types = config.getCollectionTypes();
-      expect(Array.isArray(types)).toBe(true);
-      expect(types.length).toBe(1);
-      if (types.length > 0) {
-        const firstType = types[0];
+      const typeData = config.cloneData();
+      expect(typeData.parameterToTypeMap.size).toBe(1);
+      const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
+      expect(typeof firstType).toBe("object");
+      if (firstType) {
         expect(Object.isFrozen(firstType)).toBe(true);
         expect(Reflect.ownKeys(firstType)).toEqual([
           "argumentName",
@@ -171,24 +133,22 @@ describe("CollectionConfiguration", () => {
         ]);
 
         expect(firstType.argumentName).toBe(type1Args[0]);
-        expect(firstType.mapOrSetType).toBe(type1Args[1]);
+        expect(firstType.mapOrSetType).toBe("WeakMap");
         expect(firstType.argumentType).toBe(options.argumentType);
         expect(firstType.description).toBe(options.description);
         expect(firstType.argumentValidator).toBe(null);
       }
-
-      expect(Array.from(config.getArgumentNames())).toEqual([type1Args[0]]);
     });
 
     it("defines a collection type when called with an argument filter", () => {
       options.argumentValidator = argumentValidator;
-      config.addCollectionType(...type1Args);
+      config.addMapKey(...type1Args);
 
-      const types = config.getCollectionTypes();
-      expect(Array.isArray(types)).toBe(true);
-      expect(types.length).toBe(1);
-      if (types.length > 0) {
-        const firstType = types[0];
+      const typeData = config.cloneData();
+      expect(typeData.parameterToTypeMap.size).toBe(1);
+      const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
+      expect(typeof firstType).toBe("object");
+      if (firstType) {
         expect(Object.isFrozen(firstType)).toBe(true);
         expect(Reflect.ownKeys(firstType)).toEqual([
           "argumentName",
@@ -199,14 +159,10 @@ describe("CollectionConfiguration", () => {
         ]);
 
         expect(firstType.argumentName).toBe(type1Args[0]);
-        expect(firstType.mapOrSetType).toBe(type1Args[1]);
+        expect(firstType.mapOrSetType).toBe("WeakMap");
         expect(firstType.argumentType).toBe(options.argumentType);
         expect(firstType.description).toBe(options.description);
         expect(firstType.argumentValidator).toBe(argumentValidator);
-
-        expect(Array.from(config.getArgumentNames())).toEqual([type1Args[0]]);
-
-        expect(argumentValidator).toHaveBeenCalledTimes(0);
       }
     });
 
@@ -223,13 +179,13 @@ describe("CollectionConfiguration", () => {
         args[0] += "_" + i;
         argMatrix.push(args);
 
-        config.addCollectionType(...args);
+        config.addMapKey(...args);
       }
 
-      const types = config.getCollectionTypes();
-      expect(types.length).toBe(argCount);
+      const typeData = config.cloneData();
+      expect(typeData.parameterToTypeMap.size).toBe(argCount);
 
-      types.forEach((t, index) => {
+      Array.from(typeData.parameterToTypeMap.values()).forEach((t, index) => {
         expect(Object.isFrozen(t)).toBe(true);
         expect(Reflect.ownKeys(t)).toEqual([
           "argumentName",
@@ -241,13 +197,11 @@ describe("CollectionConfiguration", () => {
         const argRow = argMatrix[index];
 
         expect(t.argumentName).toBe(argRow[0]);
-        expect(t.mapOrSetType).toBe(argRow[1]);
+        expect(t.mapOrSetType).toBe("WeakMap");
         expect(t.argumentType).toBe(options.argumentType);
         expect(t.description).toBe(options.description);
         expect(t.argumentValidator).toBe(options.argumentValidator);
       });
-
-      expect(Array.from(config.getArgumentNames())).toEqual(argMatrix.map(row => row[0]));
 
       expect(argumentValidator).toHaveBeenCalledTimes(0);
     });
@@ -258,79 +212,79 @@ describe("CollectionConfiguration", () => {
       it("a non-string argument name", () => {
         args[0] = Symbol("foo");
         expect(
-          () => config.addCollectionType(...args)
+          () => config.addMapKey(...args)
         ).toThrowError(`argumentName must be a non-empty string!`);
 
         args[0] = {};
         expect(
-          () => config.addCollectionType(...args)
+          () => config.addMapKey(...args)
         ).toThrowError(`argumentName must be a non-empty string!`);
       });
 
       it(`an argument name of "value"`, () => {
         args[0] = "value";
         expect(
-          () => config.addCollectionType(...args)
+          () => config.addMapKey(...args)
         ).toThrowError(`The argument name "value" is reserved!`);
       });
 
-      it(`a map or set type that isn't "Map", "WeakMap", "Set", or "WeakSet"`, () => {
+      it(`holdWeak being neither true nor false`, () => {
         args[1] = Symbol("foo");
         expect(
-          () => config.addCollectionType(...args)
-        ).toThrowError(`The map or set type must be one of "Map", "Set", "WeakMap" or "WeakSet"!`);
+          () => config.addMapKey(...args)
+        ).toThrowError("holdWeak must be true or false!");
 
         args[1] = {};
         expect(
-          () => config.addCollectionType(...args)
-        ).toThrowError(`The map or set type must be one of "Map", "Set", "WeakMap" or "WeakSet"!`);
+          () => config.addMapKey(...args)
+        ).toThrowError("holdWeak must be true or false!");
 
         args[1] = "WeakMultiMap";
         expect(
-          () => config.addCollectionType(...args)
-        ).toThrowError(`The map or set type must be one of "Map", "Set", "WeakMap" or "WeakSet"!`);
+          () => config.addMapKey(...args)
+        ).toThrowError("holdWeak must be true or false!");
       });
 
       it("a non-string argument type", () => {
         options.argumentType = Symbol("foo");
         expect(
-          () => config.addCollectionType(...args)
+          () => config.addMapKey(...args)
         ).toThrowError(`argumentType must be a non-empty string or omitted!`);
 
         options.argumentType ={};
         expect(
-          () => config.addCollectionType(...args)
+          () => config.addMapKey(...args)
         ).toThrowError(`argumentType must be a non-empty string or omitted!`);
       });
 
       it("a non-string description", () => {
         options.description = Symbol("foo");
         expect(
-          () => config.addCollectionType(...args)
+          () => config.addMapKey(...args)
         ).toThrowError(`description must be a non-empty string or omitted!`);
 
         options.description = {};
         expect(
-          () => config.addCollectionType(...args)
+          () => config.addMapKey(...args)
         ).toThrowError(`description must be a non-empty string or omitted!`);
       });
 
       it("a non-function argument filter", () => {
         options.argumentValidator = Symbol("foo");
         expect(
-          () => config.addCollectionType(...args)
+          () => config.addMapKey(...args)
         ).toThrowError(`argumentValidator must be a function or omitted!`);
 
         options.argumentValidator = {};
         expect(
-          () => config.addCollectionType(...args)
+          () => config.addMapKey(...args)
         ).toThrowError(`argumentValidator must be a function or omitted!`);
       });
 
       it("a known argument name being passed in twice", () => {
-        config.addCollectionType(...args);
+        config.addMapKey(...args);
         expect(
-          () => config.addCollectionType(...args)
+          () => config.addMapKey(...args)
         ).toThrowError(`Argument name "${args[0]}" has already been defined!`);
       });
 
@@ -344,47 +298,51 @@ describe("CollectionConfiguration", () => {
     });
   });
 
-  it(".getValueFilter() returns [null, null] by default", () => {
-    const config = new CollectionConfiguration("FooSet");
-    expect(config.getValueFilter()).toEqual([null, null]);
-  });
-
   describe(".setValueFilter()", () => {
     let config, valueFilter = jasmine.createSpy("valueFilter");
     beforeEach(() => {
-      config = new CollectionConfiguration("FooSet");
+      config = new CollectionConfiguration("FooMap");
       valueFilter.calls.reset();
       valueFilter.and.stub();
     });
 
     describe("accepts a function for the value filter with", () => {
       it("no jsdoc argument", () => {
+        config.addMapKey("mother", true);
         expect(() => config.setValueFilter(valueFilter)).not.toThrow();
-        expect(config.getValueFilter()).toEqual([valueFilter, null]);
         expect(valueFilter).toHaveBeenCalledTimes(0);
       });
 
       it("a jsdoc argument", () => {
+        config.addMapKey("mother", true);
         expect(() => config.setValueFilter(valueFilter, "foo")).not.toThrow();
-        expect(config.getValueFilter()).toEqual([valueFilter, "foo"]);
         expect(valueFilter).toHaveBeenCalledTimes(0);
       });
     });
 
     describe("throws for", () => {
+      it("invoking without having a map key first", () => {
+        expect(
+          () => config.setValueFilter(function() { return false })
+        ).toThrowError("You can only call .setValueFilter() directly after calling .addMapKey()!");
+      });
+
       it("setting a non-function filter", () => {
+        config.addMapKey("mother", true);
         expect(
           () => config.setValueFilter({})
         ).toThrowError(`valueFilter must be a function!`);
       });
 
       it("setting a non-string jsdoc argument", () => {
+        config.addMapKey("mother", true);
         expect(
           () => config.setValueFilter(valueFilter, {})
         ).toThrowError(`valueJSDoc must be a non-empty string or omitted!`);
       });
 
       it("calling after a successful valueFilter application", () => {
+        config.addMapKey("mother", true);
         config.setValueFilter(valueFilter);
         expect(
           () => config.setValueFilter(valueFilter)

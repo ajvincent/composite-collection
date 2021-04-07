@@ -1,9 +1,6 @@
 import CollectionConfiguration from "composite-collection/Configuration";
 
 const SoloStrongMapSpec = new CollectionConfiguration("SoloStrongMap");
-SoloStrongMapSpec.addCollectionType(
-  "key",
-  "Map"
-);
+SoloStrongMapSpec.addMapKey("key", false);
 
 export default SoloStrongMapSpec;
