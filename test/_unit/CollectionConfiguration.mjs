@@ -209,12 +209,14 @@ describe("CollectionConfiguration", () => {
     describe("throws for", () => {
       let args;
       beforeEach(() => args = type1Args.slice());
-      it("a non-string argument name", () => {
+      it("a symbol argument name", () => {
         args[0] = Symbol("foo");
         expect(
           () => config.addMapKey(...args)
         ).toThrowError(`argumentName must be a non-empty string!`);
+      });
 
+      it("an object for an argument name", () => {
         args[0] = {};
         expect(
           () => config.addMapKey(...args)
@@ -234,18 +236,8 @@ describe("CollectionConfiguration", () => {
         ).toThrowError(`The argument name "value" is reserved!`);
       });
 
-      it(`holdWeak being neither true nor false`, () => {
+      it(`holdWeak being neither true nor false: `, () => {
         args[1] = Symbol("foo");
-        expect(
-          () => config.addMapKey(...args)
-        ).toThrowError("holdWeak must be true or false!");
-
-        args[1] = {};
-        expect(
-          () => config.addMapKey(...args)
-        ).toThrowError("holdWeak must be true or false!");
-
-        args[1] = "WeakMultiMap";
         expect(
           () => config.addMapKey(...args)
         ).toThrowError("holdWeak must be true or false!");
@@ -256,19 +248,9 @@ describe("CollectionConfiguration", () => {
         expect(
           () => config.addMapKey(...args)
         ).toThrowError(`argumentType must be a non-empty string or omitted!`);
-
-        options.argumentType ={};
-        expect(
-          () => config.addMapKey(...args)
-        ).toThrowError(`argumentType must be a non-empty string or omitted!`);
       });
 
       it("a non-string description", () => {
-        options.description = Symbol("foo");
-        expect(
-          () => config.addMapKey(...args)
-        ).toThrowError(`description must be a non-empty string or omitted!`);
-
         options.description = {};
         expect(
           () => config.addMapKey(...args)
@@ -277,11 +259,6 @@ describe("CollectionConfiguration", () => {
 
       it("a non-function argument filter", () => {
         options.argumentValidator = Symbol("foo");
-        expect(
-          () => config.addMapKey(...args)
-        ).toThrowError(`argumentValidator must be a function or omitted!`);
-
-        options.argumentValidator = {};
         expect(
           () => config.addMapKey(...args)
         ).toThrowError(`argumentValidator must be a function or omitted!`);
@@ -295,25 +272,31 @@ describe("CollectionConfiguration", () => {
       });
 
       describe("invalid identifiers:", () => {
-        it("code injection attempt", () => {
+        it("code injection with assignment", () => {
           expect(
             () => config.addMapKey("foo = 3", true)
           ).toThrowError(`"foo = 3" is not a valid JavaScript identifier!`);
+        });
 
+        it("code injection with function call", () => {
           expect(
             () => config.addMapKey("foo()", true)
           ).toThrowError(`"foo()" is not a valid JavaScript identifier!`);
         });
 
-        it("comments before or after the identifier", () => {
+        it("single-line comment after the identifier", () => {
           expect(
             () => config.addMapKey("foo // no", true)
           ).toThrowError(`"foo // no" is not a valid JavaScript identifier!`);
+        });
 
+        it("comment before the identifier", () => {
           expect(
             () => config.addMapKey("/* no */ foo", true)
           ).toThrowError(`"/* no */ foo" is not a valid JavaScript identifier!`);
+        });
 
+        it("comment after the identifier", () => {
           expect(
             () => config.addMapKey("foo /* no */", true)
           ).toThrowError(`"foo /* no */" is not a valid JavaScript identifier!`);
@@ -401,5 +384,14 @@ describe("CollectionConfiguration", () => {
         ).toThrowError("You can only set the value filter once!");
       });
     });
+  });
+
+  it("disallows any further operations after throwing an exception", () => {
+    const config = new CollectionConfiguration("FooMap");
+    expect(() => config.addMapKey("#x", true)).toThrow();
+
+    expect(() => {
+      config.cloneData()
+    }).toThrowError("This configuration is dead due to a previous error!");
   });
 });

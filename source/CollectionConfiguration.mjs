@@ -86,6 +86,8 @@ export default class CollectionConfiguration {
     ["locked", new Set([
       "locked",
     ])],
+
+    ["errored", new Set()],
   ]);
 
   /** @type {string} */
@@ -176,6 +178,19 @@ export default class CollectionConfiguration {
     // XXX ajvincent More advanced JSDoc validation is a good idea.
   }
 
+  #catchErrorState(callback) {
+    if (this.#currentState === "errored")
+      throw new Error("This configuration is dead due to a previous error!");
+
+    try {
+      return callback();
+    }
+    catch (ex) {
+      this.#currentState = "errored";
+      throw ex;
+    }
+  }
+
   /**
    * @param {string} className The name of the class to define.
    * @constructor
@@ -183,24 +198,26 @@ export default class CollectionConfiguration {
    * @note depending on how this develops, I may add a collectionType string argument.
    */
   constructor(className) {
-    this.#identifierArg("className", className);
-    if (CollectionConfiguration.#PREDEFINED_TYPES.has(className))
-      throw new Error(`You can't override the ${className} primordial!`);
+    this.#catchErrorState(() => {
+      this.#identifierArg("className", className);
+      if (CollectionConfiguration.#PREDEFINED_TYPES.has(className))
+        throw new Error(`You can't override the ${className} primordial!`);
 
-    if (className.endsWith("Map"))
-      this.#doStateTransition("startMap");
-    /*
-    else if (className.endsWith("Set"))
-      this.#doStateTransition("startSet");
-    else
-      throw new Error(`The class name must end with "Map" or "Set"!`);
-    */
-    else
-      throw new Error(`The class name must end with "Map"!`);
+      if (className.endsWith("Map"))
+        this.#doStateTransition("startMap");
+      /*
+      else if (className.endsWith("Set"))
+        this.#doStateTransition("startSet");
+      else
+        throw new Error(`The class name must end with "Map" or "Set"!`);
+      */
+      else
+        throw new Error(`The class name must end with "Map"!`);
 
-    this.#className = className;
+      this.#className = className;
 
-    Reflect.preventExtensions(this);
+      Reflect.preventExtensions(this);
+    });
   }
 
   /**
@@ -209,24 +226,28 @@ export default class CollectionConfiguration {
    * @public
    */
   setFileOverview(fileoverview) {
-    this.#stringArg("fileoverview", fileoverview);
-    if (this.#fileoverview)
-      throw new Error("fileoverview has already been set!");
-    this.#fileoverview = fileoverview;
+    return this.#catchErrorState(() => {
+      this.#stringArg("fileoverview", fileoverview);
+      if (this.#fileoverview)
+        throw new Error("fileoverview has already been set!");
+      this.#fileoverview = fileoverview;
+    });
   }
 
   cloneData() {
-    return {
-      className: this.#className,
-      parameterToTypeMap: new Map(this.#parameterToTypeMap),
-      weakMapKeys: this.#weakMapKeys.slice(),
-      strongMapKeys: this.#strongMapKeys.slice(),
-      weakSetElements: this.#weakSetElements.slice(),
-      strongSetElements: this.#strongSetElements.slice(),
-      valueFilter: this.#valueFilter,
-      valueJSDoc: this.#valueJSDoc,
-      fileOverview: this.#fileoverview,
-    };
+    return this.#catchErrorState(() => {
+      return {
+        className: this.#className,
+        parameterToTypeMap: new Map(this.#parameterToTypeMap),
+        weakMapKeys: this.#weakMapKeys.slice(),
+        strongMapKeys: this.#strongMapKeys.slice(),
+        weakSetElements: this.#weakSetElements.slice(),
+        strongSetElements: this.#strongSetElements.slice(),
+        valueFilter: this.#valueFilter,
+        valueJSDoc: this.#valueJSDoc,
+        fileOverview: this.#fileoverview,
+      }
+    });
   }
 
   /**
@@ -236,61 +257,49 @@ export default class CollectionConfiguration {
    * @property {Function?} argumentValidator A method to use for testing the argument.
    */
   addMapKey(argumentName, holdWeak, options = {}) {
-    if (!this.#doStateTransition("mapKeys")) {
-      this.#throwIfLocked();
-      throw new Error("You must define map keys before calling .addSetElement(), .setValueFilter() or .lock()!");
-    }
-
-    const {
-      argumentType = null,
-      description = null,
-      argumentValidator = null
-    } = options;
-
-    this.#identifierArg("argumentName", argumentName);
-    if (argumentType !== null)
-      this.#jsdocField("argumentType", argumentType, true);
-    if (description !== null)
-      this.#jsdocField("description",  description, true);
-    if (argumentValidator !== null)
-      this.#functionArg("argumentValidator", argumentValidator, true);
-
-    if (this.#parameterToTypeMap.has(argumentName))
-      throw new Error(`Argument name "${argumentName}" has already been defined!`);
-
-    if (argumentName === "value")
-      throw new Error(`The argument name "value" is reserved!`);
-    if (typeof holdWeak !== "boolean")
-      throw new Error("holdWeak must be true or false!");
-
-    const collectionType = new CollectionType(
-      argumentName,
-      holdWeak ? "WeakMap" : "Map",
-      argumentType,
-      description,
-      argumentValidator
-    );
-    this.#parameterToTypeMap.set(argumentName, collectionType);
-
-    if (holdWeak)
-      this.#weakMapKeys.push(argumentName);
-    else
-      this.#strongMapKeys.push(argumentName);
-  }
-
-  /*
-  addSetElement(argumentName, holdWeak, options = {}) {
-    if (!this.#doStateTransition("setElements")) {
-      this.#throwIfLocked();
-      if (this.#currentState === "hasValueFilter")
-        throw new Error("You cannot have a value argument and set elements!");
-      else {
-        // we should never get here!
-        throw new Error("addSetElement cannot be called from this state: " + this.#currentState);
+    return this.#catchErrorState(() => {
+      if (!this.#doStateTransition("mapKeys")) {
+        this.#throwIfLocked();
+        throw new Error("You must define map keys before calling .addSetElement(), .setValueFilter() or .lock()!");
       }
-    }
+  
+      const {
+        argumentType = null,
+        description = null,
+        argumentValidator = null
+      } = options;
+
+      this.#identifierArg("argumentName", argumentName);
+      if (argumentType !== null)
+        this.#jsdocField("argumentType", argumentType, true);
+      if (description !== null)
+        this.#jsdocField("description",  description, true);
+      if (argumentValidator !== null)
+        this.#functionArg("argumentValidator", argumentValidator, true);
+
+      if (this.#parameterToTypeMap.has(argumentName))
+        throw new Error(`Argument name "${argumentName}" has already been defined!`);
+  
+      if (argumentName === "value")
+        throw new Error(`The argument name "value" is reserved!`);
+      if (typeof holdWeak !== "boolean")
+        throw new Error("holdWeak must be true or false!");
+  
+      const collectionType = new CollectionType(
+        argumentName,
+        holdWeak ? "WeakMap" : "Map",
+        argumentType,
+        description,
+        argumentValidator
+      );
+      this.#parameterToTypeMap.set(argumentName, collectionType);
+  
+      if (holdWeak)
+        this.#weakMapKeys.push(argumentName);
+      else
+        this.#strongMapKeys.push(argumentName);
+    });
   }
-  */
 
   /**
    * Define a final value filter for .set(), .add() calls.
@@ -299,25 +308,29 @@ export default class CollectionConfiguration {
    * @param {string}   valueJSDoc
    */
   setValueFilter(valueFilter, valueJSDoc = null) {
-    if (!this.#doStateTransition("hasValueFilter")) {
-      this.#throwIfLocked();
+    return this.#catchErrorState(() => {
+      if (!this.#doStateTransition("hasValueFilter")) {
+        this.#throwIfLocked();
+  
+        if (this.#currentState === "hasValueFilter")
+          throw new Error("You can only set the value filter once!");
+        throw new Error("You can only call .setValueFilter() directly after calling .addMapKey()!");
+      }
 
-      if (this.#currentState === "hasValueFilter")
-        throw new Error("You can only set the value filter once!");
-      throw new Error("You can only call .setValueFilter() directly after calling .addMapKey()!");
-    }
-
-    this.#functionArg("valueFilter", valueFilter);
-    if (valueJSDoc !== null)
-      this.#jsdocField("valueJSDoc", valueJSDoc, true);
-
-    this.#valueFilter = valueFilter;
-    this.#valueJSDoc = valueJSDoc;
+      this.#functionArg("valueFilter", valueFilter);
+      if (valueJSDoc !== null)
+        this.#jsdocField("valueJSDoc", valueJSDoc, true);
+  
+      this.#valueFilter = valueFilter;
+      this.#valueJSDoc = valueJSDoc;
+    });
   }
 
   lock() {
-    if (!this.#doStateTransition("locked"))
-      throw new Error("You must define a map key or set element first!");
+    return this.#catchErrorState(() => {
+      if (!this.#doStateTransition("locked"))
+        throw new Error("You must define a map key or set element first!");
+    });
   }
 
   #throwIfLocked() {
