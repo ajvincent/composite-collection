@@ -331,6 +331,12 @@ describe("CollectionConfiguration", () => {
           ).toThrowError(`"#x" is not a valid JavaScript identifier!`);
         });
 
+        it("a keyword", () => {
+          expect(
+            () => config.addMapKey("let", true)
+          ).toThrowError(`"let" is not a valid JavaScript identifier!`);
+        });
+
         it("whitespace", () => {
           expect(
             () => config.addMapKey(" x ", true)

@@ -6,7 +6,7 @@
  * This defines a data structure for configuring a composite of Maps and Sets.
  */
 
-import espree from "espree";
+import acorn from "acorn";
 
 /**
  * @public
@@ -144,19 +144,15 @@ export default class CollectionConfiguration {
     if (identifier !== identifier.trim())
       throw new Error(argName + " must not have leading or trailing whitespace!");
 
-    if (identifier.includes("//") || identifier.includes("/*") || identifier.includes("*/"))
-      throw new Error(`"${identifier}" is not a valid JavaScript identifier!`);
     {
-      let pass = false;
+      let idToken;
       try {
-        const tokens = espree.tokenize("let " + identifier, {comment: true});
-        if ((tokens.length === 2) && (tokens[1].type === "Identifier"))
-          pass = true;
+        idToken = acorn.parse("let " + identifier).body[0].declarations[0].id.name;
       }
       catch (ex) {
         // do nothing
       }
-      if (!pass)
+      if (idToken !== identifier)
         throw new Error(`"${identifier}" is not a valid JavaScript identifier!`);
     }
   }
