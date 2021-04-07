@@ -198,26 +198,24 @@ export default class CollectionConfiguration {
    * @note depending on how this develops, I may add a collectionType string argument.
    */
   constructor(className) {
-    this.#catchErrorState(() => {
-      this.#identifierArg("className", className);
-      if (CollectionConfiguration.#PREDEFINED_TYPES.has(className))
-        throw new Error(`You can't override the ${className} primordial!`);
+    this.#identifierArg("className", className);
+    if (CollectionConfiguration.#PREDEFINED_TYPES.has(className))
+      throw new Error(`You can't override the ${className} primordial!`);
 
-      if (className.endsWith("Map"))
-        this.#doStateTransition("startMap");
-      /*
-      else if (className.endsWith("Set"))
-        this.#doStateTransition("startSet");
-      else
-        throw new Error(`The class name must end with "Map" or "Set"!`);
-      */
-      else
-        throw new Error(`The class name must end with "Map"!`);
+    if (className.endsWith("Map"))
+      this.#doStateTransition("startMap");
+    /*
+    else if (className.endsWith("Set"))
+      this.#doStateTransition("startSet");
+    else
+      throw new Error(`The class name must end with "Map" or "Set"!`);
+    */
+    else
+      throw new Error(`The class name must end with "Map"!`);
 
-      this.#className = className;
+    this.#className = className;
 
-      Reflect.preventExtensions(this);
-    });
+    Reflect.preventExtensions(this);
   }
 
   /**
