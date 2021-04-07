@@ -6,6 +6,8 @@
  * This defines a data structure for configuring a composite of Maps and Sets.
  */
 
+import espree from "espree";
+
 /**
  * @public
  */
@@ -138,8 +140,25 @@ export default class CollectionConfiguration {
   }
 
   #identifierArg(argName, identifier) {
-    // XXX ajvincent When we have espree, use it to quickly check that the name is a valid identifier.
     this.#stringArg(argName, identifier);
+    if (identifier !== identifier.trim())
+      throw new Error(argName + " must not have leading or trailing whitespace!");
+
+    if (identifier.includes("//") || identifier.includes("/*") || identifier.includes("*/"))
+      throw new Error(`"${identifier}" is not a valid JavaScript identifier!`);
+    {
+      let pass = false;
+      try {
+        const tokens = espree.tokenize("let " + identifier, {comment: true});
+        if ((tokens.length === 2) && (tokens[1].type === "Identifier"))
+          pass = true;
+      }
+      catch (ex) {
+        // do nothing
+      }
+      if (!pass)
+        throw new Error(`"${identifier}" is not a valid JavaScript identifier!`);
+    }
   }
 
   /**
@@ -220,7 +239,6 @@ export default class CollectionConfiguration {
    * @property {string?}   description       A JSDoc-printable description.
    * @property {Function?} argumentValidator A method to use for testing the argument.
    */
-
   addMapKey(argumentName, holdWeak, options = {}) {
     if (!this.#doStateTransition("mapKeys")) {
       this.#throwIfLocked();

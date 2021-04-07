@@ -221,6 +221,12 @@ describe("CollectionConfiguration", () => {
         ).toThrowError(`argumentName must be a non-empty string!`);
       });
 
+      it("an empty string argument name", () => {
+        expect(
+          () => config.addMapKey("", true)
+        ).toThrowError("argumentName must be a non-empty string!");
+      });
+
       it(`an argument name of "value"`, () => {
         args[0] = "value";
         expect(
@@ -288,8 +294,48 @@ describe("CollectionConfiguration", () => {
         ).toThrowError(`Argument name "${args[0]}" has already been defined!`);
       });
 
-      xdescribe("invalid identifiers:", () => {
+      describe("invalid identifiers:", () => {
+        it("code injection attempt", () => {
+          expect(
+            () => config.addMapKey("foo = 3", true)
+          ).toThrowError(`"foo = 3" is not a valid JavaScript identifier!`);
 
+          expect(
+            () => config.addMapKey("foo()", true)
+          ).toThrowError(`"foo()" is not a valid JavaScript identifier!`);
+        });
+
+        it("comments before or after the identifier", () => {
+          expect(
+            () => config.addMapKey("foo // no", true)
+          ).toThrowError(`"foo // no" is not a valid JavaScript identifier!`);
+
+          expect(
+            () => config.addMapKey("/* no */ foo", true)
+          ).toThrowError(`"/* no */ foo" is not a valid JavaScript identifier!`);
+
+          expect(
+            () => config.addMapKey("foo /* no */", true)
+          ).toThrowError(`"foo /* no */" is not a valid JavaScript identifier!`);
+        });
+
+        it("a number", () => {
+          expect(
+            () => config.addMapKey("3", true)
+          ).toThrowError(`"3" is not a valid JavaScript identifier!`);
+        });
+
+        it("a private field", () => {
+          expect(
+            () => config.addMapKey("#x", true)
+          ).toThrowError(`"#x" is not a valid JavaScript identifier!`);
+        });
+
+        it("whitespace", () => {
+          expect(
+            () => config.addMapKey(" x ", true)
+          ).toThrowError("argumentName must not have leading or trailing whitespace!");
+        });
       });
 
       xdescribe("invalid JSDoc fields:", () => {
