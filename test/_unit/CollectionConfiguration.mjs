@@ -113,7 +113,7 @@ describe("CollectionConfiguration", () => {
       Object.freeze(type1Args);
     });
 
-    const argumentValidator = jasmine.createSpy("argumentValidator");
+    const argumentValidator = mother => {};
 
     it("defines a collection type when called without an argument filter", () => {
       config.addMapKey(...type1Args);
@@ -162,7 +162,7 @@ describe("CollectionConfiguration", () => {
         expect(firstType.mapOrSetType).toBe("WeakMap");
         expect(firstType.argumentType).toBe(options.argumentType);
         expect(firstType.description).toBe(options.description);
-        expect(firstType.argumentValidator).toBe(argumentValidator);
+        expect(typeof firstType.argumentValidator).toBe("string");
       }
     });
 
@@ -172,12 +172,12 @@ describe("CollectionConfiguration", () => {
     */
     it("can be called more than once", () => {
       const argMatrix = [];
-      const argCount = 20;
-      options.argumentValidator = argumentValidator;
+      const argCount = 1;
       for (let i = 0; i < argCount; i++) {
         const args = type1Args.slice();
         args[0] += "_" + i;
         argMatrix.push(args);
+        options.argumentValidator = eval(`${args[0]} => void(${args[0]})`);
 
         config.addMapKey(...args);
       }
@@ -200,10 +200,8 @@ describe("CollectionConfiguration", () => {
         expect(t.mapOrSetType).toBe("WeakMap");
         expect(t.argumentType).toBe(options.argumentType);
         expect(t.description).toBe(options.description);
-        expect(t.argumentValidator).toBe(options.argumentValidator);
+        expect(typeof t.argumentValidator).toBe("string");
       });
-
-      expect(argumentValidator).toHaveBeenCalledTimes(0);
     });
 
     describe("throws for", () => {
@@ -334,24 +332,29 @@ describe("CollectionConfiguration", () => {
   });
 
   describe(".setValueFilter()", () => {
-    let config, valueFilter = jasmine.createSpy("valueFilter");
+    let config, wasCalled, valueFilter = value => { wasCalled = true; };
     beforeEach(() => {
       config = new CollectionConfiguration("FooMap");
-      valueFilter.calls.reset();
-      valueFilter.and.stub();
+      wasCalled = false;
     });
 
     describe("accepts a function for the value filter with", () => {
       it("no jsdoc argument", () => {
         config.addMapKey("mother", true);
         expect(() => config.setValueFilter(valueFilter)).not.toThrow();
-        expect(valueFilter).toHaveBeenCalledTimes(0);
+        expect(wasCalled).toBe(false);
+
+        const data = config.cloneData();
+        expect(data.valueFilter).toBe("{ wasCalled = true; }");
       });
 
       it("a jsdoc argument", () => {
         config.addMapKey("mother", true);
         expect(() => config.setValueFilter(valueFilter, "foo")).not.toThrow();
-        expect(valueFilter).toHaveBeenCalledTimes(0);
+        expect(wasCalled).toBe(false);
+
+        const data = config.cloneData();
+        expect(data.valueFilter).toBe("{ wasCalled = true; }");
       });
     });
 

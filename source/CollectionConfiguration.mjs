@@ -8,6 +8,32 @@
 
 import acorn from "acorn";
 
+function getNormalFunctionAST(fn) {
+  const source = fn.toString();
+  let astNode;
+  try {
+    astNode = acorn.parse(source).body[0];
+  }
+  catch (ex) {
+    throw new Error("Acorn couldn't parse the function... why?");
+  }
+
+  if (astNode.type === "ExpressionStatement")
+    astNode = astNode.expression;
+
+  if ((astNode.type !== "ArrowFunctionExpression") &&
+      (astNode.type !== "FunctionDeclaration"))
+    throw new Error("Unsupported function type from acorn: " + astNode.type);
+
+  if (astNode.generator)
+    throw new Error("Generator functions are not allowed here!");
+
+  if (astNode.async)
+    throw new Error("Async functions are not allowed here!");
+
+  return [source, astNode.params, astNode.body];
+}
+
 /**
  * @public
  */
@@ -20,7 +46,7 @@ class CollectionType {
    *                                   Map, Set, WeakMap, WeakSet, or something that inherits from it.
    * @param {string}    argumentType   A JSDoc-printable type for the argument.
    * @param {string}    description    A JSDoc-printable description.
-   * @param {Function?} argumentValidator A method to use for testing the argument.
+   * @param {string?}   argumentValidator A method to use for testing the argument.
    */
   constructor(argumentName, mapOrSetType, argumentType, description, argumentValidator) {
     /** @public @readonly @type {string} */
@@ -96,6 +122,9 @@ export default class CollectionConfiguration {
   /** @type {string} @readonly */
   #className;
 
+  /** @type {string} @readonly */
+  #collectionType;
+
   /** @type {Map<identifier, CollectionType>} @readonly */
   #parameterToTypeMap = new Map();
 
@@ -111,7 +140,7 @@ export default class CollectionConfiguration {
   /** @type {identifier[]} */
   #strongSetElements = [];
 
-  /** @type {Function?} */
+  /** @type {string?} */
   #valueFilter = null;
 
   /** @type {string} */
@@ -160,15 +189,22 @@ export default class CollectionConfiguration {
   }
 
   /**
-   * Validate a function argument.
+   * Validate a function argument and return its body.
+   *
    * @param argumentName The name of the function.
-   * @param value        The function.
+   * @param callback        The function.
    *
    * @private
    */
-  #functionArg(argumentName, value, mayOmit = false) {
-    if (typeof value !== "function")
+  #callbackArg(argumentName, callback, singleParamName, mayOmit = false) {
+    if (typeof callback !== "function")
       throw new Error(`${argumentName} must be a function${mayOmit ? " or omitted" : ""}!`);
+
+    const [source, params, body] = getNormalFunctionAST(callback);
+    if ((params.length !== 1) || (params[0].name !== singleParamName))
+      throw new Error(`${argumentName} must be a function with a single argument, "${singleParamName}"!`);
+
+    return source.substring(body.start, body.end + 1);
   }
 
   #jsdocField(argumentName, value, mayOmit = false) {
@@ -202,8 +238,10 @@ export default class CollectionConfiguration {
     if (CollectionConfiguration.#PREDEFINED_TYPES.has(className))
       throw new Error(`You can't override the ${className} primordial!`);
 
-    if (className.endsWith("Map"))
+    if (className.endsWith("Map")) {
       this.#doStateTransition("startMap");
+      this.#collectionType = "map";
+    }
     /*
     else if (className.endsWith("Set"))
       this.#doStateTransition("startSet");
@@ -236,6 +274,7 @@ export default class CollectionConfiguration {
     return this.#catchErrorState(() => {
       return {
         className: this.#className,
+        collectionType: this.#collectionType,
         parameterToTypeMap: new Map(this.#parameterToTypeMap),
         weakMapKeys: this.#weakMapKeys.slice(),
         strongMapKeys: this.#strongMapKeys.slice(),
@@ -272,23 +311,30 @@ export default class CollectionConfiguration {
         this.#jsdocField("argumentType", argumentType, true);
       if (description !== null)
         this.#jsdocField("description",  description, true);
-      if (argumentValidator !== null)
-        this.#functionArg("argumentValidator", argumentValidator, true);
+
+      const validatorSource = (argumentValidator !== null) ?
+        this.#callbackArg(
+          "argumentValidator",
+          argumentValidator,
+          argumentName,
+          true
+        ) :
+        null;
 
       if (this.#parameterToTypeMap.has(argumentName))
         throw new Error(`Argument name "${argumentName}" has already been defined!`);
-  
+
       if (argumentName === "value")
         throw new Error(`The argument name "value" is reserved!`);
       if (typeof holdWeak !== "boolean")
         throw new Error("holdWeak must be true or false!");
-  
+
       const collectionType = new CollectionType(
         argumentName,
         holdWeak ? "WeakMap" : "Map",
         argumentType,
         description,
-        argumentValidator
+        validatorSource
       );
       this.#parameterToTypeMap.set(argumentName, collectionType);
   
@@ -315,11 +361,11 @@ export default class CollectionConfiguration {
         throw new Error("You can only call .setValueFilter() directly after calling .addMapKey()!");
       }
 
-      this.#functionArg("valueFilter", valueFilter);
+      const source = this.#callbackArg("valueFilter", valueFilter, "value");
       if (valueJSDoc !== null)
         this.#jsdocField("valueJSDoc", valueJSDoc, true);
-  
-      this.#valueFilter = valueFilter;
+
+      this.#valueFilter = source;
       this.#valueJSDoc = valueJSDoc;
     });
   }
