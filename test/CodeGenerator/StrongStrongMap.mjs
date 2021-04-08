@@ -9,11 +9,11 @@ describe("CodeGenerator(StrongStrongMap.mjs), ", () => {
   it("creates ./test/generated/StrongStrongMap.mjs", async () => {
     const sourcePath = "./test/fixtures/StrongStrongMap.mjs";
     const sourceFileURL = url.pathToFileURL(sourcePath);
-    const StrongStringMapSpec = (await import(sourceFileURL)).default;
+    const StrongStringMapConfig = (await import(sourceFileURL)).default;
 
     let resolve;
     let p = new Promise(res => resolve = res);
-    const generator = new CodeGenerator(StrongStringMapSpec, targetFile, p);
+    const generator = new CodeGenerator(StrongStringMapConfig, targetFile, p);
 
     resolve();
     await generator.completionPromise;

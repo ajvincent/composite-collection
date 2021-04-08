@@ -1,7 +1,7 @@
 import CollectionConfiguration from "../../source/CollectionConfiguration.mjs";
 
-const WeakMatrixSpec = new CollectionConfiguration("WeakMatrixMap");
-WeakMatrixSpec.addMapKey(
+const WeakMatrixConfig = new CollectionConfiguration("WeakMatrixMap");
+WeakMatrixConfig.addMapKey(
   "row",
   true,
   {
@@ -10,7 +10,7 @@ WeakMatrixSpec.addMapKey(
   }
 );
 
-WeakMatrixSpec.addMapKey(
+WeakMatrixConfig.addMapKey(
   "column",
   true,
   {
@@ -19,4 +19,4 @@ WeakMatrixSpec.addMapKey(
   }
 );
 
-export default WeakMatrixSpec;
+export default WeakMatrixConfig;

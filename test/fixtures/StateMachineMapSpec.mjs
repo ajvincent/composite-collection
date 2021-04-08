@@ -1,8 +1,8 @@
 import CollectionConfiguration from "composite-collection/Configuration";
 
-const StateMachineMapSpec = new CollectionConfiguration("StateMachineMap");
+const StateMachineMapConfig = new CollectionConfiguration("StateMachineMap");
 
-StateMachineMapSpec.addMapKey("currentState", false, {
+StateMachineMapConfig.addMapKey("currentState", false, {
   argumentFilter: currentState => {
     if (typeof currentState !== "string") {
       throw new Error("currentState must be a string!");
@@ -16,7 +16,7 @@ function to validate an argument, or a value which holds resolve and reject path
 or maybe you want to add a set argument with a validation function for your
 state machine to process.  It's really up to your needs.
 */
-StateMachineMapSpec.setValueFilter(
+StateMachineMapConfig.setValueFilter(
   value => {
     if (typeof value !== "object")
       throw new Error("value must be an object with an optional acceptTransition() method and a failMessageSet string set!");
@@ -56,4 +56,4 @@ StateMachineMapSpec.setValueFilter(
   "An object containing a nextStates string set, an optional acceptTransition method, and a failMessage string set."
 );
 
-export default StateMachineMapSpec;
+export default StateMachineMapConfig;

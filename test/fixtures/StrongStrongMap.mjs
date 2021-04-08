@@ -1,7 +1,7 @@
 import CollectionConfiguration from "composite-collection/Configuration";
 
-const StrongStrongMapSpec = new CollectionConfiguration("StrongStrongMap");
-StrongStrongMapSpec.addMapKey("key1", false);
-StrongStrongMapSpec.addMapKey("key2", false);
+const StrongStrongMapConfig = new CollectionConfiguration("StrongStrongMap");
+StrongStrongMapConfig.addMapKey("key1", false);
+StrongStrongMapConfig.addMapKey("key2", false);
 
-export default StrongStrongMapSpec;
+export default StrongStrongMapConfig;

@@ -1,7 +1,7 @@
 import CollectionConfiguration from "../../source/CollectionConfiguration.mjs";
 
-const DependencyMapSpec = new CollectionConfiguration("DependencyMap");
-DependencyMapSpec.addCollectionType(
+const DependencyMapConfig = new CollectionConfiguration("DependencyMap");
+DependencyMapConfig.addCollectionType(
   "exported",
   "Map",
   {
@@ -14,7 +14,7 @@ DependencyMapSpec.addCollectionType(
   }
 );
 
-DependencyMapSpec.addCollectionType(
+DependencyMapConfig.addCollectionType(
   "importing",
   "Set",
   {
@@ -27,4 +27,4 @@ DependencyMapSpec.addCollectionType(
   }
 );
 
-export default DependencyMapSpec;
+export default DependencyMapConfig;

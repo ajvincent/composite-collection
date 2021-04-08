@@ -11,7 +11,7 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
   it("creates a loadable SoloStrongMap.mjs class", async () => {
     const sourcePath = "./test/fixtures/SoloStrongMap.mjs";
     const sourceFileURL = url.pathToFileURL(sourcePath);
-    const SoloStringMapSpec = (await import(sourceFileURL)).default;
+    const SoloStringMapConfig = (await import(sourceFileURL)).default;
 
     let p = Promise.all(CodeGenerator.UTILITIES.map(
       leafName => fs.copyFile(
@@ -20,7 +20,7 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
       ),
     ));
 
-    const generator = new CodeGenerator(SoloStringMapSpec, targetFileURL.pathname, p);
+    const generator = new CodeGenerator(SoloStringMapConfig, targetFileURL.pathname, p);
     await generator.completionPromise;
 
     SoloStrongMap = (await import(targetFileURL)).default;

@@ -1,8 +1,8 @@
 import CollectionConfiguration from "../../source/CollectionConfiguration.mjs";
 
-const FunctionSetSpec = new CollectionConfiguration("FunctionSet");
+const FunctionSetConfig = new CollectionConfiguration("FunctionSet");
 
-FunctionSetSpec.addCollectionType(
+FunctionSetConfig.addCollectionType(
   "FunctionSet",
   "Set",
   {
@@ -11,9 +11,9 @@ FunctionSetSpec.addCollectionType(
   }
 );
 
-FunctionSetSpec.setValueFilter(function(value) {
+FunctionSetConfig.setValueFilter(function(value) {
   if (typeof value !== "function")
     throw new Error("value must be a function!");
 });
 
-export default FunctionSetSpec;
+export default FunctionSetConfig;
