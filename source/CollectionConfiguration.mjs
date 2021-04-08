@@ -61,7 +61,7 @@ class CollectionType {
     /** @public @readonly @type {string} */
     this.description    = description;
 
-    /** @public @readonly @type {Function?} */
+    /** @public @readonly @type {string?} */
     this.argumentValidator = argumentValidator;
 
     Object.freeze(this);

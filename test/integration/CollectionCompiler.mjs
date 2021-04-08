@@ -4,7 +4,7 @@ import fs from "fs/promises";
 import os from "os";
 import path from "path";
 
-describe("Integration tests: Driver", () => {
+xdescribe("Integration tests: Driver", () => {
   it("works at a basic level", async () => {
     const destDir = await fs.mkdtemp(path.join(os.tmpdir(), 'foo-'))
 

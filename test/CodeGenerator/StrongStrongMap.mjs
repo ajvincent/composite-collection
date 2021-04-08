@@ -2,18 +2,18 @@ import CodeGenerator from "../../source/CodeGenerator.mjs";
 import url from "url";
 import fs from "fs/promises";
 
-const targetPath = "../generated/SoloStrongMap.mjs";
+const targetPath = "../generated/StrongStrongMap.mjs";
 const targetFile = new URL(targetPath, import.meta.url).pathname;
 
-describe("CodeGenerator(SoloStrongMap.mjs), ", () => {
-  it("creates ./test/generated/SoloStrongMap.mjs", async () => {
-    const sourcePath = "./test/fixtures/SoloStrongMap.mjs";
+describe("CodeGenerator(StrongStrongMap.mjs), ", () => {
+  it("creates ./test/generated/StrongStrongMap.mjs", async () => {
+    const sourcePath = "./test/fixtures/StrongStrongMap.mjs";
     const sourceFileURL = url.pathToFileURL(sourcePath);
-    const SoloStringMapSpec = (await import(sourceFileURL)).default;
+    const StrongStringMapSpec = (await import(sourceFileURL)).default;
 
     let resolve;
     let p = new Promise(res => resolve = res);
-    const generator = new CodeGenerator(SoloStringMapSpec, targetFile, p);
+    const generator = new CodeGenerator(StrongStringMapSpec, targetFile, p);
 
     resolve();
     await generator.completionPromise;

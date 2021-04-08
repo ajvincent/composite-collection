@@ -86,7 +86,7 @@ export default class __className__ {
 
   set(__argList__, value) {
     this.__validateArguments__(__argList__);
-    this.__validateSetter__(value);
+    void("__doValidateValue__");
 
     const hash = this.__hasher__.buildHash(__argList__);
     const keySet = [__argList__];
@@ -102,10 +102,6 @@ export default class __className__ {
 
   __validateArguments__(__argList__) {
     void("__doValidateArguments__");
-  }
-
-  __validateSetter__(value) {
-    void("__doValidateSetter__");
   }
 }
 
