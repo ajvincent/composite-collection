@@ -9,14 +9,14 @@ let SoloStrongMap;
 
 describe("CodeGenerator(SoloStrongMap.mjs)", () => {
   it("creates a loadable SoloStrongMap.mjs class", async () => {
-    const sourcePath = "./test/fixtures/SoloStrongMap.mjs";
+    const sourcePath = "./spec/fixtures/SoloStrongMap.mjs";
     const sourceFileURL = url.pathToFileURL(sourcePath);
     const SoloStringMapConfig = (await import(sourceFileURL)).default;
 
     let p = Promise.all(CodeGenerator.UTILITIES.map(
       leafName => fs.copyFile(
         url.pathToFileURL("./templates/" + leafName),
-        url.pathToFileURL("./test/generated/" + leafName)
+        url.pathToFileURL("./spec/generated/" + leafName)
       ),
     ));
 

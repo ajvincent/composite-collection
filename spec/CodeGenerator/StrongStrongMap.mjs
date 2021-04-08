@@ -6,8 +6,8 @@ const targetPath = "../generated/StrongStrongMap.mjs";
 const targetFile = new URL(targetPath, import.meta.url).pathname;
 
 describe("CodeGenerator(StrongStrongMap.mjs), ", () => {
-  it("creates ./test/generated/StrongStrongMap.mjs", async () => {
-    const sourcePath = "./test/fixtures/StrongStrongMap.mjs";
+  it("creates ./spec/generated/StrongStrongMap.mjs", async () => {
+    const sourcePath = "./spec/fixtures/StrongStrongMap.mjs";
     const sourceFileURL = url.pathToFileURL(sourcePath);
     const StrongStringMapConfig = (await import(sourceFileURL)).default;
 
