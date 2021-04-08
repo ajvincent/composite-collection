@@ -31,6 +31,10 @@ const TemplateFiles = new Map();
  * @package
  */
 export default class CodeGenerator extends CompletionPromise {
+  static UTILITIES = [
+    "KeyHasher.mjs",
+  ];
+
   /**
    * @type {Object}
    * @readonly
@@ -54,6 +58,7 @@ export default class CodeGenerator extends CompletionPromise {
   /** @type {Map<string, string>} */
   #replaceStringKeys = new Map();
 
+  /** @type {string} */
   #generatedCode = "";
 
   /**
@@ -103,9 +108,9 @@ export default class CodeGenerator extends CompletionPromise {
 
   #buildReplaceStrings() {
     this.#replaceStringKeys.set("__className__", this.#configurationData.className);
-    this.#replaceStringKeys.set("__argList__",
-      Array.from(this.#configurationData.parameterToTypeMap.keys()).join(", ")
-    );
+    const keys = Array.from(this.#configurationData.parameterToTypeMap.keys());
+    this.#replaceStringKeys.set("__argList__", keys.join(", "));
+    this.#replaceStringKeys.set("__argNameList__", '[' + keys.map(key => `"${key}"`).join(", ") + "]");
 
     const paramsData = Array.from(this.#configurationData.parameterToTypeMap.values());
 
@@ -145,8 +150,6 @@ export default class CodeGenerator extends CompletionPromise {
 
     this.#replaceStringKeys.forEach((contents, keyName) => {
       // replaceAll() requires Node 15+.
-      if (keyName instanceof RegExp)
-        debugger;
       let source;
       do {
         source = this.#generatedCode;
@@ -172,3 +175,6 @@ export default class CodeGenerator extends CompletionPromise {
     );
   }
 }
+Object.freeze(CodeGenerator);
+Object.freeze(CodeGenerator.prototype);
+Object.freeze(CodeGenerator.UTILITIES);

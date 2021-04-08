@@ -18,7 +18,7 @@ export default class __className__ {
     /**
      * @type {KeyHasher}
      */
-    this.__hasher__ = new KeyHasher;
+    this.__hasher__ = new KeyHasher(__argNameList__);
   }
 
   get size() {
@@ -32,63 +32,48 @@ export default class __className__ {
   delete(__argList__) {
     this.__validateArguments__(__argList__);
 
-    const hash = this.__hasher__.buildHash(__argList__);
+    const hash = this.__hasher__.buildHash([__argList__]);
     return this.__root__.delete(hash);
   }
 
   entries() {
-    const rootIter = this.__root__.entries();
-    let tuple;
-    return {
-      next() {
-        const {tuple = value, done} = iter.next();
-        const [valueAndKeySet, value] = tuple;
-        return {
-          value: done ? valueAndKeySet.keySet.concat(value) : undefined,
-          done
-        };
-      }
-    }
+    return this.__wrapIterator__(
+      valueAndKeySet => valueAndKeySet.keySet.concat(valueAndKeySet.value)
+    );
   }
 
   forEach(callback) {
-    this.__root__.forEach((value, key, root) => {
-      const args = [value, ...root.get(key).keySet, this];
+    this.__root__.forEach((valueAndKeySet, key, root) => {
+      const args = valueAndKeySet.keySet.concat(this);
+      args.unshift(valueAndKeySet.value);
       callback(...args);
     });
   }
 
   get(__argList__) {
     this.__validateArguments__(__argList__);
-    const hash = this.__hasher__.buildHash(__argList__);
+    const hash = this.__hasher__.buildHash([__argList__]);
     const valueAndKeySet = this.__root__.get(hash);
     return valueAndKeySet ? valueAndKeySet.value : valueAndKeySet;
   }
 
   has(__argList__) {
     this.__validateArguments__(__argList__);
-    const hash = this.__hasher__.buildHash(__argList__);
+    const hash = this.__hasher__.buildHash([__argList__]);
     return this.__root__.has(hash);
   }
 
   keys() {
-    const rootIter = this.__root__.keys();
-    return {
-      next() {
-        const {valueAndKeySet = value, done} = rootIter.next();
-        return {
-          value: done ? valueAndKeySet.keySet.slice() : undefined,
-          done
-        };
-      }
-    }
+    return this.__wrapIterator__(
+      valueAndKeySet => valueAndKeySet.keySet.slice()
+    );
   }
 
   set(__argList__, value) {
     this.__validateArguments__(__argList__);
     void("__doValidateValue__");
 
-    const hash = this.__hasher__.buildHash(__argList__);
+    const hash = this.__hasher__.buildHash([__argList__]);
     const keySet = [__argList__];
     Object.freeze(keySet);
     this.__root__.set(hash, {value, keySet});
@@ -97,7 +82,22 @@ export default class __className__ {
   }
 
   values() {
-    return this.__root__.values();
+    return this.__wrapIterator__(
+      valueAndKeySet => valueAndKeySet.value
+    );
+  }
+
+  __wrapIterator__(unpacker) {
+    const rootIter = this.__root__.values();
+    return {
+      next() {
+        const {value, done} = rootIter.next();
+        return {
+          value: done ? undefined : unpacker(value),
+          done
+        };
+      }
+    }
   }
 
   __validateArguments__(__argList__) {
