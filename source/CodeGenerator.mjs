@@ -8,7 +8,7 @@ import CollectionConfiguration from "./CollectionConfiguration.mjs";
 import CompletionPromise from "./CompletionPromise.mjs";
 import fs from "fs/promises";
 import getAllFiles from 'get-all-files';
-import path from "path";
+import beautify from "js-beautify";
 
 /**
  * @type {Map<string, string>}
@@ -108,13 +108,24 @@ export default class CodeGenerator extends CompletionPromise {
     );
 
     const paramsData = Array.from(this.#configurationData.parameterToTypeMap.values());
-    this.#replaceStringKeys.set(
-      `void("__doValidateArguments__");`,
-      paramsData.map(pd => pd.argumentValidator || "").filter(Boolean).join("\n\n") + "\n"
-    );
+
+    {
+      const validator = paramsData.map(
+        pd => pd.argumentValidator || ""
+      ).filter(Boolean).join("\n\n").trim();
+
+      this.#replaceStringKeys.set(
+        /\s+void\(\"__doValidateArguments__\"\);/g,
+        validator
+      );
+      if (!validator) {
+        this.#replaceStringKeys.set(/\s+__validateArguments__\(key\) \{\s*\}\s+/g, "\n");
+        this.#replaceStringKeys.set(/\s+this.__validateArguments__\(key\);\n+/g, "");
+      }
+    }
 
     this.#replaceStringKeys.set(
-      `void("__doValidateValue__");`, this.#configurationData.valueFilter || ""
+      /\s+void\(\"__doValidateValue__\"\);\s+/, (this.#configurationData.valueFilter || "").trim()
     );
   }
 
@@ -134,12 +145,23 @@ export default class CodeGenerator extends CompletionPromise {
 
     this.#replaceStringKeys.forEach((contents, keyName) => {
       // replaceAll() requires Node 15+.
+      if (keyName instanceof RegExp)
+        debugger;
       let source;
       do {
         source = this.#generatedCode;
         this.#generatedCode = source.replace(keyName, contents);
       } while (source !== this.#generatedCode);
     });
+
+    this.#generatedCode = beautify(
+      this.#generatedCode,
+      {
+        "indent_size": 2,
+        "indent_char": " ",
+        "end_with_newline": true,
+      }
+    );
   }
 
   async #writeSource() {
