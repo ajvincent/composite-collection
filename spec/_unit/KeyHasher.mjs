@@ -1,4 +1,4 @@
-import KeyHasher from "../../templates/KeyHasher.mjs";
+import KeyHasher from "composite-collection/KeyHasher";
 describe("KeyHasher", () => {
   let hasher;
   const objects = [];

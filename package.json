@@ -35,6 +35,9 @@
   },
   "exports": {
     ".": "./CollectionCompiler.mjs",
-    "./Configuration": "./source/CollectionConfiguration.mjs"
+    "./Configuration": "./source/CollectionConfiguration.mjs",
+
+    "./KeyHasher":       "./exports/KeyHasher.mjs",
+    "./StrongStrongMap": "./exports/StrongStrongMap.mjs"
   }
 }

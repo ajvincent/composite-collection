@@ -1,4 +1,4 @@
-/** @module templates/KeyHasher.mjs */
+/** @module exports/KeyHasher.mjs */
 
 /**
  * @fileoverview

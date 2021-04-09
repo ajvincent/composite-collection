@@ -2,28 +2,25 @@ import CodeGenerator from "../../source/CodeGenerator.mjs";
 import url from "url";
 import fs from "fs/promises";
 
-const targetPath = "../generated/StrongStrongMap.mjs";
+const targetPath = "../../exports/StrongStrongMap.mjs";
 const targetFileURL = new URL(targetPath, import.meta.url);
 
 let StrongStrongMap;
 
 describe("CodeGenerator(StrongStrongMap.mjs), ", () => {
   it("creates a loadable StrongStrongMap class", async () => {
-    const sourcePath = "./spec/fixtures/StrongStrongMap.mjs";
+    const sourcePath = "./source/exports/StrongStrongMap.mjs";
     const sourceFileURL = url.pathToFileURL(sourcePath);
-    const SoloStringMapConfig = (await import(sourceFileURL)).default;
+    const StrongStrongMapConfig = (await import(sourceFileURL)).default;
 
-    let p = Promise.all(CodeGenerator.UTILITIES.map(
-      leafName => fs.copyFile(
-        url.pathToFileURL("./templates/" + leafName),
-        url.pathToFileURL("./spec/generated/" + leafName)
-      ),
-    ));
+    let resolve;
+    let p = new Promise(res => resolve = res);
 
-    const generator = new CodeGenerator(SoloStringMapConfig, targetFileURL.pathname, p);
+    const generator = new CodeGenerator(StrongStrongMapConfig, targetFileURL.pathname, p);
+    resolve();
     await generator.completionPromise;
 
-    StrongStrongMap = (await import(targetFileURL)).default;
+    StrongStrongMap = (await import("composite-collection/StrongStrongMap")).default;
     expect(typeof StrongStrongMap).toBe("function");
   });
 
@@ -344,9 +341,5 @@ describe("CodeGenerator(StrongStrongMap.mjs), ", () => {
       expect(testSpy.calls.argsFor(0)).toEqual([value2, key2, key1, testMap]);
       expect(testSpy.calls.argsFor(1)).toEqual([value1, key1, key2, testMap]);
     });
-  });
-
-  afterAll(async () => {
-    await fs.rm(targetFileURL.pathname);
   });
 });

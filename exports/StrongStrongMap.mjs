@@ -1,16 +1,16 @@
 import KeyHasher from "composite-collection/KeyHasher";
 
 /**
- * @typedef __className__~valueAndKeySet
+ * @typedef StrongStrongMap~valueAndKeySet
  * @property {void}   value  The actual value we store.
  * @property {void[]} keySet The set of keys we hashed.
  * @private
  */
 
-export default class __className__ {
+export default class StrongStrongMap {
   constructor() {
     /**
-     * @type {Map<string, __className__~valueAndKeySet>}
+     * @type {Map<string, StrongStrongMap~valueAndKeySet>}
      * @private
      * @readonly
      */
@@ -19,7 +19,7 @@ export default class __className__ {
     /**
      * @type {KeyHasher}
      */
-    this.__hasher__ = new KeyHasher(__argNameList__);
+    this.__hasher__ = new KeyHasher(["key1", "key2"]);
   }
 
   /**
@@ -47,17 +47,17 @@ export default class __className__ {
    * @returns {boolean} True if the item was found and deleted.
    * @public
    */
-  delete(__argList__) {
-    this.__validateArguments__(__argList__);
+  delete(key1, key2) {
+    this.__validateArguments__(key1, key2);
 
-    const hash = this.__hasher__.buildHash([__argList__]);
+    const hash = this.__hasher__.buildHash([key1, key2]);
     return this.__root__.delete(hash);
   }
 
   /**
    * Return a new iterator for the key-value pairs of the map.
    *
-   * @returns {Iterator<__argList__, value>}
+   * @returns {Iterator<key1, key2, value>}
    * @public
    */
   entries() {
@@ -69,7 +69,7 @@ export default class __className__ {
   /**
    * Iterate over the keys and values.
    *
-   * @param {__className__~ForEachCallback} callback A function to invoke for each key set.
+   * @param {StrongStrongMap~ForEachCallback} callback A function to invoke for each key set.
    *
    * @public
    */
@@ -82,10 +82,10 @@ export default class __className__ {
   }
 
   /**
-   * @callback __className__~ForEachCallback
+   * @callback StrongStrongMap~ForEachCallback
    * __argDescriptions__
    * __valueDescription__
-   * @param {__className__} The map.
+   * @param {StrongStrongMap} The map.
    */
 
   /**
@@ -96,9 +96,9 @@ export default class __className__ {
    * @returns {__valueType__?}
    * @public
    */
-  get(__argList__) {
-    this.__validateArguments__(__argList__);
-    const hash = this.__hasher__.buildHash([__argList__]);
+  get(key1, key2) {
+    this.__validateArguments__(key1, key2);
+    const hash = this.__hasher__.buildHash([key1, key2]);
     const valueAndKeySet = this.__root__.get(hash);
     return valueAndKeySet ? valueAndKeySet.value : valueAndKeySet;
   }
@@ -111,16 +111,16 @@ export default class __className__ {
    * @returns {boolean} True if the key set refers to a value.
    * @public
    */
-  has(__argList__) {
-    this.__validateArguments__(__argList__);
-    const hash = this.__hasher__.buildHash([__argList__]);
+  has(key1, key2) {
+    this.__validateArguments__(key1, key2);
+    const hash = this.__hasher__.buildHash([key1, key2]);
     return this.__root__.has(hash);
   }
 
   /**
    * Return a new iterator for the key sets of the map.
    *
-   * @returns {Iterator<__argList__>}
+   * @returns {Iterator<key1, key2>}
    * @public
    */
   keys() {
@@ -129,14 +129,15 @@ export default class __className__ {
     );
   }
 
-  set(__argList__, value) {
-    this.__validateArguments__(__argList__);
-    void("__doValidateValue__");
-
-    const hash = this.__hasher__.buildHash([__argList__]);
-    const keySet = [__argList__];
+  set(key1, key2, value) {
+    this.__validateArguments__(key1, key2);
+    const hash = this.__hasher__.buildHash([key1, key2]);
+    const keySet = [key1, key2];
     Object.freeze(keySet);
-    this.__root__.set(hash, {value, keySet});
+    this.__root__.set(hash, {
+      value,
+      keySet
+    });
 
     return this;
   }
@@ -164,7 +165,10 @@ export default class __className__ {
     const rootIter = this.__root__.values();
     return {
       next() {
-        const {value, done} = rootIter.next();
+        const {
+          value,
+          done
+        } = rootIter.next();
         return {
           value: done ? undefined : unpacker(value),
           done
@@ -178,17 +182,15 @@ export default class __className__ {
    *
    * __argDescriptions__
    */
-  __validateArguments__(__argList__) {
-    void("__doValidateArguments__");
-  }
+  __validateArguments__(key1, key2) {}
 }
 
-__className__[Symbol.iterator] = function() {
+StrongStrongMap[Symbol.iterator] = function() {
   return this.entries();
 }
 
-Reflect.defineProperty(__className__, Symbol.toStringTag, {
-  value: "__className__",
+Reflect.defineProperty(StrongStrongMap, Symbol.toStringTag, {
+  value: "StrongStrongMap",
   writable: false,
   enumerable: false,
   configurable: true

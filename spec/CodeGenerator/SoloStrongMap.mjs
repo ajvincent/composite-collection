@@ -13,14 +13,11 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
     const sourceFileURL = url.pathToFileURL(sourcePath);
     const SoloStringMapConfig = (await import(sourceFileURL)).default;
 
-    let p = Promise.all(CodeGenerator.UTILITIES.map(
-      leafName => fs.copyFile(
-        url.pathToFileURL("./templates/" + leafName),
-        url.pathToFileURL("./spec/generated/" + leafName)
-      ),
-    ));
+    let resolve;
+    let p = new Promise(res => resolve = res);
 
     const generator = new CodeGenerator(SoloStringMapConfig, targetFileURL.pathname, p);
+    resolve();
     await generator.completionPromise;
 
     SoloStrongMap = (await import(targetFileURL)).default;
