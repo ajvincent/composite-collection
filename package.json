@@ -6,6 +6,7 @@
   "scripts": {
     "dogfood": "node dogfood/build.mjs && node --expose-gc ./node_modules/jasmine/bin/jasmine.js",
     "debug": "node --inspect-brk --expose-gc ./node_modules/jasmine/bin/jasmine.js",
+    "eslint": "eslint source/ spec/ dogfood/",
     "test": "node --expose-gc ./node_modules/jasmine/bin/jasmine.js"
   },
   "repository": {
