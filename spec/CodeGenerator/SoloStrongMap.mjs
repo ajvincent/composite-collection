@@ -167,9 +167,7 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
     });
   });
 
-  /*
   afterAll(async () => {
-    await fs.rm(targetFile);
+    await fs.rm(targetFileURL.pathname);
   });
-  */
 });
