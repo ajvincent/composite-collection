@@ -11,7 +11,7 @@ FunctionSetConfig.addCollectionType(
   }
 );
 
-FunctionSetConfig.setValueFilter(function(value) {
+FunctionSetConfig.setValueType("function", "", function(value) {
   if (typeof value !== "function")
     throw new Error("value must be a function!");
 });

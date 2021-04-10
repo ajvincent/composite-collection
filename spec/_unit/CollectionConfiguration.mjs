@@ -11,7 +11,7 @@ describe("CollectionConfiguration", () => {
       "setFileOverview",
       "cloneData",
       "addMapKey",
-      "setValueFilter",
+      "setValueType",
       "lock",
     ]);
   });
@@ -331,60 +331,61 @@ describe("CollectionConfiguration", () => {
     });
   });
 
-  describe(".setValueFilter()", () => {
+  describe(".setValueType()", () => {
     let config, wasCalled, valueFilter = value => { wasCalled = true; };
     beforeEach(() => {
       config = new CollectionConfiguration("FooMap");
       wasCalled = false;
     });
 
-    describe("accepts a function for the value filter with", () => {
-      it("no jsdoc argument", () => {
-        config.addMapKey("mother", true);
-        expect(() => config.setValueFilter(valueFilter)).not.toThrow();
-        expect(wasCalled).toBe(false);
+    it("accepts a function for the value filter with a jsdoc argument", () => {
+      config.addMapKey("mother", true);
+      expect(() => config.setValueType("Car", "The car.", valueFilter)).not.toThrow();
+      expect(wasCalled).toBe(false);
 
-        const data = config.cloneData();
-        expect(data.valueFilter).toBe("{ wasCalled = true; }");
-      });
-
-      it("a jsdoc argument", () => {
-        config.addMapKey("mother", true);
-        expect(() => config.setValueFilter(valueFilter, "foo")).not.toThrow();
-        expect(wasCalled).toBe(false);
-
-        const data = config.cloneData();
-        expect(data.valueFilter).toBe("{ wasCalled = true; }");
-      });
+      const data = config.cloneData();
+      expect(data.valueType).not.toBe(null);
+      expect(data.valueType.mapOrSetType).toBe("");
+      expect(data.valueType.argumentName).toBe("value");
+      expect(data.valueType.argumentType).toBe("Car");
+      expect(data.valueType.description).toBe("The car.");
+      expect(data.valueType.argumentValidator).toBe("{ wasCalled = true; }");
     });
 
     describe("throws for", () => {
       it("invoking without having a map key first", () => {
         expect(
-          () => config.setValueFilter(function() { return false })
-        ).toThrowError("You can only call .setValueFilter() directly after calling .addMapKey()!");
+          () => config.setValueType("Car", "The car.", function() { return false })
+        ).toThrowError("You can only call .setValueType() directly after calling .addMapKey()!");
       });
 
-      it("setting a non-function filter", () => {
+      it("setting a non-string jsdoc type", () => {
         config.addMapKey("mother", true);
         expect(
-          () => config.setValueFilter({})
-        ).toThrowError(`valueFilter must be a function!`);
+          () => config.setValueType(Symbol("Car"), "The car.", valueFilter, {})
+        ).toThrowError(`type must be a non-empty string!`);
       });
 
-      it("setting a non-string jsdoc argument", () => {
+      it("setting a non-string jsdoc description", () => {
         config.addMapKey("mother", true);
         expect(
-          () => config.setValueFilter(valueFilter, {})
-        ).toThrowError(`valueJSDoc must be a non-empty string or omitted!`);
+          () => config.setValueType("Car", Symbol("The car."), valueFilter, {})
+        ).toThrowError(`description must be a non-empty string!`);
       });
 
-      it("calling after a successful valueFilter application", () => {
+      it("setting a non-function validator", () => {
         config.addMapKey("mother", true);
-        config.setValueFilter(valueFilter);
         expect(
-          () => config.setValueFilter(valueFilter)
-        ).toThrowError("You can only set the value filter once!");
+          () => config.setValueType("Car", "The car.", {})
+        ).toThrowError(`validator must be a function or omitted!`);
+      });
+
+      it("calling after a successful .setValueType() application", () => {
+        config.addMapKey("mother", true);
+        config.setValueType("Car", "The car.", function(value) { return false });
+        expect(
+          () => config.setValueType("Car", "The car.", function(value) { return false })
+        ).toThrowError("You can only set the value type once!");
       });
     });
   });

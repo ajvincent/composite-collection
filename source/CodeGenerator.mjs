@@ -6,6 +6,8 @@
 
 import CollectionConfiguration from "./CollectionConfiguration.mjs";
 import CompletionPromise from "./CompletionPromise.mjs";
+import JSDocGenerator from "./JSDocGenerator.mjs";
+
 import fs from "fs/promises";
 import { pathToFileURL } from "url";
 import getAllFiles from 'get-all-files';
@@ -42,28 +44,20 @@ export default class CodeGenerator extends CompletionPromise {
     "KeyHasher.mjs",
   ];
 
-  /**
-   * @type {Object}
-   * @readonly
-   * @private
-   */
+  /** @type {Object}  @readonly  @private */
   #configurationData;
 
-  /**
-   * @type {string}
-   * @readonly
-   * @private
-   */
+  /** @type {string} @readonly @private */
   #targetPath;
 
-  /**
-   * @type {string}
-   * @private
-   */
+  /** @type {string} @private */
   #status = "not started yet";
 
-  /** @type {Map<string, void>} */
+  /** @type {Map<string, void>} @readonly @private */
   #defines = new Map();
+
+  /** @type {JSDocGenerator} @private */
+  #docGenerator;
 
   /** @type {string} */
   #generatedCode = "";
@@ -93,9 +87,7 @@ export default class CodeGenerator extends CompletionPromise {
     Object.seal(this);
   }
 
-  /**
-   * @returns {string}
-   */
+  /** @returns {string} */
   get status() {
     return this.#status;
   }
@@ -104,6 +96,7 @@ export default class CodeGenerator extends CompletionPromise {
     this.#status = "in progress";
 
     this.#buildDefines();
+    this.#buildDocGenerator();
     this.#generateSource();
     await this.#writeSource();
 
@@ -144,7 +137,19 @@ ${validator}
         filter += "\n    ";
       this.#defines.set("validateValue", filter);
     }
+  }
 
+  #buildDocGenerator() {
+    this.#docGenerator = new JSDocGenerator(this.#configurationData.className, false);
+
+    this.#configurationData.parameterToTypeMap.forEach(typeData => {
+      this.#docGenerator.addParameter(typeData.argumentType, typeData.argumentName, typeData.description);
+    });
+
+    if (this.#configurationData.valueType) {
+      const typeData = this.#configurationData.valueType;
+      this.#docGenerator.addParameter(typeData.argumentType, typeData.argumentName, typeData.description);
+    }
   }
 
   #generateSource() {
@@ -165,7 +170,7 @@ ${validator}
     const generator = TemplateGenerators.get(generatorModuleName);
 
     this.#generatedCode = beautify(
-      generator(this.#defines, function() {}),
+      generator(this.#defines, this.#docGenerator),
       {
         "indent_size": 2,
         "indent_char": " ",

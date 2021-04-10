@@ -1,20 +1,25 @@
 import KeyHasher from "composite-collection/KeyHasher";
 
-/**
- * @typedef StrongStrongMap~valueAndKeySet
- * @property {void}   value  The actual value we store.
- * @property {void[]} keySet The set of keys we hashed.
- * @private
- */
-
 export default class StrongStrongMap {
   constructor() {
     /**
+     * The root map holding keys and values.
+     *
      * @type {Map<string, StrongStrongMap~valueAndKeySet>}
+     *
      * @private
      * @readonly
      */
     this.__root__ = new Map;
+
+    /**
+     * @typedef StrongStrongMap~valueAndKeySet
+     * @property {void}   value  The actual value we store.
+     * @property {void[]} keySet The set of keys we hashed.
+     *
+     * @private
+     * @readonly
+     */
 
     /**
      * @type {KeyHasher}
@@ -24,8 +29,9 @@ export default class StrongStrongMap {
 
   /**
    * The number of elements in this map.
-   * @type {number}
+   *
    * @public
+   * @readonly
    */
   get size() {
     return this.__root__.size;
@@ -33,6 +39,7 @@ export default class StrongStrongMap {
 
   /**
    * Clear the map.
+   *
    * @public
    */
   clear() {
@@ -41,10 +48,11 @@ export default class StrongStrongMap {
 
   /**
    * Delete an element from the map by the given key sequence.
-   * __argDescriptions__
-   * __valueDescription__
    *
-   * @returns {boolean} True if the item was found and deleted.
+   * @param {void} key1 
+   * @param {void} key2 
+   *
+   * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
   delete(key1, key2) {
@@ -81,17 +89,20 @@ export default class StrongStrongMap {
 
   /**
    * @callback StrongStrongMap~ForEachCallback
-   * __argDescriptions__
-   * __valueDescription__
-   * @param {StrongStrongMap} The map.
+   *
+   * @param {void}            key1    
+   * @param {void}            key2    
+   * @param {StrongStrongMap} __map__ The map.
+   *
    */
 
   /**
    * Get a value for a key set.
    *
-   * __argDescriptions__
+   * @param {void} key1 
+   * @param {void} key2 
    *
-   * @returns {__valueType__?}
+   * @returns {void?} The value.  Undefined if it isn't in the map.
    * @public
    */
   get(key1, key2) {
@@ -103,9 +114,10 @@ export default class StrongStrongMap {
   /**
    * Report if the map has a value for a key set.
    *
-   * __argDescriptions__
+   * @param {void} key1 
+   * @param {void} key2 
    *
-   * @returns {boolean} True if the key set refers to a value.
+   * @returns {boolean} True if the key set refers to a value in the map.
    * @public
    */
   has(key1, key2) {
@@ -125,6 +137,16 @@ export default class StrongStrongMap {
     );
   }
 
+  /**
+   * Set a value for a key set.
+   *
+   * @param {void} key1  
+   * @param {void} key2  
+   * @param {void} value The value to set.
+   *
+   * @returns {StrongStrongMap} This map.
+   * @public
+   */
   set(key1, key2, value) {
     const hash = this.__hasher__.buildHash([key1, key2]);
     const keySet = [key1, key2];
@@ -138,9 +160,9 @@ export default class StrongStrongMap {
   }
 
   /**
-   * Return a new iterator for the value of the map.
+   * Return a new iterator for the values of the map.
    *
-   * @returns {Iterator<value>}
+   * @returns {Iterator<void>}
    * @public
    */
   values() {
@@ -151,9 +173,10 @@ export default class StrongStrongMap {
 
   /**
    * Bootstrap from the native Map's values() iterator to the kind of iterator we want.
+   *
    * @param {function} unpacker The transforming function for values.
    *
-   * @returns {Iterator}
+   * @returns {Iterator<void>}
    * @private
    */
   __wrapIterator__(unpacker) {
@@ -172,6 +195,16 @@ export default class StrongStrongMap {
     }
   }
 }
+
+/**
+ * Validate the arguments.
+ *
+ * @param {void} key1 
+ * @param {void} key2 
+ *
+ * @private
+ */
+
 
 StrongStrongMap[Symbol.iterator] = function() {
   return this.entries();

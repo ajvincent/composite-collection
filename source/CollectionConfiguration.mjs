@@ -9,7 +9,8 @@
 import acorn from "acorn";
 
 function getNormalFunctionAST(fn) {
-  const source = fn.toString();
+  let source = fn.toString().replace(/^function\s*\(/, "function foo(");
+
   let astNode;
   try {
     astNode = acorn.parse(source).body[0];
@@ -140,11 +141,8 @@ export default class CollectionConfiguration {
   /** @type {identifier[]} */
   #strongSetElements = [];
 
-  /** @type {string?} */
-  #valueFilter = null;
-
-  /** @type {string} */
-  #valueJSDoc = null;
+  /** @type {CollectionType} */
+  #valueCollectionType = null;
 
   /** @type {string?} */
   #fileoverview = null;
@@ -211,7 +209,6 @@ export default class CollectionConfiguration {
     this.#stringArg(argumentName, value, mayOmit);
     if (value.includes("*/"))
       throw new Error(argumentName + " contains a comment that would end the JSDoc block!");
-    // XXX ajvincent More advanced JSDoc validation is a good idea.
   }
 
   #catchErrorState(callback) {
@@ -280,8 +277,7 @@ export default class CollectionConfiguration {
         strongMapKeys: this.#strongMapKeys.slice(),
         weakSetElements: this.#weakSetElements.slice(),
         strongSetElements: this.#strongSetElements.slice(),
-        valueFilter: this.#valueFilter,
-        valueJSDoc: this.#valueJSDoc,
+        valueType: this.#valueCollectionType,
         fileOverview: this.#fileoverview,
       }
     });
@@ -346,27 +342,31 @@ export default class CollectionConfiguration {
   }
 
   /**
-   * Define a final value filter for .set(), .add() calls.
+   * Define the value type for .set(), .add() calls.
    *
-   * @param {Function} valueFilter
-   * @param {string}   valueJSDoc
+   * @type {string}    type        The value type.
+   * @type {string}    description The description of the value.
+   * @type {function?} validator   A function to validate the value.
    */
-  setValueFilter(valueFilter, valueJSDoc = null) {
+  setValueType(type, description, validator = null) {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("hasValueFilter")) {
         this.#throwIfLocked();
-  
+
         if (this.#currentState === "hasValueFilter")
-          throw new Error("You can only set the value filter once!");
-        throw new Error("You can only call .setValueFilter() directly after calling .addMapKey()!");
+          throw new Error("You can only set the value type once!");
+        throw new Error("You can only call .setValueType() directly after calling .addMapKey()!");
       }
 
-      const source = this.#callbackArg("valueFilter", valueFilter, "value");
-      if (valueJSDoc !== null)
-        this.#jsdocField("valueJSDoc", valueJSDoc, true);
+      this.#stringArg("type", type, false);
+      this.#stringArg("description", description, false);
+      const validatorSource = (validator !== null) ?
+        this.#callbackArg("validator", validator, "value", true) :
+        null;
 
-      this.#valueFilter = source;
-      this.#valueJSDoc = valueJSDoc;
+      this.#valueCollectionType = new CollectionType(
+        "value", "", type, description, validatorSource
+      );
     });
   }
 

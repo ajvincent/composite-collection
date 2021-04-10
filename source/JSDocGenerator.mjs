@@ -17,7 +17,7 @@ class ParamBlock {
    *
    * @public
    */
-  add(type, name, description) {
+  add(type, name, description = "") {
     const [firstDescLine, ...otherDescLines] = description.split("\n");
     this.#rows.push({type, name, firstDescLine, otherDescLines});
 
@@ -58,8 +58,19 @@ export default class JSDocGenerator {
       description: "The root map holding keys and values.",
       includeArgs: "none",
       headers: [
-        "@type {Map}",
+        "@type {Map<string, __className__~valueAndKeySet>}",
       ],
+      footers: ["@private", "@readonly"],
+    }],
+
+    ["valueAndKeySet", {
+      includeArgs: "none",
+      headers: [
+        "@typedef __className__~valueAndKeySet",
+        "@property {void}   value  The actual value we store.",
+        "@property {void[]} keySet The set of keys we hashed.",
+      ],
+
       footers: ["@private", "@readonly"],
     }],
 
@@ -93,7 +104,7 @@ export default class JSDocGenerator {
     ["forEach", {
       description: "Iterate over the keys and values.",
       paramHeaders: [
-        ["{__className__~ForEachCallback}", "callback", "A function to invoke for each key set."]
+        ["__className__~ForEachCallback", "callback", "A function to invoke for each key set."]
       ],
       includeArgs: "none",
       footers: ["@public"],
@@ -111,6 +122,7 @@ export default class JSDocGenerator {
       description: "Get a value for a key set.",
       includeArgs: "excludeValue",
       returnType: "__valueType__?",
+      returnDescription: "__valueDesc__  Undefined if it isn't in the map.",
       footers: ["@public"],
     }],
 
@@ -118,7 +130,7 @@ export default class JSDocGenerator {
       description: "Report if the map has a value for a key set.",
       includeArgs: "excludeValue",
       returnType: "boolean",
-      returnDescription: "True if the key set refers to a value.",
+      returnDescription: "True if the key set refers to a value in the map.",
       footers: ["@public"],
     }],
 
@@ -148,7 +160,7 @@ export default class JSDocGenerator {
     ["values", {
       description: "Return a new iterator for the values of the map.",
       includeArgs: "none",
-      returnType: "Iterator<void>",
+      returnType: "Iterator<__valueType__>",
       footers: ["@public"],
     }],
 
@@ -158,7 +170,7 @@ export default class JSDocGenerator {
         ["function", "unpacker", "The transforming function for values."]
       ],
       includeArgs: "none",
-      returnType: "Iterator",
+      returnType: "Iterator<void>",
       footers: ["@private"],
     }],
 
@@ -185,7 +197,10 @@ export default class JSDocGenerator {
   #className = "";
 
   /** @type {string} @private */
-  #valueType = "";
+  #valueType = "void";
+
+  /** @type {string?} @private */
+  #valueDesc = undefined;
 
   /** @type {Param[]} @readonly @private */
   #params = [];
@@ -223,10 +238,12 @@ export default class JSDocGenerator {
    *
    * @public
    */
-  addParam(type, name, description) {
+  addParameter(type, name, description) {
     this.#params.push({type, name, description});
-    if (name === "value")
+    if (name === "value") {
       this.#valueType = type;
+      this.#valueDesc = description;
+    }
   }
 
   /**
@@ -240,10 +257,17 @@ export default class JSDocGenerator {
 
     let keyMap;
     {
+      const argList = this.#params.map(param => param.name);
+      {
+        let index = argList.indexOf("value");
+        if (index !== -1)
+          argList.splice(index, 1);
+      }
       const regExpSequence = [
         [/__className__/g, this.#className],
         [/__valueType__/g, this.#valueType],
-        [/__argList__/g, this.#params.map(param => param.name)],
+        [/__valueDesc__/g, this.#valueDesc || "The value."],
+        [/__argList__/g, argList.join(", ")],
       ]
 
       if (this.#isSet) {
@@ -255,6 +279,12 @@ export default class JSDocGenerator {
 
     this.#methodTemplates.forEach(template => {
       this.#replaceKeys(template, "description", keyMap);
+
+      if (Array.isArray(template.headers)) {
+        for (let i = 0; i < template.headers.length; i++) {
+          this.#replaceKeys(template.headers, i, keyMap);
+        }
+      }
 
       if (Array.isArray(template.paramHeaders)) {
         template.paramHeaders.forEach(headerRow => {
@@ -272,7 +302,14 @@ export default class JSDocGenerator {
         });
       }
 
+      if (Array.isArray(template.footers)) {
+        for (let i = 0; i < template.footers.length; i++) {
+          this.#replaceKeys(template.footers, i, keyMap);
+        }
+      }
+
       this.#replaceKeys(template, "returnType", keyMap);
+      this.#replaceKeys(template, "returnDescription", keyMap);
     });
 
     this.#methodTemplates.keysReplaced = true;
@@ -288,9 +325,9 @@ export default class JSDocGenerator {
   #replaceKeys(object, propName, keyMap) {
     if (!(propName in object))
       return;
-    keyMap.forEach((newKey, regexp) => {
-      object[propName] = object.propName.replace(regexp, newKey);
-    });
+    keyMap.forEach(
+      (newKey, regexp) => object[propName] = object[propName].replace(regexp, newKey)
+    );
   }
 
   /**
@@ -306,12 +343,14 @@ export default class JSDocGenerator {
     this.#replaceAllKeys();
 
     const lines = ["/**"];
-    const template = JSDocGenerator.methodTemplates.get(templateName);
+    const template = this.#methodTemplates.get(templateName);
 
-    lines.push(" * " + template.description, " *");
+    if (template.description) {
+      lines.push(" * " + template.description, " *");
+    }
 
     if (Array.isArray(template.headers)) {
-      lines.push(...template.headers, " *");
+      lines.push(...template.headers.map(line => " * " + line), " *");
     }
 
     // parameters
@@ -324,11 +363,17 @@ export default class JSDocGenerator {
       }
 
       if (template.includeArgs !== "none") {
+        let valueFound = false;
         this.#params.forEach(param => {
+          if (param.name === "value")
+            valueFound = true;
           if ((param.name === "value") && (template.includeArgs === "excludeValue"))
             return;
-          paramBlock.add(param.type, param.name, param.description);
+          paramBlock.add(param.type || "void", param.name, param.description || "");
         });
+
+        if (!valueFound && (template.includeArgs !== "excludeValue"))
+          paramBlock.add("void", "value", "The value to set.")
       }
 
       if (Array.isArray(template.paramFooters)) {
