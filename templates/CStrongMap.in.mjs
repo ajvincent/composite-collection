@@ -1,16 +1,36 @@
-import KeyHasher from "composite-collection/KeyHasher";
+/**
+ * @callback JSDocCallback
+ * @param {string} methodName  The name of the method or callback.
+ * @param {string} description The method description.
+ */
 
 /**
- * @typedef StrongStrongMap~valueAndKeySet
+ *
+ * @param {Map} defines
+ * @param {JSDocCallback} docs
+ * @returns
+ */
+export default function preprocess(defines, docs) {
+  void(docs);
+
+  let invokeValidate = "";
+  if (defines.has("invokeValidate")) {
+    invokeValidate = `\n    this.__validateArguments__(${defines.get("validateArguments")});\n`;
+  }
+
+  return `import KeyHasher from "composite-collection/KeyHasher";
+
+/**
+ * @typedef ${defines.get("className")}~valueAndKeySet
  * @property {void}   value  The actual value we store.
  * @property {void[]} keySet The set of keys we hashed.
  * @private
  */
 
-export default class StrongStrongMap {
+export default class ${defines.get("className")} {
   constructor() {
     /**
-     * @type {Map<string, StrongStrongMap~valueAndKeySet>}
+     * @type {Map<string, ${defines.get("className")}~valueAndKeySet>}
      * @private
      * @readonly
      */
@@ -19,7 +39,7 @@ export default class StrongStrongMap {
     /**
      * @type {KeyHasher}
      */
-    this.__hasher__ = new KeyHasher(["key1", "key2"]);
+    this.__hasher__ = new KeyHasher(${defines.get("argNameList")});
   }
 
   /**
@@ -47,15 +67,15 @@ export default class StrongStrongMap {
    * @returns {boolean} True if the item was found and deleted.
    * @public
    */
-  delete(key1, key2) {
-    const hash = this.__hasher__.buildHash([key1, key2]);
+  delete(${defines.get("argList")}) {${invokeValidate}
+    const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
     return this.__root__.delete(hash);
   }
 
   /**
    * Return a new iterator for the key-value pairs of the map.
    *
-   * @returns {Iterator<key1, key2, value>}
+   * @returns {Iterator<${defines.get("argList")}, value>}
    * @public
    */
   entries() {
@@ -67,7 +87,7 @@ export default class StrongStrongMap {
   /**
    * Iterate over the keys and values.
    *
-   * @param {StrongStrongMap~ForEachCallback} callback A function to invoke for each key set.
+   * @param {${defines.get("className")}~ForEachCallback} callback A function to invoke for each key set.
    *
    * @public
    */
@@ -80,10 +100,10 @@ export default class StrongStrongMap {
   }
 
   /**
-   * @callback StrongStrongMap~ForEachCallback
+   * @callback ${defines.get("className")}~ForEachCallback
    * __argDescriptions__
    * __valueDescription__
-   * @param {StrongStrongMap} The map.
+   * @param {${defines.get("className")}} The map.
    */
 
   /**
@@ -94,8 +114,8 @@ export default class StrongStrongMap {
    * @returns {__valueType__?}
    * @public
    */
-  get(key1, key2) {
-    const hash = this.__hasher__.buildHash([key1, key2]);
+  get(${defines.get("argList")}) {${invokeValidate}
+    const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
     const valueAndKeySet = this.__root__.get(hash);
     return valueAndKeySet ? valueAndKeySet.value : valueAndKeySet;
   }
@@ -108,15 +128,15 @@ export default class StrongStrongMap {
    * @returns {boolean} True if the key set refers to a value.
    * @public
    */
-  has(key1, key2) {
-    const hash = this.__hasher__.buildHash([key1, key2]);
+  has(${defines.get("argList")}) {${invokeValidate}
+    const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
     return this.__root__.has(hash);
   }
 
   /**
    * Return a new iterator for the key sets of the map.
    *
-   * @returns {Iterator<key1, key2>}
+   * @returns {Iterator<${defines.get("argList")}>}
    * @public
    */
   keys() {
@@ -125,14 +145,15 @@ export default class StrongStrongMap {
     );
   }
 
-  set(key1, key2, value) {
-    const hash = this.__hasher__.buildHash([key1, key2]);
-    const keySet = [key1, key2];
+  set(${defines.get("argList")}, value) {${
+    invokeValidate
+  }${
+    defines.get("validateValue")
+  }
+    const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
+    const keySet = [${defines.get("argList")}];
     Object.freeze(keySet);
-    this.__root__.set(hash, {
-      value,
-      keySet
-    });
+    this.__root__.set(hash, {value, keySet});
 
     return this;
   }
@@ -160,10 +181,7 @@ export default class StrongStrongMap {
     const rootIter = this.__root__.values();
     return {
       next() {
-        const {
-          value,
-          done
-        } = rootIter.next();
+        const {value, done} = rootIter.next();
         return {
           value: done ? undefined : unpacker(value),
           done
@@ -171,15 +189,18 @@ export default class StrongStrongMap {
       }
     }
   }
-}
+${
+  defines.has("validateArguments") ? defines.get("validateArguments") : ""
+}}
 
-StrongStrongMap[Symbol.iterator] = function() {
+${defines.get("className")}[Symbol.iterator] = function() {
   return this.entries();
 }
 
-Reflect.defineProperty(StrongStrongMap, Symbol.toStringTag, {
-  value: "StrongStrongMap",
+Reflect.defineProperty(${defines.get("className")}, Symbol.toStringTag, {
+  value: "${defines.get("className")}",
   writable: false,
   enumerable: false,
   configurable: true
 });
+`};

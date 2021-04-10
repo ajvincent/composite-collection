@@ -7,6 +7,7 @@
 import CollectionConfiguration from "./CollectionConfiguration.mjs";
 import CompletionPromise from "./CompletionPromise.mjs";
 import fs from "fs/promises";
+import { pathToFileURL } from "url";
 import getAllFiles from 'get-all-files';
 import beautify from "js-beautify";
 
@@ -14,16 +15,22 @@ import beautify from "js-beautify";
  * @type {Map<string, string>}
  * @package
  */
-const TemplateFiles = new Map();
+const TemplateGenerators = new Map();
 {
-  const templateDir = new URL("../templates", import.meta.url).pathname;
+  const templateDirURL = new URL("../templates", import.meta.url);
+  const templateDir = templateDirURL.pathname;
   const allFiles = await getAllFiles.default.async.array(templateDir);
   await Promise.all(allFiles.map(async fullPath => {
     let baseName = fullPath.substr(templateDir.length + 1);
-    if (!baseName.endsWith(".mjs"))
+    if (!baseName.endsWith(".in.mjs"))
       return;
-    baseName = baseName.replace(/\.mjs$/, "");
-    TemplateFiles.set(baseName, await fs.readFile(fullPath, { encoding: "utf-8"}));
+
+    const targetFileURL = pathToFileURL(fullPath);
+    const generator = (await import(targetFileURL)).default;
+    if (typeof generator === "function")
+      TemplateGenerators.set(baseName.replace(/\.in\.mjs$/, ""), generator);
+    else
+      throw new Error("generator isn't a function?");
   }));
 }
 
@@ -55,8 +62,8 @@ export default class CodeGenerator extends CompletionPromise {
    */
   #status = "not started yet";
 
-  /** @type {Map<string, string>} */
-  #replaceStringKeys = new Map();
+  /** @type {Map<string, void>} */
+  #defines = new Map();
 
   /** @type {string} */
   #generatedCode = "";
@@ -95,22 +102,30 @@ export default class CodeGenerator extends CompletionPromise {
 
   async buildCollection() {
     this.#status = "in progress";
+    try {
+      debugger;
+      this.#buildDefines();
 
-    this.#buildReplaceStrings();
+      this.#generateSource();
 
-    this.#generateSource();
-
-    await this.#writeSource();
+      await this.#writeSource();
+    }
+    catch (ex) {
+      console.error(ex);
+      throw ex;
+    }
 
     this.#status = "completed";
     return this.#configurationData.className;
   }
 
-  #buildReplaceStrings() {
-    this.#replaceStringKeys.set("__className__", this.#configurationData.className);
+  #buildDefines() {
+    this.#defines.clear();
+
+    this.#defines.set("className", this.#configurationData.className);
     const keys = Array.from(this.#configurationData.parameterToTypeMap.keys());
-    this.#replaceStringKeys.set("__argList__", keys.join(", "));
-    this.#replaceStringKeys.set("__argNameList__", '[' + keys.map(key => `"${key}"`).join(", ") + "]");
+    this.#defines.set("argList", keys.join(", "));
+    this.#defines.set("argNameList", '[' + keys.map(key => `"${key}"`).join(", ") + ']');
 
     const paramsData = Array.from(this.#configurationData.parameterToTypeMap.values());
 
@@ -119,27 +134,34 @@ export default class CodeGenerator extends CompletionPromise {
         pd => pd.argumentValidator || ""
       ).filter(Boolean).join("\n\n").trim();
 
-      this.#replaceStringKeys.set(
-        /\s+void\(\"__doValidateArguments__\"\);/g,
-        validator
-      );
-      if (!validator) {
-        this.#replaceStringKeys.set(/\s+__validateArguments__\(key\) \{\s*\}\s+/g, "\n");
-        this.#replaceStringKeys.set(/\s+this.__validateArguments__\(key\);\n+/g, "");
+      if (validator) {
+        const vSource = `__validateArguments__(${this.#defines.get("argList")}) {
+${validator}
+}`;
+        this.#defines.set("validateArguments", vSource);
+        this.#defines.set("invokeValidate", true);
+      }
+      else {
+        this.#defines.set("validateArguments", "");
       }
     }
 
-    this.#replaceStringKeys.set(
-      /\s+void\(\"__doValidateValue__\"\);\s+/, (this.#configurationData.valueFilter || "").trim()
-    );
+    {
+      let filter = (this.#configurationData.valueFilter || "").trim();
+      if (filter)
+        filter += "\n    ";
+      this.#defines.set("validateValue", filter);
+    }
+
   }
 
   #generateSource() {
+    let generatorModuleName = "";
     {
       const type = this.#configurationData.collectionType;
       if (type === "map") {
         if (this.#configurationData.weakMapKeys.length === 0)
-          this.#generatedCode = TemplateFiles.get("CStrongMap");
+          generatorModuleName = "CStrongMap";
         else
           throw new Error("weak maps not yet supported");
       }
@@ -148,17 +170,10 @@ export default class CodeGenerator extends CompletionPromise {
       }
     }
 
-    this.#replaceStringKeys.forEach((contents, keyName) => {
-      // replaceAll() requires Node 15+.
-      let source;
-      do {
-        source = this.#generatedCode;
-        this.#generatedCode = source.replace(keyName, contents);
-      } while (source !== this.#generatedCode);
-    });
+    const generator = TemplateGenerators.get(generatorModuleName);
 
     this.#generatedCode = beautify(
-      this.#generatedCode,
+      generator(this.#defines, function() {}),
       {
         "indent_size": 2,
         "indent_char": " ",
