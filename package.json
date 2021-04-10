@@ -31,13 +31,13 @@
     "acorn": "^7.4.1",
     "argparse": "^2.0.1",
     "get-all-files": "^3.0.0",
-    "js-beautify": "^1.13.5"
+    "js-beautify": "^1.13.5",
+    "jsdoc-parse-plus": "^1.3.0"
   },
   "exports": {
     ".": "./CollectionCompiler.mjs",
     "./Configuration": "./source/CollectionConfiguration.mjs",
-
-    "./KeyHasher":       "./exports/KeyHasher.mjs",
+    "./KeyHasher": "./exports/KeyHasher.mjs",
     "./StrongStrongMap": "./exports/StrongStrongMap.mjs"
   }
 }
