@@ -102,18 +102,10 @@ export default class CodeGenerator extends CompletionPromise {
 
   async buildCollection() {
     this.#status = "in progress";
-    try {
-      debugger;
-      this.#buildDefines();
 
-      this.#generateSource();
-
-      await this.#writeSource();
-    }
-    catch (ex) {
-      console.error(ex);
-      throw ex;
-    }
+    this.#buildDefines();
+    this.#generateSource();
+    await this.#writeSource();
 
     this.#status = "completed";
     return this.#configurationData.className;
@@ -183,7 +175,7 @@ ${validator}
   }
 
   async #writeSource() {
-    await fs.writeFile(
+    return fs.writeFile(
       this.#targetPath,
       this.#generatedCode,
       { encoding: "utf-8" }
