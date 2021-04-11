@@ -2,7 +2,7 @@ import KeyHasher from "./KeyHasher.mjs";
 
 class WeakKey extends Set {
   constructor(weakArguments, strongArguments, finalizer) {
-    weakArguments.slice(1).forEach(arg => {
+    weakArguments.forEach(arg => {
       super.add(new WeakRef(arg));
       finalizer.register(arg, this, this);
     });

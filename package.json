@@ -37,6 +37,7 @@
     ".": "./CollectionCompiler.mjs",
     "./Configuration": "./source/CollectionConfiguration.mjs",
     "./KeyHasher": "./exports/KeyHasher.mjs",
+    "./WeakKey-WeakMap": "./exports/WeakKey-WeakMap",
     "./StrongStrongMap": "./exports/StrongStrongMap.mjs"
   }
 }
