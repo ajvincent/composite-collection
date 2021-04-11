@@ -234,6 +234,13 @@ describe("CollectionConfiguration", () => {
         ).toThrowError(`The argument name "value" is reserved!`);
       });
 
+      it("an argument name starting and ending with two underscores", () => {
+        args[0] = "__value__";
+        expect(
+          () => config.addMapKey(...args)
+        ).toThrowError("This module reserves variable names starting and ending with a double underscore for itself.");
+      });
+
       it(`holdWeak being neither true nor false: `, () => {
         args[1] = Symbol("foo");
         expect(
