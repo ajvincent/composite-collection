@@ -8,6 +8,8 @@
 
 import acorn from "acorn";
 
+import ConfigurationStateGraphs from "./ConfigurationStateGraphs.mjs";
+
 function getNormalFunctionAST(fn) {
   let source = fn.toString().replace(/^function\s*\(/, "function foo(");
 
@@ -79,43 +81,8 @@ Object.freeze(CollectionType.prototype);
 export default class CollectionConfiguration {
   static #PREDEFINED_TYPES = new Set(["WeakMap", "Map", "WeakSet", "Set"]);
 
-  static #STATE_TRANSITIONS = new Map([
-    ["start", new Set([
-      "startMap",
-      /* not yet implemented
-      "startSet",
-      */
-    ])],
-
-    ["startMap", new Set([
-      "mapKeys",
-    ])],
-
-    ["startSet", new Set([
-      "setElements",
-    ])],
-
-    ["mapKeys", new Set([
-      "mapKeys",
-      "hasValueFilter",
-      "locked",
-    ])],
-
-    ["setElements", new Set([
-      "setElements",
-      "locked",
-    ])],
-
-    ["hasValueFilter", new Set([
-      "locked",
-    ])],
-
-    ["locked", new Set([
-      "locked",
-    ])],
-
-    ["errored", new Set()],
-  ]);
+  /** @type {Map<string, Set<string>>} */
+  #stateTransitionsGraph;
 
   /** @type {string} */
   #currentState = "start";
@@ -148,7 +115,7 @@ export default class CollectionConfiguration {
   #fileoverview = null;
 
   #doStateTransition(nextState) {
-    const validStates = CollectionConfiguration.#STATE_TRANSITIONS.get(this.#currentState);
+    const validStates = this.#stateTransitionsGraph.get(this.#currentState);
     const mayTransition = validStates.has(nextState);
     if (mayTransition)
       this.#currentState = nextState;
@@ -236,6 +203,7 @@ export default class CollectionConfiguration {
       throw new Error(`You can't override the ${className} primordial!`);
 
     if (className.endsWith("Map")) {
+      this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Map");
       this.#doStateTransition("startMap");
       this.#collectionType = "map";
     }
