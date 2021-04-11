@@ -1,34 +1,46 @@
 import KeyHasher from "./KeyHasher.mjs";
 
-class WeakKey extends Set {
-  constructor(weakArguments, strongArguments, finalizer) {
-    weakArguments.forEach(arg => {
-      super.add(new WeakRef(arg));
-      finalizer.register(arg, this, this);
-    });
-    strongArguments.forEach(arg => super.add(arg));
-  }
-}
-
 export default class WeakKeyComposer {
-  constructor(weakArgList, strongArgList) {
-    if (weakArgList.length === 0)
-      throw new Error("weakArgList must have at least one argument");
+  /**
+   * @param {string[]} weakArgList   The list of weak argument names.
+   * @param {string[]} strongArgList The list of strong argument names.
+   */
+  constructor(weakArgList, strongArgList = []) {
+    if (!Array.isArray(weakArgList) || (weakArgList.length === 0))
+      throw new Error("weakArgList must be a string array of at least one argument!");
+    if (!Array.isArray(strongArgList))
+      throw new Error("strongArgList must be a string array!");
 
-    /**
-     * @type {WeakMap<object, Map<hash, WeakKey>>}
-     */
+    // require all arguments be unique strings
+    {
+      const allArgs = weakArgList.concat(strongArgList);
+      if (!allArgs.every(arg => (typeof arg === "string") && (arg.length > 0)))
+        throw new Error("weakArgList and strongArgList can only contain non-empty strings!");
+
+      const argSet = new Set(allArgs);
+      if (argSet.size !== allArgs.length)
+        throw new Error("There is a duplicate argument among weakArgList and strongArgList!");
+    }
+
+    /** @type {WeakMap<object, Map<hash, WeakKey>>} @readonly @private */
     this.__keyOwner__ = new WeakMap;
+
+    /** @type {string[]} @readonly @private */
     this.__weakArgList__ = weakArgList.slice();
+
+    /** @type {string[]} @readonly @private */
     this.__strongArgList__ = strongArgList.slice();
+
+    /** @type {KeyHasher} @readonly @private */
     this.__keyHasher__ = new KeyHasher(weakArgList.concat(strongArgList));
 
-    /** @type {WeakMap<WeakKey, WeakRef<object>} */
+    /** @type {WeakMap<WeakKey, WeakRef<object>} @readonly @private */
     this.__weakKeyToFirstWeak__ = new WeakMap;
 
-    /** @type {WeakMap<WeakKey, hash>} */
+    /** @type {WeakMap<WeakKey, hash>} @readonly @private */
     this.__weakKeyToHash__ = new WeakMap;
 
+    /** @type {FinalizationRegistry} @readonly @private */
     this.__keyFinalizer__ = new FinalizationRegistry(
       weakKey => this.__deleteWeakKey__(weakKey)
     );
@@ -36,14 +48,16 @@ export default class WeakKeyComposer {
     Object.freeze(this);
   }
 
-  __getHash__(weakArguments, strongArguments) {
-    if (weakArguments.length !== this.__weakArgList__.length)
-      return null;
-    if (strongArguments.length !== this.__strongArgList__.length)
-      return null;
-    return this.__keyHasher__.buildHash(weakArguments.concat(strongArguments));
-  }
-
+  /**
+   * Get an unique key for an ordered set of weak and strong arguments.
+   *
+   * @param {void[]} weakArguments   The list of weak arguments.
+   * @param {void[]} strongArguments The list of strong arguments.
+   *
+   * @returns {WeakSet?} The key if found, null if not.
+   *
+   * @public
+   */
   getKey(weakArguments, strongArguments) {
     const hash = this.__getHash__(weakArguments, strongArguments);
     if (!hash)
@@ -56,7 +70,11 @@ export default class WeakKeyComposer {
     const hashMap = this.__keyOwner__.get(firstWeak);
 
     if (!hashMap.has(hash)) {
-      const weakKey = new WeakKey(weakArguments, strongArguments, this.__keyFinalizer__);
+      weakArguments.forEach(arg => {
+        this.__keyFinalizer__.register(arg, this, this);
+      });
+
+      const weakKey = Object.freeze({});
 
       this.__weakKeyToFirstWeak__.set(weakKey, new WeakRef(weakArguments[0]));
       this.__weakKeyToHash__.set(weakKey, hash);
@@ -66,6 +84,16 @@ export default class WeakKeyComposer {
     return hashMap.get(hash);
   }
 
+  /**
+   * Delete an unique key for an ordered set of weak and strong arguments.
+   *
+   * @param {void[]} weakArguments   The list of weak arguments.
+   * @param {void[]} strongArguments The list of strong arguments.
+   *
+   * @returns {boolean} True if the key was deleted, false if the key wasn't found.
+   *
+   * @public
+   */
   deleteKey(weakArguments, strongArguments) {
     const hash = this.__getHash__(weakArguments, strongArguments);
     if (!hash)
@@ -85,6 +113,28 @@ export default class WeakKeyComposer {
     return Boolean(weakKey);
   }
 
+  /**
+   * Get an unique hash for an ordered set of weak and strong arguments.
+   *
+   * @param {void[]} weakArguments   The list of weak arguments.
+   * @param {void[]} strongArguments The list of strong arguments.
+   *
+   * @returns {hash?} The generated hash.
+   * @private
+   */
+   __getHash__(weakArguments, strongArguments) {
+    if (weakArguments.length !== this.__weakArgList__.length)
+      return null;
+    if (strongArguments.length !== this.__strongArgList__.length)
+      return null;
+    return this.__keyHasher__.buildHash(weakArguments.concat(strongArguments));
+  }
+
+  /**
+   * Delete all references to a given weak key.
+   *
+   * @param {Object} weakKey The key to delete.
+   */
   __deleteWeakKey__(weakKey) {
     const firstKeyRef = this.__weakKeyToFirstWeak__.get(weakKey);
     const firstWeak = firstKeyRef.deref();
@@ -99,3 +149,5 @@ export default class WeakKeyComposer {
     hashMap.delete(hash);
   }
 }
+Object.freeze(WeakKeyComposer);
+Object.freeze(WeakKeyComposer.prototype);
