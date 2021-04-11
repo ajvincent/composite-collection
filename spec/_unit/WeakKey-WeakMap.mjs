@@ -1,4 +1,4 @@
-import WeakKeyComposer from "../../exports/WeakKey-WeakMap.mjs";
+import WeakKeyComposer from "composite-collection/WeakKey-WeakMap";
 
 describe("WeakKey-WeakMap composer", () => {
   it("class is frozen", () => {
