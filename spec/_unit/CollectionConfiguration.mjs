@@ -19,49 +19,49 @@ describe("CollectionConfiguration", () => {
   describe("constructor", () => {
     it("accepts a custom map class name", () => {
       expect(() => {
-        void(new CollectionConfiguration("FooMap"));
+        void(new CollectionConfiguration("FooMap", "Map"));
       }).not.toThrow();
     });
 
     xit("accepts a custom set class name", () => {
       expect(() => {
-        void(new CollectionConfiguration("FooSet"));
+        void(new CollectionConfiguration("FooSet", "Set"));
       }).not.toThrow();
     });
 
     it("disallows setting undefined properties", () => {
-      const config = new CollectionConfiguration("FooMap");
+      const config = new CollectionConfiguration("FooMap", "Map");
       expect(Object.isSealed(config)).toBe(true);
       expect(Reflect.ownKeys(config)).toEqual([]);
     });
 
     it("throws for a class name that doesn't end with 'Map' or 'Set'", () => {
       expect(() => {
-        void(new CollectionConfiguration("Foo"))
-      }).toThrowError(`The class name must end with "Map"!`);
+        void(new CollectionConfiguration("Foo", "Map"))
+      }).toThrowError(`The class name must end with "Map" or "Set"!`);
     });
 
     it(`throws for the names "Map", "WeakMap", "Set", and "WeakSet"`, () => {
       expect(() => {
-        void(new CollectionConfiguration("Map"))
+        void(new CollectionConfiguration("Map", "Map"))
       }).toThrowError(`You can't override the Map primordial!`);
 
       expect(() => {
-        void(new CollectionConfiguration("WeakMap"))
+        void(new CollectionConfiguration("WeakMap", "WeakMap"))
       }).toThrowError(`You can't override the WeakMap primordial!`);
 
       expect(() => {
-        void(new CollectionConfiguration("Set"))
+        void(new CollectionConfiguration("Set", "Set"))
       }).toThrowError(`You can't override the Set primordial!`);
 
       expect(() => {
-        void(new CollectionConfiguration("WeakSet"))
+        void(new CollectionConfiguration("WeakSet", "WeakSet"))
       }).toThrowError(`You can't override the WeakSet primordial!`);
     });
   });
 
   it("instances are frozen objects with no own properties", () => {
-    const config = new CollectionConfiguration("FooMap");
+    const config = new CollectionConfiguration("FooMap", "Map");
     expect(Object.isFrozen(config)).toBe(true);
   });
 
@@ -73,7 +73,7 @@ describe("CollectionConfiguration", () => {
     This is still a FooSet!
     `.trim();
 
-    beforeEach(() => config = new CollectionConfiguration("FooMap"));
+    beforeEach(() => config = new CollectionConfiguration("FooMap", "Map"));
     it("can be set once to a string", () => {
       expect(() => {
         config.setFileOverview(overview);
@@ -99,7 +99,7 @@ describe("CollectionConfiguration", () => {
   describe(".addMapKey()", () => {
     let config, options, type1Args;
     beforeEach(() => {
-      config = new CollectionConfiguration("FooMap");
+      config = new CollectionConfiguration("FooMap", "Map");
       options = {
         argumentType: "Cat",
         description: "The other cat",
@@ -341,7 +341,7 @@ describe("CollectionConfiguration", () => {
   describe(".setValueType()", () => {
     let config, wasCalled, valueFilter = value => { wasCalled = true; };
     beforeEach(() => {
-      config = new CollectionConfiguration("FooMap");
+      config = new CollectionConfiguration("FooMap", "Map");
       wasCalled = false;
     });
 
@@ -398,7 +398,7 @@ describe("CollectionConfiguration", () => {
   });
 
   it("disallows any further operations after throwing an exception", () => {
-    const config = new CollectionConfiguration("FooMap");
+    const config = new CollectionConfiguration("FooMap", "Map");
     expect(() => config.addMapKey("#x", true)).toThrow();
 
     expect(() => {

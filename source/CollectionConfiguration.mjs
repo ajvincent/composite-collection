@@ -73,14 +73,14 @@ class CollectionType {
 Object.freeze(CollectionType);
 Object.freeze(CollectionType.prototype);
 
+const PREDEFINED_TYPES = new Set(["WeakMap", "Map", "WeakSet", "Set"]);
+
 /**
  * A configuration manager for a single composite collection.
  *
  * @public
  */
 export default class CollectionConfiguration {
-  static #PREDEFINED_TYPES = new Set(["WeakMap", "Map", "WeakSet", "Set"]);
-
   /** @type {Map<string, Set<string>>} */
   #stateTransitionsGraph;
 
@@ -192,29 +192,66 @@ export default class CollectionConfiguration {
   }
 
   /**
-   * @param {string} className The name of the class to define.
+   * @param {string}  className The name of the class to define.
+   * @param {string}  outerType One of "Map", "WeakMap", "Set", "WeakSet".
+   * @param {string?} innerType One of "Set", "WeakSet", or null.
    * @constructor
    *
    * @note depending on how this develops, I may add a collectionType string argument.
    */
-  constructor(className) {
+  constructor(className, outerType, innerType = null) {
     this.#identifierArg("className", className);
-    if (CollectionConfiguration.#PREDEFINED_TYPES.has(className))
+    if (PREDEFINED_TYPES.has(className))
       throw new Error(`You can't override the ${className} primordial!`);
+    if (!className.endsWith("Map") && !className.endsWith("Set"))
+      throw new Error(`The class name must end with "Map" or "Set"!`);
 
-    if (className.endsWith("Map")) {
+    switch (outerType) {
+      case "Map":
+        this.#collectionType = "Strong/Map";
+        break;
+      case "WeakMap":
+        this.#collectionType = "Weak/Map";
+        break;
+
+      case "Set":
+        this.#collectionType = "Strong/Set";
+        break;
+      case "WeakSet":
+        this.#collectionType = "Weak/Set";
+        break;
+
+      default:
+        throw new Error(`outerType must be a ${Array.from(PREDEFINED_TYPES).join(", ")}!`);
+    }
+
+    switch (innerType) {
+      case null:
+        break;
+      case "Set":
+        if (outerType.endsWith("Set"))
+          throw new Error("outerType must be a Map or WeakMap when an innerType is not null!");
+        this.#collectionType += "OfStrongSets";
+        break;
+      case "WeakSet":
+        if (outerType.endsWith("Set"))
+          throw new Error("outerType must be a Map or WeakMap when an innerType is not null!");
+        this.#collectionType += "OfWeakSets";
+        break;
+      default:
+        throw new Error("innerType must be a WeakSet, Set, or null!");
+    }
+
+    if (outerType.endsWith("Map")) {
       this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Map");
       this.#doStateTransition("startMap");
-      this.#collectionType = "Strong/Map";
     }
-    /*
-    else if (className.endsWith("Set"))
+    else if (outerType.endsWith("Set")) {
+      this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Map");
       this.#doStateTransition("startSet");
+    }
     else
       throw new Error(`The class name must end with "Map" or "Set"!`);
-    */
-    else
-      throw new Error(`The class name must end with "Map"!`);
 
     this.#className = className;
 
