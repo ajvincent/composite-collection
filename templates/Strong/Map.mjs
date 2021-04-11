@@ -186,10 +186,3 @@ export default class __className__ {
 __className__[Symbol.iterator] = function() {
   return this.entries();
 }
-
-Reflect.defineProperty(__className__, Symbol.toStringTag, {
-  value: "__className__",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
