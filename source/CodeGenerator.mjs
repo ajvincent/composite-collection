@@ -153,21 +153,7 @@ ${validator}
   }
 
   #generateSource() {
-    let generatorModuleName = "";
-    {
-      const type = this.#configurationData.collectionType;
-      if (type === "map") {
-        if (this.#configurationData.weakMapKeys.length === 0)
-          generatorModuleName = "CStrongMap";
-        else
-          throw new Error("weak maps not yet supported");
-      }
-      else {
-        throw new Error("Unsupported collection type: " + collectionType);
-      }
-    }
-
-    const generator = TemplateGenerators.get(generatorModuleName);
+    const generator = TemplateGenerators.get(this.#configurationData.collectionType);
 
     this.#generatedCode = beautify(
       generator(this.#defines, this.#docGenerator),

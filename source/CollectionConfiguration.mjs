@@ -205,7 +205,7 @@ export default class CollectionConfiguration {
     if (className.endsWith("Map")) {
       this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Map");
       this.#doStateTransition("startMap");
-      this.#collectionType = "map";
+      this.#collectionType = "Strong/Map";
     }
     /*
     else if (className.endsWith("Set"))
