@@ -55,11 +55,11 @@ ${docs.buildBlock("entries", 2)}
   }
 
 ${docs.buildBlock("forEach", 2)}
-  forEach(callback) {
+  forEach(callback, thisArg) {
     this.__root__.forEach((valueAndKeySet, key, root) => {
       const args = valueAndKeySet.keySet.concat(this);
       args.unshift(valueAndKeySet.value);
-      callback(...args);
+      callback.apply(thisArg, [...args]);
     });
   }
 
