@@ -5,8 +5,8 @@
   "main": "Driver.mjs",
   "scripts": {
     "dogfood": "node dogfood/build.mjs && node --expose-gc ./node_modules/jasmine/bin/jasmine.js",
-    "debug": "node --inspect-brk --expose-gc ./node_modules/jasmine/bin/jasmine.js",
-    "test": "node --expose-gc ./node_modules/jasmine/bin/jasmine.js"
+    "debug": "jake debug",
+    "test": "jake test"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
   "devDependencies": {
     "eslint": "^7.23.0",
     "eslint-plugin-jasmine": "^4.1.2",
+    "jake": "^10.8.2",
     "jasmine": "^3.7.0"
   },
   "dependencies": {
