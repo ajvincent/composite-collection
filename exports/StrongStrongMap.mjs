@@ -79,11 +79,11 @@ export default class StrongStrongMap {
    *
    * @public
    */
-  forEach(callback) {
+  forEach(callback, thisArg) {
     this.__root__.forEach((valueAndKeySet, key, root) => {
       const args = valueAndKeySet.keySet.concat(this);
       args.unshift(valueAndKeySet.value);
-      callback(...args);
+      callback.apply(thisArg, [...args]);
     });
   }
 

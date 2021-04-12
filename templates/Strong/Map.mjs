@@ -18,6 +18,8 @@ export default class __className__ {
 
     /**
      * @type {KeyHasher}
+     * @private
+     * @readonly
      */
     this.__hasher__ = new KeyHasher(__argNameList__);
   }
@@ -73,11 +75,11 @@ export default class __className__ {
    *
    * @public
    */
-  forEach(callback) {
+  forEach(callback, thisArg) {
     this.__root__.forEach((valueAndKeySet, key, root) => {
       const args = valueAndKeySet.keySet.concat(this);
       args.unshift(valueAndKeySet.value);
-      callback(...args);
+      callback.apply(thisArg, [...args]);
     });
   }
 
