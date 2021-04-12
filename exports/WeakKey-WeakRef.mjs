@@ -45,6 +45,9 @@ export default class WeakKeyComposer {
       weakKey => this.__deleteWeakKey__(weakKey)
     );
 
+    /** @type {WeakSet{object}} */
+    this.__hasKeyParts__ = new WeakSet;
+
     Object.freeze(this);
   }
 
@@ -62,6 +65,12 @@ export default class WeakKeyComposer {
     const hash = this.__getHash__(weakArguments, strongArguments);
     if (!hash)
       return null;
+
+    weakArguments.forEach(arg => this.__hasKeyParts__.add(arg));
+    strongArguments.forEach(arg => {
+      if (Object(arg) === arg)
+        this.__hasKeyParts__.add(arg);
+    });
 
     const firstWeak = weakArguments[0];
     if (!this.__keyOwner__.has(firstWeak)) {
@@ -84,6 +93,28 @@ export default class WeakKeyComposer {
     return hashMap.get(hash);
   }
 
+  hasKey(weakArguments, strongArguments) {
+    if (weakArguments.some(arg => !this.__hasKeyParts__.has(arg)))
+      return false;
+
+    if (strongArguments.some(
+      arg => (Object(arg) === arg) && !this.__hasKeyParts__.has(arg)
+    ))
+      return false;
+
+    const firstWeak = weakArguments[0];
+    if (!this.__keyOwner__.has(firstWeak)) {
+      return false;
+    }
+    const hashMap = this.__keyOwner__.get(firstWeak);
+
+    const hash = this.__getHash__(weakArguments, strongArguments);
+    if (!hash)
+      return false;
+
+    return hashMap.has(hash);
+  }
+
   /**
    * Delete an unique key for an ordered set of weak and strong arguments.
    *
@@ -95,6 +126,14 @@ export default class WeakKeyComposer {
    * @public
    */
   deleteKey(weakArguments, strongArguments) {
+    if (weakArguments.some(arg => !this.__hasKeyParts__.has(arg)))
+      return false;
+
+    if (strongArguments.some(
+      arg => (Object(arg) === arg) && !this.__hasKeyParts__.has(arg)
+    ))
+      return false;
+
     const hash = this.__getHash__(weakArguments, strongArguments);
     if (!hash)
       return false;

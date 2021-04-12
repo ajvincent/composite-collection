@@ -27,6 +27,9 @@ export default class WeakKeyComposer {
     this.__strongArgList__ = strongArgList.slice();
     this.__keyHasher__ = new KeyHasher(strongArgList);
 
+    /** @type {WeakSet{object}} */
+    this.__hasKeyParts__ = new WeakSet;
+
     /** @type {Map<string, object} */
     this.__strongKeyToObject__ = new Map;
 
@@ -44,24 +47,53 @@ export default class WeakKeyComposer {
    * @public
    */
   getKey(weakArguments, strongArguments) {
-    weakArguments = this.__fillWeakArguments__(weakArguments, strongArguments);
-    if (!weakArguments)
+    const weakKeys = this.__fillWeakArguments__(weakArguments, strongArguments);
+    if (!weakKeys)
       return null;
 
-    const finalKey = weakArguments.pop();
+    weakArguments.forEach(arg => this.__hasKeyParts__.add(arg));
+    strongArguments.forEach(arg => {
+      if (Object(arg) === arg)
+        this.__hasKeyParts__.add(arg);
+    });
 
-    const finalMap = weakArguments.reduce((map, currentKey) => {
+    const finalKey = weakKeys.pop();
+
+    const finalMap = weakKeys.reduce((map, currentKey) => {
       if (!map.has(currentKey))
         map.set(currentKey, new WeakMap);
       return map.get(currentKey);
     }, this.__keyRoot__);
 
-    if (!finalMap)
-      return null;
-
     if (!finalMap.has(finalKey))
       finalMap.set(finalKey, Object.freeze({}));
     return finalMap.get(finalKey);
+  }
+
+  hasKey(weakArguments, strongArguments) {
+    if (weakArguments.some(arg => !this.__hasKeyParts__.has(arg)))
+      return false;
+
+    if (strongArguments.some(
+      arg => (Object(arg) === arg) && !this.__hasKeyParts__.has(arg)
+    ))
+      return false;
+
+    const weakKeys = this.__fillWeakArguments__(weakArguments, strongArguments);
+    if (!weakKeys)
+      return false;
+
+    const finalKey = weakKeys.pop();
+
+    const finalMap = weakKeys.reduce((map, currentKey) => {
+      if (!map || !map.has(currentKey))
+        return null;
+      return map.get(currentKey);
+    }, this.__keyRoot__);
+    if (!finalMap)
+      return false;
+
+    return finalMap.has(finalKey);
   }
 
   /**
@@ -75,13 +107,21 @@ export default class WeakKeyComposer {
    * @public
    */
   deleteKey(weakArguments, strongArguments) {
-    weakArguments = this.__fillWeakArguments__(weakArguments, strongArguments);
-    if (!weakArguments)
+    if (weakArguments.some(arg => !this.__hasKeyParts__.has(arg)))
       return false;
 
-    const finalKey = weakArguments.pop();
+    if (strongArguments.some(
+      arg => (Object(arg) === arg) && !this.__hasKeyParts__.has(arg)
+    ))
+      return false;
 
-    const finalMap = weakArguments.reduce((map, currentKey) => {
+    const weakKeys = this.__fillWeakArguments__(weakArguments, strongArguments);
+    if (!weakKeys)
+      return false;
+
+    const finalKey = weakKeys.pop();
+
+    const finalMap = weakKeys.reduce((map, currentKey) => {
       if (!map || !map.has(currentKey))
         return null;
       return map.get(currentKey);

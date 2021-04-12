@@ -187,5 +187,40 @@ describe("WeakKey-WeakRef composer", () => {
 
       expect(() => composer.deleteKey(...key)).not.toThrow();
     });
+
+    describe(".hasKey() returns", () => {
+      it("false for an unknown key", () => {
+        expect(composer.hasKey(...keySet1)).toBe(false);
+      });
+
+      it("false for an incorrect number of weak arguments", () => {
+        expect(composer.hasKey([], [])).toBe(false);
+        expect(composer.hasKey([{}, {}, {}])).toBe(false);
+        expect(composer.hasKey([], [{}, {}, {}])).toBe(false);
+      });
+
+      it("false for an incorrect nmber of strong arguments", () => {
+        expect(composer.hasKey(keySet1[0], [{}, {}, {}])).toBe(false);
+        expect(composer.hasKey(keySet1[0], ["a", "b", "c"])).toBe(false);
+      });
+
+      it("true for a known key", () => {
+        composer.getKey(...keySet1);
+        expect(composer.hasKey(...keySet1)).toBe(true);
+      });
+
+      it("false for a deleted key", () => {
+        composer.getKey(...keySet1);
+        composer.deleteKey(...keySet1);
+        expect(composer.hasKey(...keySet1)).toBe(false);
+      });
+
+      it("true for a re-added key", () => {
+        composer.getKey(...keySet1);
+        composer.deleteKey(...keySet1);
+        composer.getKey(...keySet1);
+        expect(composer.hasKey(...keySet1)).toBe(true);
+      });
+    });
   }
 });
