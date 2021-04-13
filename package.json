@@ -6,7 +6,8 @@
   "scripts": {
     "dogfood": "node dogfood/build.mjs && node --expose-gc ./node_modules/jasmine/bin/jasmine.js",
     "debug": "jake debug",
-    "test": "jake test"
+    "test": "jake test",
+    "all": "jake test export"
   },
   "repository": {
     "type": "git",
@@ -35,9 +36,10 @@
     "js-beautify": "^1.13.5"
   },
   "exports": {
-    ".": "./CollectionCompiler.mjs",
+    ".": "./source/CodeGenerator.mjs",
     "./Configuration": "./source/CollectionConfiguration.mjs",
-    "./KeyHasher": "./exports/KeyHasher.mjs",
+
+    "./KeyHasher":       "./exports/KeyHasher.mjs",
     "./WeakKey-WeakMap": "./exports/WeakKey-WeakMap.mjs",
     "./WeakKey-WeakRef": "./exports/WeakKey-WeakRef.mjs",
     "./StrongStrongMap": "./exports/StrongStrongMap.mjs"

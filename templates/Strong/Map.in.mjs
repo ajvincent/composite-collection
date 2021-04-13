@@ -16,7 +16,7 @@ export default function preprocess(defines, docs) {
     invokeValidate = `\n    this.__validateArguments__(${defines.get("validateArguments")});\n`;
   }
 
-  return `import KeyHasher from "composite-collection/KeyHasher";
+  return `import KeyHasher from "./KeyHasher";
 
 export default class ${defines.get("className")} {
   constructor() {

@@ -1,4 +1,4 @@
-import KeyHasher from "composite-collection/KeyHasher";
+import KeyHasher from "./KeyHasher";
 
 /**
  * @typedef __className__~valueAndKeySet
