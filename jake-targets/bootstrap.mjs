@@ -49,28 +49,28 @@ console.log(stageDirs);
 try {
   // stage 1
   await copyToStage(masterDirectory, stageDirs[0]);
+  await buildCollections(masterDirectory, stageDirs[0]);
   await buildStage(stageDirs[0]);
 
   // stage 2
-  await copyToStage(masterDirectory, stageDirs[1]);
-  await exportFromStage(stageDirs[0], stageDirs[1]);
+  await copyToStage(stageDirs[0], stageDirs[1]);
+  await buildCollections(stageDirs[0], stageDirs[1]);
   await buildStage(stageDirs[1]);
 
   const stage2Hash = hashAllFiles(stageDirs[1]);
 
   // stage 3
-  await copyToStage(masterDirectory, stageDirs[2]);
-  await exportFromStage(stageDirs[1], stageDirs[2]);
+  await copyToStage(stageDirs[1], stageDirs[2]);
+  await buildCollections(stageDirs[1], stageDirs[2]);
   await buildStage(stageDirs[2]);
 
-  await exportFromStage(stageDirs[2], stageDirs[2]);
-
   const stage3Hash = hashAllFiles(stageDirs[2]);
+
   if (stage3Hash !== stage2Hash) {
     throw new Error("Bootstrap: staged directories are different!");
   }
 
-  await exportFromStage(stageDirs[2], masterDirectory);
+  await copyToStage(stageDirs[2], masterDirectory);
 }
 catch (ex) {
   //eslint-disable-next-line no-debugger
@@ -80,4 +80,31 @@ catch (ex) {
 finally {
   cleanup.resolve();
   await cleanup.promise;
+}
+
+/**
+ * Copy files from one stage to the next.
+ * @param {string} sourceDir
+ * @param {string} targetDir
+ */
+async function copyToStage(sourceDir, targetDir) {
+  throw new Error("Not yet implemented!");
+}
+
+/**
+ * Compose required collection files from one stage to another.
+ * @param {string} sourceDir
+ * @param {string} targetDir
+ */
+async function buildCollections(sourceDir, targetDir) {
+  throw new Error("Not yet implemented!");
+}
+
+/**
+ * Build a bootstrap stage.
+ *
+ * @param {string} stageDir
+ */
+async function buildStage(stageDir) {
+  throw new Error("Not yet implemented!");
 }
