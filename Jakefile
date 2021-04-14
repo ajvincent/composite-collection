@@ -106,6 +106,7 @@ namespace("test", () => {
       "spec/generated/SoloStrongMap.mjs",
       "spec/generated/SoloStrongSet.mjs",
       "spec/generated/StrongStrongMap.mjs",
+      "spec/generated/StrongStrongSet.mjs",
     ]
   );
 
@@ -128,6 +129,7 @@ generateCollectionTasks("spec/fixtures", "spec/generated", [
 
 generateCollectionTasks("source/exports", "spec/generated", [
   "StrongStrongMap.mjs",
+  "StrongStrongSet.mjs",
 ]);
 
 desc("Debugging tests");
@@ -144,6 +146,7 @@ task(
     "exports/WeakKey-WeakMap.mjs",
     "exports/WeakKey-WeakRef.mjs",
     "exports/StrongStrongMap.mjs",
+    "exports/StrongStrongSet.mjs",
   ]
 );
 
@@ -155,4 +158,5 @@ copyFileTasks("source/exports", "exports", [
 
 generateCollectionTasks("source/exports", "exports", [
   "StrongStrongMap.mjs",
+  "StrongStrongSet.mjs",
 ]);

@@ -1,10 +1,8 @@
 import StrongStrongMap from "../generated/StrongStrongMap.mjs";
 
-describe("CodeGenerator(StrongStrongMap.mjs), ", () => {
+describe("CodeGenerator(StrongStrongMap.mjs),", () => {
   let testMap, refMap = new Map;
   beforeEach(() => {
-    if (typeof StrongStrongMap !== "function")
-      fail("cannot run test for StrongStrongMap");
     refMap.clear();
     testMap = new StrongStrongMap();
   });
@@ -90,7 +88,7 @@ describe("CodeGenerator(StrongStrongMap.mjs), ", () => {
 
     {
       const testIterator = testMap.entries();
-      const refIterator  = refMap.entries()
+      const refIterator  = refMap.entries();
       expect(testIterator.next()).toEqual({value: [key1, key3, value1], done: false});
       refIterator.next();
       expect(testIterator.next()).toEqual({value: [key2, key3, value2], done: false});
@@ -129,7 +127,7 @@ describe("CodeGenerator(StrongStrongMap.mjs), ", () => {
 
     {
       const testIterator = testMap.entries();
-      const refIterator  = refMap.entries()
+      const refIterator  = refMap.entries();
       expect(testIterator.next()).toEqual({value: [key2, key3, value2], done: false});
       refIterator.next();
       expect(testIterator.next()).toEqual({value: [key1, key3, value1], done: false});
@@ -177,7 +175,7 @@ describe("CodeGenerator(StrongStrongMap.mjs), ", () => {
 
     {
       const testIterator = testMap.entries();
-      const refIterator  = refMap.entries()
+      const refIterator  = refMap.entries();
       expect(testIterator.next()).toEqual({value: [key3, key1, value1], done: false});
       refIterator.next();
       expect(testIterator.next()).toEqual({value: [key3, key2, value2], done: false});
@@ -216,7 +214,7 @@ describe("CodeGenerator(StrongStrongMap.mjs), ", () => {
 
     {
       const testIterator = testMap.entries();
-      const refIterator  = refMap.entries()
+      const refIterator  = refMap.entries();
       expect(testIterator.next()).toEqual({value: [key3, key2, value2], done: false});
       refIterator.next();
       expect(testIterator.next()).toEqual({value: [key3, key1, value1], done: false});
@@ -264,7 +262,7 @@ describe("CodeGenerator(StrongStrongMap.mjs), ", () => {
 
     {
       const testIterator = testMap.entries();
-      const refIterator  = refMap.entries()
+      const refIterator  = refMap.entries();
       expect(testIterator.next()).toEqual({value: [key1, key2, value1], done: false});
       refIterator.next();
       expect(testIterator.next()).toEqual({value: [key2, key1, value2], done: false});
@@ -303,7 +301,7 @@ describe("CodeGenerator(StrongStrongMap.mjs), ", () => {
 
     {
       const testIterator = testMap.entries();
-      const refIterator  = refMap.entries()
+      const refIterator  = refMap.entries();
       expect(testIterator.next()).toEqual({value: [key2, key1, value2], done: false});
       refIterator.next();
       expect(testIterator.next()).toEqual({value: [key1, key2, value1], done: false});
