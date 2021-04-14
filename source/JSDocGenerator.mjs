@@ -106,7 +106,7 @@ export default class JSDocGenerator {
     ["entries", {
       description: "Return a new iterator for the key-value pairs of the collection.",
       includeArgs: "none",
-      returnType: "Iterator<__argList__, value>",
+      returnType: "Iterator<[__argList__, value]>",
       footers: ["@public"],
     }],
 
@@ -166,7 +166,7 @@ export default class JSDocGenerator {
     ["keys", {
       description: "Return a new iterator for the key sets of the collection.",
       includeArgs: "none",
-      returnType: "Iterator<__argList__>",
+      returnType: "Iterator<[__argList__]>",
       footers: ["@public"],
     }],
 
@@ -294,7 +294,7 @@ export default class JSDocGenerator {
       }
       const regExpSequence = [
         [/__className__/g, this.#className],
-        [/__valueType__/g, this.#valueType],
+        [/__valueType__/g, this.#valueType || "*"],
         [/__valueDesc__/g, this.#valueDesc || "The value."],
         [/__argList__/g, argList.join(", ")],
       ]

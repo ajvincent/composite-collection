@@ -77,7 +77,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the key-value pairs of the collection.
    *
-   * @returns {Iterator<car, driver, value>}
+   * @returns {Iterator<[car, driver, value]>}
    * @public
    */`);
     });
@@ -137,7 +137,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the key sets of the collection.
    *
-   * @returns {Iterator<car, driver>}
+   * @returns {Iterator<[car, driver]>}
    * @public
    */`);
     });
@@ -260,7 +260,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the key-value pairs of the collection.
    *
-   * @returns {Iterator<car, driver, value>}
+   * @returns {Iterator<[car, driver, value]>}
    * @public
    */`);
     });
@@ -320,7 +320,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the key sets of the collection.
    *
-   * @returns {Iterator<car, driver>}
+   * @returns {Iterator<[car, driver]>}
    * @public
    */`);
     });
@@ -642,7 +642,7 @@ describe("JSDocGenerator for sets", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the key-value pairs of the collection.
    *
-   * @returns {Iterator<car, driver, value>}
+   * @returns {Iterator<[car, driver, value]>}
    * @public
    */`);
     });
