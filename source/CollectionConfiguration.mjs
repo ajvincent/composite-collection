@@ -207,8 +207,6 @@ export default class CollectionConfiguration {
     this.#identifierArg("className", className);
     if (PREDEFINED_TYPES.has(className))
       throw new Error(`You can't override the ${className} primordial!`);
-    if (!className.endsWith("Map") && !className.endsWith("Set"))
-      throw new Error(`The class name must end with "Map" or "Set"!`);
 
     switch (outerType) {
       case "Map":
@@ -250,12 +248,10 @@ export default class CollectionConfiguration {
       this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Map");
       this.#doStateTransition("startMap");
     }
-    else if (outerType.endsWith("Set")) {
+    else {
       this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Set");
       this.#doStateTransition("startSet");
     }
-    else
-      throw new Error(`The class name must end with "Map" or "Set"!`);
 
     this.#className = className;
 

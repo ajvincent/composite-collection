@@ -18,28 +18,10 @@ describe("CollectionConfiguration", () => {
   });
 
   describe("constructor", () => {
-    it("accepts a custom map class name", () => {
-      expect(() => {
-        void(new CollectionConfiguration("FooMap", "Map"));
-      }).not.toThrow();
-    });
-
-    xit("accepts a custom set class name", () => {
-      expect(() => {
-        void(new CollectionConfiguration("FooSet", "Set"));
-      }).not.toThrow();
-    });
-
     it("disallows setting undefined properties", () => {
       const config = new CollectionConfiguration("FooMap", "Map");
       expect(Object.isSealed(config)).toBe(true);
       expect(Reflect.ownKeys(config)).toEqual([]);
-    });
-
-    it("throws for a class name that doesn't end with 'Map' or 'Set'", () => {
-      expect(() => {
-        void(new CollectionConfiguration("Foo", "Map"))
-      }).toThrowError(`The class name must end with "Map" or "Set"!`);
     });
 
     it(`throws for the names "Map", "WeakMap", "Set", and "WeakSet"`, () => {
