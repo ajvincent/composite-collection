@@ -5,7 +5,7 @@ export default class __className__ {
     /**
      * Storage of the Set's contents for quick iteration in .values().
      * The values are always frozen arrays.
-     * @type {Map<hash, void[]}
+     * @type {Map<hash, *[]}
      * @private
      * @readonly
      */

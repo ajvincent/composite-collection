@@ -48,7 +48,7 @@ export default class KeyHasher {
   /**
    * Build a hash of the key list.
    *
-   * @param {void[]} valueList
+   * @param {*[]} valueList
    * @returns {string?}
    *
    * @public

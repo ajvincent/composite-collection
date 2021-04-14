@@ -1,6 +1,6 @@
 export default class CompletionPromise {
   /**
-   * @type {void}
+   * @type {*}
    * @private
    */
   #abortException = null;

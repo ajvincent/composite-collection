@@ -8,7 +8,7 @@ export default class __className__ {
     this.__keyHasher__ = new KeyHasher(__argNames__);
     this.__keyComposer__ = new WeakKeyComposer(__weakArgNames__, __strongArgNames__);
 
-    /** @type {WeakMap<object, WeakMap<WeakKey, void>>} */
+    /** @type {WeakMap<object, WeakMap<WeakKey, *>>} */
     this.__root__ = new WeakMap;
   }
 

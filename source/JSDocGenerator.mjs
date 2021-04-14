@@ -67,7 +67,7 @@ export default class JSDocGenerator {
       description: "Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.",
       includeArgs: "none",
       headers: [
-        "@type {Map<hash, void[]>}",
+        "@type {Map<hash, *[]>}",
       ],
       footers: ["@private", "@readonly"],
     }],
@@ -76,8 +76,8 @@ export default class JSDocGenerator {
       includeArgs: "none",
       headers: [
         "@typedef __className__~valueAndKeySet",
-        "@property {void}   value  The actual value we store.",
-        "@property {void[]} keySet The set of keys we hashed.",
+        "@property {*}   value  The actual value we store.",
+        "@property {*[]} keySet The set of keys we hashed.",
       ],
 
       footers: ["@private", "@readonly"],
@@ -199,7 +199,7 @@ export default class JSDocGenerator {
         ["function", "unpacker", "The transforming function for values."]
       ],
       includeArgs: "none",
-      returnType: "Iterator<void>",
+      returnType: "Iterator<*>",
       footers: ["@private"],
     }],
 
@@ -226,7 +226,7 @@ export default class JSDocGenerator {
   #className = "";
 
   /** @type {string} @private */
-  #valueType = "void";
+  #valueType = "*";
 
   /** @type {string?} @private */
   #valueDesc = undefined;
@@ -398,11 +398,11 @@ export default class JSDocGenerator {
             if ((template.includeArgs === "excludeValue"))
               return;
           }
-          paramBlock.add(param.type || "void", param.name, param.description || "");
+          paramBlock.add(param.type || "*", param.name, param.description || "");
         });
 
         if (!valueFound && !this.#isSet && (template.includeArgs !== "excludeValue"))
-          paramBlock.add("void", "value", "The value.")
+          paramBlock.add("*", "value", "The value.")
       }
 
       if (Array.isArray(template.paramFooters)) {

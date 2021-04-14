@@ -54,8 +54,8 @@ export default class WeakKeyComposer {
   /**
    * Get an unique key for an ordered set of weak and strong arguments.
    *
-   * @param {void[]} weakArguments   The list of weak arguments.
-   * @param {void[]} strongArguments The list of strong arguments.
+   * @param {*[]} weakArguments   The list of weak arguments.
+   * @param {*[]} strongArguments The list of strong arguments.
    *
    * @returns {WeakSet?} The key if found, null if not.
    *
@@ -118,8 +118,8 @@ export default class WeakKeyComposer {
   /**
    * Delete an unique key for an ordered set of weak and strong arguments.
    *
-   * @param {void[]} weakArguments   The list of weak arguments.
-   * @param {void[]} strongArguments The list of strong arguments.
+   * @param {*[]} weakArguments   The list of weak arguments.
+   * @param {*[]} strongArguments The list of strong arguments.
    *
    * @returns {boolean} True if the key was deleted, false if the key wasn't found.
    *
@@ -155,8 +155,8 @@ export default class WeakKeyComposer {
   /**
    * Get an unique hash for an ordered set of weak and strong arguments.
    *
-   * @param {void[]} weakArguments   The list of weak arguments.
-   * @param {void[]} strongArguments The list of strong arguments.
+   * @param {*[]} weakArguments   The list of weak arguments.
+   * @param {*[]} strongArguments The list of strong arguments.
    *
    * @returns {hash?} The generated hash.
    * @private

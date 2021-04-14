@@ -6,7 +6,7 @@ FunctionSetConfig.addCollectionType(
   "FunctionSet",
   "Set",
   {
-    argumentType: "void",
+    argumentType: "*",
     description: "The set containing the function",
   }
 );

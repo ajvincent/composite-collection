@@ -2,8 +2,8 @@ import KeyHasher from "./KeyHasher";
 
 /**
  * @typedef __className__~valueAndKeySet
- * @property {void}   value  The actual value we store.
- * @property {void[]} keySet The set of keys we hashed.
+ * @property {*}   value  The actual value we store.
+ * @property {*[]} keySet The set of keys we hashed.
  * @private
  */
 

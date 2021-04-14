@@ -3,8 +3,6 @@ import SoloStrongMap from "../generated/SoloStrongMap.mjs";
 describe("CodeGenerator(SoloStrongMap.mjs)", () => {
   let testMap, refMap = new Map;
   beforeEach(() => {
-    if (typeof SoloStrongMap !== "function")
-      fail("cannot run test for SoloStrongMap");
     refMap.clear();
     testMap = new SoloStrongMap();
   });

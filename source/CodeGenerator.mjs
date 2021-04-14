@@ -53,7 +53,7 @@ export default class CodeGenerator extends CompletionPromise {
   /** @type {string} @private */
   #status = "not started yet";
 
-  /** @type {Map<string, void>} @readonly @private */
+  /** @type {Map<string, *>} @readonly @private */
   #defines = new Map();
 
   /** @type {JSDocGenerator} @private */

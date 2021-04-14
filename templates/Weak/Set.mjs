@@ -6,7 +6,7 @@ export default class __className__ {
     this.__keyComposer__ = new WeakKeyComposer(__weakArgNames__, __strongArgNames__);
 
     /**
-     * @type {WeakMap<WeakKey, Set<void> | object>}
+     * @type {WeakMap<WeakKey, Set<*> | object>}
      */
     this.__weakKeyToStrongKeys__ = new WeakMap;
   }

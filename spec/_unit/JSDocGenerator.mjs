@@ -32,8 +32,8 @@ describe("JSDocGenerator for maps", () => {
       const generated = generator.buildBlock("valueAndKeySet", 2);
       expect(generated).toEqual(`  /**
    * @typedef SoloStrongMap~valueAndKeySet
-   * @property {void}   value  The actual value we store.
-   * @property {void[]} keySet The set of keys we hashed.
+   * @property {*}   value  The actual value we store.
+   * @property {*[]} keySet The set of keys we hashed.
    *
    * @private
    * @readonly
@@ -98,7 +98,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * @callback SoloStrongMap~ForEachCallback
    *
-   * @param {void}          value          The value.
+   * @param {*}             value          The value.
    * @param {Car}           car            The car.
    * @param {Person}        driver         The driver of the car.
    * @param {SoloStrongMap} __collection__ This collection.
@@ -114,7 +114,7 @@ describe("JSDocGenerator for maps", () => {
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
    *
-   * @returns {void?} The value.  Undefined if it isn't in the collection.
+   * @returns {*?} The value.  Undefined if it isn't in the collection.
    * @public
    */`);
     });
@@ -149,7 +149,7 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   * @param {void}   value  The value.
+   * @param {*}      value  The value.
    *
    * @returns {SoloStrongMap} This collection.
    * @public
@@ -161,7 +161,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the values of the collection.
    *
-   * @returns {Iterator<void>}
+   * @returns {Iterator<*>}
    * @public
    */`);
     });
@@ -173,7 +173,7 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {function} unpacker The transforming function for values.
    *
-   * @returns {Iterator<void>}
+   * @returns {Iterator<*>}
    * @private
    */`);
     });
@@ -215,8 +215,8 @@ describe("JSDocGenerator for maps", () => {
       const generated = generator.buildBlock("valueAndKeySet", 2);
       expect(generated).toEqual(`  /**
    * @typedef SoloStrongMap~valueAndKeySet
-   * @property {void}   value  The actual value we store.
-   * @property {void[]} keySet The set of keys we hashed.
+   * @property {*}   value  The actual value we store.
+   * @property {*[]} keySet The set of keys we hashed.
    *
    * @private
    * @readonly
@@ -369,7 +369,7 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {function} unpacker The transforming function for values.
    *
-   * @returns {Iterator<void>}
+   * @returns {Iterator<*>}
    * @private
    */`);
     });
@@ -394,7 +394,7 @@ describe("JSDocGenerator for maps", () => {
     expect(generated).toEqual(`  /**
    * @callback SoloStrongMap~ForEachCallback
    *
-   * @param {void}          value          The value.
+   * @param {*}             value          The value.
    * @param {SoloStrongMap} __collection__ This collection.
    *
    */`);
@@ -438,7 +438,7 @@ describe("JSDocGenerator for sets", () => {
       expect(generated).toEqual(`  /**
    * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.
    *
-   * @type {Map<hash, void[]>}
+   * @type {Map<hash, *[]>}
    *
    * @private
    * @readonly
@@ -449,8 +449,8 @@ describe("JSDocGenerator for sets", () => {
       const generated = generator.buildBlock("valueAndKeySet", 2);
       expect(generated).toEqual(`  /**
    * @typedef SoloStrongSet~valueAndKeySet
-   * @property {void}   value  The actual value we store.
-   * @property {void[]} keySet The set of keys we hashed.
+   * @property {*}   value  The actual value we store.
+   * @property {*[]} keySet The set of keys we hashed.
    *
    * @private
    * @readonly
@@ -543,7 +543,7 @@ describe("JSDocGenerator for sets", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the values of the collection.
    *
-   * @returns {Iterator<void>}
+   * @returns {Iterator<*>}
    * @public
    */`);
     });
@@ -555,7 +555,7 @@ describe("JSDocGenerator for sets", () => {
    *
    * @param {function} unpacker The transforming function for values.
    *
-   * @returns {Iterator<void>}
+   * @returns {Iterator<*>}
    * @private
    */`);
     });
@@ -585,7 +585,7 @@ describe("JSDocGenerator for sets", () => {
       expect(generated).toEqual(`  /**
    * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.
    *
-   * @type {Map<hash, void[]>}
+   * @type {Map<hash, *[]>}
    *
    * @private
    * @readonly
@@ -596,8 +596,8 @@ describe("JSDocGenerator for sets", () => {
       const generated = generator.buildBlock("valueAndKeySet", 2);
       expect(generated).toEqual(`  /**
    * @typedef SoloStrongSet~valueAndKeySet
-   * @property {void}   value  The actual value we store.
-   * @property {void[]} keySet The set of keys we hashed.
+   * @property {*}   value  The actual value we store.
+   * @property {*[]} keySet The set of keys we hashed.
    *
    * @private
    * @readonly
@@ -716,7 +716,7 @@ describe("JSDocGenerator for sets", () => {
    *
    * @param {function} unpacker The transforming function for values.
    *
-   * @returns {Iterator<void>}
+   * @returns {Iterator<*>}
    * @private
    */`);
     });
