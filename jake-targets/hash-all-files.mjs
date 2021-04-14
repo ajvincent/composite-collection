@@ -17,6 +17,10 @@ import getAllFiles from 'get-all-files';
    test passes, and we can copy all the files subject to the hash back to
    the original repository checkout for review.
 
+   This is like mathematical induction, proving f(k) = f(1) for k >= 1.
+   f(1) builds stage 2, and f(2) builds stage 3.  If f(2) === f(1), we have
+   our proof.
+
    Overkill?  Maybe.  The hashing is fast, though, and so is the build/test
    process for one stage.  So with temporary directories and our Jakefile,
    it really shouldn't be too expensive to build out.
