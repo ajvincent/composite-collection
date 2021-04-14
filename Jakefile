@@ -143,6 +143,7 @@ task(
     "exports/KeyHasher.mjs",
     "exports/WeakKey-WeakMap.mjs",
     "exports/WeakKey-WeakRef.mjs",
+    "exports/StrongStrongMap.mjs",
   ]
 );
 
@@ -150,4 +151,8 @@ copyFileTasks("source/exports", "exports", [
   "KeyHasher.mjs",
   "WeakKey-WeakMap.mjs",
   "WeakKey-WeakRef.mjs",
+]);
+
+generateCollectionTasks("source/exports", "exports", [
+  "StrongStrongMap.mjs",
 ]);

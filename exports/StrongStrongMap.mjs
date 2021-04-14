@@ -1,4 +1,4 @@
-import KeyHasher from "composite-collection/KeyHasher";
+import KeyHasher from "./KeyHasher.mjs";
 
 export default class StrongStrongMap {
   constructor() {
@@ -14,8 +14,8 @@ export default class StrongStrongMap {
 
     /**
      * @typedef StrongStrongMap~valueAndKeySet
-     * @property {void}   value  The actual value we store.
-     * @property {void[]} keySet The set of keys we hashed.
+     * @property {*}   value  The actual value we store.
+     * @property {*[]} keySet The set of keys we hashed.
      *
      * @private
      * @readonly
@@ -23,12 +23,14 @@ export default class StrongStrongMap {
 
     /**
      * @type {KeyHasher}
+     * @private
+     * @readonly
      */
     this.__hasher__ = new KeyHasher(["key1", "key2"]);
   }
 
   /**
-   * The number of elements in this map.
+   * The number of elements in this collection.
    *
    * @public
    * @readonly
@@ -38,7 +40,7 @@ export default class StrongStrongMap {
   }
 
   /**
-   * Clear the map.
+   * Clear the collection.
    *
    * @public
    */
@@ -47,10 +49,10 @@ export default class StrongStrongMap {
   }
 
   /**
-   * Delete an element from the map by the given key sequence.
+   * Delete an element from the collection by the given key sequence.
    *
-   * @param {void} key1 
-   * @param {void} key2 
+   * @param {*} key1 
+   * @param {*} key2 
    *
    * @returns {boolean} True if we found the value and deleted it.
    * @public
@@ -61,9 +63,9 @@ export default class StrongStrongMap {
   }
 
   /**
-   * Return a new iterator for the key-value pairs of the map.
+   * Return a new iterator for the key-value pairs of the collection.
    *
-   * @returns {Iterator<key1, key2, value>}
+   * @returns {Iterator<[key1, key2, value]>}
    * @public
    */
   entries() {
@@ -75,7 +77,7 @@ export default class StrongStrongMap {
   /**
    * Iterate over the keys and values.
    *
-   * @param {StrongStrongMap~ForEachCallback} callback A function to invoke for each key set.
+   * @param {StrongStrongMap~ForEachCallback} callback A function to invoke for each iteration.
    *
    * @public
    */
@@ -90,19 +92,20 @@ export default class StrongStrongMap {
   /**
    * @callback StrongStrongMap~ForEachCallback
    *
-   * @param {void}            key1    
-   * @param {void}            key2    
-   * @param {StrongStrongMap} __map__ The map.
+   * @param {*}               value          The value.
+   * @param {*}               key1           
+   * @param {*}               key2           
+   * @param {StrongStrongMap} __collection__ This collection.
    *
    */
 
   /**
    * Get a value for a key set.
    *
-   * @param {void} key1 
-   * @param {void} key2 
+   * @param {*} key1 
+   * @param {*} key2 
    *
-   * @returns {void?} The value.  Undefined if it isn't in the map.
+   * @returns {*?} The value.  Undefined if it isn't in the collection.
    * @public
    */
   get(key1, key2) {
@@ -112,12 +115,12 @@ export default class StrongStrongMap {
   }
 
   /**
-   * Report if the map has a value for a key set.
+   * Report if the collection has a value for a key set.
    *
-   * @param {void} key1 
-   * @param {void} key2 
+   * @param {*} key1 
+   * @param {*} key2 
    *
-   * @returns {boolean} True if the key set refers to a value in the map.
+   * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
   has(key1, key2) {
@@ -126,9 +129,9 @@ export default class StrongStrongMap {
   }
 
   /**
-   * Return a new iterator for the key sets of the map.
+   * Return a new iterator for the key sets of the collection.
    *
-   * @returns {Iterator<key1, key2>}
+   * @returns {Iterator<[key1, key2]>}
    * @public
    */
   keys() {
@@ -140,11 +143,11 @@ export default class StrongStrongMap {
   /**
    * Set a value for a key set.
    *
-   * @param {void} key1  
-   * @param {void} key2  
-   * @param {void} value The value to set.
+   * @param {*} key1  
+   * @param {*} key2  
+   * @param {*} value The value.
    *
-   * @returns {StrongStrongMap} This map.
+   * @returns {StrongStrongMap} This collection.
    * @public
    */
   set(key1, key2, value) {
@@ -160,9 +163,9 @@ export default class StrongStrongMap {
   }
 
   /**
-   * Return a new iterator for the values of the map.
+   * Return a new iterator for the values of the collection.
    *
-   * @returns {Iterator<void>}
+   * @returns {Iterator<*>}
    * @public
    */
   values() {
@@ -176,7 +179,7 @@ export default class StrongStrongMap {
    *
    * @param {function} unpacker The transforming function for values.
    *
-   * @returns {Iterator<void>}
+   * @returns {Iterator<*>}
    * @private
    */
   __wrapIterator__(unpacker) {
@@ -195,16 +198,6 @@ export default class StrongStrongMap {
     }
   }
 }
-
-/**
- * Validate the arguments.
- *
- * @param {void} key1 
- * @param {void} key2 
- *
- * @private
- */
-
 
 StrongStrongMap[Symbol.iterator] = function() {
   return this.entries();
