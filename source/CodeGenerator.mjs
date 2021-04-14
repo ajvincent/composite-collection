@@ -14,6 +14,12 @@ import getAllFiles from 'get-all-files';
 import beautify from "js-beautify";
 
 /**
+ * @typedef RuntimeOptions
+ * @property {boolean|string} showSource True to show the relative path to the source file.
+ *                                       A string for an absolute URL.
+ */
+
+/**
  * @type {Map<string, string>}
  * @package
  */
@@ -50,7 +56,7 @@ export default class CodeGenerator extends CompletionPromise {
   /** @type {string} @readonly @private */
   #targetPath;
 
-  /** @type {object} @readonly @private */
+  /** @type {RuntimeOptions} @readonly @private */
   #runtimeOptions;
 
   /** @type {string} @private */
@@ -69,7 +75,7 @@ export default class CodeGenerator extends CompletionPromise {
    * @param {CollectionConfiguration} configuration  The configuration to use.
    * @param {string}                  targetPath     The directory to write the collection to.
    * @param {Promise}                 startPromise   Where we should attach our asynchronous operations to.
-   * @param {object}                  runtimeOptions Flags from an owner which may override configurations.
+   * @param {RuntimeOptions}          runtimeOptions Flags from an owner which may override configurations.
    */
   constructor(configuration, targetPath, startPromise, runtimeOptions = {}) {
     super(startPromise, () => this.buildCollection());
