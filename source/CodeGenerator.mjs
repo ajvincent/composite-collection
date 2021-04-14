@@ -126,9 +126,6 @@ ${validator}
         this.#defines.set("validateArguments", vSource);
         this.#defines.set("invokeValidate", true);
       }
-      else {
-        this.#defines.set("validateArguments", "");
-      }
     }
 
     {
@@ -140,20 +137,23 @@ ${validator}
   }
 
   #buildDocGenerator() {
-    this.#docGenerator = new JSDocGenerator(this.#configurationData.className, false);
+    this.#docGenerator = new JSDocGenerator(
+      this.#configurationData.className,
+      !this.#configurationData.collectionTemplate.endsWith("Map")
+    );
 
     this.#configurationData.parameterToTypeMap.forEach(typeData => {
       this.#docGenerator.addParameter(typeData.argumentType, typeData.argumentName, typeData.description);
     });
 
-    if (this.#configurationData.valueType) {
+    if (this.#configurationData.valueType && !this.#configurationData.parameterToTypeMap.has("value")) {
       const typeData = this.#configurationData.valueType;
       this.#docGenerator.addParameter(typeData.argumentType, typeData.argumentName, typeData.description);
     }
   }
 
   #generateSource() {
-    const generator = TemplateGenerators.get(this.#configurationData.collectionType);
+    const generator = TemplateGenerators.get(this.#configurationData.collectionTemplate);
 
     this.#generatedCode = beautify(
       generator(this.#defines, this.#docGenerator),

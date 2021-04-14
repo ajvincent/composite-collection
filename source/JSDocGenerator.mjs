@@ -54,11 +54,20 @@ class ParamBlock {
 export default class JSDocGenerator {
   /** @type {Map<string, MethodTemplate>} @readonly @private */
   #methodTemplates = new Map([
-    ["rootContainer", {
+    ["rootContainerMap", {
       description: "The root map holding keys and values.",
       includeArgs: "none",
       headers: [
         "@type {Map<string, __className__~valueAndKeySet>}",
+      ],
+      footers: ["@private", "@readonly"],
+    }],
+
+    ["rootContainerSet", {
+      description: "Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.",
+      includeArgs: "none",
+      headers: [
+        "@type {Map<hash, void[]>}",
       ],
       footers: ["@private", "@readonly"],
     }],
@@ -75,19 +84,19 @@ export default class JSDocGenerator {
     }],
 
     ["getSize", {
-      description: "The number of elements in this map.",
+      description: "The number of elements in this collection.",
       includeArgs: "none",
       footers: ["@public", "@readonly"],
     }],
 
     ["clear", {
-      description: "Clear the map.",
+      description: "Clear the collection.",
       includeArgs: "none",
       footers: ["@public"],
     }],
 
     ["delete", {
-      description: "Delete an element from the map by the given key sequence.",
+      description: "Delete an element from the collection by the given key sequence.",
       includeArgs: "excludeValue",
       returnType: "boolean",
       returnDescription: "True if we found the value and deleted it.",
@@ -95,26 +104,46 @@ export default class JSDocGenerator {
     }],
 
     ["entries", {
-      description: "Return a new iterator for the key-value pairs of the map.",
+      description: "Return a new iterator for the key-value pairs of the collection.",
       includeArgs: "none",
       returnType: "Iterator<__argList__, value>",
       footers: ["@public"],
     }],
 
-    ["forEach", {
+    ["forEachMap", {
       description: "Iterate over the keys and values.",
       paramHeaders: [
-        ["__className__~ForEachCallback", "callback", "A function to invoke for each key set."]
+        ["__className__~ForEachCallback", "callback", "A function to invoke for each iteration."]
       ],
       includeArgs: "none",
       footers: ["@public"],
     }],
 
-    ["forEachCallback", {
+    ["forEachSet", {
+      description: "Iterate over the keys.",
+      paramHeaders: [
+        ["__className__~ForEachCallback", "callback", "A function to invoke for each iteration."]
+      ],
+      includeArgs: "none",
+      footers: ["@public"],
+    }],
+
+    ["forEachCallbackMap", {
       description: "@callback __className__~ForEachCallback",
       includeArgs: "excludeValue",
+      paramHeaders: [
+        ["__valueType__", "value", "__valueDesc__"],
+      ],
       paramFooters: [
-        ["__className__", "__map__", "The map."],
+        ["__className__", "__collection__", "This collection."]
+      ],
+    }],
+
+    ["forEachCallbackSet", {
+      description: "@callback __className__~ForEachCallback",
+      includeArgs: "all",
+      paramFooters: [
+        ["__className__", "__collection__", "This collection."]
       ],
     }],
 
@@ -122,20 +151,20 @@ export default class JSDocGenerator {
       description: "Get a value for a key set.",
       includeArgs: "excludeValue",
       returnType: "__valueType__?",
-      returnDescription: "__valueDesc__  Undefined if it isn't in the map.",
+      returnDescription: "__valueDesc__  Undefined if it isn't in the collection.",
       footers: ["@public"],
     }],
 
     ["has", {
-      description: "Report if the map has a value for a key set.",
+      description: "Report if the collection has a value for a key set.",
       includeArgs: "excludeValue",
       returnType: "boolean",
-      returnDescription: "True if the key set refers to a value in the map.",
+      returnDescription: "True if the key set refers to a value in the collection.",
       footers: ["@public"],
     }],
 
     ["keys", {
-      description: "Return a new iterator for the key sets of the map.",
+      description: "Return a new iterator for the key sets of the collection.",
       includeArgs: "none",
       returnType: "Iterator<__argList__>",
       footers: ["@public"],
@@ -145,20 +174,20 @@ export default class JSDocGenerator {
       description: "Set a value for a key set.",
       includeArgs: "all",
       returnType: "__className__",
-      returnDescription: "This map.",
+      returnDescription: "This collection.",
       footers: ["@public"],
     }],
 
     ["add", {
-      description: "Add a value for this key set.",
-      includeArgs: "all",
+      description: "Add a key set to this collection.",
+      includeArgs: "excludeValue",
       returnType: "__className__",
-      returnDescription: "This set.",
+      returnDescription: "This collection.",
       footers: ["@public"],
     }],
 
     ["values", {
-      description: "Return a new iterator for the values of the map.",
+      description: "Return a new iterator for the values of the collection.",
       includeArgs: "none",
       returnType: "Iterator<__valueType__>",
       footers: ["@public"],
@@ -270,10 +299,6 @@ export default class JSDocGenerator {
         [/__argList__/g, argList.join(", ")],
       ]
 
-      if (this.#isSet) {
-        regExpSequence.unshift([/map/g, "set"], [/Map/g, "Set"]);
-      }
-
       keyMap = new Map(regExpSequence);
     }
 
@@ -340,6 +365,9 @@ export default class JSDocGenerator {
    * @public
    */
   buildBlock(templateName, baseIndent) {
+    if (!this.#methodTemplates.has(templateName))
+      throw new Error("Missing template: " + templateName);
+
     this.#replaceAllKeys();
 
     const lines = ["/**"];
@@ -365,15 +393,16 @@ export default class JSDocGenerator {
       if (template.includeArgs !== "none") {
         let valueFound = false;
         this.#params.forEach(param => {
-          if (param.name === "value")
+          if (!this.#isSet && param.name === "value") {
             valueFound = true;
-          if ((param.name === "value") && (template.includeArgs === "excludeValue"))
-            return;
+            if ((template.includeArgs === "excludeValue"))
+              return;
+          }
           paramBlock.add(param.type || "void", param.name, param.description || "");
         });
 
-        if (!valueFound && (template.includeArgs !== "excludeValue"))
-          paramBlock.add("void", "value", "The value to set.")
+        if (!valueFound && !this.#isSet && (template.includeArgs !== "excludeValue"))
+          paramBlock.add("void", "value", "The value.")
       }
 
       if (Array.isArray(template.paramFooters)) {

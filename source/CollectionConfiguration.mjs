@@ -55,7 +55,13 @@ class CollectionType {
     /** @public @readonly @type {string} */
     this.argumentName   = argumentName;
 
-    /** @public @readonly @type {string} */
+    /**
+     * @public
+     * @readonly
+     * @type {string}
+     *
+     * No one's using this, but it may be useful for debugging.
+     */
     this.mapOrSetType   = mapOrSetType;
 
     /** @public @readonly @type {string} */
@@ -91,7 +97,7 @@ export default class CollectionConfiguration {
   #className;
 
   /** @type {string} @readonly */
-  #collectionType;
+  #collectionTemplate;
 
   /** @type {Map<identifier, CollectionType>} @readonly */
   #parameterToTypeMap = new Map();
@@ -196,8 +202,6 @@ export default class CollectionConfiguration {
    * @param {string}  outerType One of "Map", "WeakMap", "Set", "WeakSet".
    * @param {string?} innerType One of "Set", "WeakSet", or null.
    * @constructor
-   *
-   * @note depending on how this develops, I may add a collectionType string argument.
    */
   constructor(className, outerType, innerType = null) {
     this.#identifierArg("className", className);
@@ -208,17 +212,17 @@ export default class CollectionConfiguration {
 
     switch (outerType) {
       case "Map":
-        this.#collectionType = "Strong/Map";
+        this.#collectionTemplate = "Strong/Map";
         break;
       case "WeakMap":
-        this.#collectionType = "Weak/Map";
+        this.#collectionTemplate = "Weak/Map";
         break;
 
       case "Set":
-        this.#collectionType = "Strong/Set";
+        this.#collectionTemplate = "Strong/Set";
         break;
       case "WeakSet":
-        this.#collectionType = "Weak/Set";
+        this.#collectionTemplate = "Weak/Set";
         break;
 
       default:
@@ -231,12 +235,12 @@ export default class CollectionConfiguration {
       case "Set":
         if (outerType.endsWith("Set"))
           throw new Error("outerType must be a Map or WeakMap when an innerType is not null!");
-        this.#collectionType += "OfStrongSets";
+        this.#collectionTemplate += "OfStrongSets";
         break;
       case "WeakSet":
         if (outerType.endsWith("Set"))
           throw new Error("outerType must be a Map or WeakMap when an innerType is not null!");
-        this.#collectionType += "OfWeakSets";
+        this.#collectionTemplate += "OfWeakSets";
         break;
       default:
         throw new Error("innerType must be a WeakSet, Set, or null!");
@@ -247,7 +251,7 @@ export default class CollectionConfiguration {
       this.#doStateTransition("startMap");
     }
     else if (outerType.endsWith("Set")) {
-      this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Map");
+      this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Set");
       this.#doStateTransition("startSet");
     }
     else
@@ -276,7 +280,7 @@ export default class CollectionConfiguration {
     return this.#catchErrorState(() => {
       return {
         className: this.#className,
-        collectionType: this.#collectionType,
+        collectionTemplate: this.#collectionTemplate,
         parameterToTypeMap: new Map(this.#parameterToTypeMap),
         weakMapKeys: this.#weakMapKeys.slice(),
         strongMapKeys: this.#strongMapKeys.slice(),
@@ -300,18 +304,14 @@ export default class CollectionConfiguration {
         this.#throwIfLocked();
         throw new Error("You must define map keys before calling .addSetElement(), .setValueFilter() or .lock()!");
       }
-  
+
       const {
         argumentType = null,
         description = null,
-        argumentValidator = null
+        argumentValidator = null,
       } = options;
 
-      this.#identifierArg("argumentName", argumentName);
-      if (argumentType !== null)
-        this.#jsdocField("argumentType", argumentType, true);
-      if (description !== null)
-        this.#jsdocField("description",  description, true);
+      this.#validateKey(argumentName, holdWeak, argumentType, description, argumentValidator);
 
       const validatorSource = (argumentValidator !== null) ?
         this.#callbackArg(
@@ -322,23 +322,6 @@ export default class CollectionConfiguration {
         ) :
         null;
 
-      if (this.#parameterToTypeMap.has(argumentName))
-        throw new Error(`Argument name "${argumentName}" has already been defined!`);
-
-      if (argumentName === "value")
-        throw new Error(`The argument name "value" is reserved!`);
-
-      /* A little explanation is in order.  Simply put, the compiler will need a set of variable names it can define
-      which should only minimally reduce the set of variable names the user may need.  A double underscore at the
-      start and the end of the argument name isn't too much to ask - and why would you have that for a function
-      argument name anyway?
-      */
-      if (/^__.*__$/.test(argumentName))
-        throw new Error("This module reserves variable names starting and ending with a double underscore for itself.");
-
-      if (typeof holdWeak !== "boolean")
-        throw new Error("holdWeak must be true or false!");
-
       const collectionType = new CollectionType(
         argumentName,
         holdWeak ? "WeakMap" : "Map",
@@ -347,12 +330,92 @@ export default class CollectionConfiguration {
         validatorSource
       );
       this.#parameterToTypeMap.set(argumentName, collectionType);
-  
+
       if (holdWeak)
         this.#weakMapKeys.push(argumentName);
       else
         this.#strongMapKeys.push(argumentName);
     });
+  }
+
+  /**
+   * @typedef CollectionTypeOptions
+   * @property {string?}   argumentType      A JSDoc-printable type for the argument.
+   * @property {string?}   description       A JSDoc-printable description.
+   * @property {Function?} argumentValidator A method to use for testing the argument.
+   */
+   addSetKey(argumentName, holdWeak, options = {}) {
+    return this.#catchErrorState(() => {
+      if (!this.#doStateTransition("setElements")) {
+        this.#throwIfLocked();
+        throw new Error("You must define set keys before calling .setValueFilter() or .lock()!");
+      }
+
+      const {
+        argumentType = null,
+        description = null,
+        argumentValidator = null,
+      } = options;
+
+      this.#validateKey(argumentName, holdWeak, argumentType, description, argumentValidator);
+
+      const validatorSource = (argumentValidator !== null) ?
+        this.#callbackArg(
+          "argumentValidator",
+          argumentValidator,
+          argumentName,
+          true
+        ) :
+        null;
+
+      const collectionType = new CollectionType(
+        argumentName,
+        holdWeak ? "WeakSet" : "Set",
+        argumentType,
+        description,
+        validatorSource
+      );
+      this.#parameterToTypeMap.set(argumentName, collectionType);
+
+      if (holdWeak)
+        this.#weakMapKeys.push(argumentName);
+      else
+        this.#strongMapKeys.push(argumentName);
+    });
+  }
+
+  #validateKey(argumentName, holdWeak, argumentType, description, argumentValidator) {
+    this.#identifierArg("argumentName", argumentName);
+    if (argumentType !== null)
+      this.#jsdocField("argumentType", argumentType, true);
+    if (description !== null)
+      this.#jsdocField("description",  description, true);
+
+    if (argumentValidator !== null) {
+      this.#callbackArg(
+        "argumentValidator",
+        argumentValidator,
+        argumentName,
+        true
+      );
+    }
+
+    if (this.#parameterToTypeMap.has(argumentName))
+      throw new Error(`Argument name "${argumentName}" has already been defined!`);
+
+    if (argumentName === "value")
+      throw new Error(`The argument name "value" is reserved!`);
+
+    /* A little explanation is in order.  Simply put, the compiler will need a set of variable names it can define
+    which should only minimally reduce the set of variable names the user may need.  A double underscore at the
+    start and the end of the argument name isn't too much to ask - and why would you have that for a function
+    argument name anyway?
+    */
+    if (/^__.*__$/.test(argumentName))
+      throw new Error("This module reserves variable names starting and ending with a double underscore for itself.");
+
+    if (typeof holdWeak !== "boolean")
+      throw new Error("holdWeak must be true or false!");
   }
 
   /**
@@ -381,6 +444,14 @@ export default class CollectionConfiguration {
       this.#valueCollectionType = new CollectionType(
         "value", "", type, description, validatorSource
       );
+
+      if (this.#collectionTemplate.includes("Set")) {
+        const holdWeak = /Weak\/?Set/.test(this.#collectionTemplate);
+        if (holdWeak)
+          this.#weakMapKeys.push("value");
+        else
+          this.#strongMapKeys.push("value");
+      }
     });
   }
 
@@ -388,6 +459,9 @@ export default class CollectionConfiguration {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("locked"))
         throw new Error("You must define a map key or set element first!");
+
+      if (this.#collectionTemplate.includes("Set"))
+        this.#defineSetValue();
     });
   }
 
@@ -395,6 +469,23 @@ export default class CollectionConfiguration {
     if (this.#currentState === "locked") {
       throw new Error("You have already locked this configuration!");
     }
+  }
+
+  #defineSetValue() {
+    if (this.#valueCollectionType)
+      return;
+
+    const holdWeak = /Weak\/?Set/.test(this.#collectionTemplate);
+    this.#valueCollectionType = new CollectionType(
+      "value",
+      holdWeak ? "WeakMap" : "Map"
+    );
+    this.#parameterToTypeMap.set("value", this.#valueCollectionType, "The value.");
+
+    if (holdWeak)
+      this.#weakMapKeys.push("value");
+    else
+      this.#strongMapKeys.push("value");
   }
 }
 Object.freeze(CollectionConfiguration);

@@ -20,13 +20,15 @@ export default function preprocess(defines, docs) {
 
 export default class ${defines.get("className")} {
   constructor() {
-${docs.buildBlock("rootContainer", 4)}
+${docs.buildBlock("rootContainerMap", 4)}
     this.__root__ = new Map;
 
 ${docs.buildBlock("valueAndKeySet", 4)}
 
     /**
      * @type {KeyHasher}
+     * @private
+     * @readonly
      */
     this.__hasher__ = new KeyHasher(${defines.get("argNameList")});
   }
@@ -54,7 +56,7 @@ ${docs.buildBlock("entries", 2)}
     );
   }
 
-${docs.buildBlock("forEach", 2)}
+${docs.buildBlock("forEachMap", 2)}
   forEach(callback, thisArg) {
     this.__root__.forEach((valueAndKeySet, key, root) => {
       const args = valueAndKeySet.keySet.concat(this);
@@ -63,7 +65,7 @@ ${docs.buildBlock("forEach", 2)}
     });
   }
 
-${docs.buildBlock("forEachCallback", 2)}
+${docs.buildBlock("forEachCallbackMap", 2)}
 
 ${docs.buildBlock("get", 2)}
   get(${defines.get("argList")}) {${invokeValidate}

@@ -1,4 +1,4 @@
-import KeyHasher from "composite-collection/KeyHasher";
+import KeyHasher from "./KeyHasher.mjs";
 
 export default class __className__ {
   constructor() {
