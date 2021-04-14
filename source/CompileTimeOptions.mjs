@@ -9,8 +9,10 @@ export default class RuntimeOptions {
   constructor(properties) {
     this.sourceFile       = validString(properties.sourceFile);
     this.sourcesDirectory = validString(properties.sourcesDirectory);
+
     this.licenseText      = validString(properties.licenseText);
     this.author           = validString(properties.author);
+    this.copyright        = validString(properties.copyright);
   }
 }
 Object.freeze(RuntimeOptions);

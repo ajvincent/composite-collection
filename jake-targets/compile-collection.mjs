@@ -17,8 +17,27 @@ parser.add_argument("config", {
 parser.add_argument("target", {
   help: "The target directory."
 });
+parser.add_argument("--author", {
+  help: "Insert an @author tag into the prologue JSDoc."
+});
+parser.add_argument("--copyright", {
+  help: "Insert an @copyright tag into the prologue JSDoc."
+});
+parser.add_argument("--mpl-license", {
+  help: "Prepend the MPL license boilerplate to the file.",
+  action: "store_true",
+});
 
 const Arguments = parser.parse_args();
+
+const MPL_BOILERPLATE = `
+/**
+ * @license
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+`.trim();
 
 // Import the configuration module.
 const sourceFileURL = url.pathToFileURL(path.join(process.cwd(), Arguments.config));

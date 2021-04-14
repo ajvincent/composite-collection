@@ -122,6 +122,8 @@ export default class CodeGenerator extends CompletionPromise {
   this.#compileOptions.sourceFile ? ` * Source: ${this.#compileOptions.sourceFile}\n` : ""
 }${
   this.#compileOptions.author ? ` * @author ${this.#compileOptions.author}\n` : ""
+}${
+  this.#compileOptions.copyright ? ` * @copyright ${this.#compileOptions.copyright}\n` : ""
 } */
 `;
     const prologue = [
