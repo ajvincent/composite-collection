@@ -7,17 +7,12 @@
 import CollectionConfiguration from "./CollectionConfiguration.mjs";
 import CompletionPromise from "./CompletionPromise.mjs";
 import JSDocGenerator from "./JSDocGenerator.mjs";
+import CompileTimeOptions from "./CompileTimeOptions.mjs";
 
 import fs from "fs/promises";
 import { pathToFileURL } from "url";
 import getAllFiles from 'get-all-files';
 import beautify from "js-beautify";
-
-/**
- * @typedef RuntimeOptions
- * @property {boolean|string} showSource True to show the relative path to the source file.
- *                                       A string for an absolute URL.
- */
 
 /**
  * @type {Map<string, string>}
@@ -57,7 +52,7 @@ export default class CodeGenerator extends CompletionPromise {
   #targetPath;
 
   /** @type {RuntimeOptions} @readonly @private */
-  #runtimeOptions;
+  #compileOptions;
 
   /** @type {string} @private */
   #status = "not started yet";
@@ -75,9 +70,9 @@ export default class CodeGenerator extends CompletionPromise {
    * @param {CollectionConfiguration} configuration  The configuration to use.
    * @param {string}                  targetPath     The directory to write the collection to.
    * @param {Promise}                 startPromise   Where we should attach our asynchronous operations to.
-   * @param {RuntimeOptions}          runtimeOptions Flags from an owner which may override configurations.
+   * @param {CompileTimeOptions}      compileOptions Flags from an owner which may override configurations.
    */
-  constructor(configuration, targetPath, startPromise, runtimeOptions = {}) {
+  constructor(configuration, targetPath, startPromise, compileOptions) {
     super(startPromise, () => this.buildCollection());
 
     if (!(configuration instanceof CollectionConfiguration))
@@ -90,7 +85,7 @@ export default class CodeGenerator extends CompletionPromise {
     configuration.lock(); // this may throw, but if so, it's good that it does so.
     this.#configurationData = configuration.cloneData();
     this.#targetPath = targetPath;
-    this.#runtimeOptions = runtimeOptions;
+    this.#compileOptions = (compileOptions instanceof CompileTimeOptions) ? compileOptions : {};
 
     this.completionPromise.catch(
       exn => this.#status = "aborted"
@@ -113,6 +108,28 @@ export default class CodeGenerator extends CompletionPromise {
 
     this.#status = "completed";
     return this.#configurationData.className;
+  }
+
+  #filePrologue() {
+
+    let generatedCodeNotice =
+      `
+/**
+ * This is generated code.  Do not edit.
+ *
+ * Generator: https://github.com/ajvincent/composite-collection/
+ ${
+  this.#compileOptions.sourceFile ? ` * Source: ${this.#compileOptions.sourceFile}\n` : ""
+}${
+  this.#compileOptions.author ? ` * @author ${this.#compileOptions.author}\n` : ""
+} */
+`;
+    const prologue = [
+      this.#compileOptions.licenseText,
+      generatedCodeNotice.trim(),
+    ];
+
+    return prologue.filter(Boolean).join("\n\n");
   }
 
   #buildDefines() {
@@ -166,8 +183,13 @@ ${validator}
   #generateSource() {
     const generator = TemplateGenerators.get(this.#configurationData.collectionTemplate);
 
-    this.#generatedCode = beautify(
+    this.#generatedCode = [
+      this.#filePrologue(),
       generator(this.#defines, this.#docGenerator),
+    ].flat(Infinity).filter(Boolean).join("\n\n");
+
+    this.#generatedCode = beautify(
+      this.#generatedCode,
       {
         "indent_size": 2,
         "indent_char": " ",

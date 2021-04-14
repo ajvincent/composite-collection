@@ -1,3 +1,9 @@
+/**
+ * This is generated code.  Do not edit.
+ *
+ * Generator: https://github.com/ajvincent/composite-collection/
+ */
+
 import KeyHasher from "./KeyHasher.mjs";
 
 export default class StrongStrongMap {
