@@ -50,6 +50,9 @@ export default class CodeGenerator extends CompletionPromise {
   /** @type {string} @readonly @private */
   #targetPath;
 
+  /** @type {object} @readonly @private */
+  #runtimeOptions;
+
   /** @type {string} @private */
   #status = "not started yet";
 
@@ -63,11 +66,12 @@ export default class CodeGenerator extends CompletionPromise {
   #generatedCode = "";
 
   /**
-   * @param {CollectionConfiguration} configuration The configuration to use.
-   * @param {string}                  targetPath
-   * @param {Promise}                 startPromise
+   * @param {CollectionConfiguration} configuration  The configuration to use.
+   * @param {string}                  targetPath     The directory to write the collection to.
+   * @param {Promise}                 startPromise   Where we should attach our asynchronous operations to.
+   * @param {object}                  runtimeOptions Flags from an owner which may override configurations.
    */
-  constructor(configuration, targetPath, startPromise) {
+  constructor(configuration, targetPath, startPromise, runtimeOptions = {}) {
     super(startPromise, () => this.buildCollection());
 
     if (!(configuration instanceof CollectionConfiguration))
@@ -80,6 +84,7 @@ export default class CodeGenerator extends CompletionPromise {
     configuration.lock(); // this may throw, but if so, it's good that it does so.
     this.#configurationData = configuration.cloneData();
     this.#targetPath = targetPath;
+    this.#runtimeOptions = runtimeOptions;
 
     this.completionPromise.catch(
       exn => this.#status = "aborted"
