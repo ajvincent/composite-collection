@@ -37,8 +37,12 @@ ${docs.buildBlock("getSize", 2)}
   }
 
 ${docs.buildBlock("add", 4)}
-  add(${defines.get("argList")}) {
-    const hash = this.__hasher__.buildHash(${defines.get("argList")});
+  add(${defines.get("argList")}) {${
+    invokeValidate
+  }${
+    defines.get("validateValue")
+  }
+    const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
     this.__root__.set(hash, Object.freeze([${defines.get("argList")}]));
     return this;
   }
@@ -50,14 +54,14 @@ ${docs.buildBlock("clear", 4)}
 
 ${docs.buildBlock("delete", 2)}
   delete(${defines.get("argList")}) {
-    const hash = this.__hasher__.buildHash(${defines.get("argList")});
+    const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
     return this.__root__.delete(hash);
   }
 
 ${docs.buildBlock("forEachSet", 2)}
   forEach(__callback__, __thisArg__) {
     this.__root__.forEach(valueSet => {
-      __callback__.apply(__thisArg__, [valueSet.concat(this)]);
+      __callback__.apply(__thisArg__, valueSet.concat(this));
     });
   }
 
@@ -65,7 +69,7 @@ ${docs.buildBlock("forEachCallbackSet", 2)}
 
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {
-    const hash = this.__hasher__.buildHash(${defines.get("argList")});
+    const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
     return this.__root__.has(hash);
   }
 

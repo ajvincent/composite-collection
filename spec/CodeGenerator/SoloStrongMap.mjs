@@ -87,7 +87,7 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
 
     {
       const testIterator = testMap.entries();
-      const refIterator  = refMap.entries()
+      const refIterator  = refMap.entries();
       expect(testIterator.next()).toEqual(refIterator.next());
       expect(testIterator.next()).toEqual(refIterator.next());
       expect(testIterator.next()).toEqual(refIterator.next());

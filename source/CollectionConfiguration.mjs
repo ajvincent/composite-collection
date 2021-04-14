@@ -399,7 +399,7 @@ export default class CollectionConfiguration {
     if (this.#parameterToTypeMap.has(argumentName))
       throw new Error(`Argument name "${argumentName}" has already been defined!`);
 
-    if (argumentName === "value")
+    if ((argumentName === "value") && !this.#collectionTemplate.includes("Set"))
       throw new Error(`The argument name "value" is reserved!`);
 
     /* A little explanation is in order.  Simply put, the compiler will need a set of variable names it can define
@@ -455,9 +455,6 @@ export default class CollectionConfiguration {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("locked"))
         throw new Error("You must define a map key or set element first!");
-
-      if (this.#collectionTemplate.includes("Set"))
-        this.#defineSetValue();
     });
   }
 
@@ -465,23 +462,6 @@ export default class CollectionConfiguration {
     if (this.#currentState === "locked") {
       throw new Error("You have already locked this configuration!");
     }
-  }
-
-  #defineSetValue() {
-    if (this.#valueCollectionType)
-      return;
-
-    const holdWeak = /Weak\/?Set/.test(this.#collectionTemplate);
-    this.#valueCollectionType = new CollectionType(
-      "value",
-      holdWeak ? "WeakMap" : "Map"
-    );
-    this.#parameterToTypeMap.set("value", this.#valueCollectionType, "The value.");
-
-    if (holdWeak)
-      this.#weakMapKeys.push("value");
-    else
-      this.#strongMapKeys.push("value");
   }
 }
 Object.freeze(CollectionConfiguration);

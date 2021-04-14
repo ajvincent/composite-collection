@@ -387,6 +387,12 @@ describe("CollectionConfiguration", () => {
       }
     });
 
+    it(`allows an argument name of "value"`, () => {
+      expect(
+        () => config.addSetKey("value", true, options)
+      ).not.toThrow();
+    });
+
     /* This is an extreme case.  Don't do this in production.
 
     (Who wants a 20-key set in JavaScript, anyway?)
@@ -446,13 +452,6 @@ describe("CollectionConfiguration", () => {
         expect(
           () => config.addSetKey("", true)
         ).toThrowError("argumentName must be a non-empty string!");
-      });
-
-      it(`an argument name of "value"`, () => {
-        args[0] = "value";
-        expect(
-          () => config.addSetKey(...args)
-        ).toThrowError(`The argument name "value" is reserved!`);
       });
 
       it("an argument name starting and ending with two underscores", () => {
