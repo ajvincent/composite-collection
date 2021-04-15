@@ -38,7 +38,7 @@
   "exports": {
     ".": "./source/CodeGenerator.mjs",
     "./Configuration": "./source/CollectionConfiguration.mjs",
-    "./CompleTimeOptions":  "./source/CompileTimeOptions.mjs",
+    "./CompleTimeOptions": "./source/CompileTimeOptions.mjs",
     "./KeyHasher": "./exports/KeyHasher.mjs",
     "./WeakKey-WeakMap": "./exports/WeakKey-WeakMap.mjs",
     "./WeakKey-WeakRef": "./exports/WeakKey-WeakRef.mjs",
