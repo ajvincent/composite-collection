@@ -103,4 +103,23 @@ describe("KeyHasher", () => {
       expect(hasher.buildHash(keyList)).toBe(null);
     });
   });
+
+  it("does not hold strong references to objects", async () => {
+    const finalizer = new FinalizationRegistry(resolver => resolver());
+
+    let promiseArray = [];
+    for (let i = 0; i < 20; i++) {
+      const key = {};
+      hasher.buildHash("row", "column", key);
+      promiseArray.push(new Promise(resolve => {
+        finalizer.register(key, resolve);
+      }));
+    }
+
+    /* At this point, there should be no strong references to the keys we just created. */
+    await new Promise(resolve => setImmediate(resolve));
+    gc();
+
+    await expectAsync(Promise.all(promiseArray)).toBeResolved();
+  });
 });
