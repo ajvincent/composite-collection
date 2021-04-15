@@ -30,7 +30,7 @@ export default class WeakKeyComposer {
     /** @type {WeakSet{object}} */
     this.__hasKeyParts__ = new WeakSet;
 
-    /** @type {Map<string, object} */
+    /** @type {Map<string, Set<*>>} */
     this.__strongKeyToObject__ = new Map;
 
     Object.freeze(this);
@@ -162,7 +162,7 @@ export default class WeakKeyComposer {
   __getStrongKey__(strongArguments) {
     const strongHash = this.__keyHasher__.buildHash(strongArguments);
     if (!this.__strongKeyToObject__.has(strongHash))
-      this.__strongKeyToObject__.set(strongHash, {});
+      this.__strongKeyToObject__.set(strongHash, new Set(strongArguments));
     return this.__strongKeyToObject__.get(strongHash);
   }
 }
