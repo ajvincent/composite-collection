@@ -85,23 +85,15 @@ desc("Testing");
 task(
   "test",
   [
-    "test:unit",
     "test:fixtures",
     "test:all",
   ]
 );
 
 namespace("test", () => {
-  desc("Unit testing");
-  task(
-    "unit",
-    () => runModule("./node_modules/jasmine/bin/jasmine.js", ["spec/_unit/*"])
-  );
-
   task(
     "fixtures",
     [
-      "test:unit",
       "spec/generated/KeyHasher.mjs",
       "spec/generated/SoloStrongMap.mjs",
       "spec/generated/SoloStrongSet.mjs",
