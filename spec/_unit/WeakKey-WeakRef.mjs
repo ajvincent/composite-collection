@@ -1,4 +1,5 @@
 import WeakKeyComposer from "composite-collection/WeakKey-WeakRef";
+import GarbageCollectionMatchers from "../support/garbageCollectionMatchers.mjs";
 
 describe("WeakKey-WeakRef composer", () => {
   it("class is frozen", () => {
@@ -225,107 +226,71 @@ describe("WeakKey-WeakRef composer", () => {
   }
 
   describe("holds references to objects", () => {
-    let composer = null;
-    const finalizer = new FinalizationRegistry(resolver => resolver());
+    let composer;
     const weakExternalKey = {};
+
     beforeEach(() => {
+      jasmine.addAsyncMatchers(GarbageCollectionMatchers);
       composer = new WeakKeyComposer(["weakKey1", "weakKey2"], ["strongKey"]);
     });
 
     // Because of the nature of weak references and weak maps, I have to test this in more than one weak key dimension.
-    it("weakly when defined as the first weak argument", async () => {
-      const promiseArray = [];
-      const methods = ["getKey", "hasKey", "deleteKey"];
-      methods.forEach(methodName => {
-        for (let i = 0; i < 20; i++) {
-          const key = {};
-          composer[methodName]([key, weakExternalKey], ["foo"]);
-          promiseArray.push(new Promise(resolve => {
-            finalizer.register(key, resolve);
-          }));
-        }
+    describe("weakly when defined as the first weak argument in", () => {
+      it(".getKey()", async () => {
+        await expectAsync(
+          key => composer.getKey([key, weakExternalKey], ["foo"])
+        ).toHoldReferencesWeakly();
       });
 
-      /* At this point, there should be no strong references to the keys we just created. */
-      await new Promise(resolve => setImmediate(resolve));
-      gc();
+      it(".hasKey()", async () => {
+        await expectAsync(
+          key => composer.hasKey([key, weakExternalKey], ["foo"])
+        ).toHoldReferencesWeakly();
+      });
 
-      await expectAsync(Promise.all(promiseArray)).toBeResolved();
+      it(".deleteKey()", async () => {
+        await expectAsync(
+          key => composer.deleteKey([key, weakExternalKey], ["foo"])
+        ).toHoldReferencesWeakly();
+      });
     });
 
-    it("weakly when defined as the second weak argument", async () => {
-      const promiseArray = [];
-      const methods = ["getKey", "hasKey", "deleteKey"];
-      methods.forEach(methodName => {
-        for (let i = 0; i < 20; i++) {
-          const key = {};
-          composer[methodName]([weakExternalKey, key], ["foo"]);
-          promiseArray.push(new Promise(resolve => {
-            finalizer.register(key, resolve);
-          }));
-        }
+    describe("weakly when defined as the second weak argument in", () => {
+      it(".getKey()", async () => {
+        await expectAsync(
+          key => composer.getKey([weakExternalKey, key], ["foo"])
+        ).toHoldReferencesWeakly();
       });
 
-      /* At this point, there should be no strong references to the keys we just created. */
-      await new Promise(resolve => setImmediate(resolve));
-      gc();
+      it(".hasKey()", async () => {
+        await expectAsync(
+          key => composer.hasKey([weakExternalKey, key], ["foo"])
+        ).toHoldReferencesWeakly();
+      });
 
-      await expectAsync(Promise.all(promiseArray)).toBeResolved();
+      it(".deleteKey()", async () => {
+        await expectAsync(
+          key => composer.deleteKey([weakExternalKey, key], ["foo"])
+        ).toHoldReferencesWeakly();
+      });
     });
 
     it("strongly when we pass them as strong arguments to .getKey()", async () => {
-      const promiseArray = [];
-
-      for (let i = 0; i < 20; i++) {
-        promiseArray.push(new Promise((resolve, reject) => {
-          // resolve will never be invoked, but it also doubles nicely as a strong key
-          composer.getKey([weakExternalKey, weakExternalKey], [resolve]);
-          finalizer.register(resolve, () => reject("getKey() failed at index " + i));
-        }));
-      }
-
-      /* At this point, calling gc() should force weak keys to be collected.  Abuse it. */
-      for (let i = 0; i < 20; i++) {
-        await new Promise(resolve => setImmediate(resolve));
-        gc();
-      }
-
-      promiseArray.push(new Promise(resolve => setTimeout(resolve, 10)));
-      await expectAsync(Promise.race(promiseArray)).toBeResolved();
+      await expectAsync(
+        key => composer.getKey([weakExternalKey, weakExternalKey], [key])
+      ).toHoldReferencesStrongly();
     });
 
     it("weakly when we pass them as strong arguments to .hasKey()", async () => {
-      const promiseArray = [];
-      for (let i = 0; i < 20; i++) {
-        const key = {};
-        composer.hasKey([weakExternalKey, weakExternalKey], [key]);
-        promiseArray.push(new Promise(
-          resolve => finalizer.register(key, resolve)
-        ));
-      }
-
-      /* At this point, there should be no strong references to the keys we just created. */
-      await new Promise(resolve => setImmediate(resolve));
-      gc();
-
-      await expectAsync(Promise.all(promiseArray)).toBeResolved();
+      await expectAsync(
+        key => composer.hasKey([weakExternalKey, weakExternalKey], [key])
+      ).toHoldReferencesWeakly();
     });
 
     it("weakly when we pass them as strong arguments to .deleteKey()", async () => {
-      const promiseArray = [];
-      for (let i = 0; i < 20; i++) {
-        const key = {};
-        composer.deleteKey([weakExternalKey, weakExternalKey], [key]);
-        promiseArray.push(new Promise(
-          resolve => finalizer.register(key, resolve)
-        ));
-      }
-
-      /* At this point, there should be no strong references to the keys we just created. */
-      await new Promise(resolve => setImmediate(resolve));
-      gc();
-
-      await expectAsync(Promise.all(promiseArray)).toBeResolved();
+      await expectAsync(
+        key => composer.deleteKey([weakExternalKey, weakExternalKey], [key])
+      ).toHoldReferencesWeakly();
     });
   });
 });
