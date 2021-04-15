@@ -61,7 +61,6 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
     refSet.add(key1);
     refSet.add(key2);
 
-    debugger;
     expect(testSet.add(key1)).toBe(testSet);
     expect(testSet.has(key1)).toBe(refSet.has(key1));
 

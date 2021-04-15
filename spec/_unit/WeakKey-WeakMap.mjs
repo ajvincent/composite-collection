@@ -20,7 +20,7 @@ describe("WeakKey-WeakMap composer", () => {
     expect(Object.isFrozen(composer)).toBe(true);
   });
 
-  xit("has no public properties", () => {
+  xit("instances have no public properties", () => {
     // I disabled this test because Mozilla Firefox and Safari don't support private properties.
     const composer = new WeakKeyComposer(["foo"]);
     expect(Reflect.ownKeys(composer)).toEqual([]);
@@ -228,17 +228,39 @@ describe("WeakKey-WeakMap composer", () => {
   describe("holds references to objects", () => {
     let composer = null;
     const finalizer = new FinalizationRegistry(resolver => resolver());
+    const weakExternalKey = {};
     beforeEach(() => {
-      composer = new WeakKeyComposer(["weakKey"], ["strongKey"]);
+      composer = new WeakKeyComposer(["weakKey1", "weakKey2"], ["strongKey"]);
     });
 
-    it("weakly when defined as a weak argument", async () => {
+    // Because of the nature of weak references and weak maps, I have to test this in more than one weak key dimension.
+    it("weakly when defined as the first weak argument", async () => {
       const promiseArray = [];
       const methods = ["getKey", "hasKey", "deleteKey"];
       methods.forEach(methodName => {
         for (let i = 0; i < 20; i++) {
           const key = {};
-          composer[methodName]([key], ["foo"]);
+          composer[methodName]([key, weakExternalKey], ["foo"]);
+          promiseArray.push(new Promise(resolve => {
+            finalizer.register(key, resolve);
+          }));
+        }
+      });
+
+      /* At this point, there should be no strong references to the keys we just created. */
+      await new Promise(resolve => setImmediate(resolve));
+      gc();
+
+      await expectAsync(Promise.all(promiseArray)).toBeResolved();
+    });
+
+    it("weakly when defined as the second weak argument", async () => {
+      const promiseArray = [];
+      const methods = ["getKey", "hasKey", "deleteKey"];
+      methods.forEach(methodName => {
+        for (let i = 0; i < 20; i++) {
+          const key = {};
+          composer[methodName]([weakExternalKey, key], ["foo"]);
           promiseArray.push(new Promise(resolve => {
             finalizer.register(key, resolve);
           }));
@@ -254,12 +276,11 @@ describe("WeakKey-WeakMap composer", () => {
 
     it("strongly when we pass them as strong arguments to .getKey()", async () => {
       const promiseArray = [];
-      const weakKey = {};
 
       for (let i = 0; i < 20; i++) {
         promiseArray.push(new Promise((resolve, reject) => {
           // resolve will never be invoked, but it also doubles nicely as a strong key
-          composer.getKey([weakKey], [resolve]);
+          composer.getKey([weakExternalKey, weakExternalKey], [resolve]);
           finalizer.register(resolve, () => reject("getKey() failed at index " + i));
         }));
       }
@@ -276,10 +297,9 @@ describe("WeakKey-WeakMap composer", () => {
 
     it("weakly when we pass them as strong arguments to .hasKey()", async () => {
       const promiseArray = [];
-      const weakKey = {};
       for (let i = 0; i < 20; i++) {
         const key = {};
-        composer.hasKey([weakKey], [key]);
+        composer.hasKey([weakExternalKey, weakExternalKey], [key]);
         promiseArray.push(new Promise(
           resolve => finalizer.register(key, resolve)
         ));
@@ -294,10 +314,9 @@ describe("WeakKey-WeakMap composer", () => {
 
     it("weakly when we pass them as strong arguments to .deleteKey()", async () => {
       const promiseArray = [];
-      const weakKey = {};
       for (let i = 0; i < 20; i++) {
         const key = {};
-        composer.deleteKey([weakKey], [key]);
+        composer.deleteKey([weakExternalKey, weakExternalKey], [key]);
         promiseArray.push(new Promise(
           resolve => finalizer.register(key, resolve)
         ));

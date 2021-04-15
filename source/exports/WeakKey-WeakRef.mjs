@@ -40,6 +40,9 @@ export default class WeakKeyComposer {
     /** @type {WeakMap<WeakKey, hash>} @readonly @private */
     this.__weakKeyToHash__ = new WeakMap;
 
+    /** @type {WeakMap<WeakKey, Set<*>>?} @readonly @private */
+    this.__weakKeyToStrongRefs__ = strongArgList.length ? new WeakMap : null;
+
     /** @type {FinalizationRegistry} @readonly @private */
     this.__keyFinalizer__ = new FinalizationRegistry(
       weakKey => this.__deleteWeakKey__(weakKey)
@@ -87,6 +90,9 @@ export default class WeakKeyComposer {
 
       this.__weakKeyToFirstWeak__.set(weakKey, new WeakRef(weakArguments[0]));
       this.__weakKeyToHash__.set(weakKey, hash);
+      if (strongArguments.length) {
+        this.__weakKeyToStrongRefs__.set(weakKey, new Set(strongArguments));
+      }
       hashMap.set(hash, weakKey);
     }
 
@@ -176,6 +182,8 @@ export default class WeakKeyComposer {
    */
   __deleteWeakKey__(weakKey) {
     const firstKeyRef = this.__weakKeyToFirstWeak__.get(weakKey);
+    if (!firstKeyRef)
+      return;
     const firstWeak = firstKeyRef.deref();
     if (!firstWeak)
       return;
