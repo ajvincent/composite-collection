@@ -1,4 +1,5 @@
 import StrongStrongMap from "../generated/StrongStrongMap.mjs";
+import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
 
 describe("CodeGenerator(StrongStrongMap.mjs),", () => {
   let testMap, refMap = new Map;
@@ -314,5 +315,71 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     expect(testSpy).toHaveBeenCalledTimes(2);
     expect(testSpy.calls.argsFor(0)).toEqual([value2, key2, key1, testMap]);
     expect(testSpy.calls.argsFor(1)).toEqual([value1, key1, key2, testMap]);
+  });
+
+  describe("holds references to objects", () => {
+    beforeEach(() => {
+      jasmine.addAsyncMatchers(ToHoldRefsMatchers);
+    });
+
+    it("weakly as the first key in .delete()", async () => {
+      await expectAsync(
+        key => testMap.delete(key, {})
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly as the first key in .get()", async () => {
+      await expectAsync(
+        key => testMap.get(key, {})
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly as the first key in .has()", async () => {
+      await expectAsync(
+        key => testMap.has(key, {})
+      ).toHoldReferencesWeakly();
+    });
+
+    it("strongly as the first key in .set()", async () => {
+      await expectAsync(
+        key => testMap.set(key, {}, {})
+      ).toHoldReferencesStrongly();
+    });
+
+    it("strongly as the first argument in .set() where there is no second argument", async () => {
+      await expectAsync(
+        key => testMap.set(key)
+      ).toHoldReferencesStrongly();
+    });
+
+    it("weakly as the second key in .delete()", async () => {
+      await expectAsync(
+        key => testMap.delete({}, key)
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly as the second key in .get()", async () => {
+      await expectAsync(
+        key => testMap.get({}, key)
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly as the second key in .has()", async () => {
+      await expectAsync(
+        key => testMap.has({}, key)
+      ).toHoldReferencesWeakly();
+    });
+
+    it("strongly as the second key in .set()", async () => {
+      await expectAsync(
+        key => testMap.set({}, key, {})
+      ).toHoldReferencesStrongly();
+    });
+
+    it("strongly as the second argument in .set() where there is no third argument", async () => {
+      await expectAsync(
+        key => testMap.set({}, key)
+      ).toHoldReferencesStrongly();
+    });
   });
 });

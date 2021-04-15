@@ -1,4 +1,5 @@
 import SoloStrongSet from "../generated/SoloStrongSet.mjs";
+import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
 
 describe("CodeGenerator(SoloStrongSet.mjs)", () => {
   let testSet, refSet = new Set;
@@ -125,5 +126,29 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
     expect(spy.calls.thisFor(0)).toBe(thisObj);
     expect(spy.calls.thisFor(1)).toBe(thisObj);
     */
+  });
+
+  describe("holds references to objects", () => {
+    beforeEach(() => {
+      jasmine.addAsyncMatchers(ToHoldRefsMatchers);
+    });
+
+    it("strongly as the key in .add()", async () => {
+      await expectAsync(
+        key => testSet.add(key)
+      ).toHoldReferencesStrongly();
+    });
+
+    it("weakly as the key in .delete()", async () => {
+      await expectAsync(
+        key => testSet.delete(key)
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly as the key in .has()", async () => {
+      await expectAsync(
+        key => testSet.has(key)
+      ).toHoldReferencesWeakly();
+    });
   });
 });

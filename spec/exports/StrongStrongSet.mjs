@@ -1,4 +1,5 @@
 import StrongStrongSet from "../generated/StrongStrongSet.mjs";
+import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
 
 describe("CodeGenerator(StrongStrongSet.mjs)", () => {
   const refSet = new Set;
@@ -222,4 +223,51 @@ describe("CodeGenerator(StrongStrongSet.mjs)", () => {
     expect(testSpy.calls.argsFor(1)).toEqual([key1, key2, testSet]);
   });
 
+  describe("holds references to objects", () => {
+    beforeEach(() => {
+      jasmine.addAsyncMatchers(ToHoldRefsMatchers);
+    });
+
+    it("strongly as the first key in .add()", async () => {
+      await expectAsync(
+        key => testSet.add(key, {})
+      ).toHoldReferencesStrongly();
+    });
+
+    it("strongly as the first argument in .add() where there is no second argument", async () => {
+      await expectAsync(
+        key => testSet.add(key)
+      ).toHoldReferencesStrongly();
+    });
+
+    it("weakly as the first key in .delete()", async () => {
+      await expectAsync(
+        key => testSet.delete(key, {})
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly as the first key in .has()", async () => {
+      await expectAsync(
+        key => testSet.has(key, {})
+      ).toHoldReferencesWeakly();
+    });
+
+    it("strongly as the second key in .add()", async () => {
+      await expectAsync(
+        key => testSet.add({}, key)
+      ).toHoldReferencesStrongly();
+    });
+
+    it("weakly as the second key in .delete()", async () => {
+      await expectAsync(
+        key => testSet.delete({}, key)
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly as the second key in .has()", async () => {
+      await expectAsync(
+        key => testSet.has({}, key)
+      ).toHoldReferencesWeakly();
+    });
+  });
 });

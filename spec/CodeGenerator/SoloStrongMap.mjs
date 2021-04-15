@@ -1,4 +1,5 @@
 import SoloStrongMap from "../generated/SoloStrongMap.mjs";
+import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
 
 describe("CodeGenerator(SoloStrongMap.mjs)", () => {
   let testMap, refMap = new Map;
@@ -135,5 +136,35 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
     expect(testSpy).toHaveBeenCalledTimes(2);
     expect(testSpy.calls.argsFor(0)).toEqual([value2, key2, testMap]);
     expect(testSpy.calls.argsFor(1)).toEqual([value1, key1, testMap]);
+  });
+
+  describe("holds references to objects", () => {
+    beforeEach(() => {
+      jasmine.addAsyncMatchers(ToHoldRefsMatchers);
+    });
+
+    it("weakly as the key in .delete()", async () => {
+      await expectAsync(
+        key => testMap.delete(key)
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly as the key in .get()", async () => {
+      await expectAsync(
+        key => testMap.get(key)
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly as the key in .has()", async () => {
+      await expectAsync(
+        key => testMap.has(key)
+      ).toHoldReferencesWeakly();
+    });
+
+    it("strongly as the key in .set()", async () => {
+      await expectAsync(
+        key => testMap.set(key, {})
+      ).toHoldReferencesStrongly();
+    });
   });
 });
