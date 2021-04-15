@@ -1,5 +1,5 @@
 import KeyHasher from "composite-collection/KeyHasher";
-import GarbageCollectionMatchers from "../support/garbageCollectionMatchers.mjs";
+import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
 
 describe("KeyHasher", () => {
   let hasher;
@@ -27,7 +27,7 @@ describe("KeyHasher", () => {
   });
 
   xit("instance exposes no private properties", () => {
-    expect(Reflect.ownKeys(hasher)).toEqual([]);
+    expect(Reflect.ownKeys(hasher)).toEqual(["buildHash"]);
   });
 
   describe(".buildHash()", () => {
@@ -108,7 +108,7 @@ describe("KeyHasher", () => {
 
   describe("holds references", () => {
     beforeEach(() => {
-      jasmine.addAsyncMatchers(GarbageCollectionMatchers);
+      jasmine.addAsyncMatchers(ToHoldRefsMatchers);
     });
 
     it("weakly to objects", async () => {

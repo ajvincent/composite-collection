@@ -1,5 +1,5 @@
 import WeakKeyComposer from "composite-collection/WeakKey-WeakRef";
-import GarbageCollectionMatchers from "../support/garbageCollectionMatchers.mjs";
+import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
 
 describe("WeakKey-WeakRef composer", () => {
   it("class is frozen", () => {
@@ -230,7 +230,7 @@ describe("WeakKey-WeakRef composer", () => {
     const weakExternalKey = {};
 
     beforeEach(() => {
-      jasmine.addAsyncMatchers(GarbageCollectionMatchers);
+      jasmine.addAsyncMatchers(ToHoldRefsMatchers);
       composer = new WeakKeyComposer(["weakKey1", "weakKey2"], ["strongKey"]);
     });
 
