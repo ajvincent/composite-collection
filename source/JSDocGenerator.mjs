@@ -63,6 +63,19 @@ export default class JSDocGenerator {
       footers: ["@private", "@readonly"],
     }],
 
+    ["rootContainerWeakMap", {
+      description: "The root map holding weak composite keys and values.",
+      includeArgs: "none",
+      headers: [
+        "@type {WeakMap<object, WeakMap<WeakKey, *>>}"
+      ],
+      footers: [
+        "@private",
+        "@readonly",
+        "@note The weak key holds the strong references."
+      ]
+    }],
+
     ["rootContainerSet", {
       description: "Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.",
       includeArgs: "none",

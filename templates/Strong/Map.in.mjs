@@ -1,10 +1,4 @@
 /**
- * @callback JSDocCallback
- * @param {string} methodName  The name of the method or callback.
- * @param {string} description The method description.
- */
-
-/**
  *
  * @param {Map} defines
  * @param {JSDocGenerator} docs

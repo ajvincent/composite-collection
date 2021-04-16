@@ -37,6 +37,10 @@ const TemplateGenerators = new Map();
   }));
 }
 
+function buildArgNameList(keys) {
+  return '[' + keys.map(key => `"${key}"`).join(", ") + ']'
+}
+
 /**
  * @package
  */
@@ -137,12 +141,26 @@ export default class CodeGenerator extends CompletionPromise {
   #buildDefines() {
     this.#defines.clear();
 
-    this.#defines.set("className", this.#configurationData.className);
-    const keys = Array.from(this.#configurationData.parameterToTypeMap.keys());
-    this.#defines.set("argList", keys.join(", "));
-    this.#defines.set("argNameList", '[' + keys.map(key => `"${key}"`).join(", ") + ']');
+    const data = this.#configurationData;
+    this.#defines.set("className", data.className);
+    {
+      const keys = Array.from(data.parameterToTypeMap.keys());
+      this.#defines.set("argList", keys.join(", "));
+      this.#defines.set("argNameList", buildArgNameList(keys));
+    }
 
-    const paramsData = Array.from(this.#configurationData.parameterToTypeMap.values());
+    const paramsData = Array.from(data.parameterToTypeMap.values());
+
+    if (/Weak\/?Map/.test(data.collectionTemplate)) {
+      this.#defines.set("weakMapCount", data.weakMapKeys.length);
+      this.#defines.set("weakMapArgList", data.weakMapKeys.join(", "));
+      this.#defines.set("weakMapArgNameList", buildArgNameList(data.weakMapKeys));
+      this.#defines.set("weakMapArgument0", data.weakMapKeys[0]);
+
+      this.#defines.set("strongMapCount", data.strongMapKeys.length);
+      this.#defines.set("strongMapArgList", data.strongMapKeys.join(", "));
+      this.#defines.set("strongMapArgNameList", buildArgNameList(data.strongMapKeys));
+    }
 
     {
       const validator = paramsData.map(
@@ -159,7 +177,7 @@ ${validator}
     }
 
     {
-      let filter = (this.#configurationData.valueFilter || "").trim();
+      let filter = (data.valueFilter || "").trim();
       if (filter)
         filter += "\n    ";
       this.#defines.set("validateValue", filter);

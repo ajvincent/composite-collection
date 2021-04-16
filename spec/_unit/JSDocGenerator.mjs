@@ -28,6 +28,19 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
+    it("rootContainerWeakMap", () => {
+      const generated = generator.buildBlock("rootContainerWeakMap", 2);
+      expect(generated).toEqual(`  /**
+   * The root map holding weak composite keys and values.
+   *
+   * @type {WeakMap<object, WeakMap<WeakKey, *>>}
+   *
+   * @private
+   * @readonly
+   * @note The weak key holds the strong references.
+   */`);
+    });
+
     it("valueAndKeySet", () => {
       const generated = generator.buildBlock("valueAndKeySet", 2);
       expect(generated).toEqual(`  /**

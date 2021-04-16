@@ -97,6 +97,7 @@ namespace("test", () => {
       "spec/generated/KeyHasher.mjs",
       "spec/generated/SoloStrongMap.mjs",
       "spec/generated/SoloStrongSet.mjs",
+      "spec/generated/SoloWeakMap.mjs",
       "spec/generated/StrongStrongMap.mjs",
       "spec/generated/StrongStrongSet.mjs",
     ]
@@ -117,6 +118,7 @@ copyFileTasks("source/exports", "spec/generated", [
 generateCollectionTasks("spec/fixtures", "spec/generated", [
   "SoloStrongMap.mjs",
   "SoloStrongSet.mjs",
+  "SoloWeakMap.mjs",
 ]);
 
 generateCollectionTasks("source/exports", "spec/generated", [
