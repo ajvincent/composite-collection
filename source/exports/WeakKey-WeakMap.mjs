@@ -141,6 +141,8 @@ export default class WeakKeyComposer {
   __fillWeakArguments__(weakArguments, strongArguments) {
     if (weakArguments.length !== this.__weakArgList__.length)
       return null;
+    if (weakArguments.some(arg => Object(arg) !== arg))
+      return null;
     if (strongArguments.length !== this.__strongArgList__.length)
       return null;
 
