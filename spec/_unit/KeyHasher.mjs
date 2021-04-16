@@ -1,4 +1,4 @@
-import KeyHasher from "composite-collection/KeyHasher";
+import KeyHasher from "../../source/exports/KeyHasher.mjs";
 import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
 
 describe("KeyHasher", () => {
