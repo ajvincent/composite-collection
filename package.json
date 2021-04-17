@@ -40,8 +40,7 @@
     "./Configuration": "./source/CollectionConfiguration.mjs",
     "./CompleTimeOptions": "./source/CompileTimeOptions.mjs",
     "./KeyHasher": "./exports/KeyHasher.mjs",
-    "./WeakKey-WeakMap": "./exports/WeakKey-WeakMap.mjs",
-    "./WeakKey-WeakRef": "./exports/WeakKey-WeakRef.mjs",
+    "./WeakKeyComposer": "./exports/WeakKey-WeakMap.mjs",
     "./StrongStrongMap": "./exports/StrongStrongMap.mjs",
     "./StrongStrongSet": "./exports/StrongStrongSet.mjs"
   }
