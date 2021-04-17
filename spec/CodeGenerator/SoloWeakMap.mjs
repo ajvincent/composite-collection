@@ -31,7 +31,6 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
     const value = "value";
     refMap.set(key1, value);
 
-    debugger;
     expect(testMap.set(key1, value)).toBe(testMap);
     expect(testMap.has(key1)).toBe(refMap.has(key1));
     expect(testMap.get(key1)).toBe(refMap.get(key1));
