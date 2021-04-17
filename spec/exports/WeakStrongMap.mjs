@@ -1,16 +1,16 @@
-import WeakWeakMap from "../generated/WeakWeakMap.mjs";
+import WeakStrongMap from "../generated/WeakStrongMap.mjs";
 import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
 
-describe("CodeGenerator(WeakWeakMap.mjs),", () => {
+describe("CodeGenerator(WeakStrongMap.mjs),", () => {
   let testMap, refMap = new Map;
   beforeEach(() => {
     refMap.clear();
-    testMap = new WeakWeakMap();
+    testMap = new WeakStrongMap();
   });
 
   it("class is frozen", () => {
-    expect(Object.isFrozen(WeakWeakMap)).toBe(true);
-    expect(Object.isFrozen(WeakWeakMap.prototype)).toBe(true);
+    expect(Object.isFrozen(WeakStrongMap)).toBe(true);
+    expect(Object.isFrozen(WeakStrongMap.prototype)).toBe(true);
   });
 
   xit("class only exposes public methods", () => {
@@ -25,13 +25,13 @@ describe("CodeGenerator(WeakWeakMap.mjs),", () => {
     expect(Reflect.getOwnPropertyDescriptor(testMap, "forEach")).toBe(undefined);
   });
 
-  it(".isValidKey() returns true only if all key parts are non-primitive", () => {
+  it(".isValidKey() returns true only if the first key part is non-primitive", () => {
     const key1 = {isKey1: true}, key2 = {isKey2: true};
     expect(testMap.isValidKey(key1, key2)).toBe(true);
     expect(testMap.isValidKey(key2, key1)).toBe(true);
-    expect(testMap.isValidKey(key1, "foo")).toBe(false);
+    expect(testMap.isValidKey(key1, "foo")).toBe(true);
     expect(testMap.isValidKey("foo", key2)).toBe(false);
-    expect(testMap.isValidKey(key1)).toBe(false);
+    expect(testMap.isValidKey(key1)).toBe(true);
     expect(testMap.isValidKey()).toBe(false);
   });
 
@@ -51,60 +51,6 @@ describe("CodeGenerator(WeakWeakMap.mjs),", () => {
     expect(testMap.get(key1, key2)).toBe(refMap.get(key1));
   });
 
-  describe("using a primitive as", () => {
-    describe("the first key throws for", () => {
-      it("delete()", () => {
-        expect(
-          () => testMap.delete("foo", {})
-        ).toThrowError("The ordered key set is not valid!");
-      });
-
-      it("get()", () => {
-        expect(
-          () => testMap.get("foo", {})
-        ).toThrowError("The ordered key set is not valid!");
-      });
-  
-      it("has()", () => {
-        expect(
-          () => testMap.has("foo", {})
-        ).toThrowError("The ordered key set is not valid!");
-      });
-  
-      it("set()", () => {
-        expect(
-          () => testMap.set("foo", {}, 3)
-        ).toThrowError("The ordered key set is not valid!");
-      });
-    });
-
-    describe("the second key throws for", () => {
-      it("delete()", () => {
-        expect(
-          () => testMap.delete({}, "foo")
-        ).toThrowError("The ordered key set is not valid!");
-      });
-
-      it("get()", () => {
-        expect(
-          () => testMap.get({}, "foo")
-        ).toThrowError("The ordered key set is not valid!");
-      });
-
-      it("has()", () => {
-        expect(
-          () => testMap.has({}, "foo")
-        ).toThrowError("The ordered key set is not valid!");
-      });
-
-      it("set()", () => {
-        expect(
-          () => testMap.set({}, "foo", 3)
-        ).toThrowError("The ordered key set is not valid!");
-      });
-    });
-  });
-
   it("setting two values with a constant second key", () => {
     const key1 = {isKey1: true}, key3 = {isKey3: true}, value1 = "value1";
     refMap.set(key1, value1);
@@ -121,6 +67,9 @@ describe("CodeGenerator(WeakWeakMap.mjs),", () => {
 
     expect(testMap.delete(key1, key3)).toBe(true);
     expect(testMap.delete(key1, key3)).toBe(false);
+
+    refMap.delete(key1);
+    refMap.set(key1, value1);
 
     expect(testMap.set(key1, key3, value1)).toBe(testMap);
     expect(testMap.has(key1, key3)).toBe(refMap.has(key1));
@@ -144,6 +93,9 @@ describe("CodeGenerator(WeakWeakMap.mjs),", () => {
     expect(testMap.delete(key3, key1)).toBe(true);
     expect(testMap.delete(key3, key1)).toBe(false);
 
+    refMap.delete(key1);
+    refMap.set(key1, value1);
+
     expect(testMap.set(key3, key1, value1)).toBe(testMap);
     expect(testMap.has(key3, key1)).toBe(refMap.has(key1));
     expect(testMap.get(key3, key1)).toBe(refMap.get(key1));
@@ -166,85 +118,95 @@ describe("CodeGenerator(WeakWeakMap.mjs),", () => {
     expect(testMap.delete(key1, key2)).toBe(true);
     expect(testMap.delete(key1, key2)).toBe(false);
 
+    refMap.delete(key1);
+    refMap.set(key1, value1);
+
     expect(testMap.set(key1, key2, value1)).toBe(testMap);
     expect(testMap.has(key1, key2)).toBe(refMap.has(key1));
     expect(testMap.get(key1, key2)).toBe(refMap.get(key1));
   });
 
-  describe("holds references to objects weakly as the", () => {
+  describe("holds references to objects", () => {
+    const externalKey = {};
     beforeEach(() => {
       jasmine.addAsyncMatchers(ToHoldRefsMatchers);
     });
 
-    describe("first key in", () => {
-      // isValidKey()?
-      it(".delete()", async () => {
-        await expectAsync(
-          key => testMap.delete(key, {})
-        ).toHoldReferencesWeakly();
-      });
-  
-      it(".get()", async () => {
-        await expectAsync(
-          key => testMap.get(key, {})
-        ).toHoldReferencesWeakly();
-      });
-
-      it(".has()", async () => {
-        await expectAsync(
-          key => testMap.has(key, {})
-        ).toHoldReferencesWeakly();
-      });
-
-      it(".set()", async () => {
-        await expectAsync(
-          key => testMap.set(key, {}, {})
-        ).toHoldReferencesWeakly();
-      });
+    it("weakly as the first key in .delete()", async () => {
+      await expectAsync(
+        key => testMap.delete(key, {})
+      ).toHoldReferencesWeakly();
     });
 
-    describe("second key in", () => {
-      // isValidKey()?
-      it(".delete()", async () => {
-        await expectAsync(
-          key => testMap.delete({}, key)
-        ).toHoldReferencesWeakly();
-      });
-
-      it(".get()", async () => {
-        await expectAsync(
-          key => testMap.get({}, key)
-        ).toHoldReferencesWeakly();
-      });
-
-      it(".has()", async () => {
-        await expectAsync(
-          key => testMap.has({}, key)
-        ).toHoldReferencesWeakly();
-      });
-
-      it(".set()", async () => {
-        await expectAsync(
-          key => testMap.set({}, key, {})
-        ).toHoldReferencesWeakly();
-      });
+    it("weakly as the first key in .get()", async () => {
+      await expectAsync(
+        key => testMap.get(key, {})
+      ).toHoldReferencesWeakly();
     });
 
-    it("value when the keys are held externally", async () => {
+    it("weakly as the first key in .has()", async () => {
+      await expectAsync(
+        key => testMap.has(key, {})
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly as the first key in .set()", async () => {
+      await expectAsync(
+        key => testMap.set(key, {}, {})
+      ).toHoldReferencesWeakly();
+    });
+
+    it("strongly as the first argument in .set() where there is no second argument", async () => {
+      await expectAsync(
+        key => testMap.set(key)
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly as the second key in .delete()", async () => {
+      await expectAsync(
+        key => testMap.delete(externalKey, key)
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly as the second key in .get()", async () => {
+      await expectAsync(
+        key => testMap.get(externalKey, key)
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly as the second key in .has()", async () => {
+      await expectAsync(
+        key => testMap.has(externalKey, key)
+      ).toHoldReferencesWeakly();
+    });
+
+    it("strongly as the second key in .set()", async () => {
+      await expectAsync(
+        key => testMap.set(externalKey, key, {})
+      ).toHoldReferencesStrongly();
+    });
+
+    it("strongly as the second argument in .set() where there is no third argument", async () => {
+      await expectAsync(
+        key => testMap.set(externalKey, key)
+      ).toHoldReferencesStrongly();
+    });
+
+    it("strongly as values when the keys are held externally", async () => {
       const externalKeys = [];
       await expectAsync(
         value => {
           let externalKey = {};
-          testMap.set(externalKey, externalKey, value);
+          testMap.set(externalKeys, externalKey, value);
           externalKeys.push(externalKey);
           externalKey = null;
         }
       ).toHoldReferencesStrongly();
     });
 
-    it("value when the keys are not held externally", async () => {
+    it("weakly as values when the keys are not held externally", async () => {
       await expectAsync(
-        key => testMap.set({}, {}, key)
+        value => testMap.set({}, {}, value)
       ).toHoldReferencesWeakly();
     });
   });

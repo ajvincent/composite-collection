@@ -1,0 +1,165 @@
+/**
+ * This is generated code.  Do not edit.
+ *
+ * Generator: https://github.com/ajvincent/composite-collection/
+ */
+
+import KeyHasher from "./KeyHasher.mjs"
+import WeakKeyComposer from "./WeakKey-WeakMap.mjs"
+
+export default class WeakStrongMap {
+  constructor() {
+    this.__weakArgCount__ = 1;
+    this.__strongArgCount__ = 1;
+    this.__keyHasher__ = new KeyHasher(["weakKey", "strongKey"]);
+    this.__keyComposer__ = new WeakKeyComposer(["weakKey"], ["strongKey"]);
+
+    /**
+     * The root map holding weak composite keys and values.
+     *
+     * @type {WeakMap<object, WeakMap<WeakKey, *>>}
+     *
+     * @private
+     * @readonly
+     * @note The weak key holds the strong references.
+     */
+    /** @type {WeakMap<object, WeakMap<WeakKey, *>>} */
+    this.__root__ = new WeakMap;
+  }
+
+  /**
+   * Delete an element from the collection by the given key sequence.
+   *
+   * @param {object} weakKey   
+   * @param {*}      strongKey 
+   *
+   * @returns {boolean} True if we found the value and deleted it.
+   * @public
+   */
+  delete(weakKey, strongKey) {
+    this.__requireValidKey__(weakKey, strongKey);
+    const __keyMap__ = this.__root__.get(weakKey);
+    if (!__keyMap__)
+      return false;
+
+    if (!this.__keyComposer__.hasKey([weakKey], [strongKey]))
+      return false;
+
+    const __key__ = this.__keyComposer__.getKey([weakKey], [strongKey]);
+    this.__keyComposer__.deleteKey([weakKey], [strongKey]);
+    return __keyMap__.delete(__key__);
+  }
+
+  /**
+   * Get a value for a key set.
+   *
+   * @param {object} weakKey   
+   * @param {*}      strongKey 
+   *
+   * @returns {*?} The value.  Undefined if it isn't in the collection.
+   * @public
+   */
+  get(weakKey, strongKey) {
+    this.__requireValidKey__(weakKey, strongKey);
+    const __keyMap__ = this.__root__.get(weakKey);
+    if (!__keyMap__)
+      return undefined;
+
+    if (!this.__keyComposer__.hasKey([weakKey], [strongKey]))
+      return undefined;
+
+    const __key__ = this.__keyComposer__.getKey([weakKey], [strongKey]);
+    if (!__key__)
+      return undefined;
+    return __keyMap__.get(__key__);
+  }
+
+  /**
+   * Determine if a set of keys is valid.
+   *
+   * @param {object} weakKey   
+   * @param {*}      strongKey 
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @public
+   */
+  isValidKey(weakKey, strongKey) {
+    return this.__isValidKey__(weakKey, strongKey);
+  }
+
+  /**
+   * Report if the collection has a value for a key set.
+   *
+   * @param {object} weakKey   
+   * @param {*}      strongKey 
+   *
+   * @returns {boolean} True if the key set refers to a value in the collection.
+   * @public
+   */
+  has(weakKey, strongKey) {
+    this.__requireValidKey__(weakKey, strongKey);
+    const __keyMap__ = this.__root__.get(weakKey);
+    if (!__keyMap__)
+      return false;
+
+    if (!this.__keyComposer__.hasKey([weakKey], [strongKey]))
+      return false;
+
+    const __key__ = this.__keyComposer__.getKey([weakKey], [strongKey]);
+    if (!__key__)
+      return false;
+    return __keyMap__.has(__key__);
+  }
+
+  /**
+   * Set a value for a key set.
+   *
+   * @param {object} weakKey   
+   * @param {*}      strongKey 
+   * @param {*}      value     The value.
+   *
+   * @returns {WeakStrongMap} This collection.
+   * @public
+   */
+  set(weakKey, strongKey, value) {
+    this.__requireValidKey__(weakKey, strongKey);
+    if (!this.__root__.has(weakKey))
+      this.__root__.set(weakKey, new WeakMap);
+
+    const __keyMap__ = this.__root__.get(weakKey);
+    const __key__ = this.__keyComposer__.getKey([weakKey], [strongKey]);
+
+    __keyMap__.set(__key__, value);
+    return this;
+  }
+
+  /**
+   * @param {object} weakKey   
+   * @param {*}      strongKey 
+   *
+   * @throws for an invalid key set.
+   */
+  __requireValidKey__(weakKey, strongKey) {
+    if (!this.__isValidKey__(weakKey, strongKey))
+      throw new Error("The ordered key set is not valid!");
+  }
+
+  /**
+   * Determine if a set of keys is valid.
+   *
+   * @param {object} weakKey   
+   * @param {*}      strongKey 
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @private
+   */
+  __isValidKey__(weakKey, strongKey) {
+    if (!this.__keyComposer__.isValidForKey([weakKey], [strongKey]))
+      return false;
+
+    return true;
+  }
+}
+
+Object.freeze(WeakStrongMap);
+Object.freeze(WeakStrongMap.prototype);
