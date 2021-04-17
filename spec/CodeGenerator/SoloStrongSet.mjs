@@ -5,6 +5,7 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
   let testSet, refSet = new Set;
   const key1 = {isKey1: true}, key2 = {isKey2: true};
   Object.freeze(key1);
+  Object.freeze(key2);
 
   beforeEach(() => {
     refSet.clear();
