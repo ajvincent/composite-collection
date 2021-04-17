@@ -22,6 +22,11 @@ describe("KeyHasher", () => {
     ]);
   });
 
+  it("class cannot have subclasses", () => {
+    class Subclass extends KeyHasher {};
+    expect(() => new Subclass).toThrowError("You cannot subclass KeyHasher!");
+  });
+
   it("instances are sealed", () => {
     expect(Object.isSealed(hasher)).toBe(true);
   });

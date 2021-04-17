@@ -15,6 +15,9 @@ export default class KeyHasher {
    * @param {string[]} argList The list of keys.
    */
   constructor(argList) {
+    if (new.target !== KeyHasher)
+      throw new Error("You cannot subclass KeyHasher!");
+
     /**
      * @type {Number}
      * @private
@@ -42,6 +45,7 @@ export default class KeyHasher {
      */
     this.__argList__ = argList.slice();
 
+    // freeze when we can convert the above to private class fields.
     Object.seal(this);
   }
 

@@ -7,6 +7,11 @@ describe("WeakKey-WeakRef composer", () => {
     expect(Object.isFrozen(WeakKeyComposer.prototype)).toBe(true);
   });
 
+  it("class cannot have subclasses", () => {
+    class Subclass extends WeakKeyComposer {};
+    expect(() => new Subclass).toThrowError("You cannot subclass WeakKeyComposer!");
+  });
+
   xit("class exposes only the getKey(), hasKey() and deleteKey() methods", () => {
     expect(Reflect.ownKeys(WeakKeyComposer)).toEqual([
       "constructor",

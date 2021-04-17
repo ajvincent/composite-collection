@@ -6,6 +6,8 @@ export default class WeakKeyComposer {
    * @param {string[]} strongArgList The list of strong argument names.
    */
   constructor(weakArgList, strongArgList = []) {
+    if (new.target !== WeakKeyComposer)
+      throw new Error("You cannot subclass WeakKeyComposer!");
     if (!Array.isArray(weakArgList) || (weakArgList.length === 0))
       throw new Error("weakArgList must be a string array of at least one argument!");
     if (!Array.isArray(strongArgList))
