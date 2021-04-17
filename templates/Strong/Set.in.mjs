@@ -36,7 +36,7 @@ ${docs.buildBlock("getSize", 2)}
     return this.__root__.size;
   }
 
-${docs.buildBlock("add", 4)}
+${docs.buildBlock("add", 2)}
   add(${defines.get("argList")}) {${
     invokeValidate
   }${
@@ -47,7 +47,7 @@ ${docs.buildBlock("add", 4)}
     return this;
   }
 
-${docs.buildBlock("clear", 4)}
+${docs.buildBlock("clear", 2)}
   clear() {
     this.__root__.clear();
   }
