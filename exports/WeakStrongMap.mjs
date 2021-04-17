@@ -11,7 +11,19 @@ export default class WeakStrongMap {
   constructor() {
     this.__weakArgCount__ = 1;
     this.__strongArgCount__ = 1;
+
+    /**
+     * @type {KeyHasher}
+     * @private
+     * @readonly
+     */
     this.__keyHasher__ = new KeyHasher(["weakKey", "strongKey"]);
+
+    /**
+     * @type {WeakKeyComposer}
+     * @private
+     * @readonly
+     */
     this.__keyComposer__ = new WeakKeyComposer(["weakKey"], ["strongKey"]);
 
     /**

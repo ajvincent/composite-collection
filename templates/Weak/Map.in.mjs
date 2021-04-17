@@ -12,7 +12,19 @@ export default class ${defines.get("className")} {
   constructor() {
     this.__weakArgCount__ = ${defines.get("weakMapCount")};
     this.__strongArgCount__ = ${defines.get("strongMapCount")};
+
+    /**
+     * @type {KeyHasher}
+     * @private
+     * @readonly
+     */
     this.__keyHasher__ = new KeyHasher(${defines.get("argNameList")});
+
+    /**
+     * @type {WeakKeyComposer}
+     * @private
+     * @readonly
+     */
     this.__keyComposer__ = new WeakKeyComposer(${
       defines.get("weakMapArgNameList")
     }, ${
