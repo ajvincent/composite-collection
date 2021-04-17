@@ -131,4 +131,7 @@ Reflect.defineProperty(${defines.get("className")}, Symbol.toStringTag, {
   enumerable: false,
   configurable: true
 });
+
+Object.freeze(${defines.get("className")});
+Object.freeze(${defines.get("className")}.prototype);
 `};

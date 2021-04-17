@@ -114,5 +114,8 @@ ${docs.buildBlock("rootContainerWeakMap", 4)}
     return this;
   }
 }
+
+Object.freeze(${defines.get("className")});
+Object.freeze(${defines.get("className")}.prototype);
 `
 };

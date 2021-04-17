@@ -11,6 +11,11 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
     testSet = new SoloStrongSet();
   });
 
+  it("class is frozen", () => {
+    expect(Object.isFrozen(SoloStrongSet)).toBe(true);
+    expect(Object.isFrozen(SoloStrongSet.prototype)).toBe(true);
+  });
+
   it("adding one value", () => {
     refSet.add(key1);
 

@@ -12,6 +12,11 @@ describe("CodeGenerator(StrongStrongSet.mjs)", () => {
     testSet = new StrongStrongSet();
   });
 
+  it("class is frozen", () => {
+    expect(Object.isFrozen(StrongStrongSet)).toBe(true);
+    expect(Object.isFrozen(StrongStrongSet.prototype)).toBe(true);
+  });
+
   it("adding one value", () => {
     refSet.add(key1);
 

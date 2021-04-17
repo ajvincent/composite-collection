@@ -86,5 +86,8 @@ ${
 }${defines.get("className")}[Symbol.iterator] = function() {
   return this.values();
 }
+
+Object.freeze(${defines.get("className")});
+Object.freeze(${defines.get("className")}.prototype);
 `;
 }

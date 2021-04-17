@@ -124,3 +124,6 @@ export default class StrongStrongSet {
 StrongStrongSet[Symbol.iterator] = function() {
   return this.values();
 }
+
+Object.freeze(StrongStrongSet);
+Object.freeze(StrongStrongSet.prototype);

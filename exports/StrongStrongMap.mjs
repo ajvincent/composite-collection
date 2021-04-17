@@ -215,3 +215,6 @@ Reflect.defineProperty(StrongStrongMap, Symbol.toStringTag, {
   enumerable: false,
   configurable: true
 });
+
+Object.freeze(StrongStrongMap);
+Object.freeze(StrongStrongMap.prototype);

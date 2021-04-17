@@ -8,6 +8,12 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     testMap = new StrongStrongMap();
   });
 
+
+  it("class is frozen", () => {
+    expect(Object.isFrozen(StrongStrongMap)).toBe(true);
+    expect(Object.isFrozen(StrongStrongMap.prototype)).toBe(true);
+  });
+
   it("setting one value", () => {
     const key1 = {isKey1: true}, key2 = {isKey2: true}, value = "value";
     refMap.set(key1, value);
