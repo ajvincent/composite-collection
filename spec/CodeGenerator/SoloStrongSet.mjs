@@ -17,6 +17,10 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
     expect(Object.isFrozen(SoloStrongSet.prototype)).toBe(true);
   });
 
+  xit("exposes all methods of a strong set", () => {
+
+  });
+
   it("adding one value", () => {
     refSet.add(key1);
 
