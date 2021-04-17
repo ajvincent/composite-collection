@@ -17,8 +17,8 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
     expect(Object.isFrozen(SoloStrongSet.prototype)).toBe(true);
   });
 
-  xit("exposes all methods of a strong set", () => {
-
+  xit("class only exposes public methods", () => {
+    // not implemented yet
   });
 
   it("adding one value", () => {

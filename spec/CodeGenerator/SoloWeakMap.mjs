@@ -21,8 +21,12 @@ describe("CodeGenerator(SoloWeakMap.mjs)", () => {
     // not implemented yet
   });
 
-  xit("exposes all methods of a weak map, but not those of a strong map", () => {
-
+  it("exposes all methods of a weak map, but not those of a strong map", () => {
+    expect(Reflect.getOwnPropertyDescriptor(testMap, "size")).toBe(undefined);
+    expect(Reflect.getOwnPropertyDescriptor(testMap, "keys")).toBe(undefined);
+    expect(Reflect.getOwnPropertyDescriptor(testMap, "values")).toBe(undefined);
+    expect(Reflect.getOwnPropertyDescriptor(testMap, "entries")).toBe(undefined);
+    expect(Reflect.getOwnPropertyDescriptor(testMap, "forEach")).toBe(undefined);
   });
 
   it("validating a value is a non-primitive", () => {

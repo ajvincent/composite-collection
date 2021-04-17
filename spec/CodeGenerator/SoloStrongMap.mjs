@@ -13,8 +13,8 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
     expect(Object.isFrozen(SoloStrongMap.prototype)).toBe(true);
   });
 
-  xit("exposes all methods of a strong map", () => {
-
+  xit("class only exposes public methods", () => {
+    // not implemented yet
   });
 
   it("setting one value", () => {
