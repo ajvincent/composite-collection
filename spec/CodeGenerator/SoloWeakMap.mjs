@@ -1,7 +1,7 @@
 import SoloWeakMap from "../generated/SoloWeakMap.mjs";
 import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
 
-describe("CodeGenerator(SoloStrongSet.mjs)", () => {
+describe("CodeGenerator(SoloWeakMap.mjs)", () => {
   let testMap, refMap;
   const key1 = {isKey1: true}, key2 = {isKey2: true};
   Object.freeze(key1);
@@ -19,6 +19,10 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
 
   xit("class only exposes public methods", () => {
     // not implemented yet
+  });
+
+  xit("exposes all methods of a weak map, but not those of a strong map", () => {
+
   });
 
   it("validating a value is a non-primitive", () => {
@@ -44,25 +48,25 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
   });
 
   describe("using a primitive as a key throws for", () => {
-    it("delete", () => {
+    it("delete()", () => {
       expect(
         () => testMap.delete("foo")
       ).toThrowError("The ordered key set is not valid!");
     });
 
-    it("get", () => {
+    it("get()", () => {
       expect(
         () => testMap.get("foo")
       ).toThrowError("The ordered key set is not valid!");
     });
 
-    it("has", () => {
+    it("has()", () => {
       expect(
         () => testMap.has("foo")
       ).toThrowError("The ordered key set is not valid!");
     });
 
-    it("set", () => {
+    it("set()", () => {
       expect(
         () => testMap.set("foo")
       ).toThrowError("The ordered key set is not valid!");
@@ -126,6 +130,24 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
     it("weakly as the key in .set()", async () => {
       await expectAsync(
         key => testMap.set(key, {})
+      ).toHoldReferencesWeakly();
+    });
+
+    it("strongly as values when the keys are held externally", async () => {
+      const externalKeys = [];
+      await expectAsync(
+        value => {
+          let externalKey = {};
+          testMap.set(externalKey, value);
+          externalKeys.push(externalKey);
+          externalKey = null;
+        }
+      ).toHoldReferencesStrongly();
+    });
+
+    it("weakly as values when the keys are not held externally", async () => {
+      await expectAsync(
+        key => testMap.set({}, key)
       ).toHoldReferencesWeakly();
     });
   });

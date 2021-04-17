@@ -13,6 +13,10 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
     expect(Object.isFrozen(SoloStrongMap.prototype)).toBe(true);
   });
 
+  xit("exposes all methods of a strong map", () => {
+
+  });
+
   it("setting one value", () => {
     const key = {isKey: true}, value = "value";
     refMap.set(key, value);
@@ -169,6 +173,24 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
     it("strongly as the key in .set()", async () => {
       await expectAsync(
         key => testMap.set(key, {})
+      ).toHoldReferencesStrongly();
+    });
+
+    it("as values when the keys are held externally", async () => {
+      const externalKeys = [];
+      await expectAsync(
+        value => {
+          let externalKey = {};
+          testMap.set(externalKey, value);
+          externalKeys.push(externalKey);
+          externalKey = null;
+        }
+      ).toHoldReferencesStrongly();
+    });
+
+    it("as values when the keys are not held externally", async () => {
+      await expectAsync(
+        value => testMap.set({}, value)
       ).toHoldReferencesStrongly();
     });
   });

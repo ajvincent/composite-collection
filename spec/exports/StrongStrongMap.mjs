@@ -8,7 +8,6 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     testMap = new StrongStrongMap();
   });
 
-
   it("class is frozen", () => {
     expect(Object.isFrozen(StrongStrongMap)).toBe(true);
     expect(Object.isFrozen(StrongStrongMap.prototype)).toBe(true);
@@ -385,6 +384,24 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     it("strongly as the second argument in .set() where there is no third argument", async () => {
       await expectAsync(
         key => testMap.set({}, key)
+      ).toHoldReferencesStrongly();
+    });
+
+    it("strongly as values when the keys are held externally", async () => {
+      const externalKeys = [];
+      await expectAsync(
+        value => {
+          let externalKey = {};
+          testMap.set(externalKey, externalKey, value);
+          externalKeys.push(externalKey);
+          externalKey = null;
+        }
+      ).toHoldReferencesStrongly();
+    });
+
+    it("strongly as values when the keys are not held externally", async () => {
+      await expectAsync(
+        value => testMap.set({}, {}, value)
       ).toHoldReferencesStrongly();
     });
   });
