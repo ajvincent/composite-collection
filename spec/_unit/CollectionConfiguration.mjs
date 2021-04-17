@@ -149,6 +149,60 @@ describe("CollectionConfiguration", () => {
       }
     });
 
+    it("defaults to an argument type of 'object' when the argumentType is not specified and holdWeak is true", () => {
+      delete options.argumentType;
+      config.addMapKey(...type1Args);
+
+      const typeData = config.cloneData();
+      expect(typeData.parameterToTypeMap.size).toBe(1);
+      const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
+      expect(typeof firstType).toBe("object");
+      if (firstType) {
+        expect(Object.isFrozen(firstType)).toBe(true);
+        expect(Reflect.ownKeys(firstType)).toEqual([
+          "argumentName",
+          "mapOrSetType",
+          "argumentType",
+          "description",
+          "argumentValidator",
+        ]);
+
+        expect(firstType.argumentName).toBe(type1Args[0]);
+        expect(firstType.mapOrSetType).toBe("WeakMap");
+        expect(firstType.argumentType).toBe("object");
+        expect(firstType.description).toBe(options.description);
+        expect(firstType.argumentValidator).toBe(null);
+      }
+    });
+
+    it("defaults to an argument type of '*' when the argumentType is not specified and holdWeak is false", () => {
+      delete options.argumentType;
+      const args = type1Args.slice();
+      args.splice(1, 1, false);
+      config.addMapKey(...args);
+
+      const typeData = config.cloneData();
+      expect(typeData.parameterToTypeMap.size).toBe(1);
+      const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
+      expect(typeof firstType).toBe("object");
+      if (firstType) {
+        expect(Object.isFrozen(firstType)).toBe(true);
+        expect(Reflect.ownKeys(firstType)).toEqual([
+          "argumentName",
+          "mapOrSetType",
+          "argumentType",
+          "description",
+          "argumentValidator",
+        ]);
+
+        expect(firstType.argumentName).toBe(type1Args[0]);
+        expect(firstType.mapOrSetType).toBe("Map");
+        expect(firstType.argumentType).toBe("*");
+        expect(firstType.description).toBe(options.description);
+        expect(firstType.argumentValidator).toBe(null);
+      }
+    });
+
     /* This is an extreme case.  Don't do this in production.
 
     (Who wants a 20-key set in JavaScript, anyway?)
@@ -393,6 +447,62 @@ describe("CollectionConfiguration", () => {
       ).not.toThrow();
     });
 
+    it("defaults to a argument type of 'object' when the argumentType is not specified and holdWeak is true", () => {
+      delete options.argumentType;
+
+      config.addSetKey(...type1Args);
+
+      const typeData = config.cloneData();
+      expect(typeData.parameterToTypeMap.size).toBe(1);
+      const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
+      expect(typeof firstType).toBe("object");
+      if (firstType) {
+        expect(Object.isFrozen(firstType)).toBe(true);
+        expect(Reflect.ownKeys(firstType)).toEqual([
+          "argumentName",
+          "mapOrSetType",
+          "argumentType",
+          "description",
+          "argumentValidator",
+        ]);
+
+        expect(firstType.argumentName).toBe(type1Args[0]);
+        expect(firstType.mapOrSetType).toBe("WeakSet");
+        expect(firstType.argumentType).toBe("object");
+        expect(firstType.description).toBe(options.description);
+        expect(firstType.argumentValidator).toBe(null);
+      }
+    });
+
+    it("defaults to a argument type of '*' when the argumentType is not specified and holdWeak is false", () => {
+      delete options.argumentType;
+      const args = type1Args.slice();
+      args.splice(1, 1, false);
+
+      config.addSetKey(...args);
+
+      const typeData = config.cloneData();
+      expect(typeData.parameterToTypeMap.size).toBe(1);
+      const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
+      expect(typeof firstType).toBe("object");
+      if (firstType) {
+        expect(Object.isFrozen(firstType)).toBe(true);
+        expect(Reflect.ownKeys(firstType)).toEqual([
+          "argumentName",
+          "mapOrSetType",
+          "argumentType",
+          "description",
+          "argumentValidator",
+        ]);
+
+        expect(firstType.argumentName).toBe(type1Args[0]);
+        expect(firstType.mapOrSetType).toBe("Set");
+        expect(firstType.argumentType).toBe("*");
+        expect(firstType.description).toBe(options.description);
+        expect(firstType.argumentValidator).toBe(null);
+      }
+    });
+
     /* This is an extreme case.  Don't do this in production.
 
     (Who wants a 20-key set in JavaScript, anyway?)
@@ -553,7 +663,6 @@ describe("CollectionConfiguration", () => {
       });
     });
   });
-
 
   describe(".setValueType()", () => {
     let config, wasCalled, valueFilter = value => { wasCalled = true; };

@@ -302,7 +302,7 @@ export default class CollectionConfiguration {
       }
 
       const {
-        argumentType = null,
+        argumentType = holdWeak ? "object" : "*",
         description = null,
         argumentValidator = null,
       } = options;
@@ -348,7 +348,7 @@ export default class CollectionConfiguration {
       }
 
       const {
-        argumentType = null,
+        argumentType = holdWeak ? "object" : "*",
         description = null,
         argumentValidator = null,
       } = options;
