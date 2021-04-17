@@ -42,6 +42,7 @@
     "./KeyHasher": "./exports/KeyHasher.mjs",
     "./WeakKeyComposer": "./exports/WeakKey-WeakMap.mjs",
     "./StrongStrongMap": "./exports/StrongStrongMap.mjs",
-    "./StrongStrongSet": "./exports/StrongStrongSet.mjs"
+    "./StrongStrongSet": "./exports/StrongStrongSet.mjs",
+    "./WeakWeakMap": "./exports/WeakWeakMap.mjs"
   }
 }
