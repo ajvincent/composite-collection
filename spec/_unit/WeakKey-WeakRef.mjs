@@ -12,11 +12,13 @@ describe("WeakKey-WeakRef composer", () => {
     expect(() => new Subclass).toThrowError("You cannot subclass WeakKeyComposer!");
   });
 
-  xit("class exposes only the getKey(), hasKey() and deleteKey() methods", () => {
+  xit("class exposes only the public methods", () => {
     expect(Reflect.ownKeys(WeakKeyComposer)).toEqual([
       "constructor",
       "getKey",
-      "deleteKey"
+      "hasKey",
+      "isValidKey",
+      "deleteKey",
     ]);
   });
 
@@ -262,6 +264,12 @@ describe("WeakKey-WeakRef composer", () => {
           key => composer.deleteKey([key, weakExternalKey], ["foo"])
         ).toHoldReferencesWeakly();
       });
+
+      it(".isValidForKey()", async () => {
+        await expectAsync(
+          key => composer.isValidForKey([key, weakExternalKey], ["foo"])
+        ).toHoldReferencesWeakly();
+      });
     });
 
     describe("weakly when defined as the second weak argument in", () => {
@@ -280,6 +288,12 @@ describe("WeakKey-WeakRef composer", () => {
       it(".deleteKey()", async () => {
         await expectAsync(
           key => composer.deleteKey([weakExternalKey, key], ["foo"])
+        ).toHoldReferencesWeakly();
+      });
+
+      it(".isValidForKey()", async () => {
+        await expectAsync(
+          key => composer.isValidForKey([weakExternalKey, key], ["foo"])
         ).toHoldReferencesWeakly();
       });
     });
@@ -309,6 +323,12 @@ describe("WeakKey-WeakRef composer", () => {
     it("weakly when we pass them as strong arguments to .deleteKey()", async () => {
       await expectAsync(
         key => composer.deleteKey([weakExternalKey, weakExternalKey], [key])
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly when we pass them as strong arguments to .isValidForKey()", async () => {
+      await expectAsync(
+        key => composer.isValidForKey([weakExternalKey, weakExternalKey], [key])
       ).toHoldReferencesWeakly();
     });
   });

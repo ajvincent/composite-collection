@@ -7,7 +7,7 @@
 export default function preprocess(defines, docs) {
   let invokeValidate = "";
   if (defines.has("invokeValidate")) {
-    invokeValidate = `\n    this.__validateArguments__(${defines.get("validateArguments")});\n`;
+    invokeValidate = `\n    this.__requireValidKey__(${defines.get("argList")});\n`;
   }
 
   return `import KeyHasher from "./KeyHasher.mjs";
@@ -74,7 +74,13 @@ ${docs.buildBlock("has", 2)}
     return this.__root__.has(hash);
   }
 
-${docs.buildBlock("keys", 2)}
+${defines.has("validateArguments") ? `
+${docs.buildBlock("isValidKeyPublic", 2)}
+  isValidKey(${defines.get("argList")}) {
+    return this.__isValidKey__(${defines.get("argList")});
+  }
+
+` : ``}${docs.buildBlock("keys", 2)}
   keys() {
     return this.__wrapIterator__(
       valueAndKeySet => valueAndKeySet.keySet.slice()
@@ -101,8 +107,20 @@ ${docs.buildBlock("values", 2)}
       valueAndKeySet => valueAndKeySet.value
     );
   }
+${defines.has("validateArguments") ? `
+${docs.buildBlock("requireValidKey", 2)}
+  __requireValidKey__(${defines.get("argList")}) {
+    if (!this.__isValidKey__(${defines.get("argList")}))
+      throw new Error("The ordered key set is not valid!");
+  }
 
-${docs.buildBlock("wrapIteratorMap", 2)}
+${docs.buildBlock("isValidKeyPrivate", 2)}
+  __isValidKey__(${defines.get("argList")}) {
+${defines.get("validateArguments")}
+    return true;
+  }
+
+` : ``}${docs.buildBlock("wrapIteratorMap", 2)}
   __wrapIterator__(unpacker) {
     const rootIter = this.__root__.values();
     return {
@@ -117,11 +135,7 @@ ${docs.buildBlock("wrapIteratorMap", 2)}
   }
 }
 
-${
-  defines.has("validateArguments") ?
-    docs.buildBlock("validateArguments", 2) + "\n" + defines.get("validateArguments") + "\n\n" :
-    ""
-}${defines.get("className")}[Symbol.iterator] = function() {
+${defines.get("className")}[Symbol.iterator] = function() {
   return this.entries();
 }
 

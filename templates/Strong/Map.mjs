@@ -50,7 +50,7 @@ export default class __className__ {
    * @public
    */
   delete(__argList__) {
-    this.__validateArguments__(__argList__);
+    this.__requireValidKey__(__argList__);
 
     const hash = this.__hasher__.buildHash([__argList__]);
     return this.__root__.delete(hash);
@@ -99,7 +99,7 @@ export default class __className__ {
    * @public
    */
   get(__argList__) {
-    this.__validateArguments__(__argList__);
+    this.__requireValidKey__(__argList__);
     const hash = this.__hasher__.buildHash([__argList__]);
     const valueAndKeySet = this.__root__.get(hash);
     return valueAndKeySet ? valueAndKeySet.value : valueAndKeySet;
@@ -114,7 +114,7 @@ export default class __className__ {
    * @public
    */
   has(__argList__) {
-    this.__validateArguments__(__argList__);
+    this.__requireValidKey__(__argList__);
     const hash = this.__hasher__.buildHash([__argList__]);
     return this.__root__.has(hash);
   }
@@ -132,7 +132,7 @@ export default class __className__ {
   }
 
   set(__argList__, value) {
-    this.__validateArguments__(__argList__);
+    this.__requireValidKey__(__argList__);
     void("__doValidateValue__");
 
     const hash = this.__hasher__.buildHash([__argList__]);
@@ -180,7 +180,7 @@ export default class __className__ {
    *
    * __argDescriptions__
    */
-  __validateArguments__(__argList__) {
+  __requireValidKey__(__argList__) {
     void("__doValidateArguments__");
   }
 }

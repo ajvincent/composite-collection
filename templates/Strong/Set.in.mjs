@@ -13,7 +13,7 @@
 export default function preprocess(defines, docs) {
   let invokeValidate = "";
   if (defines.has("invokeValidate")) {
-    invokeValidate = `\n    this.__validateArguments__(${defines.get("validateArguments")});\n`;
+    invokeValidate = `\n    this.__requireValidKey__(${defines.get("argList")});\n`;
   }
 
   return `import KeyHasher from "./KeyHasher.mjs";
@@ -66,7 +66,21 @@ ${docs.buildBlock("forEachSet", 2)}
   }
 
 ${docs.buildBlock("forEachCallbackSet", 2)}
+${defines.has("invokeValidate") ?
+`
+${docs.buildBlock("requireValidKey", 2)}
+  __requireValidKey__(${defines.get("argList")}) {
+    if (!this.__isValidKey__(${defines.get("argList")}))
+      throw new Error("The ordered key set is not valid!");
+  }
 
+${docs.buildBlock("isValidKeyPrivate", 2)}
+  __isValidKey__(${defines.get("argList")}) {
+${defines.get("validateArguments")}
+    return true;
+  }
+
+` : ``}
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {
     const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
@@ -79,11 +93,7 @@ ${docs.buildBlock("values", 2)}
   }
 }
 
-${
-  defines.has("validateArguments") ?
-    docs.buildBlock("validateArguments", 2) + "\n" + defines.get("validateArguments") + "\n\n" :
-    ""
-}${defines.get("className")}[Symbol.iterator] = function() {
+${defines.get("className")}[Symbol.iterator] = function() {
   return this.values();
 }
 

@@ -216,11 +216,27 @@ export default class JSDocGenerator {
       footers: ["@private"],
     }],
 
-    ["validateArguments", {
-      description: "Validate the arguments.",
+    ["isValidKeyPublic", {
+      description: "Determine if a set of keys is valid.",
       includeArgs: "excludeValue",
+      returnType: "boolean",
+      returnDescription: "True if the validation passes, false if it doesn't.",
+      footers: ["@public"],
+    }],
+
+    ["isValidKeyPrivate", {
+      description: "Determine if a set of keys is valid.",
+      includeArgs: "excludeValue",
+      returnType: "boolean",
+      returnDescription: "True if the validation passes, false if it doesn't.",
       footers: ["@private"],
     }],
+
+    ["requireValidKey", {
+      includeArgs: "excludeValue",
+      footers: ["@throws for an invalid key set."]
+    }],
+
   ]);
 
   /**

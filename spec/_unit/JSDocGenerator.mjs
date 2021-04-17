@@ -179,6 +179,42 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
+    it("isValidKeyPublic", () => {
+      const generated = generator.buildBlock("isValidKeyPublic", 2);
+      expect(generated).toEqual(`  /**
+   * Determine if a set of keys is valid.
+   *
+   * @param {Car}    car    The car.
+   * @param {Person} driver The driver of the car.
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @public
+   */`);
+    });
+
+    it("isValidKeyPrivate", () => {
+      const generated = generator.buildBlock("isValidKeyPrivate", 2);
+      expect(generated).toEqual(`  /**
+   * Determine if a set of keys is valid.
+   *
+   * @param {Car}    car    The car.
+   * @param {Person} driver The driver of the car.
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @private
+   */`);
+    });
+
+    it("requireValidKey", () => {
+      const generated = generator.buildBlock("requireValidKey", 2);
+      expect(generated).toEqual(`  /**
+   * @param {Car}    car    The car.
+   * @param {Person} driver The driver of the car.
+   *
+   * @throws for an invalid key set.
+   */`);
+    });
+
     it("wrapIteratorMap", () => {
       const generated = generator.buildBlock("wrapIteratorMap", 2);
       expect(generated).toEqual(`  /**
@@ -191,17 +227,8 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
-    it("validateArguments", () => {
-      const generated = generator.buildBlock("validateArguments", 2);
-      expect(generated).toEqual(`  /**
-   * Validate the arguments.
-   *
-   * @param {Car}    car    The car.
-   * @param {Person} driver The driver of the car.
-   *
-   * @private
-   */`);
-    });
+
+
   });
 
   describe(".buildBlock() with two arguments and a value type builds a valid comment block for the template name", () => {
@@ -387,15 +414,39 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
-    it("validateArguments", () => {
-      const generated = generator.buildBlock("validateArguments", 2);
+    it("isValidKeyPublic", () => {
+      const generated = generator.buildBlock("isValidKeyPublic", 2);
       expect(generated).toEqual(`  /**
-   * Validate the arguments.
+   * Determine if a set of keys is valid.
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
    *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @public
+   */`);
+    });
+
+    it("isValidKeyPrivate", () => {
+      const generated = generator.buildBlock("isValidKeyPrivate", 2);
+      expect(generated).toEqual(`  /**
+   * Determine if a set of keys is valid.
+   *
+   * @param {Car}    car    The car.
+   * @param {Person} driver The driver of the car.
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
    * @private
+   */`);
+    });
+
+    it("requireValidKey", () => {
+      const generated = generator.buildBlock("requireValidKey", 2);
+      expect(generated).toEqual(`  /**
+   * @param {Car}    car    The car.
+   * @param {Person} driver The driver of the car.
+   *
+   * @throws for an invalid key set.
    */`);
     });
   });
@@ -573,15 +624,39 @@ describe("JSDocGenerator for sets", () => {
    */`);
     });
 
-    it("validateArguments", () => {
-      const generated = generator.buildBlock("validateArguments", 2);
+    it("isValidKeyPublic", () => {
+      const generated = generator.buildBlock("isValidKeyPublic", 2);
       expect(generated).toEqual(`  /**
-   * Validate the arguments.
+   * Determine if a set of keys is valid.
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
    *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @public
+   */`);
+    });
+
+    it("isValidKeyPrivate", () => {
+      const generated = generator.buildBlock("isValidKeyPrivate", 2);
+      expect(generated).toEqual(`  /**
+   * Determine if a set of keys is valid.
+   *
+   * @param {Car}    car    The car.
+   * @param {Person} driver The driver of the car.
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
    * @private
+   */`);
+    });
+
+    it("requireValidKey", () => {
+      const generated = generator.buildBlock("requireValidKey", 2);
+      expect(generated).toEqual(`  /**
+   * @param {Car}    car    The car.
+   * @param {Person} driver The driver of the car.
+   *
+   * @throws for an invalid key set.
    */`);
     });
   });
@@ -734,16 +809,42 @@ describe("JSDocGenerator for sets", () => {
    */`);
     });
 
-    it("validateArguments", () => {
-      const generated = generator.buildBlock("validateArguments", 2);
+    it("isValidKeyPublic", () => {
+      const generated = generator.buildBlock("isValidKeyPublic", 2);
       expect(generated).toEqual(`  /**
-   * Validate the arguments.
+   * Determine if a set of keys is valid.
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
    * @param {State}  value  The state of registration.
    *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @public
+   */`);
+    });
+
+    it("isValidKeyPrivate", () => {
+      const generated = generator.buildBlock("isValidKeyPrivate", 2);
+      expect(generated).toEqual(`  /**
+   * Determine if a set of keys is valid.
+   *
+   * @param {Car}    car    The car.
+   * @param {Person} driver The driver of the car.
+   * @param {State}  value  The state of registration.
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
    * @private
+   */`);
+    });
+
+    it("requireValidKey", () => {
+      const generated = generator.buildBlock("requireValidKey", 2);
+      expect(generated).toEqual(`  /**
+   * @param {Car}    car    The car.
+   * @param {Person} driver The driver of the car.
+   * @param {State}  value  The state of registration.
+   *
+   * @throws for an invalid key set.
    */`);
     });
   });

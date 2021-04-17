@@ -141,11 +141,7 @@ export default class WeakKeyComposer {
    * @private
    */
   __fillWeakArguments__(weakArguments, strongArguments) {
-    if (weakArguments.length !== this.__weakArgList__.length)
-      return null;
-    if (weakArguments.some(arg => Object(arg) !== arg))
-      return null;
-    if (strongArguments.length !== this.__strongArgList__.length)
+    if (!this.isValidForKey(weakArguments, strongArguments))
       return null;
 
     weakArguments = weakArguments.slice();
@@ -154,6 +150,24 @@ export default class WeakKeyComposer {
     }
 
     return weakArguments;
+  }
+
+  /**
+   * Determine if the set of arguments is valid to form a key.
+   * @param {*[]} weakArguments   The list of weak arguments.
+   * @param {*[]} strongArguments The list of strong arguments.
+   *
+   * @returns {boolean}
+   * @public
+   */
+  isValidForKey(weakArguments, strongArguments) {
+    if (weakArguments.length !== this.__weakArgList__.length)
+      return false;
+    if (weakArguments.some(arg => Object(arg) !== arg))
+      return false;
+    if (strongArguments.length !== this.__strongArgList__.length)
+      return false;
+    return true;
   }
 
   /**

@@ -163,15 +163,12 @@ export default class CodeGenerator extends CompletionPromise {
     }
 
     {
-      const validator = paramsData.map(
+      const validatorCode = paramsData.map(
         pd => pd.argumentValidator || ""
       ).filter(Boolean).join("\n\n").trim();
 
-      if (validator) {
-        const vSource = `__validateArguments__(${this.#defines.get("argList")}) {
-${validator}
-}`;
-        this.#defines.set("validateArguments", vSource);
+      if (validatorCode) {
+        this.#defines.set("validateArguments", validatorCode);
         this.#defines.set("invokeValidate", true);
       }
     }
