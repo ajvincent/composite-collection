@@ -374,9 +374,9 @@ export default class CollectionConfiguration {
       this.#parameterToTypeMap.set(argumentName, collectionType);
 
       if (holdWeak)
-        this.#weakMapKeys.push(argumentName);
+        this.#weakSetElements.push(argumentName);
       else
-        this.#strongMapKeys.push(argumentName);
+        this.#strongSetElements.push(argumentName);
     });
   }
 
