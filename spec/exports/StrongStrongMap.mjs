@@ -13,6 +13,10 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     expect(Object.isFrozen(StrongStrongMap.prototype)).toBe(true);
   });
 
+  xit("class only exposes public methods", () => {
+    // not implemented yet
+  });
+
   it("setting one value", () => {
     const key1 = {isKey1: true}, key2 = {isKey2: true}, value = "value";
     refMap.set(key1, value);

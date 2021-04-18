@@ -19,6 +19,7 @@ describe("CodeGenerator(WeakStrongMap.mjs),", () => {
 
   it("exposes all methods of a weak map, but not those of a strong map", () => {
     expect(Reflect.getOwnPropertyDescriptor(testMap, "size")).toBe(undefined);
+    expect(Reflect.getOwnPropertyDescriptor(testMap, "clear")).toBe(undefined);
     expect(Reflect.getOwnPropertyDescriptor(testMap, "keys")).toBe(undefined);
     expect(Reflect.getOwnPropertyDescriptor(testMap, "values")).toBe(undefined);
     expect(Reflect.getOwnPropertyDescriptor(testMap, "entries")).toBe(undefined);

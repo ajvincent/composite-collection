@@ -99,11 +99,17 @@ namespace("test", () => {
       "spec/generated/SoloStrongSet.mjs",
       "spec/generated/SoloWeakMap.mjs",
       "spec/generated/SoloWeakSet.mjs",
+
       "spec/generated/StrongStrongMap.mjs",
       "spec/generated/StrongStrongSet.mjs",
+
       "spec/generated/WeakWeakMap.mjs",
       "spec/generated/WeakStrongMap.mjs",
       "spec/generated/StrongWeakMap.mjs",
+
+      "spec/generated/WeakWeakSet.mjs",
+      "spec/generated/WeakStrongSet.mjs",
+      "spec/generated/StrongWeakSet.mjs",
     ]
   );
 
@@ -125,6 +131,7 @@ generateCollectionTasks("spec/fixtures", "spec/generated", [
   "SoloWeakMap.mjs",
   "SoloWeakSet.mjs",
   "StrongWeakMap.mjs",
+  "StrongWeakSet.mjs",
 ]);
 
 generateCollectionTasks("source/exports", "spec/generated", [
@@ -132,6 +139,8 @@ generateCollectionTasks("source/exports", "spec/generated", [
   "StrongStrongSet.mjs",
   "WeakWeakMap.mjs",
   "WeakStrongMap.mjs",
+  "WeakWeakSet.mjs",
+  "WeakStrongSet.mjs",
 ]);
 
 desc("Debugging tests");
@@ -147,10 +156,15 @@ task(
     "exports/KeyHasher.mjs",
     "exports/WeakKey-WeakMap.mjs",
     "exports/WeakKey-WeakRef.mjs",
+
     "exports/StrongStrongMap.mjs",
     "exports/StrongStrongSet.mjs",
+
     "exports/WeakWeakMap.mjs",
     "exports/WeakStrongMap.mjs",
+
+    "exports/WeakWeakSet.mjs",
+    "exports/WeakStrongSet.mjs",
   ]
 );
 
@@ -165,4 +179,6 @@ generateCollectionTasks("source/exports", "exports", [
   "StrongStrongSet.mjs",
   "WeakWeakMap.mjs",
   "WeakStrongMap.mjs",
+  "WeakWeakSet.mjs",
+  "WeakStrongSet.mjs",
 ]);

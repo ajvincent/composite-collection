@@ -53,8 +53,8 @@ ${docs.buildBlock("add", 2)}
       return null;${
   defines.get("strongSetCount") ? `
     if (!this.__weakKeyToStrongKeys__.has(__key__))
-      this.__weakKeyToStrongKeys__.set(__key__, new Set(${defines.get("strongSetArgList")}));
-}` : `
+      this.__weakKeyToStrongKeys__.set(__key__, new Set([${defines.get("strongSetArgList")}]));
+` : `
     this.__weakKeySet__.add(__key__);
 `}
     return this;
@@ -64,7 +64,11 @@ ${docs.buildBlock("delete", 2)}
   delete(${defines.get("argList")}) {
     this.__requireValidKey__(${defines.get("argList")});
 
-    if (!this.__keyComposer__.hasKey([key], []))
+    if (!this.__keyComposer__.hasKey([${
+      defines.get("weakSetArgList")
+    }], [${
+      defines.get("strongSetArgList")
+    }]))
       return false;
 
     const __key__ = this.__keyComposer__.getKey([${

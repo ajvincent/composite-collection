@@ -17,6 +17,10 @@ describe("CodeGenerator(StrongStrongSet.mjs)", () => {
     expect(Object.isFrozen(StrongStrongSet.prototype)).toBe(true);
   });
 
+  xit("class only exposes public methods", () => {
+    // not implemented yet
+  });
+
   it("adding one value", () => {
     refSet.add(key1);
 

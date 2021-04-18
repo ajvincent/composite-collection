@@ -41,9 +41,12 @@
     "./CompleTimeOptions": "./source/CompileTimeOptions.mjs",
     "./KeyHasher": "./exports/KeyHasher.mjs",
     "./WeakKeyComposer": "./exports/WeakKey-WeakMap.mjs",
+
     "./StrongStrongMap": "./exports/StrongStrongMap.mjs",
     "./StrongStrongSet": "./exports/StrongStrongSet.mjs",
     "./WeakWeakMap": "./exports/WeakWeakMap.mjs",
-    "./WeakStrongMap": "./exports/WeakStrongMap.mjs"
+    "./WeakStrongMap": "./exports/WeakStrongMap.mjs",
+    "./WeakWeakSet": "./exports/WeakWeakSet.mjs",
+    "./WeakStrongSet": "./exports/WeakStrongSet.mjs"
   }
 }

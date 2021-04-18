@@ -19,6 +19,7 @@ describe("CodeGenerator(WeakWeakMap.mjs),", () => {
 
   it("exposes all methods of a weak map, but not those of a strong map", () => {
     expect(Reflect.getOwnPropertyDescriptor(testMap, "size")).toBe(undefined);
+    expect(Reflect.getOwnPropertyDescriptor(testMap, "clear")).toBe(undefined);
     expect(Reflect.getOwnPropertyDescriptor(testMap, "keys")).toBe(undefined);
     expect(Reflect.getOwnPropertyDescriptor(testMap, "values")).toBe(undefined);
     expect(Reflect.getOwnPropertyDescriptor(testMap, "entries")).toBe(undefined);
@@ -64,13 +65,13 @@ describe("CodeGenerator(WeakWeakMap.mjs),", () => {
           () => testMap.get("foo", {})
         ).toThrowError("The ordered key set is not valid!");
       });
-  
+
       it("has()", () => {
         expect(
           () => testMap.has("foo", {})
         ).toThrowError("The ordered key set is not valid!");
       });
-  
+
       it("set()", () => {
         expect(
           () => testMap.set("foo", {}, 3)
