@@ -14,6 +14,7 @@
    the original repository checkout for review.
 
    This is like mathematical induction, proving f(k) === f(1) for k >= 1.
+   f(0), the master code, builds stage 1, but that's not included in the test.
    f(1) builds stage 2, and f(2) builds stage 3.  If f(2) === f(1), we have
    our proof.
 
@@ -26,27 +27,26 @@ import fs from "fs/promises";
 import path from "path";
 import os from "os";
 
-import { getHashFileList, hashAllFiles } from "./hash-all-files.mjs";
-
-async function promiseTempDirs() {
-  let resolve, startPromise = new Promise(res => resolve = res);
-  for (let i = 0; i < 3; i++) {
-    stageDirs.push(await fs.mkdtemp(path.join(os.tmpdir(), "composite-collection-")));
-  }
-
-  return {
-    resolve,
-    promise: Promise.all(stageDirs.map(async stageDir => {
-      await startPromise;
-      await fs.rmdir(stageDir, { recursive: true })
-    })),
-  }
-}
+import { hashAllFiles } from "./hash-all-files.mjs";
+import tempDirWithCleanup from "../spec/support/tempDirWithCleanup.mjs"
 
 const masterDirectory = process.cwd();
 
 const stageDirs = [];
-const cleanup = await promiseTempDirs();
+const cleanupAll = { resolve, promise };
+{
+  let resolveSequence = [];
+  let promiseSequence = [];
+  for (let i = 0; i < 3; i++) {
+    let cleanup = await tempDirWithCleanup();
+    resolveSequence.push(cleanup.resolve);
+    promiseSequence.push(cleanup.promise);
+    stageDirs.push(cleanup.tempDir);
+
+    cleanupAll.resolve = () => resolveSequence.forEach(res => res());
+    cleanupAll.promise = Promise.all(promiseSequence);
+  }
+}
 
 console.log(stageDirs);
 
@@ -82,7 +82,7 @@ catch (ex) {
   throw ex;
 }
 finally {
-  cleanup.resolve();
+  cleanupAll.resolve();
   await cleanup.promise;
 }
 

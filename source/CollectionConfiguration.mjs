@@ -344,7 +344,7 @@ export default class CollectionConfiguration {
    * @property {string?}   description       A JSDoc-printable description.
    * @property {Function?} argumentValidator A method to use for testing the argument.
    */
-   addSetKey(argumentName, holdWeak, options = {}) {
+  addSetKey(argumentName, holdWeak, options = {}) {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("setElements")) {
         this.#throwIfLocked();
