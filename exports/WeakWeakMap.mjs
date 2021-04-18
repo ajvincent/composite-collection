@@ -173,5 +173,12 @@ export default class WeakWeakMap {
   }
 }
 
+Reflect.defineProperty(WeakWeakMap, Symbol.toStringTag, {
+  value: "WeakWeakMap",
+  writable: false,
+  enumerable: false,
+  configurable: true
+});
+
 Object.freeze(WeakWeakMap);
 Object.freeze(WeakWeakMap.prototype);

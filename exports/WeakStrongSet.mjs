@@ -132,5 +132,12 @@ export default class WeakStrongSet {
   }
 }
 
+Reflect.defineProperty(WeakStrongSet, Symbol.toStringTag, {
+  value: "WeakStrongSet",
+  writable: false,
+  enumerable: false,
+  configurable: true
+});
+
 Object.freeze(WeakStrongSet);
 Object.freeze(WeakStrongSet.prototype);

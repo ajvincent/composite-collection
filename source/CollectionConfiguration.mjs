@@ -244,7 +244,11 @@ export default class CollectionConfiguration {
         throw new Error("innerType must be a WeakSet, Set, or null!");
     }
 
-    if (outerType.endsWith("Map")) {
+    if (this.#collectionTemplate.includes("MapOf")) {
+      this.#stateTransitionsGraph = ConfigurationStateGraphs.get("MapOfSets");
+      this.#doStateTransition("startMap");
+    }
+    else if (outerType.endsWith("Map")) {
       this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Map");
       this.#doStateTransition("startMap");
     }

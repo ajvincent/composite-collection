@@ -1,25 +1,33 @@
+/**
+ * This is generated code.  Do not edit.
+ *
+ * Generator: https://github.com/ajvincent/composite-collection/
+ */
+
 import KeyHasher from "./KeyHasher.mjs";
 
-export default class __className__ {
+export default class StrongMapOfStrongSets {
   constructor() {
     /**
      * @type {Map<string, Map<hash, *[]>>}
+     * @private
+     * @const
      */
     this.__outerMap__ = new Map();
 
     /**
      * @type {KeyHasher}
      * @private
-     * @readonly
+     * @const
      */
-    this.__mapHasher__ = new KeyHasher(__mapArgList__);
+    this.__mapHasher__ = new KeyHasher(["mapKey"]);
 
     /**
      * @type {KeyHasher}
      * @private
-     * @readonly
+     * @const
      */
-    this.__setHasher__ = new KeyHasher(__mapArgList__);
+    this.__setHasher__ = new KeyHasher(["setKey"]);
 
     /** @type {Number} @private */
     this.__sizeOfAll__ = 0;
@@ -29,8 +37,8 @@ export default class __className__ {
     return this.__sizeOfAll__;
   }
 
-  getSizeOfSet(__mapArgList__) {
-    const [__innerMap__] = this.__getInnerMap__(__mapArgList__);
+  getSizeOfSet(mapKey) {
+    const [__innerMap__] = this.__getInnerMap__(mapKey);
     return __innerMap__ ? __innerMap__.size : 0;
   }
 
@@ -38,40 +46,42 @@ export default class __className__ {
     return this.__outerMap__.size;
   }
 
-  add(__mapArgList__, __setArgList__) {
-    const __mapHash__ = this.__mapHasher__.buildHash([__mapArgList__]);
+  add(mapKey, setKey) {
+    const __mapHash__ = this.__mapHasher__.buildHash([mapKey]);
     if (!this.__outerMap__.has(__mapHash__))
       this.__outerMap__.set(__mapHash__, new Map);
 
     const __innerMap__ = this.__outerMap__.get(__mapHash__);
 
-    const __setHash__ = this.__setHasher__.buildHash([__setArgList__]);
+    const __setHash__ = this.__setHasher__.buildHash([setKey]);
     if (!__innerMap__.has(__setHash__)) {
-      __innerMap__.set(__setHash__, Object.freeze([__argList__]));
+      __innerMap__.set(__setHash__, Object.freeze([mapKey, setKey]));
       this.__sizeOfAll__++;
     }
 
     return this;
   }
 
-  addSets(__mapArgList__, __sets__) {
+  addSets(mapKey, __sets__) {
     const __array__ = Array.from(__sets__).map((__set__, __index__) => {
       __set__ = Array.from(__set__);
-      if (__set__.length !== __setArgCount__) {
-        throw new Error(`Set at index ${__index__} doesn't have exactly ${__setArgCount__} arguments!`);
+      if (__set__.length !== 1) {
+        throw new Error(`Set at index ${__index__} doesn't have exactly 1 argument!`);
       }
       return __set__;
     });
 
-    const __mapHash__ = this.__mapHasher__.buildHash([__mapArgList__]);
+    const __mapHash__ = this.__mapHasher__.buildHash([mapKey]);
     if (!this.__outerMap__.has(__mapHash__))
       this.__outerMap__.set(__mapHash__, new Map);
 
     const __innerMap__ = this.__outerMap__.get(__mapHash__);
+    const __mapArgs__ = [mapKey];
+
     __array__.forEach(__set__ => {
       const __setHash__ = this.__setHasher__.buildHash(__set__);
       if (!__innerMap__.has(__setHash__)) {
-        __innerMap__.set(__setHash__, Object.freeze(__mapArgList__.concat(__set__)));
+        __innerMap__.set(__setHash__, Object.freeze(__mapArgs__.concat(__set__)));
         this.__sizeOfAll__++;
       }
     });
@@ -82,12 +92,12 @@ export default class __className__ {
     this.__sizeOfAll__ = 0;
   }
 
-  delete(__mapArgList__, __setArgList__) {
-    const [__innerMap__, __mapHash__] = this.__getInnerMap__(__mapArgList__);
+  delete(mapKey, setKey) {
+    const [__innerMap__, __mapHash__] = this.__getInnerMap__(mapKey);
     if (!__innerMap__)
       return false;
 
-    const __setHash__ = this.__setHasher__.buildHash([__setArgList__]);
+    const __setHash__ = this.__setHasher__.buildHash([setKey]);
     if (!__innerMap__.has(__setHash__))
       return false;
 
@@ -95,14 +105,14 @@ export default class __className__ {
     this.__sizeOfAll__--;
 
     if (__innerMap__.size === 0) {
-      this.__outerMap__.delete(__innerMap__);
+      this.__outerMap__.delete(__mapHash__);
     }
 
     return true;
   }
 
-  deleteSet(__mapArgList__) {
-    const [__innerMap__, __mapHash__] = this.__getInnerMap__(__mapArgList__);
+  deleteSet(mapKey) {
+    const [__innerMap__, __mapHash__] = this.__getInnerMap__(mapKey);
     if (!__innerMap__)
       return false;
 
@@ -111,7 +121,7 @@ export default class __className__ {
     return true;
   }
 
-  forEach(__callback__) {
+  forEach(__callback__, __thisArg__) {
     this.__outerMap__.forEach(
       __innerMap__ => __innerMap__.forEach(
         __keySet__ => __callback__.apply(__thisArg__, __keySet__.concat(this))
@@ -119,8 +129,8 @@ export default class __className__ {
     );
   }
 
-  forEachSet(__mapArgList__, __callback__, __thisArg__) {
-    const [__innerMap__] = this.__getInnerMap__(__mapArgList__);
+  forEachSet(mapKey, __callback__, __thisArg__) {
+    const [__innerMap__] = this.__getInnerMap__(mapKey);
     if (!__innerMap__)
       return;
 
@@ -129,17 +139,17 @@ export default class __className__ {
     );
   }
 
-  has(__mapArgList__, __setArgList__) {
-    const [__innerMap__] = this.__getInnerMap__(__mapArgList__);
+  has(mapKey, setKey) {
+    const [__innerMap__] = this.__getInnerMap__(mapKey);
     if (!__innerMap__)
       return false;
 
-    const __setHash__ = this.__setHasher__.buildHash([__setArgList__]);
+    const __setHash__ = this.__setHasher__.buildHash([setKey]);
     return __innerMap__.has(__setHash__);
   }
 
-  hasSet(__mapArgList__) {
-    const [__innerMap__] = this.__getInnerMap__(__mapArgList__);
+  hasSet(mapKey) {
+    const [__innerMap__] = this.__getInnerMap__(mapKey);
     return Boolean(__innerMap__);
   }
 
@@ -151,9 +161,15 @@ export default class __className__ {
       next() {
         while (true) {
           if (!__innerIter__) {
-            const {value: __innerMap__, done} = __outerIter__.next();
+            const {
+              value: __innerMap__,
+              done
+            } = __outerIter__.next();
             if (done)
-              return {value: undefined, done};
+              return {
+                value: undefined,
+                done
+              };
 
             __innerIter__ = __innerMap__.values();
           }
@@ -168,20 +184,38 @@ export default class __className__ {
     };
   }
 
-  valuesSet(__mapArgList__) {
-    const [__innerMap__] = this.__getInnerMap__(__mapArgList__);
+  valuesSet(mapKey) {
+    const [__innerMap__] = this.__getInnerMap__(mapKey);
     if (!__innerMap__)
-      return {value: undefined, done: true};
+      return {
+        next() {
+          return {
+            value: undefined,
+            done: true
+          }
+        }
+      };
 
     return __innerMap__.values();
   }
 
-  __getInnerMap__(__mapArgList__) {
-    const __hash__ = this.__mapHasher__.buildHash([__mapArgList__]);
+  /** @private */
+  __getInnerMap__(...__mapArguments__) {
+    const __hash__ = this.__mapHasher__.buildHash(__mapArguments__);
     return [this.__outerMap__.get(__hash__), __hash__] || [];
   }
 }
 
-__className__[Symbol.iterator] = function() {
+StrongMapOfStrongSets[Symbol.iterator] = function() {
   return this.values();
 }
+
+Reflect.defineProperty(StrongMapOfStrongSets, Symbol.toStringTag, {
+  value: "StrongMapOfStrongSets",
+  writable: false,
+  enumerable: false,
+  configurable: true
+});
+
+Object.freeze(StrongMapOfStrongSets);
+Object.freeze(StrongMapOfStrongSets.prototype);

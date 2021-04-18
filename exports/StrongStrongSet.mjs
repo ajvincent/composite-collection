@@ -125,5 +125,12 @@ StrongStrongSet[Symbol.iterator] = function() {
   return this.values();
 }
 
+Reflect.defineProperty(StrongStrongSet, Symbol.toStringTag, {
+  value: "StrongStrongSet",
+  writable: false,
+  enumerable: false,
+  configurable: true
+});
+
 Object.freeze(StrongStrongSet);
 Object.freeze(StrongStrongSet.prototype);

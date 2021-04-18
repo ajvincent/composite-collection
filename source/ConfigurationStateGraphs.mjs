@@ -72,7 +72,6 @@ ConfigurationStateGraphs.set(
     ["mapKeys", new Set([
       "mapKeys",
       "setElements",
-      "locked",
     ])],
 
     ["setElements", new Set([

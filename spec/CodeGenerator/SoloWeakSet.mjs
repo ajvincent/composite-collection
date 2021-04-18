@@ -28,7 +28,6 @@ describe("CodeGenerator(SoloWeakSet.mjs)", () => {
   });
 
   it("validating a value is a non-primitive", () => {
-    debugger;
     expect(testSet.isValidKey(key1)).toBe(true);
     expect(testSet.isValidKey(key2)).toBe(true);
     expect(testSet.isValidKey("foo")).toBe(false);

@@ -172,6 +172,18 @@ export default class CodeGenerator extends CompletionPromise {
       this.#defines.set("strongSetArgNameList", buildArgNameList(data.strongSetElements));
     }
 
+    if (data.collectionTemplate.includes("MapOf")) {
+      const mapKeys = data.weakMapKeys.concat(data.strongMapKeys);
+      this.#defines.set("mapArgCount", mapKeys.length);
+      this.#defines.set("mapArgList", mapKeys.join(", "));
+      this.#defines.set("mapArgNameList", buildArgNameList(mapKeys));
+
+      const setKeys = data.weakSetElements.concat(data.strongSetElements);
+      this.#defines.set("setArgCount", setKeys.length);
+      this.#defines.set("setArgList", setKeys.join(", "));
+      this.#defines.set("setArgNameList", buildArgNameList(setKeys));
+    }
+
     {
       const validatorCode = paramsData.map(
         pd => pd.argumentValidator || ""
