@@ -4,7 +4,7 @@
  * @param {JSDocGenerator} docs
  * @returns
  */
- export default function preprocess(defines, docs) {
+export default function preprocess(defines, docs) {
   return `import WeakKeyComposer from "./WeakKey-WeakMap.mjs";
 
 export default class ${defines.get("className")} {

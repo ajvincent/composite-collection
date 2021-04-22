@@ -4,7 +4,7 @@
  * @param {JSDocGenerator} docs
  * @returns
  */
- export default function preprocess(defines, docs) {
+export default function preprocess(defines, docs) {
   let invokeValidate = "";
   if (defines.has("invokeValidate")) {
     invokeValidate = `\n    this.__requireValidKey__(${defines.get("argList")});\n`;
@@ -93,6 +93,8 @@ export default class ${defines.get("className")} {
         this.__sizeOfAll__++;
       }
     });
+
+    return this;
   }
 
   clear() {
