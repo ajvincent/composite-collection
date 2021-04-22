@@ -177,7 +177,9 @@ task(
     "exports/WeakStrongSet.mjs",
 
     "exports/StrongMapOfStrongSets.mjs",
+    /* see https://github.com/ajvincent/composite-collection/issues/41 - this can't ship yet
     "exports/StrongMapOfWeakSets.mjs",
+    */
   ]
 );
 
@@ -198,5 +200,7 @@ generateCollectionTasks("source/exports", "exports", [
   "WeakStrongSet.mjs",
 
   "StrongMapOfStrongSets.mjs",
+  /* see https://github.com/ajvincent/composite-collection/issues/41 - this can't ship yet
   "StrongMapOfWeakSets.mjs",
+  */
 ]);

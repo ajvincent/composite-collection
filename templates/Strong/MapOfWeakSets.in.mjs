@@ -41,10 +41,6 @@ export default class ${defines.get("className")} {
     });
   }
 
-  get mapSize() {
-    return this.__outerMap__.size;
-  }
-
   add(${defines.get("argList")}) {
     this.__requireValidKey__(${defines.get("argList")});
 
@@ -85,7 +81,7 @@ ${
       this.__outerMap__.set(__mapHash__, new ${defines.get("strongSetCount") ? "WeakMap" : "WeakSet"});
 
     const __inner__ = this.__outerMap__.get(__mapHash__);
-    __array__.forEach(__set__ => {
+    __array__.forEach(([${defines.get("setArgList")}] = __set__) => {
       const __setKey__ = this.__setKeyComposer__.getKey([${
         defines.get("weakSetArgList")
       }], [${
