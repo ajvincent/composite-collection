@@ -59,14 +59,11 @@ export default class ${defines.get("className")} {
     }], [${
       defines.get("strongSetArgList")
     }]);
-    if (!__setKey__)
-      return null;${
+${
   defines.get("strongSetCount") ? `
     if (!__inner__.has(__setKey__))
-      __inner__.set(__setKey__, new Set([${defines.get("strongSetArgList")}]));
-` : `
-    __inner__.add(__setKey__);
-`}
+      __inner__.set(__setKey__, new Set([${defines.get("strongSetArgList")}]));` : `
+    __inner__.add(__setKey__);`}
     return this;
   }
 
@@ -88,21 +85,18 @@ export default class ${defines.get("className")} {
       this.__outerMap__.set(__mapHash__, new ${defines.get("strongSetCount") ? "WeakMap" : "WeakSet"});
 
     const __inner__ = this.__outerMap__.get(__mapHash__);
-
     __array__.forEach(__set__ => {
       const __setKey__ = this.__setKeyComposer__.getKey([${
         defines.get("weakSetArgList")
       }], [${
         defines.get("strongSetArgList")
       }]);
-      if (!__setKey__)
-        return null;${
+${
     defines.get("strongSetCount") ? `
       if (!__inner__.has(__setKey__))
         __inner__.set(__setKey__, new Set([${defines.get("strongSetArgList")}]));
-  ` : `
-      __inner__.add(__setKey__);
-  `}    });
+` : `
+      __inner__.add(__setKey__);`}    });
 
     return this;
   }

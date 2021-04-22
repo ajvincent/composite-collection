@@ -41,10 +41,8 @@ export default class StrongMapOfWeakSets {
     const __inner__ = this.__outerMap__.get(__mapHash__);
 
     const __setKey__ = this.__setKeyComposer__.getKey([setKey], []);
-    if (!__setKey__)
-      return null;
-    __inner__.add(__setKey__);
 
+    __inner__.add(__setKey__);
     return this;
   }
 
@@ -64,11 +62,9 @@ export default class StrongMapOfWeakSets {
       this.__outerMap__.set(__mapHash__, new WeakSet);
 
     const __inner__ = this.__outerMap__.get(__mapHash__);
-
     __array__.forEach(__set__ => {
       const __setKey__ = this.__setKeyComposer__.getKey([setKey], []);
-      if (!__setKey__)
-        return null;
+
       __inner__.add(__setKey__);
     });
 
