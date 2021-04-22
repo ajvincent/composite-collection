@@ -85,6 +85,8 @@ export default class StrongMapOfStrongSets {
         this.__sizeOfAll__++;
       }
     });
+
+    return this;
   }
 
   clear() {
