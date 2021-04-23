@@ -9,6 +9,7 @@
 import acorn from "acorn";
 
 import ConfigurationStateGraphs from "./ConfigurationStateGraphs.mjs";
+import CollectionType from "./CollectionType.mjs";
 
 function getNormalFunctionAST(fn) {
   let source = fn.toString().replace(/^function\s*\(/, "function foo(");
@@ -36,48 +37,6 @@ function getNormalFunctionAST(fn) {
 
   return [source, astNode.params, astNode.body];
 }
-
-/**
- * @public
- */
-class CollectionType {
-  /**
-   * A simple data structure.
-   *
-   * @param {string}    argumentName   The name of the argument.
-   * @param {string}    mapOrSetType   The name of the map or set type.
-   *                                   Map, Set, WeakMap, WeakSet, or something that inherits from it.
-   * @param {string}    argumentType   A JSDoc-printable type for the argument.
-   * @param {string}    description    A JSDoc-printable description.
-   * @param {string?}   argumentValidator A method to use for testing the argument.
-   */
-  constructor(argumentName, mapOrSetType, argumentType, description, argumentValidator) {
-    /** @public @readonly @type {string} */
-    this.argumentName   = argumentName;
-
-    /**
-     * @public
-     * @readonly
-     * @type {string}
-     *
-     * No one's using this, but it may be useful for debugging.
-     */
-    this.mapOrSetType   = mapOrSetType;
-
-    /** @public @readonly @type {string} */
-    this.argumentType   = argumentType;
-
-    /** @public @readonly @type {string} */
-    this.description    = description;
-
-    /** @public @readonly @type {string?} */
-    this.argumentValidator = argumentValidator;
-
-    Object.freeze(this);
-  }
-}
-Object.freeze(CollectionType);
-Object.freeze(CollectionType.prototype);
 
 const PREDEFINED_TYPES = new Set(["WeakMap", "Map", "WeakSet", "Set"]);
 

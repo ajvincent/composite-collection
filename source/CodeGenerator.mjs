@@ -6,6 +6,7 @@
 
 import CollectionConfiguration from "./CollectionConfiguration.mjs";
 import CompletionPromise from "./CompletionPromise.mjs";
+import CollectionType from "./CollectionType.mjs";
 import JSDocGenerator from "./JSDocGenerator.mjs";
 import CompileTimeOptions from "./CompileTimeOptions.mjs";
 
@@ -210,12 +211,11 @@ export default class CodeGenerator extends CompletionPromise {
     );
 
     this.#configurationData.parameterToTypeMap.forEach(typeData => {
-      this.#docGenerator.addParameter(typeData.argumentType, typeData.argumentName, typeData.description);
+      this.#docGenerator.addParameter(typeData);
     });
 
     if (this.#configurationData.valueType && !this.#configurationData.parameterToTypeMap.has("value")) {
-      const typeData = this.#configurationData.valueType;
-      this.#docGenerator.addParameter(typeData.argumentType, typeData.argumentName, typeData.description);
+      this.#docGenerator.addParameter(this.#configurationData.valueType);
     }
   }
 

@@ -547,7 +547,7 @@ describe("CodeGenerator(StrongMapOfStrongSets.mjs)", () => {
     refSet.delete(key1);
     refSet.delete(key2);
 
-    testSet.deleteSet(key3);
+    testSet.deleteSets(key3);
     expect(testSet.size).toBe(0);
     expect(testSet.mapSize).toBe(0);
     expect(testSet.getSizeOfSet(key3)).toBe(0);

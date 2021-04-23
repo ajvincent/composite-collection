@@ -1,3 +1,5 @@
+import CollectionType from "./CollectionType.mjs";
+
 /** @private */
 class ParamBlock {
   /** @type {object} */
@@ -102,6 +104,18 @@ export default class JSDocGenerator {
       footers: ["@public", "@readonly"],
     }],
 
+    ["getSizeOfSet", {
+      description: "The number of elements in a particular set.",
+      includeArgs: "mapArguments",
+      footers: ["@public", "@readonly"],
+    }],
+
+    ["mapSize", {
+      description: "The number of maps in this collection.",
+      includeArgs: "mapArguments",
+      footers: ["@public", "@readonly"],
+    }],
+
     ["clear", {
       description: "Clear the collection.",
       includeArgs: "none",
@@ -111,6 +125,14 @@ export default class JSDocGenerator {
     ["delete", {
       description: "Delete an element from the collection by the given key sequence.",
       includeArgs: "excludeValue",
+      returnType: "boolean",
+      returnDescription: "True if we found the value and deleted it.",
+      footers: ["@public"],
+    }],
+
+    ["deleteSets", {
+      description: "Delete all sets from the collection by the given map sequence.",
+      includeArgs: "mapArguments",
       returnType: "boolean",
       returnDescription: "True if we found the value and deleted it.",
       footers: ["@public"],
@@ -134,6 +156,15 @@ export default class JSDocGenerator {
 
     ["forEachSet", {
       description: "Iterate over the keys.",
+      paramHeaders: [
+        ["__className__~ForEachCallback", "callback", "A function to invoke for each iteration."]
+      ],
+      includeArgs: "none",
+      footers: ["@public"],
+    }],
+
+    ["forEachMapSet", {
+      description: "Iterate over the keys under a map in this collection.",
       paramHeaders: [
         ["__className__~ForEachCallback", "callback", "A function to invoke for each iteration."]
       ],
@@ -176,6 +207,14 @@ export default class JSDocGenerator {
       footers: ["@public"],
     }],
 
+    ["hasSet", {
+      description: "Report if the collection has any sets for a map.",
+      includeArgs: "excludeValue",
+      returnType: "boolean",
+      returnDescription: "True if the key set refers to a value in the collection.",
+      footers: ["@public"],
+    }],
+
     ["keys", {
       description: "Return a new iterator for the key sets of the collection.",
       includeArgs: "none",
@@ -199,8 +238,23 @@ export default class JSDocGenerator {
       footers: ["@public"],
     }],
 
+    ["addSets", {
+      description: "Add several sets to a map in this collection.",
+      includeArgs: "mapArguments",
+      returnType: "__className__",
+      returnDescription: "This collection.",
+      footers: ["@public"],
+    }],
+
     ["values", {
       description: "Return a new iterator for the values of the collection.",
+      includeArgs: "none",
+      returnType: "Iterator<__valueType__>",
+      footers: ["@public"],
+    }],
+
+    ["valuesSet", {
+      description: "Return a new iterator for the sets of the collection in a map.",
       includeArgs: "none",
       returnType: "Iterator<__valueType__>",
       footers: ["@public"],
@@ -290,17 +344,16 @@ export default class JSDocGenerator {
 
   /**
    * Add a parameter definition.
-   * @param {string}   type         The parameter type.
-   * @param {string}   name         The parameter name.
-   * @param {string[]} description  The parameter description.
-   *
+   * @param {CollectionType} parameter The parameter type information.
    * @public
    */
-  addParameter(type, name, description) {
-    this.#params.push({type, name, description});
-    if (name === "value") {
-      this.#valueType = type;
-      this.#valueDesc = description;
+  addParameter(parameter) {
+    if (!(parameter instanceof CollectionType))
+      throw new Error("parameter must be a CollectionType!")
+    this.#params.push(parameter);
+    if (parameter.argumentName === "value") {
+      this.#valueType = parameter.argumentType;
+      this.#valueDesc = parameter.description;
     }
   }
 
@@ -315,7 +368,7 @@ export default class JSDocGenerator {
 
     let keyMap;
     {
-      const argList = this.#params.map(param => param.name);
+      const argList = this.#params.map(param => param.argumentName);
       {
         let index = argList.indexOf("value");
         if (index !== -1)
@@ -422,12 +475,16 @@ export default class JSDocGenerator {
       if (template.includeArgs !== "none") {
         let valueFound = false;
         this.#params.forEach(param => {
-          if (!this.#isSet && param.name === "value") {
+          if (!this.#isSet && param.argumentName === "value") {
             valueFound = true;
             if ((template.includeArgs === "excludeValue"))
               return;
           }
-          paramBlock.add(param.type || "*", param.name, param.description || "");
+          paramBlock.add(
+            param.argumentType || "*",
+            param.argumentName,
+            param.description || ""
+          );
         });
 
         if (!valueFound && !this.#isSet && (template.includeArgs !== "excludeValue"))

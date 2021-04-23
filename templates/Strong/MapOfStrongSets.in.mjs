@@ -15,7 +15,7 @@ export default function preprocess(defines, docs) {
 export default class ${defines.get("className")} {
   constructor() {
     /**
-     * @type {Map<string, Map<hash, *[]>>}
+     * @type {Map<hash, Map<hash, *[]>>}
      * @private
      * @const
      */
@@ -39,19 +39,23 @@ export default class ${defines.get("className")} {
     this.__sizeOfAll__ = 0;
   }
 
+${docs.buildBlock("getSize", 2)}
   get size() {
     return this.__sizeOfAll__;
   }
 
+${docs.buildBlock("getSizeOfSet", 2)}
   getSizeOfSet(${defines.get("mapArgList")}) {
     const [__innerMap__] = this.__getInnerMap__(${defines.get("mapArgList")});
     return __innerMap__ ? __innerMap__.size : 0;
   }
 
+${docs.buildBlock("mapSize", 2)}
   get mapSize() {
     return this.__outerMap__.size;
   }
 
+${docs.buildBlock("add", 2)}
   add(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
     const __mapHash__ = this.__mapHasher__.buildHash([${defines.get("mapArgList")}]);
     if (!this.__outerMap__.has(__mapHash__))
@@ -68,6 +72,7 @@ export default class ${defines.get("className")} {
     return this;
   }
 
+${docs.buildBlock("addSets", 2)}
   addSets(${defines.get("mapArgList")}, __sets__) {
     const __array__ = Array.from(__sets__).map((__set__, __index__) => {
       __set__ = Array.from(__set__);
@@ -97,11 +102,13 @@ export default class ${defines.get("className")} {
     return this;
   }
 
+${docs.buildBlock("clear", 2)}
   clear() {
     this.__outerMap__.clear();
     this.__sizeOfAll__ = 0;
   }
 
+${docs.buildBlock("delete", 2)}
   delete(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
     const [__innerMap__, __mapHash__] = this.__getInnerMap__(${defines.get("mapArgList")});
     if (!__innerMap__)
@@ -121,7 +128,8 @@ export default class ${defines.get("className")} {
     return true;
   }
 
-  deleteSet(${defines.get("mapArgList")}) {
+${docs.buildBlock("deleteSets", 2)}
+  deleteSets(${defines.get("mapArgList")}) {
     const [__innerMap__, __mapHash__] = this.__getInnerMap__(${defines.get("mapArgList")});
     if (!__innerMap__)
       return false;
@@ -131,6 +139,7 @@ export default class ${defines.get("className")} {
     return true;
   }
 
+${docs.buildBlock("forEachSet", 2)}
   forEach(__callback__, __thisArg__) {
     this.__outerMap__.forEach(
       __innerMap__ => __innerMap__.forEach(
@@ -139,6 +148,7 @@ export default class ${defines.get("className")} {
     );
   }
 
+${docs.buildBlock("forEachMapSet", 2)}
   forEachSet(${defines.get("mapArgList")}, __callback__, __thisArg__) {
     const [__innerMap__] = this.__getInnerMap__(${defines.get("mapArgList")});
     if (!__innerMap__)
@@ -149,6 +159,9 @@ export default class ${defines.get("className")} {
     );
   }
 
+${docs.buildBlock("forEachCallbackSet", 2)}
+
+${docs.buildBlock("has", 2)}
   has(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
     const [__innerMap__] = this.__getInnerMap__(${defines.get("mapArgList")});
     if (!__innerMap__)
@@ -158,11 +171,13 @@ export default class ${defines.get("className")} {
     return __innerMap__.has(__setHash__);
   }
 
+${docs.buildBlock("hasSet", 2)}
   hasSet(${defines.get("mapArgList")}) {
     const [__innerMap__] = this.__getInnerMap__(${defines.get("mapArgList")});
     return Boolean(__innerMap__);
   }
 
+${docs.buildBlock("values", 2)}
   values() {
     const __outerIter__ = this.__outerMap__.values();
     let __innerIter__ = null;
@@ -188,6 +203,7 @@ export default class ${defines.get("className")} {
     };
   }
 
+${docs.buildBlock("valuesSet", 2)}
   valuesSet(${defines.get("mapArgList")}) {
     const [__innerMap__] = this.__getInnerMap__(${defines.get("mapArgList")});
     if (!__innerMap__)

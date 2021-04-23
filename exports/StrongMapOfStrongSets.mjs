@@ -9,7 +9,7 @@ import KeyHasher from "./KeyHasher.mjs";
 export default class StrongMapOfStrongSets {
   constructor() {
     /**
-     * @type {Map<string, Map<hash, *[]>>}
+     * @type {Map<hash, Map<hash, *[]>>}
      * @private
      * @const
      */
@@ -33,19 +33,52 @@ export default class StrongMapOfStrongSets {
     this.__sizeOfAll__ = 0;
   }
 
+  /**
+   * The number of elements in this collection.
+   *
+   * @public
+   * @readonly
+   */
   get size() {
     return this.__sizeOfAll__;
   }
 
+  /**
+   * The number of elements in a particular set.
+   *
+   * @param {*} mapKey 
+   * @param {*} setKey 
+   *
+   * @public
+   * @readonly
+   */
   getSizeOfSet(mapKey) {
     const [__innerMap__] = this.__getInnerMap__(mapKey);
     return __innerMap__ ? __innerMap__.size : 0;
   }
 
+  /**
+   * The number of maps in this collection.
+   *
+   * @param {*} mapKey 
+   * @param {*} setKey 
+   *
+   * @public
+   * @readonly
+   */
   get mapSize() {
     return this.__outerMap__.size;
   }
 
+  /**
+   * Add a key set to this collection.
+   *
+   * @param {*} mapKey 
+   * @param {*} setKey 
+   *
+   * @returns {StrongMapOfStrongSets} This collection.
+   * @public
+   */
   add(mapKey, setKey) {
     const __mapHash__ = this.__mapHasher__.buildHash([mapKey]);
     if (!this.__outerMap__.has(__mapHash__))
@@ -62,6 +95,15 @@ export default class StrongMapOfStrongSets {
     return this;
   }
 
+  /**
+   * Add several sets to a map in this collection.
+   *
+   * @param {*} mapKey 
+   * @param {*} setKey 
+   *
+   * @returns {StrongMapOfStrongSets} This collection.
+   * @public
+   */
   addSets(mapKey, __sets__) {
     const __array__ = Array.from(__sets__).map((__set__, __index__) => {
       __set__ = Array.from(__set__);
@@ -89,11 +131,25 @@ export default class StrongMapOfStrongSets {
     return this;
   }
 
+  /**
+   * Clear the collection.
+   *
+   * @public
+   */
   clear() {
     this.__outerMap__.clear();
     this.__sizeOfAll__ = 0;
   }
 
+  /**
+   * Delete an element from the collection by the given key sequence.
+   *
+   * @param {*} mapKey 
+   * @param {*} setKey 
+   *
+   * @returns {boolean} True if we found the value and deleted it.
+   * @public
+   */
   delete(mapKey, setKey) {
     const [__innerMap__, __mapHash__] = this.__getInnerMap__(mapKey);
     if (!__innerMap__)
@@ -113,7 +169,16 @@ export default class StrongMapOfStrongSets {
     return true;
   }
 
-  deleteSet(mapKey) {
+  /**
+   * Delete all sets from the collection by the given map sequence.
+   *
+   * @param {*} mapKey 
+   * @param {*} setKey 
+   *
+   * @returns {boolean} True if we found the value and deleted it.
+   * @public
+   */
+  deleteSets(mapKey) {
     const [__innerMap__, __mapHash__] = this.__getInnerMap__(mapKey);
     if (!__innerMap__)
       return false;
@@ -123,6 +188,13 @@ export default class StrongMapOfStrongSets {
     return true;
   }
 
+  /**
+   * Iterate over the keys.
+   *
+   * @param {StrongMapOfStrongSets~ForEachCallback} callback A function to invoke for each iteration.
+   *
+   * @public
+   */
   forEach(__callback__, __thisArg__) {
     this.__outerMap__.forEach(
       __innerMap__ => __innerMap__.forEach(
@@ -131,6 +203,13 @@ export default class StrongMapOfStrongSets {
     );
   }
 
+  /**
+   * Iterate over the keys under a map in this collection.
+   *
+   * @param {StrongMapOfStrongSets~ForEachCallback} callback A function to invoke for each iteration.
+   *
+   * @public
+   */
   forEachSet(mapKey, __callback__, __thisArg__) {
     const [__innerMap__] = this.__getInnerMap__(mapKey);
     if (!__innerMap__)
@@ -141,6 +220,24 @@ export default class StrongMapOfStrongSets {
     );
   }
 
+  /**
+   * @callback StrongMapOfStrongSets~ForEachCallback
+   *
+   * @param {*}                     mapKey         
+   * @param {*}                     setKey         
+   * @param {StrongMapOfStrongSets} __collection__ This collection.
+   *
+   */
+
+  /**
+   * Report if the collection has a value for a key set.
+   *
+   * @param {*} mapKey 
+   * @param {*} setKey 
+   *
+   * @returns {boolean} True if the key set refers to a value in the collection.
+   * @public
+   */
   has(mapKey, setKey) {
     const [__innerMap__] = this.__getInnerMap__(mapKey);
     if (!__innerMap__)
@@ -150,11 +247,26 @@ export default class StrongMapOfStrongSets {
     return __innerMap__.has(__setHash__);
   }
 
+  /**
+   * Report if the collection has any sets for a map.
+   *
+   * @param {*} mapKey 
+   * @param {*} setKey 
+   *
+   * @returns {boolean} True if the key set refers to a value in the collection.
+   * @public
+   */
   hasSet(mapKey) {
     const [__innerMap__] = this.__getInnerMap__(mapKey);
     return Boolean(__innerMap__);
   }
 
+  /**
+   * Return a new iterator for the values of the collection.
+   *
+   * @returns {Iterator<*>}
+   * @public
+   */
   values() {
     const __outerIter__ = this.__outerMap__.values();
     let __innerIter__ = null;
@@ -186,6 +298,12 @@ export default class StrongMapOfStrongSets {
     };
   }
 
+  /**
+   * Return a new iterator for the sets of the collection in a map.
+   *
+   * @returns {Iterator<*>}
+   * @public
+   */
   valuesSet(mapKey) {
     const [__innerMap__] = this.__getInnerMap__(mapKey);
     if (!__innerMap__)
