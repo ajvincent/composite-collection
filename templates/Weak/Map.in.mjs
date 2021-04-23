@@ -41,14 +41,7 @@ ${
          * @private
          */
         this.__weakKeyToStrongKeys__ = new WeakMap;
-` : `
-        /**
-         * @type {WeakSet<WeakKey>}
-         * @const
-         * @private
-         */
-        this.__weakKeySet__ = new WeakSet;
-    `
+` : ``
 }  }
 
 ${docs.buildBlock("delete", 2)}
@@ -146,9 +139,7 @@ ${docs.buildBlock("set", 2)}
 defines.get("strongMapCount") ? `
     if (!this.__weakKeyToStrongKeys__.has(__key__))
       this.__weakKeyToStrongKeys__.set(__key__, new Set([${defines.get("strongMapArgList")}]));
-` : `
-    this.__weakKeySet__.add(__key__);
-`}
+` : ``}
     __keyMap__.set(__key__, value);
     return this;
   }
