@@ -220,5 +220,14 @@ describe("CodeGenerator(WeakStrongSet.mjs)", () => {
         key => testSet.has(externalKey, key)
       ).toHoldReferencesWeakly();
     });
+
+    it("weakly as the second key through .add(), then .delete()", async () => {
+      await expectAsync(
+        key => {
+          testSet.add(externalKey, key);
+          testSet.delete(externalKey, key);
+        }
+      ).toHoldReferencesWeakly();
+    });
   });
 });

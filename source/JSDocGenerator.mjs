@@ -71,11 +71,7 @@ export default class JSDocGenerator {
       headers: [
         "@type {WeakMap<object, WeakMap<WeakKey, *>>}"
       ],
-      footers: [
-        "@private",
-        "@readonly",
-        "@note The weak key holds the strong references."
-      ]
+      footers: ["@private", "@readonly"],
     }],
 
     ["rootContainerSet", {

@@ -128,36 +128,36 @@ describe("CodeGenerator(WeakStrongMap.mjs),", () => {
   });
 
   describe("holds references to objects", () => {
-    const externalKey = {};
+    const externalKey = {}, externalValue = {};
     beforeEach(() => {
       jasmine.addAsyncMatchers(ToHoldRefsMatchers);
     });
 
     it("weakly as the first key in .delete()", async () => {
       await expectAsync(
-        key => testMap.delete(key, {})
+        key => testMap.delete(key, externalKey)
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the first key in .get()", async () => {
       await expectAsync(
-        key => testMap.get(key, {})
+        key => testMap.get(key, externalKey)
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the first key in .has()", async () => {
       await expectAsync(
-        key => testMap.has(key, {})
+        key => testMap.has(key, externalKey)
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the first key in .set()", async () => {
       await expectAsync(
-        key => testMap.set(key, {}, {})
+        key => testMap.set(key, externalKey, externalValue)
       ).toHoldReferencesWeakly();
     });
 
-    it("strongly as the first argument in .set() where there is no second argument", async () => {
+    it("weakly as the first argument in .set() where there is no second argument", async () => {
       await expectAsync(
         key => testMap.set(key)
       ).toHoldReferencesWeakly();
@@ -183,8 +183,17 @@ describe("CodeGenerator(WeakStrongMap.mjs),", () => {
 
     it("strongly as the second key in .set()", async () => {
       await expectAsync(
-        key => testMap.set(externalKey, key, {})
+        key => testMap.set(externalKey, key, externalValue)
       ).toHoldReferencesStrongly();
+    });
+
+    it("weakly as the second key through .add(), then .delete()", async () => {
+      await expectAsync(
+        key => {
+          testMap.set(externalKey, key, externalValue);
+          testMap.delete(externalKey, key);
+        }
+      ).toHoldReferencesWeakly();
     });
 
     it("strongly as the second argument in .set() where there is no third argument", async () => {

@@ -326,6 +326,15 @@ describe("WeakKey-WeakRef composer", () => {
       ).toHoldReferencesWeakly();
     });
 
+    it("weakly when we pass them as strong arguments to .addKey(), then .deleteKey()", async () => {
+      await expectAsync(
+        key => {
+          composer.getKey([weakExternalKey, weakExternalKey], [key]);
+          composer.deleteKey([weakExternalKey, weakExternalKey], [key]);
+        }
+      ).toHoldReferencesWeakly();
+    });
+
     it("weakly when we pass them as strong arguments to .isValidForKey()", async () => {
       await expectAsync(
         key => composer.isValidForKey([weakExternalKey, weakExternalKey], [key])

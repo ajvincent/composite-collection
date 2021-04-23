@@ -32,9 +32,24 @@ export default class ${defines.get("className")} {
     });
 
 ${docs.buildBlock("rootContainerWeakMap", 4)}
-    /** @type {WeakMap<object, WeakMap<WeakKey, *>>} */
     this.__root__ = new WeakMap;
-  }
+${
+      defines.get("strongMapCount") ? `
+        /**
+         * @type {WeakMap<WeakKey, Set<*>>}
+         * @const
+         * @private
+         */
+        this.__weakKeyToStrongKeys__ = new WeakMap;
+` : `
+        /**
+         * @type {WeakSet<WeakKey>}
+         * @const
+         * @private
+         */
+        this.__weakKeySet__ = new WeakSet;
+    `
+}  }
 
 ${docs.buildBlock("delete", 2)}
   delete(${defines.get("argList")}) {
@@ -127,8 +142,13 @@ ${docs.buildBlock("set", 2)}
       defines.get("weakMapArgList")
     }], [${
       defines.get("strongMapArgList")
-    }]);
-
+    }]);${
+defines.get("strongMapCount") ? `
+    if (!this.__weakKeyToStrongKeys__.has(__key__))
+      this.__weakKeyToStrongKeys__.set(__key__, new Set([${defines.get("strongMapArgList")}]));
+` : `
+    this.__weakKeySet__.add(__key__);
+`}
     __keyMap__.set(__key__, value);
     return this;
   }

@@ -23,13 +23,6 @@ ${
      * @private
      */
     this.__weakKeyToStrongKeys__ = new WeakMap;
-
-    /**
-     * @type {string[]}
-     * @const
-     * @private
-     */
-    this.__strongArgNames__ = ${defines.get("strongSetArgNameList")};
 ` : `
     /**
      * @type {WeakSet<WeakKey>}

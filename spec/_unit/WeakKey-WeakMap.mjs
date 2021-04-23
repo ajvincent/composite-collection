@@ -298,10 +298,10 @@ describe("WeakKey-WeakMap composer", () => {
       });
     });
 
-    it("strongly when we pass them as strong arguments to .getKey() with valid arguments", async () => {
+    it("weakly when we pass them as strong arguments to .getKey() with valid arguments", async () => {
       await expectAsync(
         key => composer.getKey([weakExternalKey, weakExternalKey], [key])
-      ).toHoldReferencesStrongly();
+      ).toHoldReferencesWeakly();
     });
 
     it("weakly when we pass them as strong arguments to .getKey() with invalid arguments", async () => {
@@ -323,6 +323,15 @@ describe("WeakKey-WeakMap composer", () => {
     it("weakly when we pass them as strong arguments to .deleteKey()", async () => {
       await expectAsync(
         key => composer.deleteKey([weakExternalKey, weakExternalKey], [key])
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly when we pass them as strong arguments to .addKey(), then .deleteKey()", async () => {
+      await expectAsync(
+        key => {
+          composer.getKey([weakExternalKey, weakExternalKey], [key]);
+          composer.deleteKey([weakExternalKey, weakExternalKey], [key]);
+        }
       ).toHoldReferencesWeakly();
     });
 

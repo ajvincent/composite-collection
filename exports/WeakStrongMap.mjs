@@ -33,10 +33,15 @@ export default class WeakStrongMap {
      *
      * @private
      * @readonly
-     * @note The weak key holds the strong references.
      */
-    /** @type {WeakMap<object, WeakMap<WeakKey, *>>} */
     this.__root__ = new WeakMap;
+
+    /**
+     * @type {WeakMap<WeakKey, Set<*>>}
+     * @const
+     * @private
+     */
+    this.__weakKeyToStrongKeys__ = new WeakMap;
   }
 
   /**
@@ -140,6 +145,8 @@ export default class WeakStrongMap {
 
     const __keyMap__ = this.__root__.get(weakKey);
     const __key__ = this.__keyComposer__.getKey([weakKey], [strongKey]);
+    if (!this.__weakKeyToStrongKeys__.has(__key__))
+      this.__weakKeyToStrongKeys__.set(__key__, new Set([strongKey]));
 
     __keyMap__.set(__key__, value);
     return this;

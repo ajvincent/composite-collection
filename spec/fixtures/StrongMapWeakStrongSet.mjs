@@ -1,8 +1,8 @@
 import CollectionConfiguration from "composite-collection/Configuration";
 
-const StrongMapOfStrongSetsConfig = new CollectionConfiguration("StrongMapOfWeakSets", "Map", "WeakSet");
-StrongMapOfStrongSetsConfig.addMapKey("mapKey", false);
-StrongMapOfStrongSetsConfig.addSetKey("weakSetKey", true);
-StrongMapOfStrongSetsConfig.addSetKey("strongSetKey", false);
+const StrongMapOfWeakStrongSetsConfig = new CollectionConfiguration("StrongMapOfWeakStrongSets", "Map", "WeakSet");
+StrongMapOfWeakStrongSetsConfig.addMapKey("mapKey", false);
+StrongMapOfWeakStrongSetsConfig.addSetKey("weakSetKey", true);
+StrongMapOfWeakStrongSetsConfig.addSetKey("strongSetKey", false);
 
-export default StrongMapOfStrongSetsConfig;
+export default StrongMapOfWeakStrongSetsConfig;

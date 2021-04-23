@@ -178,43 +178,44 @@ describe("CodeGenerator(StrongMapOfWeakSets.mjs)", () => {
   });
 
   describe("holds references to objects", () => {
+    const externalKey = {};
     beforeEach(() => {
       jasmine.addAsyncMatchers(ToHoldRefsMatchers);
     });
 
     it("weakly as the first key in .add()", async () => {
       await expectAsync(
-        key => testSet.add(key, {})
+        key => testSet.add(key, externalKey)
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the first key in .delete()", async () => {
       await expectAsync(
-        key => testSet.delete(key, {})
+        key => testSet.delete(key, externalKey)
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the first key in .has()", async () => {
       await expectAsync(
-        key => testSet.has(key, {})
+        key => testSet.has(key, externalKey)
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the second key in .add()", async () => {
       await expectAsync(
-        key => testSet.add({}, key)
+        key => testSet.add(externalKey, key)
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the second key in .delete()", async () => {
       await expectAsync(
-        key => testSet.delete({}, key)
+        key => testSet.delete(externalKey, key)
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the second key in .has()", async () => {
       await expectAsync(
-        key => testSet.has({}, key)
+        key => testSet.has(externalKey, key)
       ).toHoldReferencesWeakly();
     });
   });

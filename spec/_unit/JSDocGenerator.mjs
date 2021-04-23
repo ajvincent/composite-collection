@@ -40,7 +40,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @private
    * @readonly
-   * @note The weak key holds the strong references.
    */`);
     });
 

@@ -33,10 +33,15 @@ export default class WeakWeakMap {
      *
      * @private
      * @readonly
-     * @note The weak key holds the strong references.
      */
-    /** @type {WeakMap<object, WeakMap<WeakKey, *>>} */
     this.__root__ = new WeakMap;
+
+    /**
+     * @type {WeakSet<WeakKey>}
+     * @const
+     * @private
+     */
+    this.__weakKeySet__ = new WeakSet;
   }
 
   /**
@@ -140,6 +145,7 @@ export default class WeakWeakMap {
 
     const __keyMap__ = this.__root__.get(key1);
     const __key__ = this.__keyComposer__.getKey([key1, key2], []);
+    this.__weakKeySet__.add(__key__);
 
     __keyMap__.set(__key__, value);
     return this;

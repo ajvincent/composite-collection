@@ -130,58 +130,59 @@ describe("CodeGenerator(StrongWeakMap.mjs),", () => {
     beforeEach(() => {
       jasmine.addAsyncMatchers(ToHoldRefsMatchers);
     });
+    const externalKey = {}, externalValue = {};
 
     it("weakly as the first key in .delete()", async () => {
       await expectAsync(
-        key => testMap.delete(key, {})
+        key => testMap.delete(key, externalKey)
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the first key in .get()", async () => {
       await expectAsync(
-        key => testMap.get(key, {})
+        key => testMap.get(key, externalKey)
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the first key in .has()", async () => {
       await expectAsync(
-        key => testMap.has(key, {})
+        key => testMap.has(key, externalKey)
       ).toHoldReferencesWeakly();
     });
 
     it("strongly as the first key in .set()", async () => {
       await expectAsync(
-        key => testMap.set(key, {}, {})
+        key => testMap.set(key, externalKey, externalValue)
       ).toHoldReferencesStrongly();
     });
 
     it("weakly as the second key in .delete()", async () => {
       await expectAsync(
-        key => testMap.delete({}, key)
+        key => testMap.delete(externalKey, key)
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the second key in .get()", async () => {
       await expectAsync(
-        key => testMap.get({}, key)
+        key => testMap.get(externalKey, key)
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the second key in .has()", async () => {
       await expectAsync(
-        key => testMap.has({}, key)
+        key => testMap.has(externalKey, key)
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the second key in .set()", async () => {
       await expectAsync(
-        key => testMap.set({}, key, {})
+        key => testMap.set(externalKey, key, externalValue)
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the second argument in .set() where there is no third argument", async () => {
       await expectAsync(
-        key => testMap.set({}, key)
+        key => testMap.set(externalKey, key)
       ).toHoldReferencesWeakly();
     });
 
