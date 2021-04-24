@@ -114,6 +114,8 @@ namespace("test", () => {
       "spec/generated/StrongMapOfStrongSets.mjs",
       "spec/generated/StrongMapOfWeakSets.mjs",
       "spec/generated/StrongMapWeakStrongSet.mjs",
+
+      "spec/generated/WeakMapOfStrongSets.mjs",
     ]
   );
 
@@ -151,6 +153,8 @@ generateCollectionTasks("source/exports", "spec/generated", [
 
   "StrongMapOfStrongSets.mjs",
   "StrongMapOfWeakSets.mjs",
+
+  "WeakMapOfStrongSets.mjs",
 ]);
 
 desc("Debugging tests");
