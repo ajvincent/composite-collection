@@ -87,10 +87,14 @@ export default class ${defines.get("className")} {
       return false;
 
     // level 3: inner map to set
-    {
-      const __setKeyHash__ = this.__setHasher__.buildHash([${defines.get("setArgList")}]);
-      return __innerMap__.delete(__setKeyHash__);
+    const __setKeyHash__ = this.__setHasher__.buildHash([${defines.get("setArgList")}]);
+    const __returnValue__ = __innerMap__.delete(__setKeyHash__);
+
+    if (__innerMap__.size === 0) {
+      this.deleteSets(${defines.get("mapArgList")});
     }
+
+    return __returnValue__;
   }
 
   deleteSets(${defines.get("mapArgList")}) {
@@ -102,13 +106,13 @@ export default class ${defines.get("className")} {
       if (!this.__root__.has(${defines.get("weakMapArgument0")})) {
         return false;
       }
-      __weakKeyMap__ = this.__mapKeyComposer__.get(${defines.get("weakMapArgument0")});
+      __weakKeyMap__ = this.__root__.get(${defines.get("weakMapArgument0")});
     }
 
     // level 2:  weak map key to inner map
     {
       const __mapKey__ = this.__mapKeyComposer__.getKey(
-        ${defines.get("weakMapArgList")}, ${defines.get("strongMapArgList")}
+        [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
       );
       return __weakKeyMap__.delete(__mapKey__);
     }
@@ -221,7 +225,7 @@ export default class ${defines.get("className")} {
   }
 
   __isValidKey__(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
-    return this.__isValidMapKey__(${defines.get("mapArgList")}) && this.__isValidSetKey(${defines.get("setArgList")});
+    return this.__isValidMapKey__(${defines.get("mapArgList")}) && this.__isValidSetKey__(${defines.get("setArgList")});
   }
 
   __requireValidMapKey__(${defines.get("mapArgList")}) {
@@ -230,15 +234,25 @@ export default class ${defines.get("className")} {
   }
 
   __isValidMapKey__(${defines.get("mapArgList")}) {
-    if (!this.__keyComposer__.isValidForKey(${defines.get("mapArgList")}))
+    if (!this.__mapKeyComposer__.isValidForKey([${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]))
       return false;
     return true;
   }
 
-  __isValidSetKey(${defines.get("setArgList")}) {
+  __isValidSetKey__(${defines.get("setArgList")}) {
     void(${defines.get("setArgList")});
     return true;
   }
 }
+
+Reflect.defineProperty(${defines.get("className")}, Symbol.toStringTag, {
+  value: "${defines.get("className")}",
+  writable: false,
+  enumerable: false,
+  configurable: true
+});
+
+Object.freeze(${defines.get("className")});
+Object.freeze(${defines.get("className")}.prototype);
 `;
 }
