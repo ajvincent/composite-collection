@@ -187,6 +187,7 @@ task(
     "exports/StrongMapOfWeakSets.mjs",
     */
     "exports/WeakMapOfStrongSets.mjs",
+    "exports/WeakMapOfWeakSets.mjs",
   ]
 );
 
@@ -211,4 +212,5 @@ generateCollectionTasks("source/exports", "exports", [
   "StrongMapOfWeakSets.mjs",
   */
   "WeakMapOfStrongSets.mjs",
+  "WeakMapOfWeakSets.mjs",
 ]);
