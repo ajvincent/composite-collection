@@ -160,5 +160,14 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
         key => testSet.has(key)
       ).toHoldReferencesWeakly();
     });
+
+    it("weakly as the key in .add(), then .delete()", async () => {
+      await expectAsync(
+        key => {
+          testSet.add(key);
+          testSet.delete(key);
+        }
+      ).toHoldReferencesWeakly();
+    });
   });
 });

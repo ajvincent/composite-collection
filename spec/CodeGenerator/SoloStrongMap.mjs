@@ -176,6 +176,15 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
       ).toHoldReferencesStrongly();
     });
 
+    it("weakly as the key in .add(), then .delete()", async () => {
+      await expectAsync(
+        key => {
+          testMap.set(key, {});
+          testMap.delete(key);
+        }
+      ).toHoldReferencesWeakly();
+    });
+
     it("as values when the keys are held externally", async () => {
       const externalKeys = [];
       await expectAsync(

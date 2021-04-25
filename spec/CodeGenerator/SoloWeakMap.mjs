@@ -147,6 +147,10 @@ describe("CodeGenerator(SoloWeakMap.mjs)", () => {
           externalKey = null;
         }
       ).toHoldReferencesStrongly();
+
+      externalKeys.forEach(externalKey => {
+        expect(testMap.has(externalKey)).toBe(true);
+      });
     });
 
     it("weakly as values when the keys are not held externally", async () => {

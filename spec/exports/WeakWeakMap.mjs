@@ -236,11 +236,15 @@ describe("CodeGenerator(WeakWeakMap.mjs),", () => {
       await expectAsync(
         value => {
           let externalKey = {};
-          testMap.set(externalKey, externalKey, value);
+          testMap.set(externalKeys, externalKey, value);
           externalKeys.push(externalKey);
           externalKey = null;
         }
       ).toHoldReferencesStrongly();
+
+      externalKeys.forEach(externalKey => {
+        expect(testMap.has(externalKeys, externalKey)).toBe(true);
+      });
     });
 
     it("value when the keys are not held externally", async () => {

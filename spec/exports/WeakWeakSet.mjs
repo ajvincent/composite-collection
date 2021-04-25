@@ -183,42 +183,59 @@ describe("CodeGenerator(WeakWeakSet.mjs)", () => {
 
     const externalKey = {};
 
-    describe("first key in", () => {
-      it("first key in .add()", async () => {
+    describe("weakly as the", () => {
+      describe("first key in", () => {
+        it("first key in .add()", async () => {
+          await expectAsync(
+            key => testSet.add(key, externalKey)
+          ).toHoldReferencesWeakly();
+        });
+  
+        it("first key in .delete()", async () => {
+          await expectAsync(
+            key => testSet.delete(key, externalKey)
+          ).toHoldReferencesWeakly();
+        });
+  
+        it("first key in .has()", async () => {
+          await expectAsync(
+            key => testSet.has(key, externalKey)
+          ).toHoldReferencesWeakly();
+        });
+      });
+  
+      it("second key in .add()", async () => {
         await expectAsync(
-          key => testSet.add(key, externalKey)
+          key => testSet.add(externalKey, key)
         ).toHoldReferencesWeakly();
       });
-
-      it("first key in .delete()", async () => {
+  
+      it("second key in .delete()", async () => {
         await expectAsync(
-          key => testSet.delete(key, externalKey)
+          key => testSet.delete(externalKey, key)
         ).toHoldReferencesWeakly();
       });
-
-      it("first key in .has()", async () => {
+  
+      it("second key in .has()", async () => {
         await expectAsync(
-          key => testSet.has(key, externalKey)
+          key => testSet.has(externalKey, key)
         ).toHoldReferencesWeakly();
       });
     });
 
-    it("second key in .add()", async () => {
+    it("strongly when the keys are held externally", async () => {
+      const externalKeys = [];
       await expectAsync(
-        key => testSet.add(externalKey, key)
-      ).toHoldReferencesWeakly();
-    });
+        externalKey => {
+          testSet.add(externalKeys, externalKey);
+          externalKeys.push(externalKey);
+          externalKey = null;
+        }
+      ).toHoldReferencesStrongly();
 
-    it("second key in .delete()", async () => {
-      await expectAsync(
-        key => testSet.delete(externalKey, key)
-      ).toHoldReferencesWeakly();
-    });
-
-    it("second key in .has()", async () => {
-      await expectAsync(
-        key => testSet.has(externalKey, key)
-      ).toHoldReferencesWeakly();
+      externalKeys.forEach(externalKey => {
+        expect(testSet.has(externalKeys, externalKey)).toBe(true);
+      });
     });
   });
 });

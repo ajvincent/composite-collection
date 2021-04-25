@@ -93,5 +93,20 @@ describe("CodeGenerator(SoloWeakSet.mjs)", () => {
         key => testSet.has(key)
       ).toHoldReferencesWeakly();
     });
+
+    it("strongly when the keys are held externally", async () => {
+      const externalKeys = [];
+      await expectAsync(
+        externalKey => {
+          testSet.add(externalKey);
+          externalKeys.push(externalKey);
+          externalKey = null;
+        }
+      ).toHoldReferencesStrongly();
+
+      externalKeys.forEach(externalKey => {
+        expect(testSet.has(externalKey)).toBe(true);
+      });
+    });
   });
 });

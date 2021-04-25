@@ -189,6 +189,20 @@ describe("CodeGenerator(WeakMapOfWeakSets.mjs)", () => {
       ).toHoldReferencesWeakly();
     });
 
+    it("strongly as the first key in .add() when the key is held externally", async () => {
+      // this is really to make sure .has() still works
+      const externalKeys = [];
+      await expectAsync(
+        key => {
+          externalKeys.push(key);
+          testSet.add(key, externalKey);
+        }
+      ).toHoldReferencesStrongly();
+      externalKeys.forEach(key => {
+        expect(testSet.has(key, externalKey)).toBe(true);
+      });
+    });
+
     it("weakly as the second key in .add()", async () => {
       await expectAsync(
         key => testSet.add(externalKey, key)
@@ -205,6 +219,20 @@ describe("CodeGenerator(WeakMapOfWeakSets.mjs)", () => {
       await expectAsync(
         key => testSet.has(externalKey, key)
       ).toHoldReferencesWeakly();
+    });
+
+    it("strongly as the second key in .add() when the key is held externally", async () => {
+      // this is really to make sure .has() still works
+      const externalKeys = [];
+      await expectAsync(
+        key => {
+          externalKeys.push(key);
+          testSet.add(externalKey, key);
+        }
+      ).toHoldReferencesStrongly();
+      externalKeys.forEach(key => {
+        expect(testSet.has(externalKey, key)).toBe(true);
+      });
     });
   });
 });
