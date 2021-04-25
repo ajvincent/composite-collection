@@ -108,6 +108,16 @@ ${docs.buildBlock("clear", 2)}
     this.__sizeOfAll__ = 0;
   }
 
+${docs.buildBlock("clearSets", 2)}
+  clearSets(${defines.get("mapArgList")}) {
+    const [__innerMap__, __mapHash__] = this.__getInnerMap__(${defines.get("mapArgList")});
+    if (!__innerMap__)
+      return;
+
+    this.__sizeOfAll__ -= __innerMap__.size;
+    __innerMap__.clear();
+  }
+
 ${docs.buildBlock("delete", 2)}
   delete(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
     const [__innerMap__, __mapHash__] = this.__getInnerMap__(${defines.get("mapArgList")});

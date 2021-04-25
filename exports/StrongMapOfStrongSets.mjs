@@ -137,6 +137,22 @@ export default class StrongMapOfStrongSets {
   }
 
   /**
+   * Clear all sets from the collection for a given map keyset.
+   *
+   * @param {*} mapKey 
+   *
+   * @public
+   */
+  clearSets(mapKey) {
+    const [__innerMap__, __mapHash__] = this.__getInnerMap__(mapKey);
+    if (!__innerMap__)
+      return;
+
+    this.__sizeOfAll__ -= __innerMap__.size;
+    __innerMap__.clear();
+  }
+
+  /**
    * Delete an element from the collection by the given key sequence.
    *
    * @param {*} mapKey 

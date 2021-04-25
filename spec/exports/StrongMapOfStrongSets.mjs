@@ -552,12 +552,35 @@ describe("CodeGenerator(StrongMapOfStrongSets.mjs)", () => {
     expect(testSet.getSizeOfSet(key3)).toBe(0);
     expect(testSet.has(key3, key1)).toBe(refSet.has(key1));
     expect(testSet.has(key3, key2)).toBe(refSet.has(key2));
+    expect(testSet.hasSets(key3)).toBe(false);
 
     {
       const iterator = testSet.values();
       expect(iterator.next()).toEqual({value: undefined, done: true});
       expect(iterator.next()).toEqual({value: undefined, done: true});
     }
+
+    refSet.add(key1);
+    refSet.add(key2);
+
+    testSet.addSets(key3, setOfSets);
+    testSet.clearSets(key1);
+    expect(testSet.size).toBe(2);
+    expect(testSet.mapSize).toBe(1);
+    expect(testSet.getSizeOfSet(key3)).toBe(2);
+    expect(testSet.has(key3, key1)).toBe(refSet.has(key1));
+    expect(testSet.has(key3, key2)).toBe(refSet.has(key2));
+    expect(testSet.hasSets(key3)).toBe(true);
+
+    refSet.clear();
+
+    testSet.clearSets(key3);
+    expect(testSet.size).toBe(0);
+    expect(testSet.mapSize).toBe(1);
+    expect(testSet.getSizeOfSet(key3)).toBe(0);
+    expect(testSet.has(key3, key1)).toBe(refSet.has(key1));
+    expect(testSet.has(key3, key2)).toBe(refSet.has(key2));
+    expect(testSet.hasSets(key3)).toBe(true);
   });
 
   describe("holds references to objects", () => {

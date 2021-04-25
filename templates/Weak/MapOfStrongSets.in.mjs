@@ -82,6 +82,16 @@ ${docs.buildBlock("addSets", 2)}
     return this;
   }
 
+${docs.buildBlock("clearSets", 2)}
+  clearSets(${defines.get("mapArgList")}) {
+    this.__requireValidMapKey__(${defines.get("mapArgList")});
+    const __innerMap__ = this.__getExistingInnerMap__(${defines.get("mapArgList")});
+    if (!__innerMap__)
+      return;
+
+    __innerMap__.clear();
+  }
+
 ${docs.buildBlock("delete", 2)}
   delete(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
     this.__requireValidKey__(${defines.get("mapArgList")}, ${defines.get("setArgList")});

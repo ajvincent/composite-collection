@@ -382,6 +382,24 @@ describe("CodeGenerator(WeakMapOfStrongSets.mjs)", () => {
     expect(testSet.getSizeOfSet(key3)).toBe(0);
     expect(testSet.has(key3, key1)).toBe(refSet.has(key1));
     expect(testSet.has(key3, key2)).toBe(refSet.has(key2));
+
+    refSet.add(key1);
+    refSet.add(key2);
+
+    testSet.addSets(key3, setOfSets);
+    testSet.clearSets(key1);
+    expect(testSet.getSizeOfSet(key3)).toBe(2);
+    expect(testSet.has(key3, key1)).toBe(refSet.has(key1));
+    expect(testSet.has(key3, key2)).toBe(refSet.has(key2));
+    expect(testSet.hasSets(key3)).toBe(true);
+
+    refSet.clear();
+
+    testSet.clearSets(key3);
+    expect(testSet.getSizeOfSet(key3)).toBe(0);
+    expect(testSet.has(key3, key1)).toBe(refSet.has(key1));
+    expect(testSet.has(key3, key2)).toBe(refSet.has(key2));
+    expect(testSet.hasSets(key3)).toBe(true);
   });
 
   describe("holds references to objects", () => {

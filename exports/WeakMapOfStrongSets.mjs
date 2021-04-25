@@ -96,6 +96,22 @@ export default class WeakMapOfStrongSets {
   }
 
   /**
+   * Clear all sets from the collection for a given map keyset.
+   *
+   * @param {object} mapKey 
+   *
+   * @public
+   */
+  clearSets(mapKey) {
+    this.__requireValidMapKey__(mapKey);
+    const __innerMap__ = this.__getExistingInnerMap__(mapKey);
+    if (!__innerMap__)
+      return;
+
+    __innerMap__.clear();
+  }
+
+  /**
    * Delete an element from the collection by the given key sequence.
    *
    * @param {object} mapKey 
