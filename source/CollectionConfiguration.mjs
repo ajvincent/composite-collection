@@ -52,13 +52,13 @@ export default class CollectionConfiguration {
   /** @type {string} */
   #currentState = "start";
 
-  /** @type {string} @readonly */
+  /** @type {string} @const */
   #className;
 
   /** @type {string} @readonly */
   #collectionTemplate;
 
-  /** @type {Map<identifier, CollectionType>} @readonly */
+  /** @type {Map<identifier, CollectionType>} @const */
   #parameterToTypeMap = new Map();
 
   /** @type {identifier[]} */

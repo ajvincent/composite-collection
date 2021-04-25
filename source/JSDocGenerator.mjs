@@ -54,7 +54,7 @@ class ParamBlock {
  * @package
  */
 export default class JSDocGenerator {
-  /** @type {Map<string, MethodTemplate>} @readonly @private */
+  /** @type {Map<string, MethodTemplate>} @const @private */
   #methodTemplates = new Map([
     ["rootContainerMap", {
       description: "The root map holding keys and values.",
@@ -62,7 +62,7 @@ export default class JSDocGenerator {
       headers: [
         "@type {Map<string, __className__~valueAndKeySet>}",
       ],
-      footers: ["@private", "@readonly"],
+      footers: ["@private", "@const"],
     }],
 
     ["rootContainerWeakMap", {
@@ -71,7 +71,7 @@ export default class JSDocGenerator {
       headers: [
         "@type {WeakMap<object, WeakMap<WeakKey, *>>}"
       ],
-      footers: ["@private", "@readonly"],
+      footers: ["@private", "@const"],
     }],
 
     ["rootContainerSet", {
@@ -80,7 +80,7 @@ export default class JSDocGenerator {
       headers: [
         "@type {Map<hash, *[]>}",
       ],
-      footers: ["@private", "@readonly"],
+      footers: ["@private", "@const"],
     }],
 
     ["valueAndKeySet", {
@@ -91,25 +91,25 @@ export default class JSDocGenerator {
         "@property {*[]} keySet The set of keys we hashed.",
       ],
 
-      footers: ["@private", "@readonly"],
+      footers: ["@private", "@const"],
     }],
 
     ["getSize", {
       description: "The number of elements in this collection.",
       includeArgs: "none",
-      footers: ["@public", "@readonly"],
+      footers: ["@public", "@const"],
     }],
 
     ["getSizeOfSet", {
       description: "The number of elements in a particular set.",
       includeArgs: "mapArguments",
-      footers: ["@public", "@readonly"],
+      footers: ["@public"],
     }],
 
     ["mapSize", {
       description: "The number of maps in this collection.",
       includeArgs: "none",
-      footers: ["@public", "@readonly"],
+      footers: ["@public", "@const"],
     }],
 
     ["clear", {
@@ -348,7 +348,7 @@ export default class JSDocGenerator {
   /** @type {string?} @private */
   #valueDesc = undefined;
 
-  /** @type {Param[]} @readonly @private */
+  /** @type {Param[]} @const @private */
   #params = [];
 
   /**
@@ -361,7 +361,7 @@ export default class JSDocGenerator {
   /**
    * True if we should replace the word "map" with "set" in our main descriptions.
    * @type {boolean}
-   * @readonly
+   * @const
    */
   #isSet;
 

@@ -15,14 +15,14 @@ export default class WeakStrongMap {
     /**
      * @type {KeyHasher}
      * @private
-     * @readonly
+     * @const
      */
     this.__keyHasher__ = new KeyHasher(["weakKey", "strongKey"]);
 
     /**
      * @type {WeakKeyComposer}
      * @private
-     * @readonly
+     * @const
      */
     this.__keyComposer__ = new WeakKeyComposer(["weakKey"], ["strongKey"]);
 
@@ -32,7 +32,7 @@ export default class WeakStrongMap {
      * @type {WeakMap<object, WeakMap<WeakKey, *>>}
      *
      * @private
-     * @readonly
+     * @const
      */
     this.__root__ = new WeakMap;
 

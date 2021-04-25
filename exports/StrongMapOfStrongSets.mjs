@@ -37,7 +37,7 @@ export default class StrongMapOfStrongSets {
    * The number of elements in this collection.
    *
    * @public
-   * @readonly
+   * @const
    */
   get size() {
     return this.__sizeOfAll__;
@@ -49,7 +49,6 @@ export default class StrongMapOfStrongSets {
    * @param {*} mapKey 
    *
    * @public
-   * @readonly
    */
   getSizeOfSet(mapKey) {
     const [__innerMap__] = this.__getInnerMap__(mapKey);
@@ -60,7 +59,7 @@ export default class StrongMapOfStrongSets {
    * The number of maps in this collection.
    *
    * @public
-   * @readonly
+   * @const
    */
   get mapSize() {
     return this.__outerMap__.size;

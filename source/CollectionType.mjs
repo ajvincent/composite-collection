@@ -12,23 +12,23 @@ export default class CollectionType {
    * @param {string?}   argumentValidator A method to use for testing the argument.
    */
   constructor(argumentName, mapOrSetType, argumentType, description, argumentValidator) {
-    /** @public @readonly @type {string} */
+    /** @public @const @type {string} */
     this.argumentName   = argumentName;
 
     /**
      * @public
-     * @readonly
+     * @const
      * @type {string}
      */
     this.mapOrSetType   = mapOrSetType;
 
-    /** @public @readonly @type {string} */
+    /** @public @const @type {string} */
     this.argumentType   = argumentType;
 
-    /** @public @readonly @type {string} */
+    /** @public @const @type {string} */
     this.description    = description;
 
-    /** @public @readonly @type {string?} */
+    /** @public @const @type {string?} */
     this.argumentValidator = argumentValidator;
 
     Object.freeze(this);

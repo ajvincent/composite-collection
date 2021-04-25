@@ -12,14 +12,14 @@ export default class __className__ {
     /**
      * @type {Map<string, __className__~valueAndKeySet>}
      * @private
-     * @readonly
+     * @const
      */
     this.__root__ = new Map;
 
     /**
      * @type {KeyHasher}
      * @private
-     * @readonly
+     * @const
      */
     this.__hasher__ = new KeyHasher(__argNameList__);
   }

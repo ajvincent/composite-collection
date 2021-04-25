@@ -24,28 +24,28 @@ export default class WeakKeyComposer {
         throw new Error("There is a duplicate argument among weakArgList and strongArgList!");
     }
 
-    /** @type {WeakMap<object, Map<hash, WeakKey>>} @readonly @private */
+    /** @type {WeakMap<object, Map<hash, WeakKey>>} @const @private */
     this.__keyOwner__ = new WeakMap;
 
-    /** @type {string[]} @readonly @private */
+    /** @type {string[]} @const @private */
     this.__weakArgList__ = weakArgList.slice();
 
-    /** @type {string[]} @readonly @private */
+    /** @type {string[]} @const @private */
     this.__strongArgList__ = strongArgList.slice();
 
-    /** @type {KeyHasher} @readonly @private */
+    /** @type {KeyHasher} @const @private */
     this.__keyHasher__ = new KeyHasher(weakArgList.concat(strongArgList));
 
-    /** @type {WeakMap<WeakKey, WeakRef<object>} @readonly @private */
+    /** @type {WeakMap<WeakKey, WeakRef<object>} @const @private */
     this.__weakKeyToFirstWeak__ = new WeakMap;
 
-    /** @type {WeakMap<WeakKey, hash>} @readonly @private */
+    /** @type {WeakMap<WeakKey, hash>} @const @private */
     this.__weakKeyToHash__ = new WeakMap;
 
-    /** @type {WeakMap<WeakKey, Set<*>>?} @readonly @private */
+    /** @type {WeakMap<WeakKey, Set<*>>?} @const @private */
     this.__weakKeyToStrongRefs__ = strongArgList.length ? new WeakMap : null;
 
-    /** @type {FinalizationRegistry} @readonly @private */
+    /** @type {FinalizationRegistry} @const @private */
     this.__keyFinalizer__ = new FinalizationRegistry(
       weakKey => this.__deleteWeakKey__(weakKey)
     );

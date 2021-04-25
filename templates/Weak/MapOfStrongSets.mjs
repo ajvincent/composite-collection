@@ -23,7 +23,7 @@ export default class __className__ {
     /**
      * @type {KeyHasher}
      * @private
-     * @readonly
+     * @const
      */
     this.__keyHasher__ = new KeyHasher(__setArgNameList__);
 

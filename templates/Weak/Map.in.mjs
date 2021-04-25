@@ -16,14 +16,14 @@ export default class ${defines.get("className")} {
     /**
      * @type {KeyHasher}
      * @private
-     * @readonly
+     * @const
      */
     this.__keyHasher__ = new KeyHasher(${defines.get("argNameList")});
 
     /**
      * @type {WeakKeyComposer}
      * @private
-     * @readonly
+     * @const
      */
     this.__keyComposer__ = new WeakKeyComposer(${
       defines.get("weakMapArgNameList")

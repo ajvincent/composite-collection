@@ -27,7 +27,7 @@ describe("JSDocGenerator for maps", () => {
    * @type {Map<string, SoloStrongMap~valueAndKeySet>}
    *
    * @private
-   * @readonly
+   * @const
    */`);
     });
 
@@ -39,7 +39,7 @@ describe("JSDocGenerator for maps", () => {
    * @type {WeakMap<object, WeakMap<WeakKey, *>>}
    *
    * @private
-   * @readonly
+   * @const
    */`);
     });
 
@@ -51,7 +51,7 @@ describe("JSDocGenerator for maps", () => {
    * @property {*[]} keySet The set of keys we hashed.
    *
    * @private
-   * @readonly
+   * @const
    */`);
     });
 
@@ -61,7 +61,7 @@ describe("JSDocGenerator for maps", () => {
    * The number of elements in this collection.
    *
    * @public
-   * @readonly
+   * @const
    */`);
     });
 
@@ -248,7 +248,7 @@ describe("JSDocGenerator for maps", () => {
    * @type {Map<string, SoloStrongMap~valueAndKeySet>}
    *
    * @private
-   * @readonly
+   * @const
    */`);
     });
 
@@ -260,7 +260,7 @@ describe("JSDocGenerator for maps", () => {
    * @property {*[]} keySet The set of keys we hashed.
    *
    * @private
-   * @readonly
+   * @const
    */`);
     });
 
@@ -270,7 +270,7 @@ describe("JSDocGenerator for maps", () => {
    * The number of elements in this collection.
    *
    * @public
-   * @readonly
+   * @const
    */`);
     });
 
@@ -479,7 +479,7 @@ describe("JSDocGenerator for maps", () => {
      * @type {Map<string, SoloStrongMap~valueAndKeySet>}
      *
      * @private
-     * @readonly
+     * @const
      */`);
   });
 
@@ -515,7 +515,7 @@ describe("JSDocGenerator for sets", () => {
    * @type {Map<hash, *[]>}
    *
    * @private
-   * @readonly
+   * @const
    */`);
     });
 
@@ -527,7 +527,7 @@ describe("JSDocGenerator for sets", () => {
    * @property {*[]} keySet The set of keys we hashed.
    *
    * @private
-   * @readonly
+   * @const
    */`);
     });
 
@@ -537,7 +537,7 @@ describe("JSDocGenerator for sets", () => {
    * The number of elements in this collection.
    *
    * @public
-   * @readonly
+   * @const
    */`);
     });
 
@@ -688,7 +688,7 @@ describe("JSDocGenerator for sets", () => {
    * @type {Map<hash, *[]>}
    *
    * @private
-   * @readonly
+   * @const
    */`);
     });
 
@@ -700,7 +700,7 @@ describe("JSDocGenerator for sets", () => {
    * @property {*[]} keySet The set of keys we hashed.
    *
    * @private
-   * @readonly
+   * @const
    */`);
     });
 
@@ -710,7 +710,7 @@ describe("JSDocGenerator for sets", () => {
    * The number of elements in this collection.
    *
    * @public
-   * @readonly
+   * @const
    */`);
     });
 
@@ -887,7 +887,7 @@ describe("JSDocGenerator for sets", () => {
      * @type {Map<string, SoloStrongSet~valueAndKeySet>}
      *
      * @private
-     * @readonly
+     * @const
      */`);
   });
 

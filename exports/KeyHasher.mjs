@@ -26,14 +26,14 @@ export default class KeyHasher {
 
     /**
      * @type {WeakMap<Object>}
-     * @readonly
+     * @const
      * @private
      */
     this.__weakValueToHash__ = new WeakMap();
 
     /**
      * @type {Map<value>}
-     * @readonly
+     * @const
      * @private
      */
     this.__strongValueToHash__ = new Map();
@@ -41,7 +41,7 @@ export default class KeyHasher {
     /**
      * @type {string[]}
      * @private
-     * @readonly
+     * @const
      */
     this.__argList__ = argList.slice();
 

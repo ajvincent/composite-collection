@@ -10,14 +10,14 @@ export default class __className__ {
     /**
      * @type {KeyHasher}
      * @private
-     * @readonly
+     * @const
      */
     this.__mapHasher__ = new KeyHasher(__mapArgList__);
 
     /**
      * @type {KeyHasher}
      * @private
-     * @readonly
+     * @const
      */
     this.__setHasher__ = new KeyHasher(__mapArgList__);
 

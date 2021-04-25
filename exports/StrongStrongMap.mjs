@@ -14,7 +14,7 @@ export default class StrongStrongMap {
      * @type {Map<string, StrongStrongMap~valueAndKeySet>}
      *
      * @private
-     * @readonly
+     * @const
      */
     this.__root__ = new Map;
 
@@ -24,13 +24,13 @@ export default class StrongStrongMap {
      * @property {*[]} keySet The set of keys we hashed.
      *
      * @private
-     * @readonly
+     * @const
      */
 
     /**
      * @type {KeyHasher}
      * @private
-     * @readonly
+     * @const
      */
     this.__hasher__ = new KeyHasher(["key1", "key2"]);
   }
@@ -39,7 +39,7 @@ export default class StrongStrongMap {
    * The number of elements in this collection.
    *
    * @public
-   * @readonly
+   * @const
    */
   get size() {
     return this.__root__.size;

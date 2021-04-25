@@ -14,14 +14,14 @@ export default class StrongStrongSet {
      * @type {Map<hash, *[]>}
      *
      * @private
-     * @readonly
+     * @const
      */
     this.__root__ = new Map;
 
     /**
      * @type {KeyHasher}
      * @private
-     * @readonly
+     * @const
      */
     this.__hasher__ = new KeyHasher(["key1", "key2"]);
   }
@@ -30,7 +30,7 @@ export default class StrongStrongSet {
    * The number of elements in this collection.
    *
    * @public
-   * @readonly
+   * @const
    */
   get size() {
     return this.__root__.size;

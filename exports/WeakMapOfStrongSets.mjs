@@ -26,7 +26,7 @@ export default class WeakMapOfStrongSets {
     /**
      * @type {KeyHasher}
      * @private
-     * @readonly
+     * @const
      */
     this.__setHasher__ = new KeyHasher(["setKey"]);
 
@@ -183,7 +183,6 @@ export default class WeakMapOfStrongSets {
    * @param {object} mapKey 
    *
    * @public
-   * @readonly
    */
   getSizeOfSet(mapKey) {
     this.__requireValidMapKey__(mapKey);

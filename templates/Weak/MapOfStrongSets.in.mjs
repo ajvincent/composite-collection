@@ -27,7 +27,7 @@ export default class ${defines.get("className")} {
     /**
      * @type {KeyHasher}
      * @private
-     * @readonly
+     * @const
      */
     this.__setHasher__ = new KeyHasher(${defines.get("setArgNameList")});
 

@@ -7,14 +7,14 @@ export default class __className__ {
      * The values are always frozen arrays.
      * @type {Map<hash, *[]}
      * @private
-     * @readonly
+     * @const
      */
     this.__root__ = new Map;
 
     /**
      * @type {KeyHasher}
      * @private
-     * @readonly
+     * @const
      */
     this.__hasher__ = new KeyHasher(__argNameList__);
   }

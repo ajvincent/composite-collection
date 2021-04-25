@@ -22,7 +22,7 @@ ${docs.buildBlock("valueAndKeySet", 4)}
     /**
      * @type {KeyHasher}
      * @private
-     * @readonly
+     * @const
      */
     this.__hasher__ = new KeyHasher(${defines.get("argNameList")});
   }

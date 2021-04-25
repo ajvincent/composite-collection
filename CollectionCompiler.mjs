@@ -10,14 +10,14 @@ export default class CollectionCompiler extends CompletionPromise {
   /**
    * @type {string}
    * @private
-   * @readonly
+   * @const
    */
   #sourcesPath;
 
   /**
    * @type {string}
    * @private
-   * @readonly
+   * @const
    */
   #targetsPath;
 
