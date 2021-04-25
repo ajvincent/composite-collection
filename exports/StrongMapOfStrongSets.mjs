@@ -47,7 +47,6 @@ export default class StrongMapOfStrongSets {
    * The number of elements in a particular set.
    *
    * @param {*} mapKey 
-   * @param {*} setKey 
    *
    * @public
    * @readonly
@@ -59,9 +58,6 @@ export default class StrongMapOfStrongSets {
 
   /**
    * The number of maps in this collection.
-   *
-   * @param {*} mapKey 
-   * @param {*} setKey 
    *
    * @public
    * @readonly
@@ -98,8 +94,8 @@ export default class StrongMapOfStrongSets {
   /**
    * Add several sets to a map in this collection.
    *
-   * @param {*} mapKey 
-   * @param {*} setKey 
+   * @param {*}     mapKey   
+   * @param {Set[]} __sets__ The sets to add.
    *
    * @returns {StrongMapOfStrongSets} This collection.
    * @public
@@ -173,7 +169,6 @@ export default class StrongMapOfStrongSets {
    * Delete all sets from the collection by the given map sequence.
    *
    * @param {*} mapKey 
-   * @param {*} setKey 
    *
    * @returns {boolean} True if we found the value and deleted it.
    * @public

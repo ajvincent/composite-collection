@@ -38,6 +38,15 @@ export default class WeakMapOfStrongSets {
     this.__weakKeyToStrongKeys__ = new WeakMap;
   }
 
+  /**
+   * Add a key set to this collection.
+   *
+   * @param {object} mapKey 
+   * @param {*}      setKey 
+   *
+   * @returns {WeakMapOfStrongSets} This collection.
+   * @public
+   */
   add(mapKey, setKey) {
     this.__requireValidKey__(mapKey, setKey);
     const __innerMap__ = this.__requireInnerMap__(mapKey);
@@ -53,6 +62,15 @@ export default class WeakMapOfStrongSets {
     return this;
   }
 
+  /**
+   * Add several sets to a map in this collection.
+   *
+   * @param {object} mapKey   
+   * @param {Set[]}  __sets__ The sets to add.
+   *
+   * @returns {WeakMapOfStrongSets} This collection.
+   * @public
+   */
   addSets(mapKey, __sets__) {
     this.__requireValidMapKey__(mapKey);
     const __array__ = Array.from(__sets__).map((__set__, __index__) => {
@@ -77,6 +95,15 @@ export default class WeakMapOfStrongSets {
     return this;
   }
 
+  /**
+   * Delete an element from the collection by the given key sequence.
+   *
+   * @param {object} mapKey 
+   * @param {*}      setKey 
+   *
+   * @returns {boolean} True if we found the value and deleted it.
+   * @public
+   */
   delete(mapKey, setKey) {
     this.__requireValidKey__(mapKey, setKey);
     const __innerMap__ = this.__getExistingInnerMap__(mapKey);
@@ -94,6 +121,14 @@ export default class WeakMapOfStrongSets {
     return __returnValue__;
   }
 
+  /**
+   * Delete all sets from the collection by the given map sequence.
+   *
+   * @param {object} mapKey 
+   *
+   * @returns {boolean} True if we found the value and deleted it.
+   * @public
+   */
   deleteSets(mapKey) {
     this.__requireValidMapKey__(mapKey);
     let __weakKeyMap__;
@@ -115,6 +150,13 @@ export default class WeakMapOfStrongSets {
     }
   }
 
+  /**
+   * Iterate over the keys under a map in this collection.
+   *
+   * @param {WeakMapOfStrongSets~ForEachCallback} callback A function to invoke for each iteration.
+   *
+   * @public
+   */
   forEachSet(mapKey, __callback__, __thisArg__) {
     this.__requireValidMapKey__(mapKey);
     const __innerMap__ = this.__getExistingInnerMap__(mapKey);
@@ -126,6 +168,23 @@ export default class WeakMapOfStrongSets {
     );
   }
 
+  /**
+   * @callback WeakMapOfStrongSets~ForEachCallback
+   *
+   * @param {object}              mapKey         
+   * @param {*}                   setKey         
+   * @param {WeakMapOfStrongSets} __collection__ This collection.
+   *
+   */
+
+  /**
+   * The number of elements in a particular set.
+   *
+   * @param {object} mapKey 
+   *
+   * @public
+   * @readonly
+   */
   getSizeOfSet(mapKey) {
     this.__requireValidMapKey__(mapKey);
     const __innerMap__ = this.__getExistingInnerMap__(mapKey);
@@ -135,6 +194,15 @@ export default class WeakMapOfStrongSets {
     return __innerMap__.size;
   }
 
+  /**
+   * Report if the collection has a value for a key set.
+   *
+   * @param {object} mapKey 
+   * @param {*}      setKey 
+   *
+   * @returns {boolean} True if the key set refers to a value in the collection.
+   * @public
+   */
   has(mapKey, setKey) {
     this.__requireValidKey__(mapKey, setKey);
     const __innerMap__ = this.__getExistingInnerMap__(mapKey);
@@ -148,15 +216,39 @@ export default class WeakMapOfStrongSets {
     }
   }
 
+  /**
+   * Report if the collection has any sets for a map.
+   *
+   * @param {object} mapKey 
+   * @param {*}      setKey 
+   *
+   * @returns {boolean} True if the key set refers to a value in the collection.
+   * @public
+   */
   hasSet(mapKey) {
     this.__requireValidMapKey__(mapKey);
     return Boolean(this.__getExistingInnerMap__(mapKey));
   }
 
+  /**
+   * Determine if a set of keys is valid.
+   *
+   * @param {object} mapKey 
+   * @param {*}      setKey 
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @public
+   */
   isValidKey(mapKey, setKey) {
     return this.__isValidKey__(mapKey, setKey);
   }
 
+  /**
+   * Return a new iterator for the sets of the collection in a map.
+   *
+   * @returns {Iterator<*>}
+   * @public
+   */
   valuesSet(mapKey) {
     this.__requireValidMapKey__(mapKey);
     const __innerMap__ = this.__getExistingInnerMap__(mapKey);
@@ -173,6 +265,13 @@ export default class WeakMapOfStrongSets {
     return __innerMap__.values();
   }
 
+  /**
+   * Require an inner map exist for the given map keys.
+   *
+   * @param {object} mapKey 
+   *
+   * @private
+   */
   __requireInnerMap__(mapKey) {
     let __weakKeyMap__, __innerMap__;
     // level 1:  first weak argument to weak map key
@@ -201,6 +300,14 @@ export default class WeakMapOfStrongSets {
     }
   }
 
+  /**
+   * Get an existing inner map exist for the given map keys.
+   *
+   * @param {object} mapKey 
+   *
+   * @returns {WeakMapOfStrongSets~InnerMap}
+   * @private
+   */
   __getExistingInnerMap__(mapKey) {
     let __weakKeyMap__;
 
@@ -221,26 +328,67 @@ export default class WeakMapOfStrongSets {
     }
   }
 
+  /**
+   * Throw if the key set is not valid.
+   *
+   * @param {object} mapKey 
+   * @param {*}      setKey 
+   *
+   * @throws for an invalid key set.
+   */
   __requireValidKey__(mapKey, setKey) {
     if (!this.__isValidKey__(mapKey, setKey))
       throw new Error("The ordered key set is not valid!");
   }
 
+  /**
+   * Determine if a set of keys is valid.
+   *
+   * @param {object} mapKey 
+   * @param {*}      setKey 
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @private
+   */
   __isValidKey__(mapKey, setKey) {
     return this.__isValidMapKey__(mapKey) && this.__isValidSetKey__(setKey);
   }
 
+  /**
+   * Throw if the map key set is not valid.
+   *
+   * @param {object} mapKey 
+   *
+   * @throws for an invalid key set.
+   * @private
+   */
   __requireValidMapKey__(mapKey) {
     if (!this.__isValidMapKey__(mapKey))
       throw new Error("The ordered map key set is not valid!");
   }
 
+  /**
+   * Determine if a set of map keys is valid.
+   *
+   * @param {object} mapKey 
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @private
+   */
   __isValidMapKey__(mapKey) {
     if (!this.__mapKeyComposer__.isValidForKey([mapKey], []))
       return false;
     return true;
   }
 
+  /**
+   * Determine if a set of set keys is valid.
+   *
+   * @param {*} setKey 
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @private
+   */
   __isValidSetKey__(setKey) {
     void(setKey);
     return true;

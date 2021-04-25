@@ -143,6 +143,8 @@ export default class WeakWeakMap {
   }
 
   /**
+   * Throw if the key set is not valid.
+   *
    * @param {object} key1 
    * @param {object} key2 
    *

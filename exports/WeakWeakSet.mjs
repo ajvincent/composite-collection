@@ -93,6 +93,8 @@ export default class WeakWeakSet {
   }
 
   /**
+   * Throw if the key set is not valid.
+   *
    * @param {object} key1 
    * @param {object} key2 
    *

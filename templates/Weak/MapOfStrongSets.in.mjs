@@ -39,6 +39,7 @@ export default class ${defines.get("className")} {
     this.__weakKeyToStrongKeys__ = new WeakMap;
   }
 
+${docs.buildBlock("add", 2)}
   add(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
     this.__requireValidKey__(${defines.get("mapArgList")}, ${defines.get("setArgList")});
     const __innerMap__ = this.__requireInnerMap__(${defines.get("mapArgList")});
@@ -54,6 +55,7 @@ export default class ${defines.get("className")} {
     return this;
   }
 
+${docs.buildBlock("addSets", 2)}
   addSets(${defines.get("mapArgList")}, __sets__) {
     this.__requireValidMapKey__(${defines.get("mapArgList")});
     const __array__ = Array.from(__sets__).map((__set__, __index__) => {
@@ -80,6 +82,7 @@ export default class ${defines.get("className")} {
     return this;
   }
 
+${docs.buildBlock("delete", 2)}
   delete(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
     this.__requireValidKey__(${defines.get("mapArgList")}, ${defines.get("setArgList")});
     const __innerMap__ = this.__getExistingInnerMap__(${defines.get("mapArgList")});
@@ -97,6 +100,7 @@ export default class ${defines.get("className")} {
     return __returnValue__;
   }
 
+${docs.buildBlock("deleteSets", 2)}
   deleteSets(${defines.get("mapArgList")}) {
     this.__requireValidMapKey__(${defines.get("mapArgList")});
     let __weakKeyMap__;
@@ -118,6 +122,7 @@ export default class ${defines.get("className")} {
     }
   }
 
+${docs.buildBlock("forEachMapSet", 2)}
   forEachSet(${defines.get("mapArgList")}, __callback__, __thisArg__) {
     this.__requireValidMapKey__(${defines.get("mapArgList")});
     const __innerMap__ = this.__getExistingInnerMap__(${defines.get("mapArgList")});
@@ -129,6 +134,9 @@ export default class ${defines.get("className")} {
     );
   }
 
+${docs.buildBlock("forEachCallbackSet", 2)}
+
+${docs.buildBlock("getSizeOfSet", 2)}
   getSizeOfSet(${defines.get("mapArgList")}) {
     this.__requireValidMapKey__(${defines.get("mapArgList")});
     const __innerMap__ = this.__getExistingInnerMap__(${defines.get("mapArgList")});
@@ -138,6 +146,7 @@ export default class ${defines.get("className")} {
     return __innerMap__.size;
   }
 
+${docs.buildBlock("has", 2)}
   has(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
     this.__requireValidKey__(${defines.get("mapArgList")}, ${defines.get("setArgList")});
     const __innerMap__ = this.__getExistingInnerMap__(${defines.get("mapArgList")});
@@ -151,15 +160,18 @@ export default class ${defines.get("className")} {
     }
   }
 
+${docs.buildBlock("hasSet", 2)}
   hasSet(${defines.get("mapArgList")}) {
     this.__requireValidMapKey__(${defines.get("mapArgList")});
     return Boolean(this.__getExistingInnerMap__(${defines.get("mapArgList")}));
   }
 
+${docs.buildBlock("isValidKeyPublic", 2)}
   isValidKey(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
     return this.__isValidKey__(${defines.get("mapArgList")}, ${defines.get("setArgList")});
   }
 
+${docs.buildBlock("valuesSet", 2)}
   valuesSet(${defines.get("mapArgList")}) {
     this.__requireValidMapKey__(${defines.get("mapArgList")});
     const __innerMap__ = this.__getExistingInnerMap__(${defines.get("mapArgList")});
@@ -171,6 +183,7 @@ export default class ${defines.get("className")} {
     return __innerMap__.values();
   }
 
+${docs.buildBlock("requireInnerMapPrivate", 2)}
   __requireInnerMap__(${defines.get("mapArgList")}) {
     let __weakKeyMap__, __innerMap__;
     // level 1:  first weak argument to weak map key
@@ -199,6 +212,7 @@ export default class ${defines.get("className")} {
     }
   }
 
+${docs.buildBlock("getExistingInnerMapPrivate", 2)}
   __getExistingInnerMap__(${defines.get("mapArgList")}) {
     let __weakKeyMap__;
 
@@ -219,26 +233,31 @@ export default class ${defines.get("className")} {
     }
   }
 
+${docs.buildBlock("requireValidKey", 2)}
   __requireValidKey__(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
     if (!this.__isValidKey__(${defines.get("mapArgList")}, ${defines.get("setArgList")}))
       throw new Error("The ordered key set is not valid!");
   }
 
+${docs.buildBlock("isValidKeyPrivate", 2)}
   __isValidKey__(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
     return this.__isValidMapKey__(${defines.get("mapArgList")}) && this.__isValidSetKey__(${defines.get("setArgList")});
   }
 
+${docs.buildBlock("requireValidMapKey", 2)}
   __requireValidMapKey__(${defines.get("mapArgList")}) {
     if (!this.__isValidMapKey__(${defines.get("mapArgList")}))
       throw new Error("The ordered map key set is not valid!");
   }
 
+${docs.buildBlock("isValidMapKeyPrivate", 2)}
   __isValidMapKey__(${defines.get("mapArgList")}) {
     if (!this.__mapKeyComposer__.isValidForKey([${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]))
       return false;
     return true;
   }
 
+${docs.buildBlock("isValidSetKeyPrivate", 2)}
   __isValidSetKey__(${defines.get("setArgList")}) {
     void(${defines.get("setArgList")});
     return true;

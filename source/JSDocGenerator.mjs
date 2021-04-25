@@ -108,7 +108,7 @@ export default class JSDocGenerator {
 
     ["mapSize", {
       description: "The number of maps in this collection.",
-      includeArgs: "mapArguments",
+      includeArgs: "none",
       footers: ["@public", "@readonly"],
     }],
 
@@ -237,6 +237,9 @@ export default class JSDocGenerator {
     ["addSets", {
       description: "Add several sets to a map in this collection.",
       includeArgs: "mapArguments",
+      paramFooters: [
+        ['Set[]', '__sets__', "The sets to add."],
+      ],
       returnType: "__className__",
       returnDescription: "This collection.",
       footers: ["@public"],
@@ -283,10 +286,45 @@ export default class JSDocGenerator {
     }],
 
     ["requireValidKey", {
+      description: "Throw if the key set is not valid.",
       includeArgs: "excludeValue",
       footers: ["@throws for an invalid key set."]
     }],
 
+    ["requireInnerMapPrivate", {
+      description: "Require an inner map exist for the given map keys.",
+      includeArgs: "mapArguments",
+      footers: ["@private"],
+    }],
+
+    ["getExistingInnerMapPrivate", {
+      description: "Get an existing inner map exist for the given map keys.",
+      includeArgs: "mapArguments",
+      returnType: "__className__~InnerMap",
+      footers: ["@private"],
+    }],
+
+    ["requireValidMapKey", {
+      description: "Throw if the map key set is not valid.",
+      includeArgs: "mapArguments",
+      footers: ["@throws for an invalid key set.", "@private"]
+    }],
+
+    ["isValidMapKeyPrivate", {
+      description: "Determine if a set of map keys is valid.",
+      includeArgs: "mapArguments",
+      returnType: "boolean",
+      returnDescription: "True if the validation passes, false if it doesn't.",
+      footers: ["@private"],
+    }],
+
+    ["isValidSetKeyPrivate", {
+      description: "Determine if a set of set keys is valid.",
+      includeArgs: "setArguments",
+      returnType: "boolean",
+      returnDescription: "True if the validation passes, false if it doesn't.",
+      footers: ["@private"],
+    }],
   ]);
 
   /**
@@ -471,6 +509,10 @@ export default class JSDocGenerator {
       if (template.includeArgs !== "none") {
         let valueFound = false;
         this.#params.forEach(param => {
+          if ((template.includeArgs === "mapArguments") && !param.mapOrSetType.endsWith("Map"))
+            return;
+          if ((template.includeArgs === "setArguments") && !param.mapOrSetType.endsWith("Set"))
+            return;
           if (!this.#isSet && param.argumentName === "value") {
             valueFound = true;
             if ((template.includeArgs === "excludeValue"))
@@ -483,7 +525,7 @@ export default class JSDocGenerator {
           );
         });
 
-        if (!valueFound && !this.#isSet && (template.includeArgs !== "excludeValue"))
+        if (!valueFound && !this.#isSet && (template.includeArgs === "all"))
           paramBlock.add("*", "value", "The value.")
       }
 
