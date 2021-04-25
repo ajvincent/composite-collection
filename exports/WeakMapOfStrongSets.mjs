@@ -225,7 +225,7 @@ export default class WeakMapOfStrongSets {
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
-  hasSet(mapKey) {
+  hasSets(mapKey) {
     this.__requireValidMapKey__(mapKey);
     return Boolean(this.__getExistingInnerMap__(mapKey));
   }

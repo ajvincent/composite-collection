@@ -251,7 +251,7 @@ export default class StrongMapOfStrongSets {
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
-  hasSet(mapKey) {
+  hasSets(mapKey) {
     const [__innerMap__] = this.__getInnerMap__(mapKey);
     return Boolean(__innerMap__);
   }

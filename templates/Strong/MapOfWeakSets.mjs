@@ -13,6 +13,9 @@ export default class __className__ {
 
   }
 
+  addSets(__mapArgList__, __sets__) {
+  }
+
   clear() {
 
   }
@@ -21,7 +24,7 @@ export default class __className__ {
 
   }
 
-  deleteSet(__mapArgList__) {
+  deleteSets(__mapArgList__) {
 
   }
 
@@ -29,7 +32,7 @@ export default class __className__ {
 
   }
 
-  hasSet(__mapArgList__) {
+  hasSets(__mapArgList__) {
 
   }
 }

@@ -165,14 +165,14 @@ describe("CodeGenerator(StrongMapOfWeakSets.mjs)", () => {
     expect(testSet.has(key3, key1)).toBe(refSet.has(key1));
     expect(testSet.has(key3, key2)).toBe(refSet.has(key2));
 
-    expect(testSet.hasSet(key1)).toBe(false);
-    expect(testSet.hasSet(key2)).toBe(false);
-    expect(testSet.hasSet(key3)).toBe(true);
+    expect(testSet.hasSets(key1)).toBe(false);
+    expect(testSet.hasSets(key2)).toBe(false);
+    expect(testSet.hasSets(key3)).toBe(true);
 
     refSet.delete(key1);
     refSet.delete(key2);
 
-    testSet.deleteSet(key3);
+    testSet.deleteSets(key3);
     expect(testSet.has(key3, key1)).toBe(refSet.has(key1));
     expect(testSet.has(key3, key2)).toBe(refSet.has(key2));
   });

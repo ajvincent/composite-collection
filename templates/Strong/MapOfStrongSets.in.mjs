@@ -172,7 +172,7 @@ ${docs.buildBlock("has", 2)}
   }
 
 ${docs.buildBlock("hasSet", 2)}
-  hasSet(${defines.get("mapArgList")}) {
+  hasSets(${defines.get("mapArgList")}) {
     const [__innerMap__] = this.__getInnerMap__(${defines.get("mapArgList")});
     return Boolean(__innerMap__);
   }

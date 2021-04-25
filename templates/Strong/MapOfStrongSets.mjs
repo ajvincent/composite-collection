@@ -101,7 +101,7 @@ export default class __className__ {
     return true;
   }
 
-  deleteSet(__mapArgList__) {
+  deleteSets(__mapArgList__) {
     const [__innerMap__, __mapHash__] = this.__getInnerMap__(__mapArgList__);
     if (!__innerMap__)
       return false;
@@ -138,7 +138,7 @@ export default class __className__ {
     return __innerMap__.has(__setHash__);
   }
 
-  hasSet(__mapArgList__) {
+  hasSets(__mapArgList__) {
     const [__innerMap__] = this.__getInnerMap__(__mapArgList__);
     return Boolean(__innerMap__);
   }

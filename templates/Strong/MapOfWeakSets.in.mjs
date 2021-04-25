@@ -124,7 +124,7 @@ ${
     return __inner__.delete(__key__);
   }
 
-  deleteSet(${defines.get("mapArgList")}) {
+  deleteSets(${defines.get("mapArgList")}) {
     const [__inner__, __mapHash__] = this.__getInner__(${defines.get("mapArgList")});
     if (!__inner__)
       return false;
@@ -156,7 +156,7 @@ ${
     return __inner__.has(__key__);
   }
 
-  hasSet(${defines.get("mapArgList")}) {
+  hasSets(${defines.get("mapArgList")}) {
     const [__inner__] = this.__getInner__(${defines.get("mapArgList")});
     return Boolean(__inner__);
   }

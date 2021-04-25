@@ -161,7 +161,7 @@ ${docs.buildBlock("has", 2)}
   }
 
 ${docs.buildBlock("hasSet", 2)}
-  hasSet(${defines.get("mapArgList")}) {
+  hasSets(${defines.get("mapArgList")}) {
     this.__requireValidMapKey__(${defines.get("mapArgList")});
     return Boolean(this.__getExistingInnerMap__(${defines.get("mapArgList")}));
   }

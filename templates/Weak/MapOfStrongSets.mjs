@@ -89,7 +89,7 @@ export default class __className__ {
     }
   }
 
-  deleteSet(__mapArgList__) {
+  deleteSets(__mapArgList__) {
     this.__requireValidMapKey__(__mapArgList__);
     let __weakKeyMap__, __innerMap__;
 
@@ -143,7 +143,7 @@ export default class __className__ {
     }
   }
 
-  hasSet(__mapArgList__) {
+  hasSets(__mapArgList__) {
     this.__requireValidMapKey__(__mapArgList__);
     return Boolean(this.__getExistingInnerMap__(__mapArgList__));
   }
