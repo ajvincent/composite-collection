@@ -82,7 +82,7 @@ describe("CollectionConfiguration", () => {
   describe(".addMapKey()", () => {
     let config, options, type1Args;
     beforeEach(() => {
-      config = new CollectionConfiguration("FooMap", "Map");
+      config = new CollectionConfiguration("FooMap", "WeakMap");
       options = {
         argumentType: "Cat",
         description: "The other cat",
@@ -313,6 +313,13 @@ describe("CollectionConfiguration", () => {
         ).toThrowError(`Argument name "${args[0]}" has already been defined!`);
       });
 
+      it("a weak map argument we pass in for a collection that can't have one", () => {
+        config = new CollectionConfiguration("FooMap", "Map");
+        expect(
+          () => config.addMapKey(...args)
+        ).toThrowError("Strong maps cannot have weak map keys!");
+      });
+
       describe("invalid identifiers:", () => {
         it("code injection with assignment", () => {
           expect(
@@ -374,7 +381,7 @@ describe("CollectionConfiguration", () => {
   describe(".addSetKey()", () => {
     let config, options, type1Args;
     beforeEach(() => {
-      config = new CollectionConfiguration("FooSet", "Set");
+      config = new CollectionConfiguration("FooSet", "WeakSet");
       options = {
         argumentType: "Cat",
         description: "The other cat",
@@ -606,6 +613,13 @@ describe("CollectionConfiguration", () => {
         ).toThrowError(`Argument name "${args[0]}" has already been defined!`);
       });
 
+      it("a weak set argument we pass in for a collection that can't have one", () => {
+        config = new CollectionConfiguration("FooSet", "Set");
+        expect(
+          () => config.addSetKey(...args)
+        ).toThrowError("Strong sets cannot have weak set keys!");
+      });
+
       describe("invalid identifiers:", () => {
         it("code injection with assignment", () => {
           expect(
@@ -667,7 +681,7 @@ describe("CollectionConfiguration", () => {
   describe(".setValueType()", () => {
     let config, wasCalled, valueFilter = value => { wasCalled = true; };
     beforeEach(() => {
-      config = new CollectionConfiguration("FooMap", "Map");
+      config = new CollectionConfiguration("FooMap", "WeakMap");
       wasCalled = false;
     });
 
@@ -724,7 +738,7 @@ describe("CollectionConfiguration", () => {
   });
 
   it("disallows any further operations after throwing an exception", () => {
-    const config = new CollectionConfiguration("FooMap", "Map");
+    const config = new CollectionConfiguration("FooMap", "WeakMap");
     expect(() => config.addMapKey("#x", true)).toThrow();
 
     expect(() => {

@@ -271,6 +271,8 @@ export default class CollectionConfiguration {
       } = options;
 
       this.#validateKey(argumentName, holdWeak, argumentType, description, argumentValidator);
+      if (holdWeak && !this.#collectionTemplate.startsWith("Weak/Map"))
+        throw new Error("Strong maps cannot have weak map keys!");
 
       const validatorSource = (argumentValidator !== null) ?
         this.#callbackArg(
@@ -317,6 +319,8 @@ export default class CollectionConfiguration {
       } = options;
 
       this.#validateKey(argumentName, holdWeak, argumentType, description, argumentValidator);
+      if (holdWeak && !/Weak\/?Set/.test(this.#collectionTemplate))
+        throw new Error("Strong sets cannot have weak set keys!");
 
       const validatorSource = (argumentValidator !== null) ?
         this.#callbackArg(
