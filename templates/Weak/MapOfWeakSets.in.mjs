@@ -1,6 +1,13 @@
-import WeakKeyComposer from "./WeakKey-WeakMap.mjs"
+/**
+ *
+ * @param {Map} defines
+ * @param {JSDocGenerator} docs
+ * @returns
+ */
+export default function preprocess(defines, docs) {
+  return `import WeakKeyComposer from "./WeakKey-WeakMap.mjs"
 
-export default class __className__ {
+export default class ${defines.get("className")} {
   constructor() {
     /**
      * @type {WeakMap<object, WeakMap<WeakKey, WeakSet<WeakKey>>>}
@@ -11,12 +18,12 @@ export default class __className__ {
 
     /** @type {WeakKeyComposer} */
     this.__mapKeyComposer__ = new WeakKeyComposer(
-      __weakMapArgNameList__, __strongMapArgNameList__
+      ${defines.get("weakMapArgNameList")}, ${defines.get("strongMapArgNameList")}
     );
 
     /** @type {WeakKeyComposer} */
     this.__setKeyComposer__ = new WeakKeyComposer(
-      __weakSetArgNameList__, __strongSetArgNameList__
+      ${defines.get("weakSetArgNameList")}, ${defines.get("strongSetArgNameList")}
     );
 
     /**
@@ -27,74 +34,77 @@ export default class __className__ {
     this.__weakKeyToStrongKeys__ = new WeakMap;
   }
 
-  add(__mapArgList__, __setArgList__) {
-    this.__requireValidKey__(__mapArgList__, __setArgList__);
-    const __innerMap__ = this.__requireInnerMap__(__mapArgList__);
+${docs.buildBlock("add", 2)}
+  add(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
+    this.__requireValidKey__(${defines.get("mapArgList")}, ${defines.get("setArgList")});
+    const __innerMap__ = this.__requireInnerMap__(${defines.get("mapArgList")});
 
     // level 3: inner WeakSet
     const __weakSetKey__ = this.__setKeyComposer__.getKey(
-      [__weakSetArgList__], [__strongSetArgList__]
+      [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
     );
     if (!this.__weakKeyToStrongKeys__.has(__weakSetKey__))
-      this.__weakKeyToStrongKeys__.set(__weakSetKey__, new Set([__strongSetArgList__]));
+      this.__weakKeyToStrongKeys__.set(__weakSetKey__, new Set([${defines.get("strongSetArgList")}]));
 
     __innerMap__.add(__weakSetKey__);
     return this;
   }
 
-  addSets(__mapArgList__, __sets__) {
-    this.__requireValidMapKey__(__mapArgList__);
+${docs.buildBlock("addSets", 2)}
+  addSets(${defines.get("mapArgList")}, __sets__) {
+    this.__requireValidMapKey__(${defines.get("mapArgList")});
     const __array__ = Array.from(__sets__).map((__set__, __index__) => {
       __set__ = Array.from(__set__);
-      if (__set__.length !== __setArgCount__) {
-        throw new Error(`Set at index ${__index__} doesn't have exactly ${defines.get("setArgCount")} set argument${
-          __setArgCount__ > 1 ? "s" : ""
-        }!`);
+      if (__set__.length !== ${defines.get("setArgCount")}) {
+        throw new Error(\`Set at index \${__index__} doesn't have exactly ${defines.get("setArgCount")} set argument${
+          defines.get("setArgCount") > 1 ? "s" : ""
+        }!\`);
       }
-      this.__requireValidKey__(__mapArgList__, ...__set__);
+      this.__requireValidKey__(${defines.get("mapArgList")}, ...__set__);
       return __set__;
     });
 
-    const __innerMap__ = this.__requireInnerMap__(__mapArgList__);
+    const __innerMap__ = this.__requireInnerMap__(${defines.get("mapArgList")});
 
-    __array__.forEach(__set__ => {
+    __array__.forEach(([${defines.get("setArgList")}] = __set__) => {
       const __weakSetKey__ = this.__setKeyComposer__.getKey(
-        [__weakSetArgList__], [__strongSetArgList__]
+        [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
       );
       if (!this.__weakKeyToStrongKeys__.has(__weakSetKey__))
-        this.__weakKeyToStrongKeys__.set(__weakSetKey__, new Set([__strongSetArgList__]));
+        this.__weakKeyToStrongKeys__.set(__weakSetKey__, new Set([${defines.get("strongSetArgList")}]));
   
       __innerMap__.add(__weakSetKey__);
     });
   }
 
-  delete(__mapArgList__, __setArgList__) {
-    this.__requireValidKey__(__mapArgList__, __setArgList__);
-    const __innerMap__ = this.__getExistingInnerMap__(__mapArgList__);
+${docs.buildBlock("delete", 2)}
+  delete(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
+    this.__requireValidKey__(${defines.get("mapArgList")}, ${defines.get("setArgList")});
+    const __innerMap__ = this.__getExistingInnerMap__(${defines.get("mapArgList")});
     if (!__innerMap__)
       return false;
 
     if (!this.__setKeyComposer__.hasKey(
-      [__weakSetArgList__], [__strongSetArgList__]
+      [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
     ))
       return false;
 
     const __weakSetKey__ = this.__setKeyComposer__.getKey(
-      [__weakSetArgList__], [__strongSetArgList__]
+      [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
     );
 
     const __returnValue__ = this.__weakKeyToStrongKeys__.delete(__weakSetKey__);
     if (__returnValue__)
       this.__setKeyComposer__.deleteKey(
-        [__weakSetArgList__], [__strongSetArgList__]
+        [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
       );
 
     return __returnValue__;
   }
 
-  deleteSets(__mapArgList__) {
-    this.__requireValidMapKey__(__mapArgList__);
-    /*
+${docs.buildBlock("deleteSets", 2)}
+  deleteSets(${defines.get("mapArgList")}) {
+    this.__requireValidMapKey__(${defines.get("mapArgList")});
     let __weakKeyMap__;
 
     // level 1:  first weak argument to weak map key
@@ -112,35 +122,33 @@ export default class __className__ {
       );
       return __weakKeyMap__.delete(__mapKey__);
     }
-    */
   }
 
-  has(__mapArgList__, __setArgList__) {
-    this.__requireValidKey__(__mapArgList__, __setArgList__);
-    const __innerMap__ = this.__getExistingInnerMap__(__mapArgList__);
+${docs.buildBlock("has", 2)}
+  has(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
+    this.__requireValidKey__(${defines.get("mapArgList")}, ${defines.get("setArgList")});
+    const __innerMap__ = this.__getExistingInnerMap__(${defines.get("mapArgList")});
     if (!__innerMap__)
       return false;
 
     if (!this.__setKeyComposer__.hasKey(
-      [__weakSetArgList__], [__strongSetArgList__]
+      [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
     ))
       return false;
 
     const __weakSetKey__ = this.__setKeyComposer__.getKey(
-      [__weakSetArgList__], [__strongSetArgList__]
+      [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
     );
 
     return __innerMap__.has(__weakSetKey__);
   }
 
-  hasSets(__mapArgList__) {
-    this.__requireValidMapKey__(__mapArgList__);
-    /*
+${docs.buildBlock("hasSet", 2)}
+  hasSets(${defines.get("mapArgList")}) {
+    this.__requireValidMapKey__(${defines.get("mapArgList")});
     return Boolean(this.__getExistingInnerMap__(${defines.get("mapArgList")}));
-    */
   }
 
-/*
 ${docs.buildBlock("requireInnerMapPrivate", 2)}
   __requireInnerMap__(${defines.get("mapArgList")}) {
     let __weakKeyMap__, __innerMap__;
@@ -158,12 +166,12 @@ ${docs.buildBlock("requireInnerMapPrivate", 2)}
         [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
       );
       if (!__weakKeyMap__.has(__mapKey__)) {
-        __weakKeyMap__.set(__mapKey__, new Map);
+        __weakKeyMap__.set(__mapKey__, new WeakSet);
       }
       __innerMap__ = __weakKeyMap__.get(__mapKey__);
 
       if (!this.__weakKeyToStrongKeys__.has(__mapKey__)) {
-        this.__weakKeyToStrongKeys__.set(__mapKey__, new Set([${defines.get("strongMapArgList")}]));
+        this.__weakKeyToStrongKeys__.set(__mapKey__, new WeakSet([${defines.get("strongMapArgList")}]));
       }
 
       return __innerMap__;
@@ -199,14 +207,8 @@ ${docs.buildBlock("requireValidKey", 2)}
 
 ${docs.buildBlock("isValidKeyPrivate", 2)}
   __isValidKey__(${defines.get("argList")}) {
-    if (!this.__keyComposer__.isValidForKey([${
-      defines.get("weakSetArgList")
-    }], [${
-      defines.get("strongSetArgList")
-    }]))
-      return false;
-${defines.get("validateArguments") || ""}
-    return true;
+    return this.__isValidMapKey__(${defines.get("mapArgList")}) &&
+           this.__isValidSetKey__(${defines.get("setArgList")});
   }
 
 ${docs.buildBlock("requireValidMapKey", 2)}
@@ -224,8 +226,25 @@ ${docs.buildBlock("isValidMapKeyPrivate", 2)}
 
 ${docs.buildBlock("isValidSetKeyPrivate", 2)}
   __isValidSetKey__(${defines.get("setArgList")}) {
-    void(${defines.get("setArgList")});
+    if (!this.__setKeyComposer__.isValidForKey([${
+      defines.get("weakSetArgList")
+    }], [${
+      defines.get("strongSetArgList")
+    }]))
+      return false;
+${defines.get("validateArguments") || ""}
     return true;
   }
-*/
+}
+
+Reflect.defineProperty(${defines.get("className")}, Symbol.toStringTag, {
+  value: "${defines.get("className")}",
+  writable: false,
+  enumerable: false,
+  configurable: true
+});
+
+Object.freeze(${defines.get("className")});
+Object.freeze(${defines.get("className")}.prototype);
+`;
 }

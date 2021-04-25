@@ -116,6 +116,7 @@ namespace("test", () => {
       "spec/generated/StrongMapWeakStrongSet.mjs",
 
       "spec/generated/WeakMapOfStrongSets.mjs",
+      "spec/generated/WeakMapOfWeakSets.mjs",
     ]
   );
 
@@ -155,10 +156,11 @@ generateCollectionTasks("source/exports", "spec/generated", [
   "StrongMapOfWeakSets.mjs",
 
   "WeakMapOfStrongSets.mjs",
+  "WeakMapOfWeakSets.mjs",
 ]);
 
 desc("Debugging tests");
-task("debug", async () => {
+task("debug", ["test:fixtures"], async () => {
   return runModule("./node_modules/jasmine/bin/jasmine.js", [], ["--inspect-brk"]);
 });
 
