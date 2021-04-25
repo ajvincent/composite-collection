@@ -291,14 +291,14 @@ export default class JSDocGenerator {
       footers: ["@throws for an invalid key set."]
     }],
 
-    ["requireInnerMapPrivate", {
-      description: "Require an inner map exist for the given map keys.",
+    ["requireInnerCollectionPrivate", {
+      description: "Require an inner collection exist for the given map keys.",
       includeArgs: "mapArguments",
       footers: ["@private"],
     }],
 
-    ["getExistingInnerMapPrivate", {
-      description: "Get an existing inner map exist for the given map keys.",
+    ["getExistingInnerCollectionPrivate", {
+      description: "Get an existing inner collection for the given map keys.",
       includeArgs: "mapArguments",
       returnType: "__className__~InnerMap",
       footers: ["@private"],

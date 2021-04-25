@@ -18,7 +18,7 @@ export default class WeakMapOfStrongSets {
      */
     this.__root__ = new WeakMap();
 
-    /** @type {WeakKeyComposer} */
+    /** @type {WeakKeyComposer} @private */
     this.__mapKeyComposer__ = new WeakKeyComposer(
       ["mapKey"], []
     );
@@ -266,7 +266,7 @@ export default class WeakMapOfStrongSets {
   }
 
   /**
-   * Require an inner map exist for the given map keys.
+   * Require an inner collection exist for the given map keys.
    *
    * @param {object} mapKey 
    *
@@ -301,7 +301,7 @@ export default class WeakMapOfStrongSets {
   }
 
   /**
-   * Get an existing inner map exist for the given map keys.
+   * Get an existing inner collection for the given map keys.
    *
    * @param {object} mapKey 
    *

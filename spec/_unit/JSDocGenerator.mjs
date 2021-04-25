@@ -906,10 +906,10 @@ describe("JSDocGenerator for maps of sets", () => {
   });
   afterEach(() => generator = null);
 
-  it("requireInnerMapPrivate", () => {
-    const generated = generator.buildBlock("requireInnerMapPrivate", 2);
+  it("requireInnerCollectionPrivate", () => {
+    const generated = generator.buildBlock("requireInnerCollectionPrivate", 2);
     expect(generated).toEqual(`  /**
-   * Require an inner map exist for the given map keys.
+   * Require an inner collection exist for the given map keys.
    *
    * @param {Car} car The car.
    *
@@ -917,10 +917,10 @@ describe("JSDocGenerator for maps of sets", () => {
    */`);
   });
 
-  it("getExistingInnerMapPrivate", () => {
-    const generated = generator.buildBlock("getExistingInnerMapPrivate", 2);
+  it("getExistingInnerCollectionPrivate", () => {
+    const generated = generator.buildBlock("getExistingInnerCollectionPrivate", 2);
     expect(generated).toEqual(`  /**
-   * Get an existing inner map exist for the given map keys.
+   * Get an existing inner collection for the given map keys.
    *
    * @param {Car} car The car.
    *

@@ -19,7 +19,7 @@ export default class ${defines.get("className")} {
      */
     this.__root__ = new WeakMap();
 
-    /** @type {WeakKeyComposer} */
+    /** @type {WeakKeyComposer} @private */
     this.__mapKeyComposer__ = new WeakKeyComposer(
       ${defines.get("weakMapArgNameList")}, ${defines.get("strongMapArgNameList")}
     );
@@ -183,7 +183,7 @@ ${docs.buildBlock("valuesSet", 2)}
     return __innerMap__.values();
   }
 
-${docs.buildBlock("requireInnerMapPrivate", 2)}
+${docs.buildBlock("requireInnerCollectionPrivate", 2)}
   __requireInnerMap__(${defines.get("mapArgList")}) {
     let __weakKeyMap__, __innerMap__;
     // level 1:  first weak argument to weak map key
@@ -212,7 +212,7 @@ ${docs.buildBlock("requireInnerMapPrivate", 2)}
     }
   }
 
-${docs.buildBlock("getExistingInnerMapPrivate", 2)}
+${docs.buildBlock("getExistingInnerCollectionPrivate", 2)}
   __getExistingInnerMap__(${defines.get("mapArgList")}) {
     let __weakKeyMap__;
 
