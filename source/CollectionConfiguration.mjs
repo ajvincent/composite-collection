@@ -422,6 +422,12 @@ export default class CollectionConfiguration {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("locked"))
         throw new Error("You must define a map key or set element first!");
+
+      if (this.#collectionTemplate.startsWith("Weak/Map") && !this.#weakMapKeys.length)
+        throw new Error("A weak map keyset must have at least one weak key!");
+
+      if (/Weak\/?Set/.test(this.#collectionTemplate) && !this.#weakSetElements.length)
+        throw new Error("A weak set keyset must have at least one weak key!");
     });
   }
 

@@ -737,6 +737,115 @@ describe("CollectionConfiguration", () => {
     });
   });
 
+  describe(".lock()", () => {
+    let config, options, type1Args;
+    afterEach(() => {
+      config = null;
+      options = null;
+      type1Args = null;
+    })
+
+    describe("is the final state for a", () => {
+      it("map", () => {
+        config = new CollectionConfiguration("FooMap", "WeakMap");
+        options = {
+          argumentType: "Cat",
+          description: "The other cat",
+        }
+
+        type1Args = [
+          "mother",
+          true,
+          options
+        ];
+
+        config.addMapKey(...type1Args);
+        expect(() => config.lock()).not.toThrow();
+        expect(() => config.lock()).not.toThrow();
+        expect(
+          () => config.addMapKey("Dog", "The other dog")
+        ).toThrowError("You have already locked this configuration!");
+      });
+
+      it("set", () => {
+        config = new CollectionConfiguration("FooSet", "WeakSet");
+        options = {
+          argumentType: "Cat",
+          description: "The other cat",
+        }
+
+        type1Args = [
+          "mother",
+          true,
+          options
+        ];
+
+        config.addSetKey(...type1Args);
+        expect(() => config.lock()).not.toThrow();
+        expect(() => config.lock()).not.toThrow();
+        expect(
+          () => config.addSetKey("Dog", "The other dog")
+        ).toThrowError("You have already locked this configuration!");
+      });
+
+      it("map of sets", () => {
+        config = new CollectionConfiguration("FooMap", "WeakMap", "WeakSet");
+        options = {
+          argumentType: "Cat",
+          description: "The other cat",
+        }
+  
+        type1Args = [
+          "mother",
+          true,
+          options
+        ];
+  
+        config.addMapKey(...type1Args);
+        config.addSetKey("dog", true);
+        expect(() => config.lock()).not.toThrow();
+        expect(() => config.lock()).not.toThrow();
+        expect(
+          () => config.addSetKey("Elephant", "You have an elephant?!?")
+        ).toThrowError("You have already locked this configuration!");
+      });
+    });
+
+    it("throws for a weak map key group missing any weak keys", () => {
+      config = new CollectionConfiguration("FooMap", "WeakMap");
+      options = {
+        argumentType: "Cat",
+        description: "The other cat",
+      }
+
+      type1Args = [
+        "mother",
+        false,
+        options
+      ];
+
+      config.addMapKey(...type1Args);
+      expect(() => config.lock()).toThrowError("A weak map keyset must have at least one weak key!");
+    });
+
+    it("throws for a weak set key group missing any weak keys", () => {
+      config = new CollectionConfiguration("FooSet", "WeakSet");
+      options = {
+        argumentType: "Cat",
+        description: "The other cat",
+      }
+
+      type1Args = [
+        "mother",
+        false,
+        options
+      ];
+
+      config.addSetKey(...type1Args);
+      expect(() => config.lock()).toThrowError("A weak set keyset must have at least one weak key!");
+    });
+  });
+
   it("disallows any further operations after throwing an exception", () => {
     const config = new CollectionConfiguration("FooMap", "WeakMap");
     expect(() => config.addMapKey("#x", true)).toThrow();
