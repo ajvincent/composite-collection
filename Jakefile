@@ -90,6 +90,10 @@ task(
   ]
 );
 
+task("clean", async () => {
+  return runModule("./jake-targets/clean.mjs");
+});
+
 namespace("test", () => {
   task(
     "fixtures",

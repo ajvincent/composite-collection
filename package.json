@@ -4,10 +4,11 @@
   "description": "Composing Maps, WeakMaps, Sets and WeakSets into generated classes",
   "main": "Driver.mjs",
   "scripts": {
+    "clean": "jake clean",
     "dogfood": "node dogfood/build.mjs && node --expose-gc ./node_modules/jasmine/bin/jasmine.js",
-    "debug": "jake debug",
-    "test": "jake test",
-    "all": "jake test export"
+    "debug": "jake clean debug",
+    "test": "jake clean test",
+    "all": "jake clean test export"
   },
   "repository": {
     "type": "git",
