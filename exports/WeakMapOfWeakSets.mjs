@@ -6,7 +6,6 @@
 
 import WeakKeyComposer from "./WeakKey-WeakMap.mjs"
 
-
 export default class WeakMapOfWeakSets {
   constructor() {
     /**

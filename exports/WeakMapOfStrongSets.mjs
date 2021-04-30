@@ -7,7 +7,6 @@
 import KeyHasher from "./KeyHasher.mjs"
 import WeakKeyComposer from "./WeakKey-WeakMap.mjs"
 
-
 /** @typedef {Map<hash, *[]>} WeakMapOfStrongSets~InnerMap */
 
 export default class WeakMapOfStrongSets {

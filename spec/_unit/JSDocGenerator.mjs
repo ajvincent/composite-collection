@@ -219,6 +219,27 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
+    it("isValidValuePublic", () => {
+      const generated = generator.buildBlock("isValidValuePublic", 2);
+      expect(generated).toEqual(`  /**
+   * Determine if a value is valid.
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @public
+   */`);
+    });
+
+    it("isValidValuePrivate", () => {
+      const generated = generator.buildBlock("isValidValuePrivate", 2);
+      expect(generated).toEqual(`  /**
+   * Determine if a value is valid.
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @private
+   */`);
+    });
+
+
     it("wrapIteratorMap", () => {
       const generated = generator.buildBlock("wrapIteratorMap", 2);
       expect(generated).toEqual(`  /**

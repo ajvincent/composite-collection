@@ -19,7 +19,7 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
   });
 
   it("setting one value", () => {
-    const key = new MockImportable({isKey: true}), value = "value";
+    const key = new MockImportable({isKey: true}), value = new MockImportable("value");
     refMap.set(key, value);
 
     expect(testMap.set(key, value)).toBe(testMap);
@@ -66,9 +66,9 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
   });
 
   it("setting two values", () => {
-    const key1 = new MockImportable({isKey1: true}), value1 = "value1";
+    const key1 = new MockImportable({isKey1: true}), value1 = new MockImportable("value1");
     refMap.set(key1, value1);
-    const key2 = new MockImportable({isKey2: true}), value2 = "value2";
+    const key2 = new MockImportable({isKey2: true}), value2 = new MockImportable("value2");
     refMap.set(key2, value2);
 
     expect(testMap.set(key1, value1)).toBe(testMap);
@@ -173,7 +173,7 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
 
     it("strongly as the key in .set()", async () => {
       await expectAsync(
-        key => testMap.set(new MockImportable(key), {})
+        key => testMap.set(new MockImportable(key), new MockImportable({}))
       ).toHoldReferencesStrongly();
     });
 
@@ -181,7 +181,7 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
       await expectAsync(
         key => {
           key = new MockImportable(key);
-          testMap.set(key, {});
+          testMap.set(key, new MockImportable({}));
           testMap.delete(key);
         }
       ).toHoldReferencesWeakly();
@@ -192,7 +192,7 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
       await expectAsync(
         value => {
           let externalKey = new MockImportable({});
-          testMap.set(externalKey, value);
+          testMap.set(externalKey, new MockImportable(value));
           externalKeys.push(externalKey);
           externalKey = null;
         }
@@ -201,7 +201,7 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
 
     it("as values when the keys are not held externally", async () => {
       await expectAsync(
-        value => testMap.set(new MockImportable({}), value)
+        value => testMap.set(new MockImportable({}), new MockImportable(value))
       ).toHoldReferencesStrongly();
     });
   });

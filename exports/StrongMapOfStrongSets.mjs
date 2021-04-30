@@ -6,7 +6,6 @@
 
 import KeyHasher from "./KeyHasher.mjs";
 
-
 export default class StrongMapOfStrongSets {
   constructor() {
     /**
@@ -113,6 +112,7 @@ export default class StrongMapOfStrongSets {
       if (__set__.length !== 1) {
         throw new Error(`Set at index ${__index__} doesn't have exactly 1 argument!`);
       }
+
       return __set__;
     });
 
@@ -343,6 +343,7 @@ export default class StrongMapOfStrongSets {
     const __hash__ = this.__mapHasher__.buildHash(__mapArguments__);
     return [this.__outerMap__.get(__hash__), __hash__] || [];
   }
+
 }
 
 StrongMapOfStrongSets[Symbol.iterator] = function() {

@@ -331,6 +331,22 @@ export default class JSDocGenerator {
       returnDescription: "True if the validation passes, false if it doesn't.",
       footers: ["@private"],
     }],
+
+    ["isValidValuePublic", {
+      description: "Determine if a value is valid.",
+      includeArgs: "none",
+      returnType: "boolean",
+      returnDescription: "True if the validation passes, false if it doesn't.",
+      footers: ["@public"],
+    }],
+
+    ["isValidValuePrivate", {
+      description: "Determine if a value is valid.",
+      includeArgs: "none",
+      returnType: "boolean",
+      returnDescription: "True if the validation passes, false if it doesn't.",
+      footers: ["@private"],
+    }],
   ]);
 
   /**

@@ -6,7 +6,6 @@
 
 import WeakKeyComposer from "./WeakKey-WeakMap.mjs";
 
-
 export default class WeakWeakSet {
   constructor() {
     /** @type {WeakKeyComposer} @const @private */
@@ -18,7 +17,6 @@ export default class WeakWeakSet {
      * @private
      */
     this.__weakKeySet__ = new WeakSet;
-
 
     if (arguments.length > 0) {
       const iterable = arguments[0];

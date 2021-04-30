@@ -48,7 +48,7 @@ ${docs.buildBlock("add", 2)}
   add(${defines.get("argList")}) {${
     invokeValidate
   }${
-    defines.get("validateValue")
+    defines.get("validateValue") || ""
   }
     const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
     this.__root__.set(hash, Object.freeze([${defines.get("argList")}]));

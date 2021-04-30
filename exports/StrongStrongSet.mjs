@@ -6,7 +6,6 @@
 
 import KeyHasher from "./KeyHasher.mjs";
 
-
 export default class StrongStrongSet {
   constructor() {
     /**

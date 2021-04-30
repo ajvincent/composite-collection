@@ -12,4 +12,10 @@ SoloStrongMapConfig.addMapKey("key", false, {
   },
 });
 
+SoloStrongMapConfig.setValueType("MockImportable", "The value", function(value) {
+  // eslint-disable-next-line no-undef
+  if (!(value instanceof MockImportable))
+    return false;
+});
+
 export default SoloStrongMapConfig;

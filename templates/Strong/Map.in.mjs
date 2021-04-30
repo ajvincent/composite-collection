@@ -88,6 +88,15 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
     return this.__isValidKey__(${defines.get("argList")});
   }
 
+${
+  defines.has("validateValue") ? `
+${docs.buildBlock("isValidValuePublic", 2)}
+  isValidValue(value) {
+    return this.__isValidValue__(value);
+  }
+  ` : ``
+  }
+
 ` : ``}${docs.buildBlock("keys", 2)}
   keys() {
     return this.__wrapIterator__(
@@ -98,9 +107,13 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
 ${docs.buildBlock("set", 2)}
   set(${defines.get("argList")}, value) {${
     invokeValidate
-  }${
-    defines.get("validateValue")
   }
+${
+  defines.has("validateValue") ? `
+  if (!this.__isValidValue__(value))
+    throw new Error("The value is not valid!");
+` : ``
+}
     const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
     const keySet = [${defines.get("argList")}];
     Object.freeze(keySet);
@@ -115,7 +128,6 @@ ${docs.buildBlock("values", 2)}
       valueAndKeySet => valueAndKeySet.value
     );
   }
-
 ${defines.has("validateArguments") ? `
 ${docs.buildBlock("requireValidKey", 2)}
   __requireValidKey__(${defines.get("argList")}) {
@@ -128,8 +140,15 @@ ${docs.buildBlock("isValidKeyPrivate", 2)}
 ${defines.get("validateArguments")}
     return true;
   }
-
-` : ``}${docs.buildBlock("wrapIteratorMap", 2)}
+` : ``}
+${defines.has("validateValue") ? `
+${docs.buildBlock("isValidValuePrivate", 2)}
+  __isValidValue__(value) {
+    ${defines.get("validateValue")}
+    return true;
+  }
+  ` : ``}
+${docs.buildBlock("wrapIteratorMap", 2)}
   __wrapIterator__(unpacker) {
     const rootIter = this.__root__.values();
     return {

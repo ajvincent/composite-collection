@@ -7,7 +7,6 @@
 import KeyHasher from "./KeyHasher.mjs"
 import WeakKeyComposer from "./WeakKey-WeakMap.mjs"
 
-
 export default class WeakStrongMap {
   constructor() {
     this.__weakArgCount__ = 1;
@@ -51,7 +50,6 @@ export default class WeakStrongMap {
       }
     }
   }
-
 
   /**
    * Delete an element from the collection by the given key sequence.
@@ -186,7 +184,6 @@ export default class WeakStrongMap {
   __isValidKey__(weakKey, strongKey) {
     if (!this.__keyComposer__.isValidForKey([weakKey], [strongKey]))
       return false;
-
 
     return true;
   }

@@ -6,7 +6,6 @@
 
 import KeyHasher from "./KeyHasher.mjs";
 
-
 export default class StrongStrongMap {
   constructor() {
     /**
@@ -165,6 +164,7 @@ export default class StrongStrongMap {
    * @public
    */
   set(key1, key2, value) {
+
     const hash = this.__hasher__.buildHash([key1, key2]);
     const keySet = [key1, key2];
     Object.freeze(keySet);

@@ -173,18 +173,19 @@ export default class CodeGenerator extends CompletionPromise {
       this.#defines.set("strongSetArgNameList", buildArgNameList(data.strongSetElements));
     }
 
+    const mapKeys = data.weakMapKeys.concat(data.strongMapKeys);
+    const setKeys = data.weakSetElements.concat(data.strongSetElements);
     if (data.collectionTemplate.includes("MapOf")) {
-      const mapKeys = data.weakMapKeys.concat(data.strongMapKeys);
       this.#defines.set("mapArgCount", mapKeys.length);
       this.#defines.set("mapArgList", mapKeys.join(", "));
       this.#defines.set("mapArgNameList", buildArgNameList(mapKeys));
 
-      const setKeys = data.weakSetElements.concat(data.strongSetElements);
       this.#defines.set("setArgCount", setKeys.length);
       this.#defines.set("setArgList", setKeys.join(", "));
       this.#defines.set("setArgNameList", buildArgNameList(setKeys));
     }
 
+    // validateArguments
     {
       const validatorCode = paramsData.map(
         pd => pd.argumentValidator || ""
@@ -196,11 +197,23 @@ export default class CodeGenerator extends CompletionPromise {
       }
     }
 
+    // validateMapArguments
     {
-      let filter = (data.valueFilter || "").trim();
+      const validatorCode = paramsData.map(pd => {
+        if (!mapKeys.includes(pd.argumentName))
+          return "";
+        return pd.argumentValidator || "";
+      }).filter(Boolean).join("\n\n").trim();
+
+      if (validatorCode)
+        this.#defines.set("validateMapArguments", validatorCode);
+    }
+
+    // validateValue
+    {
+      let filter = (data?.valueType?.argumentValidator || "").trim();
       if (filter)
-        filter += "\n    ";
-      this.#defines.set("validateValue", filter);
+        this.#defines.set("validateValue", filter + "\n    ");
     }
   }
 
@@ -235,6 +248,8 @@ export default class CodeGenerator extends CompletionPromise {
         "end_with_newline": true,
       }
     );
+
+    this.#generatedCode = this.#generatedCode.replace(/\n{3,}/g, "\n\n");
   }
 
   async #writeSource() {
