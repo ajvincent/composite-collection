@@ -1,4 +1,4 @@
-/** @module templates/KeyHasher.mjs */
+/** @module exports/KeyHasher.mjs */
 
 /**
  * @fileoverview
@@ -15,6 +15,9 @@ export default class KeyHasher {
    * @param {string[]} argList The list of keys.
    */
   constructor(argList) {
+    if (new.target !== KeyHasher)
+      throw new Error("You cannot subclass KeyHasher!");
+
     /**
      * @type {Number}
      * @private
@@ -23,14 +26,14 @@ export default class KeyHasher {
 
     /**
      * @type {WeakMap<Object>}
-     * @readonly
+     * @const
      * @private
      */
     this.__weakValueToHash__ = new WeakMap();
 
     /**
      * @type {Map<value>}
-     * @readonly
+     * @const
      * @private
      */
     this.__strongValueToHash__ = new Map();
@@ -38,17 +41,18 @@ export default class KeyHasher {
     /**
      * @type {string[]}
      * @private
-     * @readonly
+     * @const
      */
     this.__argList__ = argList.slice();
 
+    // freeze when we can convert the above to private class fields.
     Object.seal(this);
   }
 
   /**
    * Build a hash of the key list.
    *
-   * @param {void[]} valueList
+   * @param {*[]} valueList
    * @returns {string?}
    *
    * @public

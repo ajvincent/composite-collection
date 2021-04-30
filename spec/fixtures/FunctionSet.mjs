@@ -6,12 +6,12 @@ FunctionSetConfig.addCollectionType(
   "FunctionSet",
   "Set",
   {
-    argumentType: "void",
+    argumentType: "*",
     description: "The set containing the function",
   }
 );
 
-FunctionSetConfig.setValueFilter(function(value) {
+FunctionSetConfig.setValueType("function", "", function(value) {
   if (typeof value !== "function")
     throw new Error("value must be a function!");
 });

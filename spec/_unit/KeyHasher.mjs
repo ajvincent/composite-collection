@@ -1,4 +1,6 @@
-import KeyHasher from "../../templates/KeyHasher.mjs";
+import KeyHasher from "../../source/exports/KeyHasher.mjs";
+import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
+
 describe("KeyHasher", () => {
   let hasher;
   const objects = [];
@@ -20,12 +22,17 @@ describe("KeyHasher", () => {
     ]);
   });
 
+  it("class cannot have subclasses", () => {
+    class Subclass extends KeyHasher {};
+    expect(() => new Subclass).toThrowError("You cannot subclass KeyHasher!");
+  });
+
   it("instances are sealed", () => {
     expect(Object.isSealed(hasher)).toBe(true);
   });
 
   xit("instance exposes no private properties", () => {
-    expect(Reflect.ownKeys(hasher)).toEqual([]);
+    expect(Reflect.ownKeys(hasher)).toEqual(["buildHash"]);
   });
 
   describe(".buildHash()", () => {
@@ -101,6 +108,18 @@ describe("KeyHasher", () => {
     it("returns null for a non-array value list", () => {
       const keyList = new Set(objects.slice(0, 3));
       expect(hasher.buildHash(keyList)).toBe(null);
+    });
+  });
+
+  describe("holds references", () => {
+    beforeEach(() => {
+      jasmine.addAsyncMatchers(ToHoldRefsMatchers);
+    });
+
+    it("weakly to objects", async () => {
+      await expectAsync(
+        key => hasher.buildHash("row", "column", key)
+      ).toHoldReferencesWeakly();
     });
   });
 });

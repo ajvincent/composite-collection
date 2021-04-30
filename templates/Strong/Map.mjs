@@ -1,9 +1,9 @@
-import KeyHasher from "./KeyHasher.mjs";
+import KeyHasher from "./KeyHasher";
 
 /**
  * @typedef __className__~valueAndKeySet
- * @property {void}   value  The actual value we store.
- * @property {void[]} keySet The set of keys we hashed.
+ * @property {*}   value  The actual value we store.
+ * @property {*[]} keySet The set of keys we hashed.
  * @private
  */
 
@@ -12,12 +12,14 @@ export default class __className__ {
     /**
      * @type {Map<string, __className__~valueAndKeySet>}
      * @private
-     * @readonly
+     * @const
      */
     this.__root__ = new Map;
 
     /**
      * @type {KeyHasher}
+     * @private
+     * @const
      */
     this.__hasher__ = new KeyHasher(__argNameList__);
   }
@@ -48,7 +50,7 @@ export default class __className__ {
    * @public
    */
   delete(__argList__) {
-    this.__validateArguments__(__argList__);
+    this.__requireValidKey__(__argList__);
 
     const hash = this.__hasher__.buildHash([__argList__]);
     return this.__root__.delete(hash);
@@ -73,11 +75,11 @@ export default class __className__ {
    *
    * @public
    */
-  forEach(callback) {
+  forEach(callback, thisArg) {
     this.__root__.forEach((valueAndKeySet, key, root) => {
       const args = valueAndKeySet.keySet.concat(this);
       args.unshift(valueAndKeySet.value);
-      callback(...args);
+      callback.apply(thisArg, [...args]);
     });
   }
 
@@ -97,7 +99,7 @@ export default class __className__ {
    * @public
    */
   get(__argList__) {
-    this.__validateArguments__(__argList__);
+    this.__requireValidKey__(__argList__);
     const hash = this.__hasher__.buildHash([__argList__]);
     const valueAndKeySet = this.__root__.get(hash);
     return valueAndKeySet ? valueAndKeySet.value : valueAndKeySet;
@@ -112,7 +114,7 @@ export default class __className__ {
    * @public
    */
   has(__argList__) {
-    this.__validateArguments__(__argList__);
+    this.__requireValidKey__(__argList__);
     const hash = this.__hasher__.buildHash([__argList__]);
     return this.__root__.has(hash);
   }
@@ -130,7 +132,7 @@ export default class __className__ {
   }
 
   set(__argList__, value) {
-    this.__validateArguments__(__argList__);
+    this.__requireValidKey__(__argList__);
     void("__doValidateValue__");
 
     const hash = this.__hasher__.buildHash([__argList__]);
@@ -178,7 +180,7 @@ export default class __className__ {
    *
    * __argDescriptions__
    */
-  __validateArguments__(__argList__) {
+  __requireValidKey__(__argList__) {
     void("__doValidateArguments__");
   }
 }
@@ -186,10 +188,3 @@ export default class __className__ {
 __className__[Symbol.iterator] = function() {
   return this.entries();
 }
-
-Reflect.defineProperty(__className__, Symbol.toStringTag, {
-  value: "__className__",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});

@@ -8,8 +8,12 @@
 
 import acorn from "acorn";
 
+import ConfigurationStateGraphs from "./ConfigurationStateGraphs.mjs";
+import CollectionType from "./CollectionType.mjs";
+
 function getNormalFunctionAST(fn) {
-  const source = fn.toString();
+  let source = fn.toString().replace(/^function\s*\(/, "function foo(");
+
   let astNode;
   try {
     astNode = acorn.parse(source).body[0];
@@ -34,41 +38,7 @@ function getNormalFunctionAST(fn) {
   return [source, astNode.params, astNode.body];
 }
 
-/**
- * @public
- */
-class CollectionType {
-  /**
-   * A simple data structure.
-   *
-   * @param {string}    argumentName   The name of the argument.
-   * @param {string}    mapOrSetType   The name of the map or set type.
-   *                                   Map, Set, WeakMap, WeakSet, or something that inherits from it.
-   * @param {string}    argumentType   A JSDoc-printable type for the argument.
-   * @param {string}    description    A JSDoc-printable description.
-   * @param {string?}   argumentValidator A method to use for testing the argument.
-   */
-  constructor(argumentName, mapOrSetType, argumentType, description, argumentValidator) {
-    /** @public @readonly @type {string} */
-    this.argumentName   = argumentName;
-
-    /** @public @readonly @type {string} */
-    this.mapOrSetType   = mapOrSetType;
-
-    /** @public @readonly @type {string} */
-    this.argumentType   = argumentType;
-
-    /** @public @readonly @type {string} */
-    this.description    = description;
-
-    /** @public @readonly @type {string?} */
-    this.argumentValidator = argumentValidator;
-
-    Object.freeze(this);
-  }
-}
-Object.freeze(CollectionType);
-Object.freeze(CollectionType.prototype);
+const PREDEFINED_TYPES = new Set(["WeakMap", "Map", "WeakSet", "Set"]);
 
 /**
  * A configuration manager for a single composite collection.
@@ -76,56 +46,19 @@ Object.freeze(CollectionType.prototype);
  * @public
  */
 export default class CollectionConfiguration {
-  static #PREDEFINED_TYPES = new Set(["WeakMap", "Map", "WeakSet", "Set"]);
-
-  static #STATE_TRANSITIONS = new Map([
-    ["start", new Set([
-      "startMap",
-      /* not yet implemented
-      "startSet",
-      */
-    ])],
-
-    ["startMap", new Set([
-      "mapKeys",
-    ])],
-
-    ["startSet", new Set([
-      "setElements",
-    ])],
-
-    ["mapKeys", new Set([
-      "mapKeys",
-      "hasValueFilter",
-      "locked",
-    ])],
-
-    ["setElements", new Set([
-      "setElements",
-      "locked",
-    ])],
-
-    ["hasValueFilter", new Set([
-      "locked",
-    ])],
-
-    ["locked", new Set([
-      "locked",
-    ])],
-
-    ["errored", new Set()],
-  ]);
+  /** @type {Map<string, Set<string>>} */
+  #stateTransitionsGraph;
 
   /** @type {string} */
   #currentState = "start";
 
-  /** @type {string} @readonly */
+  /** @type {string} @const */
   #className;
 
   /** @type {string} @readonly */
-  #collectionType;
+  #collectionTemplate;
 
-  /** @type {Map<identifier, CollectionType>} @readonly */
+  /** @type {Map<identifier, CollectionType>} @const */
   #parameterToTypeMap = new Map();
 
   /** @type {identifier[]} */
@@ -140,17 +73,14 @@ export default class CollectionConfiguration {
   /** @type {identifier[]} */
   #strongSetElements = [];
 
-  /** @type {string?} */
-  #valueFilter = null;
-
-  /** @type {string} */
-  #valueJSDoc = null;
+  /** @type {CollectionType} */
+  #valueCollectionType = null;
 
   /** @type {string?} */
   #fileoverview = null;
 
   #doStateTransition(nextState) {
-    const validStates = CollectionConfiguration.#STATE_TRANSITIONS.get(this.#currentState);
+    const validStates = this.#stateTransitionsGraph.get(this.#currentState);
     const mayTransition = validStates.has(nextState);
     if (mayTransition)
       this.#currentState = nextState;
@@ -211,7 +141,6 @@ export default class CollectionConfiguration {
     this.#stringArg(argumentName, value, mayOmit);
     if (value.includes("*/"))
       throw new Error(argumentName + " contains a comment that would end the JSDoc block!");
-    // XXX ajvincent More advanced JSDoc validation is a good idea.
   }
 
   #catchErrorState(callback) {
@@ -228,28 +157,70 @@ export default class CollectionConfiguration {
   }
 
   /**
-   * @param {string} className The name of the class to define.
+   * @param {string}  className The name of the class to define.
+   * @param {string}  outerType One of "Map", "WeakMap", "Set", "WeakSet".
+   * @param {string?} innerType One of "Set", "WeakSet", or null.
    * @constructor
-   *
-   * @note depending on how this develops, I may add a collectionType string argument.
    */
-  constructor(className) {
+  constructor(className, outerType, innerType = null) {
     this.#identifierArg("className", className);
-    if (CollectionConfiguration.#PREDEFINED_TYPES.has(className))
+    if (PREDEFINED_TYPES.has(className))
       throw new Error(`You can't override the ${className} primordial!`);
 
-    if (className.endsWith("Map")) {
-      this.#doStateTransition("startMap");
-      this.#collectionType = "map";
+    switch (outerType) {
+      case "Map":
+        this.#collectionTemplate = "Strong/Map";
+        break;
+      case "WeakMap":
+        this.#collectionTemplate = "Weak/Map";
+        break;
+
+      case "Set":
+        this.#collectionTemplate = "Strong/Set";
+        break;
+      case "WeakSet":
+        this.#collectionTemplate = "Weak/Set";
+        break;
+
+      default:
+        throw new Error(`outerType must be a ${Array.from(PREDEFINED_TYPES).join(", ")}!`);
     }
-    /*
-    else if (className.endsWith("Set"))
+
+    switch (innerType) {
+      case null:
+        break;
+      case "Set":
+        if (outerType.endsWith("Set"))
+          throw new Error("outerType must be a Map or WeakMap when an innerType is not null!");
+        this.#collectionTemplate += "OfStrongSets";
+        break;
+      case "WeakSet":
+        /*
+        There can't be a strong map of weak sets, because it's unclear when we would hold strong
+        references to the strong map keys.  Try it as a thought experiment:  add two such sets,
+        then delete one.  Should the map keys be held strongly?  What about after garbage collection
+        removes the other set?
+        */
+        if (outerType !== "WeakMap")
+          throw new Error("outerType must be a WeakMap when the innerType is a WeakSet!");
+        this.#collectionTemplate += "OfWeakSets";
+        break;
+      default:
+        throw new Error("innerType must be a WeakSet, Set, or null!");
+    }
+
+    if (this.#collectionTemplate.includes("MapOf")) {
+      this.#stateTransitionsGraph = ConfigurationStateGraphs.get("MapOfSets");
+      this.#doStateTransition("startMap");
+    }
+    else if (outerType.endsWith("Map")) {
+      this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Map");
+      this.#doStateTransition("startMap");
+    }
+    else {
+      this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Set");
       this.#doStateTransition("startSet");
-    else
-      throw new Error(`The class name must end with "Map" or "Set"!`);
-    */
-    else
-      throw new Error(`The class name must end with "Map"!`);
+    }
 
     this.#className = className;
 
@@ -274,14 +245,13 @@ export default class CollectionConfiguration {
     return this.#catchErrorState(() => {
       return {
         className: this.#className,
-        collectionType: this.#collectionType,
+        collectionTemplate: this.#collectionTemplate,
         parameterToTypeMap: new Map(this.#parameterToTypeMap),
         weakMapKeys: this.#weakMapKeys.slice(),
         strongMapKeys: this.#strongMapKeys.slice(),
         weakSetElements: this.#weakSetElements.slice(),
         strongSetElements: this.#strongSetElements.slice(),
-        valueFilter: this.#valueFilter,
-        valueJSDoc: this.#valueJSDoc,
+        valueType: this.#valueCollectionType,
         fileOverview: this.#fileoverview,
       }
     });
@@ -299,18 +269,16 @@ export default class CollectionConfiguration {
         this.#throwIfLocked();
         throw new Error("You must define map keys before calling .addSetElement(), .setValueFilter() or .lock()!");
       }
-  
+
       const {
-        argumentType = null,
+        argumentType = holdWeak ? "object" : "*",
         description = null,
-        argumentValidator = null
+        argumentValidator = null,
       } = options;
 
-      this.#identifierArg("argumentName", argumentName);
-      if (argumentType !== null)
-        this.#jsdocField("argumentType", argumentType, true);
-      if (description !== null)
-        this.#jsdocField("description",  description, true);
+      this.#validateKey(argumentName, holdWeak, argumentType, description, argumentValidator);
+      if (holdWeak && !this.#collectionTemplate.startsWith("Weak/Map"))
+        throw new Error("Strong maps cannot have weak map keys!");
 
       const validatorSource = (argumentValidator !== null) ?
         this.#callbackArg(
@@ -321,14 +289,6 @@ export default class CollectionConfiguration {
         ) :
         null;
 
-      if (this.#parameterToTypeMap.has(argumentName))
-        throw new Error(`Argument name "${argumentName}" has already been defined!`);
-
-      if (argumentName === "value")
-        throw new Error(`The argument name "value" is reserved!`);
-      if (typeof holdWeak !== "boolean")
-        throw new Error("holdWeak must be true or false!");
-
       const collectionType = new CollectionType(
         argumentName,
         holdWeak ? "WeakMap" : "Map",
@@ -337,7 +297,7 @@ export default class CollectionConfiguration {
         validatorSource
       );
       this.#parameterToTypeMap.set(argumentName, collectionType);
-  
+
       if (holdWeak)
         this.#weakMapKeys.push(argumentName);
       else
@@ -346,27 +306,121 @@ export default class CollectionConfiguration {
   }
 
   /**
-   * Define a final value filter for .set(), .add() calls.
-   *
-   * @param {Function} valueFilter
-   * @param {string}   valueJSDoc
+   * @typedef CollectionTypeOptions
+   * @property {string?}   argumentType      A JSDoc-printable type for the argument.
+   * @property {string?}   description       A JSDoc-printable description.
+   * @property {Function?} argumentValidator A method to use for testing the argument.
    */
-  setValueFilter(valueFilter, valueJSDoc = null) {
+  addSetKey(argumentName, holdWeak, options = {}) {
+    return this.#catchErrorState(() => {
+      if (!this.#doStateTransition("setElements")) {
+        this.#throwIfLocked();
+        throw new Error("You must define set keys before calling .setValueFilter() or .lock()!");
+      }
+
+      const {
+        argumentType = holdWeak ? "object" : "*",
+        description = null,
+        argumentValidator = null,
+      } = options;
+
+      this.#validateKey(argumentName, holdWeak, argumentType, description, argumentValidator);
+      if (holdWeak && !/Weak\/?Set/.test(this.#collectionTemplate))
+        throw new Error("Strong sets cannot have weak set keys!");
+
+      const validatorSource = (argumentValidator !== null) ?
+        this.#callbackArg(
+          "argumentValidator",
+          argumentValidator,
+          argumentName,
+          true
+        ) :
+        null;
+
+      const collectionType = new CollectionType(
+        argumentName,
+        holdWeak ? "WeakSet" : "Set",
+        argumentType,
+        description,
+        validatorSource
+      );
+      this.#parameterToTypeMap.set(argumentName, collectionType);
+
+      if (holdWeak)
+        this.#weakSetElements.push(argumentName);
+      else
+        this.#strongSetElements.push(argumentName);
+    });
+  }
+
+  #validateKey(argumentName, holdWeak, argumentType, description, argumentValidator) {
+    this.#identifierArg("argumentName", argumentName);
+    if (argumentType !== null)
+      this.#jsdocField("argumentType", argumentType, true);
+    if (description !== null)
+      this.#jsdocField("description",  description, true);
+
+    if (argumentValidator !== null) {
+      this.#callbackArg(
+        "argumentValidator",
+        argumentValidator,
+        argumentName,
+        true
+      );
+    }
+
+    if (this.#parameterToTypeMap.has(argumentName))
+      throw new Error(`Argument name "${argumentName}" has already been defined!`);
+
+    if ((argumentName === "value") && !this.#collectionTemplate.includes("Set"))
+      throw new Error(`The argument name "value" is reserved!`);
+
+    /* A little explanation is in order.  Simply put, the compiler will need a set of variable names it can define
+    which should only minimally reduce the set of variable names the user may need.  A double underscore at the
+    start and the end of the argument name isn't too much to ask - and why would you have that for a function
+    argument name anyway?
+    */
+    if (/^__.*__$/.test(argumentName))
+      throw new Error("This module reserves variable names starting and ending with a double underscore for itself.");
+
+    if (typeof holdWeak !== "boolean")
+      throw new Error("holdWeak must be true or false!");
+  }
+
+  /**
+   * Define the value type for .set(), .add() calls.
+   *
+   * @type {string}    type        The value type.
+   * @type {string}    description The description of the value.
+   * @type {function?} validator   A function to validate the value.
+   */
+  setValueType(type, description, validator = null) {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("hasValueFilter")) {
         this.#throwIfLocked();
-  
+
         if (this.#currentState === "hasValueFilter")
-          throw new Error("You can only set the value filter once!");
-        throw new Error("You can only call .setValueFilter() directly after calling .addMapKey()!");
+          throw new Error("You can only set the value type once!");
+        throw new Error("You can only call .setValueType() directly after calling .addMapKey()!");
       }
 
-      const source = this.#callbackArg("valueFilter", valueFilter, "value");
-      if (valueJSDoc !== null)
-        this.#jsdocField("valueJSDoc", valueJSDoc, true);
+      this.#stringArg("type", type, false);
+      this.#stringArg("description", description, false);
+      const validatorSource = (validator !== null) ?
+        this.#callbackArg("validator", validator, "value", true) :
+        null;
 
-      this.#valueFilter = source;
-      this.#valueJSDoc = valueJSDoc;
+      this.#valueCollectionType = new CollectionType(
+        "value", "", type, description, validatorSource
+      );
+
+      if (this.#collectionTemplate.includes("Set")) {
+        const holdWeak = /Weak\/?Set/.test(this.#collectionTemplate);
+        if (holdWeak)
+          this.#weakMapKeys.push("value");
+        else
+          this.#strongMapKeys.push("value");
+      }
     });
   }
 
@@ -374,6 +428,12 @@ export default class CollectionConfiguration {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("locked"))
         throw new Error("You must define a map key or set element first!");
+
+      if (this.#collectionTemplate.startsWith("Weak/Map") && !this.#weakMapKeys.length)
+        throw new Error("A weak map keyset must have at least one weak key!");
+
+      if (/Weak\/?Set/.test(this.#collectionTemplate) && !this.#weakSetElements.length)
+        throw new Error("A weak set keyset must have at least one weak key!");
     });
   }
 

@@ -6,7 +6,12 @@
 
 import CollectionConfiguration from "./CollectionConfiguration.mjs";
 import CompletionPromise from "./CompletionPromise.mjs";
+import CollectionType from "./CollectionType.mjs";
+import JSDocGenerator from "./JSDocGenerator.mjs";
+import CompileTimeOptions from "./CompileTimeOptions.mjs";
+
 import fs from "fs/promises";
+import { pathToFileURL } from "url";
 import getAllFiles from 'get-all-files';
 import beautify from "js-beautify";
 
@@ -14,17 +19,27 @@ import beautify from "js-beautify";
  * @type {Map<string, string>}
  * @package
  */
-const TemplateFiles = new Map();
+const TemplateGenerators = new Map();
 {
-  const templateDir = new URL("../templates", import.meta.url).pathname;
+  const templateDirURL = new URL("../templates", import.meta.url);
+  const templateDir = templateDirURL.pathname;
   const allFiles = await getAllFiles.default.async.array(templateDir);
   await Promise.all(allFiles.map(async fullPath => {
     let baseName = fullPath.substr(templateDir.length + 1);
-    if (!baseName.endsWith(".mjs"))
+    if (!baseName.endsWith(".in.mjs"))
       return;
-    baseName = baseName.replace(/\.mjs$/, "");
-    TemplateFiles.set(baseName, await fs.readFile(fullPath, { encoding: "utf-8"}));
+
+    const targetFileURL = pathToFileURL(fullPath);
+    const generator = (await import(targetFileURL)).default;
+    if (typeof generator === "function")
+      TemplateGenerators.set(baseName.replace(/\.in\.mjs$/, ""), generator);
+    else
+      throw new Error("generator isn't a function?");
   }));
+}
+
+function buildArgNameList(keys) {
+  return '[' + keys.map(key => `"${key}"`).join(", ") + ']'
 }
 
 /**
@@ -35,38 +50,34 @@ export default class CodeGenerator extends CompletionPromise {
     "KeyHasher.mjs",
   ];
 
-  /**
-   * @type {Object}
-   * @readonly
-   * @private
-   */
+  /** @type {Object}  @const  @private */
   #configurationData;
 
-  /**
-   * @type {string}
-   * @readonly
-   * @private
-   */
+  /** @type {string} @const @private */
   #targetPath;
 
-  /**
-   * @type {string}
-   * @private
-   */
+  /** @type {RuntimeOptions} @const @private */
+  #compileOptions;
+
+  /** @type {string} @private */
   #status = "not started yet";
 
-  /** @type {Map<string, string>} */
-  #replaceStringKeys = new Map();
+  /** @type {Map<string, *>} @const @private */
+  #defines = new Map();
+
+  /** @type {JSDocGenerator} @private */
+  #docGenerator;
 
   /** @type {string} */
   #generatedCode = "";
 
   /**
-   * @param {CollectionConfiguration} configuration The configuration to use.
-   * @param {string}                  targetPath
-   * @param {Promise}                 startPromise
+   * @param {CollectionConfiguration} configuration  The configuration to use.
+   * @param {string}                  targetPath     The directory to write the collection to.
+   * @param {Promise}                 startPromise   Where we should attach our asynchronous operations to.
+   * @param {CompileTimeOptions}      compileOptions Flags from an owner which may override configurations.
    */
-  constructor(configuration, targetPath, startPromise) {
+  constructor(configuration, targetPath, startPromise, compileOptions) {
     super(startPromise, () => this.buildCollection());
 
     if (!(configuration instanceof CollectionConfiguration))
@@ -79,6 +90,7 @@ export default class CodeGenerator extends CompletionPromise {
     configuration.lock(); // this may throw, but if so, it's good that it does so.
     this.#configurationData = configuration.cloneData();
     this.#targetPath = targetPath;
+    this.#compileOptions = (compileOptions instanceof CompileTimeOptions) ? compileOptions : {};
 
     this.completionPromise.catch(
       exn => this.#status = "aborted"
@@ -86,9 +98,7 @@ export default class CodeGenerator extends CompletionPromise {
     Object.seal(this);
   }
 
-  /**
-   * @returns {string}
-   */
+  /** @returns {string} */
   get status() {
     return this.#status;
   }
@@ -96,66 +106,126 @@ export default class CodeGenerator extends CompletionPromise {
   async buildCollection() {
     this.#status = "in progress";
 
-    this.#buildReplaceStrings();
-
+    this.#buildDefines();
+    this.#buildDocGenerator();
     this.#generateSource();
-
     await this.#writeSource();
 
     this.#status = "completed";
     return this.#configurationData.className;
   }
 
-  #buildReplaceStrings() {
-    this.#replaceStringKeys.set("__className__", this.#configurationData.className);
-    const keys = Array.from(this.#configurationData.parameterToTypeMap.keys());
-    this.#replaceStringKeys.set("__argList__", keys.join(", "));
-    this.#replaceStringKeys.set("__argNameList__", '[' + keys.map(key => `"${key}"`).join(", ") + "]");
+  #filePrologue() {
 
-    const paramsData = Array.from(this.#configurationData.parameterToTypeMap.values());
+    let generatedCodeNotice =
+      `
+/**
+ * This is generated code.  Do not edit.
+ *
+ * Generator: https://github.com/ajvincent/composite-collection/
+ ${
+  this.#compileOptions.sourceFile ? ` * Source: ${this.#compileOptions.sourceFile}\n` : ""
+}${
+  this.#compileOptions.author ? ` * @author ${this.#compileOptions.author}\n` : ""
+}${
+  this.#compileOptions.copyright ? ` * @copyright ${this.#compileOptions.copyright}\n` : ""
+} */
+`;
+    const prologue = [
+      this.#compileOptions.licenseText,
+      generatedCodeNotice.trim(),
+    ];
+
+    return prologue.filter(Boolean).join("\n\n");
+  }
+
+  #buildDefines() {
+    this.#defines.clear();
+
+    const data = this.#configurationData;
+    this.#defines.set("className", data.className);
+    {
+      const keys = Array.from(data.parameterToTypeMap.keys());
+      this.#defines.set("argList", keys.join(", "));
+      this.#defines.set("argNameList", buildArgNameList(keys));
+    }
+
+    const paramsData = Array.from(data.parameterToTypeMap.values());
+
+    if (/Weak\/?Map/.test(data.collectionTemplate)) {
+      this.#defines.set("weakMapCount", data.weakMapKeys.length);
+      this.#defines.set("weakMapArgList", data.weakMapKeys.join(", "));
+      this.#defines.set("weakMapArgNameList", buildArgNameList(data.weakMapKeys));
+      this.#defines.set("weakMapArgument0", data.weakMapKeys[0]);
+
+      this.#defines.set("strongMapCount", data.strongMapKeys.length);
+      this.#defines.set("strongMapArgList", data.strongMapKeys.join(", "));
+      this.#defines.set("strongMapArgNameList", buildArgNameList(data.strongMapKeys));
+    }
+
+    if (/Weak\/?Set/.test(data.collectionTemplate)) {
+      this.#defines.set("weakSetCount", data.weakSetElements.length);
+      this.#defines.set("weakSetArgList", data.weakSetElements.join(", "));
+      this.#defines.set("weakSetArgNameList", buildArgNameList(data.weakSetElements));
+
+      this.#defines.set("strongSetCount", data.strongSetElements.length);
+      this.#defines.set("strongSetArgList", data.strongSetElements.join(", "));
+      this.#defines.set("strongSetArgNameList", buildArgNameList(data.strongSetElements));
+    }
+
+    if (data.collectionTemplate.includes("MapOf")) {
+      const mapKeys = data.weakMapKeys.concat(data.strongMapKeys);
+      this.#defines.set("mapArgCount", mapKeys.length);
+      this.#defines.set("mapArgList", mapKeys.join(", "));
+      this.#defines.set("mapArgNameList", buildArgNameList(mapKeys));
+
+      const setKeys = data.weakSetElements.concat(data.strongSetElements);
+      this.#defines.set("setArgCount", setKeys.length);
+      this.#defines.set("setArgList", setKeys.join(", "));
+      this.#defines.set("setArgNameList", buildArgNameList(setKeys));
+    }
 
     {
-      const validator = paramsData.map(
+      const validatorCode = paramsData.map(
         pd => pd.argumentValidator || ""
       ).filter(Boolean).join("\n\n").trim();
 
-      this.#replaceStringKeys.set(
-        /\s+void\(\"__doValidateArguments__\"\);/g,
-        validator
-      );
-      if (!validator) {
-        this.#replaceStringKeys.set(/\s+__validateArguments__\(key\) \{\s*\}\s+/g, "\n");
-        this.#replaceStringKeys.set(/\s+this.__validateArguments__\(key\);\n+/g, "");
+      if (validatorCode) {
+        this.#defines.set("validateArguments", validatorCode);
+        this.#defines.set("invokeValidate", true);
       }
     }
 
-    this.#replaceStringKeys.set(
-      /\s+void\(\"__doValidateValue__\"\);\s+/, (this.#configurationData.valueFilter || "").trim()
+    {
+      let filter = (data.valueFilter || "").trim();
+      if (filter)
+        filter += "\n    ";
+      this.#defines.set("validateValue", filter);
+    }
+  }
+
+  #buildDocGenerator() {
+    this.#docGenerator = new JSDocGenerator(
+      this.#configurationData.className,
+      !this.#configurationData.collectionTemplate.endsWith("Map")
     );
+
+    this.#configurationData.parameterToTypeMap.forEach(typeData => {
+      this.#docGenerator.addParameter(typeData);
+    });
+
+    if (this.#configurationData.valueType && !this.#configurationData.parameterToTypeMap.has("value")) {
+      this.#docGenerator.addParameter(this.#configurationData.valueType);
+    }
   }
 
   #generateSource() {
-    {
-      const type = this.#configurationData.collectionType;
-      if (type === "map") {
-        if (this.#configurationData.weakMapKeys.length === 0)
-          this.#generatedCode = TemplateFiles.get("CStrongMap");
-        else
-          throw new Error("weak maps not yet supported");
-      }
-      else {
-        throw new Error("Unsupported collection type: " + collectionType);
-      }
-    }
+    const generator = TemplateGenerators.get(this.#configurationData.collectionTemplate);
 
-    this.#replaceStringKeys.forEach((contents, keyName) => {
-      // replaceAll() requires Node 15+.
-      let source;
-      do {
-        source = this.#generatedCode;
-        this.#generatedCode = source.replace(keyName, contents);
-      } while (source !== this.#generatedCode);
-    });
+    this.#generatedCode = [
+      this.#filePrologue(),
+      generator(this.#defines, this.#docGenerator),
+    ].flat(Infinity).filter(Boolean).join("\n\n");
 
     this.#generatedCode = beautify(
       this.#generatedCode,
@@ -168,7 +238,7 @@ export default class CodeGenerator extends CompletionPromise {
   }
 
   async #writeSource() {
-    await fs.writeFile(
+    return fs.writeFile(
       this.#targetPath,
       this.#generatedCode,
       { encoding: "utf-8" }

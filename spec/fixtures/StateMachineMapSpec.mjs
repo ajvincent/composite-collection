@@ -10,13 +10,14 @@ StateMachineMapConfig.addMapKey("currentState", false, {
   }
 });
 
-
 /* Your requirements may be different.  You may want your value to be a
 function to validate an argument, or a value which holds resolve and reject paths,
 or maybe you want to add a set argument with a validation function for your
 state machine to process.  It's really up to your needs.
 */
-StateMachineMapConfig.setValueFilter(
+StateMachineMapConfig.setValueType(
+  "Object",
+  "",
   value => {
     if (typeof value !== "object")
       throw new Error("value must be an object with an optional acceptTransition() method and a failMessageSet string set!");

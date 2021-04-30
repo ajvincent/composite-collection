@@ -4,10 +4,12 @@
   "description": "Composing Maps, WeakMaps, Sets and WeakSets into generated classes",
   "main": "Driver.mjs",
   "scripts": {
+    "clean": "jake clean",
     "dogfood": "node dogfood/build.mjs && node --expose-gc ./node_modules/jasmine/bin/jasmine.js",
-    "debug": "node --inspect-brk --expose-gc ./node_modules/jasmine/bin/jasmine.js",
-    "eslint": "eslint source/ spec/ dogfood/",
-    "test": "node --expose-gc ./node_modules/jasmine/bin/jasmine.js"
+    "debug": "jake clean debug",
+    "eslint": "eslint spec/generated/ exports/",
+    "test": "jake clean test",
+    "all": "jake clean test export"
   },
   "repository": {
     "type": "git",
@@ -26,6 +28,7 @@
   "devDependencies": {
     "eslint": "^7.23.0",
     "eslint-plugin-jasmine": "^4.1.2",
+    "jake": "^10.8.2",
     "jasmine": "^3.7.0"
   },
   "dependencies": {
@@ -35,7 +38,19 @@
     "js-beautify": "^1.13.5"
   },
   "exports": {
-    ".": "./CollectionCompiler.mjs",
-    "./Configuration": "./source/CollectionConfiguration.mjs"
+    ".": "./source/CodeGenerator.mjs",
+    "./Configuration": "./source/CollectionConfiguration.mjs",
+    "./CompleTimeOptions": "./source/CompileTimeOptions.mjs",
+    "./KeyHasher": "./exports/KeyHasher.mjs",
+    "./WeakKeyComposer": "./exports/WeakKey-WeakMap.mjs",
+
+    "./StrongStrongMap": "./exports/StrongStrongMap.mjs",
+    "./StrongStrongSet": "./exports/StrongStrongSet.mjs",
+    "./WeakWeakMap": "./exports/WeakWeakMap.mjs",
+    "./WeakStrongMap": "./exports/WeakStrongMap.mjs",
+    "./WeakWeakSet": "./exports/WeakWeakSet.mjs",
+    "./WeakStrongSet": "./exports/WeakStrongSet.mjs",
+
+    "./StrongMapOfStrongSets": "./exports/StrongMapOfStrongSets.mjs"
   }
 }
