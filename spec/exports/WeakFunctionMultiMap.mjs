@@ -78,5 +78,11 @@ describe("CodeGenerator(WeakFunctionMultiMap.mjs)", () => {
     expect(() => testSet.add(root, {})).toThrowError()
   });
 
+  it("throws for setting a non-validated key", () => {
+    expect(() => {
+      testSet.add(key1, {})
+    }).toThrowError("The ordered key set is not valid!");
+  });
+
   // I'm excluding the other tests because ./WeakStrongMap.mjs covers them already.
 });

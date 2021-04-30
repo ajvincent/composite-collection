@@ -148,6 +148,18 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
     expect(testSpy.calls.argsFor(1)).toEqual([value1, key1, testMap]);
   });
 
+  it("throws for setting a non-validated key or value", () => {
+    const key = new MockImportable({isKey: true}), value = new MockImportable("value");
+
+    expect(() => {
+      testMap.set({}, value)
+    }).toThrowError("The ordered key set is not valid!");
+
+    expect(() => {
+      testMap.set(key, {})
+    }).toThrowError("The value is not valid!");
+  });
+
   describe("holds references to objects", () => {
     beforeEach(() => {
       jasmine.addAsyncMatchers(ToHoldRefsMatchers);

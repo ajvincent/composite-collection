@@ -139,6 +139,12 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
     */
   });
 
+  it("throws for setting a non-validated key", () => {
+    expect(() => {
+      testSet.add({})
+    }).toThrowError("The ordered key set is not valid!");
+  });
+
   describe("holds references to objects", () => {
     beforeEach(() => {
       jasmine.addAsyncMatchers(ToHoldRefsMatchers);

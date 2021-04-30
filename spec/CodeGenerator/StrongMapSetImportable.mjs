@@ -97,4 +97,13 @@ describe("CodeGenerator(StrongMapSetImportable.mjs)", () => {
     expect(testSet.getSizeOfSet(key1)).toBe(0);
   });
 
+  it("throws for setting a non-validated key", () => {
+    expect(() => {
+      testSet.add(key1, {})
+    }).toThrowError("The ordered key set is not valid!");
+
+    expect(() => {
+      testSet.add({}, key2)
+    }).toThrowError("The ordered key set is not valid!");
+  });
 });

@@ -5,6 +5,8 @@ import MockImportable from "../fixtures/MockImportable.mjs";
 describe("CodeGenerator(SoloWeakMap.mjs)", () => {
   let testMap, refMap;
   const key1 = new MockImportable({isKey1: true}), key2 = new MockImportable({isKey2: true});
+  const value1 = new MockImportable("value1"), value2 = new MockImportable("value2");
+
   Object.freeze(key1);
   Object.freeze(key2);
 
@@ -37,17 +39,16 @@ describe("CodeGenerator(SoloWeakMap.mjs)", () => {
   });
 
   it("setting one value", () => {
-    const value = new MockImportable("value");
-    refMap.set(key1, value);
+    refMap.set(key1, value1);
 
-    expect(testMap.set(key1, value)).toBe(testMap);
+    expect(testMap.set(key1, value1)).toBe(testMap);
     expect(testMap.has(key1)).toBe(refMap.has(key1));
     expect(testMap.get(key1)).toBe(refMap.get(key1));
 
     expect(testMap.delete(key1)).toBe(true);
     expect(testMap.delete(key1)).toBe(false);
 
-    expect(testMap.set(key1, value)).toBe(testMap);
+    expect(testMap.set(key1, value1)).toBe(testMap);
     expect(testMap.has(key1)).toBe(refMap.has(key1));
     expect(testMap.get(key1)).toBe(refMap.get(key1));
   });
@@ -79,9 +80,7 @@ describe("CodeGenerator(SoloWeakMap.mjs)", () => {
   });
 
   it("setting two values", () => {
-    const value1 = new MockImportable("value1");
     refMap.set(key1, value1);
-    const value2 = new MockImportable("value2");
     refMap.set(key2, value2);
 
     expect(testMap.set(key1, value1)).toBe(testMap);
@@ -101,6 +100,16 @@ describe("CodeGenerator(SoloWeakMap.mjs)", () => {
     expect(testMap.set(key1, value1)).toBe(testMap);
     expect(testMap.has(key1)).toBe(refMap.has(key1));
     expect(testMap.get(key1)).toBe(refMap.get(key1));
+  });
+
+  it("throws for setting a non-validated key or value", () => {
+    expect(() => {
+      testMap.set({}, value1)
+    }).toThrowError("The ordered key set is not valid!");
+
+    expect(() => {
+      testMap.set(key1, {})
+    }).toThrowError("The value is not valid!");
   });
 
   describe("holds references to objects", () => {
