@@ -37,7 +37,7 @@ describe("CodeGenerator(SoloWeakMap.mjs)", () => {
   });
 
   it("setting one value", () => {
-    const value = "value";
+    const value = new MockImportable("value");
     refMap.set(key1, value);
 
     expect(testMap.set(key1, value)).toBe(testMap);
@@ -79,9 +79,9 @@ describe("CodeGenerator(SoloWeakMap.mjs)", () => {
   });
 
   it("setting two values", () => {
-    const value1 = "value1";
+    const value1 = new MockImportable("value1");
     refMap.set(key1, value1);
-    const value2 = "value2";
+    const value2 = new MockImportable("value2");
     refMap.set(key2, value2);
 
     expect(testMap.set(key1, value1)).toBe(testMap);
@@ -134,7 +134,7 @@ describe("CodeGenerator(SoloWeakMap.mjs)", () => {
 
     it("weakly as the key in .set()", async () => {
       await expectAsync(
-        key => testMap.set(new MockImportable(key), {})
+        key => testMap.set(new MockImportable(key), new MockImportable({}))
       ).toHoldReferencesWeakly();
     });
 
@@ -142,6 +142,7 @@ describe("CodeGenerator(SoloWeakMap.mjs)", () => {
       const externalKeys = [];
       await expectAsync(
         value => {
+          value = new MockImportable(value);
           let externalKey = new MockImportable({});
           testMap.set(externalKey, value);
           externalKeys.push(externalKey);
@@ -156,7 +157,7 @@ describe("CodeGenerator(SoloWeakMap.mjs)", () => {
 
     it("weakly as values when the keys are not held externally", async () => {
       await expectAsync(
-        key => testMap.set(new MockImportable({}), key)
+        key => testMap.set(new MockImportable({}), new MockImportable(key))
       ).toHoldReferencesWeakly();
     });
   });

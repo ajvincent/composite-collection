@@ -1,4 +1,5 @@
 import CollectionConfiguration from "composite-collection/Configuration";
+import MockImportable from "./MockImportable.mjs";
 
 const SoloWeakMapConfig = new CollectionConfiguration("SoloWeakMap", "WeakMap");
 SoloWeakMapConfig.importLines(
@@ -6,10 +7,15 @@ SoloWeakMapConfig.importLines(
 );
 SoloWeakMapConfig.addMapKey("key", true, {
   argumentValidator: function(key) {
-    // eslint-disable-next-line no-undef
     if (!(key instanceof MockImportable))
       return false;
   },
 });
+
+SoloWeakMapConfig.setValueType("MockImportable", "The value", function(value) {
+  if (!(value instanceof MockImportable))
+    return false;
+});
+
 
 export default SoloWeakMapConfig;

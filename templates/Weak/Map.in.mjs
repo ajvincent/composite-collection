@@ -109,6 +109,15 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
     return this.__isValidKey__(${defines.get("argList")});
   }
 
+${
+  defines.has("validateValue") ? `
+${docs.buildBlock("isValidValuePublic", 2)}
+  isValidValue(value) {
+    return this.__isValidValue__(value);
+  }
+  ` : ``
+}
+
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {
     this.__requireValidKey__(${defines.get("argList")});
@@ -136,6 +145,13 @@ ${docs.buildBlock("has", 2)}
 ${docs.buildBlock("set", 2)}
   set(${defines.get("argList")}, value) {
     this.__requireValidKey__(${defines.get("argList")});
+    ${
+      defines.has("validateValue") ? `
+      if (!this.__isValidValue__(value))
+        throw new Error("The value is not valid!");
+    ` : ``
+    }
+
     if (!this.__root__.has(${defines.get("weakMapArgument0")}))
       this.__root__.set(${defines.get("weakMapArgument0")}, new WeakMap);
 
@@ -171,6 +187,14 @@ ${docs.buildBlock("isValidKeyPrivate", 2)}
 ${defines.get("validateArguments") || ""}
     return true;
   }
+
+${defines.has("validateValue") ? `
+${docs.buildBlock("isValidValuePrivate", 2)}
+  __isValidValue__(value) {
+    ${defines.get("validateValue")}
+    return true;
+  }
+  ` : ``}
 }
 
 Reflect.defineProperty(${defines.get("className")}, Symbol.toStringTag, {

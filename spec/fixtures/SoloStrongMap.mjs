@@ -1,4 +1,5 @@
 import CollectionConfiguration from "composite-collection/Configuration";
+import MockImportable from "./MockImportable.mjs";
 
 const SoloStrongMapConfig = new CollectionConfiguration("SoloStrongMap", "Map");
 SoloStrongMapConfig.importLines(
@@ -6,14 +7,12 @@ SoloStrongMapConfig.importLines(
 );
 SoloStrongMapConfig.addMapKey("key", false, {
   argumentValidator: function(key) {
-    // eslint-disable-next-line no-undef
     if (!(key instanceof MockImportable))
       return false;
   },
 });
 
 SoloStrongMapConfig.setValueType("MockImportable", "The value", function(value) {
-  // eslint-disable-next-line no-undef
   if (!(value instanceof MockImportable))
     return false;
 });

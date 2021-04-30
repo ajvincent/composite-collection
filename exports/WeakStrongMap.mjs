@@ -147,6 +147,7 @@ export default class WeakStrongMap {
    */
   set(weakKey, strongKey, value) {
     this.__requireValidKey__(weakKey, strongKey);
+
     if (!this.__root__.has(weakKey))
       this.__root__.set(weakKey, new WeakMap);
 
@@ -187,6 +188,7 @@ export default class WeakStrongMap {
 
     return true;
   }
+
 }
 
 Reflect.defineProperty(WeakStrongMap, Symbol.toStringTag, {

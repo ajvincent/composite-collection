@@ -97,7 +97,9 @@ ${docs.buildBlock("isValidValuePublic", 2)}
   ` : ``
   }
 
-` : ``}${docs.buildBlock("keys", 2)}
+` : ``}
+
+${docs.buildBlock("keys", 2)}
   keys() {
     return this.__wrapIterator__(
       valueAndKeySet => valueAndKeySet.keySet.slice()
