@@ -28,7 +28,6 @@ describe("CodeGenerator(WeakWeakSet.mjs)", () => {
   });
 
   it(".isValidKey() returns true only if all key parts are non-primitive", () => {
-    const key1 = {isKey1: true}, key2 = {isKey2: true};
     expect(testSet.isValidKey(key1, key2)).toBe(true);
     expect(testSet.isValidKey(key2, key1)).toBe(true);
     expect(testSet.isValidKey(key1, "foo")).toBe(false);
@@ -174,6 +173,25 @@ describe("CodeGenerator(WeakWeakSet.mjs)", () => {
 
     expect(testSet.add(key1, key2)).toBe(testSet);
     expect(testSet.has(key1, key2)).toBe(refSet.has(key1));
+  });
+
+  it("constructor initializes with iterator of first argument", () => {
+    const key4 = {isKey4: true};
+
+    const items = [
+      [key1, key2],
+      [key3, key4],
+    ];
+
+    testSet = new WeakWeakSet(items);
+    expect(testSet.has(key1, key2)).toBe(true);
+    expect(testSet.has(key3, key4)).toBe(true);
+  });
+
+  it("constructor throws for an argument that is not iterable", () => {
+    expect(() => {
+      void(new WeakWeakSet({isKey1: true}));
+    }).toThrow();
   });
 
   describe("holds references to objects weakly as the", () => {

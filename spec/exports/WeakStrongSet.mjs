@@ -176,6 +176,25 @@ describe("CodeGenerator(WeakStrongSet.mjs)", () => {
     expect(testSet.has(key1, key2)).toBe(refSet.has(key1));
   });
 
+  it("constructor initializes with iterator of first argument", () => {
+    const key4 = {isKey4: true};
+
+    const items = [
+      [key1, key2],
+      [key3, key4],
+    ];
+
+    testSet = new WeakStrongSet(items);
+    expect(testSet.has(key1, key2)).toBe(true);
+    expect(testSet.has(key3, key4)).toBe(true);
+  });
+
+  it("constructor throws for an argument that is not iterable", () => {
+    expect(() => {
+      void(new WeakStrongSet({isKey1: true}));
+    }).toThrow();
+  });
+
   describe("holds references to objects", () => {
     beforeEach(() => {
       jasmine.addAsyncMatchers(ToHoldRefsMatchers);

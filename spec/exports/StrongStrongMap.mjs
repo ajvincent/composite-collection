@@ -326,6 +326,28 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     expect(testSpy.calls.argsFor(1)).toEqual([value1, key1, key2, testMap]);
   });
 
+  it("constructor initializes with iterator of first argument", () => {
+    const key1 = {isKey1: true}, key2 = {isKey2: true},
+          key3 = {isKey3: true}, key4 = {isKey4: true},
+          value1 = "value1", value2 = "value2";
+
+    const items = [
+      [key1, key2, value1],
+      [key3, key4, value2],
+    ];
+
+    testMap = new StrongStrongMap(items);
+    expect(testMap.get(key1, key2)).toBe(value1);
+    expect(testMap.get(key3, key4)).toBe(value2);
+    expect(testMap.size).toBe(2);
+  });
+
+  it("constructor throws for an argument that is not iterable", () => {
+    expect(() => {
+      void(new StrongStrongMap({isKey1: true}));
+    });
+  });
+
   describe("holds references to objects", () => {
     beforeEach(() => {
       jasmine.addAsyncMatchers(ToHoldRefsMatchers);

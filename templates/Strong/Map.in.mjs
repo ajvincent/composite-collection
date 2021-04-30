@@ -25,6 +25,13 @@ ${docs.buildBlock("valueAndKeySet", 4)}
      * @const
      */
     this.__hasher__ = new KeyHasher(${defines.get("argNameList")});
+
+    if (arguments.length > 0) {
+      const iterable = arguments[0];
+      for (let entry of iterable) {
+        this.set(...entry);
+      }
+    }
   }
 
 ${docs.buildBlock("getSize", 2)}

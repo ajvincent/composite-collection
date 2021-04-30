@@ -35,7 +35,15 @@ export default class WeakWeakMap {
      * @const
      */
     this.__root__ = new WeakMap;
+
+    if (arguments.length > 0) {
+      const iterable = arguments[0];
+      for (let entry of iterable) {
+        this.set(...entry);
+      }
+    }
   }
+
 
   /**
    * Delete an element from the collection by the given key sequence.

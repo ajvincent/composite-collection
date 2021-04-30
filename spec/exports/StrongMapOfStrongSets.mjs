@@ -583,6 +583,26 @@ describe("CodeGenerator(StrongMapOfStrongSets.mjs)", () => {
     expect(testSet.hasSets(key3)).toBe(true);
   });
 
+  it("constructor initializes with iterator of first argument", () => {
+    const key4 = {isKey4: true};
+
+    const items = [
+      [key1, key2],
+      [key3, key4],
+    ];
+
+    testSet = new StrongMapOfStrongSets(items);
+    expect(testSet.has(key1, key2)).toBe(true);
+    expect(testSet.has(key3, key4)).toBe(true);
+    expect(testSet.size).toBe(2);
+  });
+
+  it("constructor throws for an argument that is not iterable", () => {
+    expect(() => {
+      void(new StrongMapOfStrongSets({isKey1: true}));
+    }).toThrow();
+  });
+
   describe("holds references to objects", () => {
     const externalKey = {};
     beforeEach(() => {

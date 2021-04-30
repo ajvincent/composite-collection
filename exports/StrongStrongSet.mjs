@@ -24,6 +24,13 @@ export default class StrongStrongSet {
      * @const
      */
     this.__hasher__ = new KeyHasher(["key1", "key2"]);
+
+    if (arguments.length > 0) {
+      const iterable = arguments[0];
+      for (let entry of iterable) {
+        this.add(...entry);
+      }
+    }
   }
 
   /**

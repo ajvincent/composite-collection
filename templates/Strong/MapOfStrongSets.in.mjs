@@ -39,6 +39,13 @@ export default class ${defines.get("className")} {
 
     /** @type {Number} @private */
     this.__sizeOfAll__ = 0;
+
+    if (arguments.length > 0) {
+      const iterable = arguments[0];
+      for (let entry of iterable) {
+        this.add(...entry);
+      }
+    }
   }
 
 ${docs.buildBlock("getSize", 2)}
