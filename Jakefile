@@ -1,7 +1,7 @@
 const { fork } = require('child_process');
 const fs  = require('fs/promises');
 const path = require("path");
-const { task, desc, file } = require('jake');
+const { task, desc } = require('jake');
 
 /**
  * Run a specific submodule.
@@ -94,6 +94,7 @@ task("clean", async () => {
   return runModule("./jake-targets/clean.mjs");
 });
 
+// eslint-disable-next-line no-undef
 namespace("test", () => {
   task(
     "fixtures",
@@ -170,6 +171,7 @@ task("debug", ["test:fixtures"], async () => {
 desc("eslint support");
 task("eslint", async () => {
   return runModule("./node_modules/eslint/bin/eslint.js", [
+    "Jakefile",
     "exports",
     "spec",
     "templates",
