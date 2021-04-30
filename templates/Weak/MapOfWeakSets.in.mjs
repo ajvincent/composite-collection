@@ -230,6 +230,8 @@ ${docs.buildBlock("isValidMapKeyPrivate", 2)}
   __isValidMapKey__(${defines.get("mapArgList")}) {
     if (!this.__mapKeyComposer__.isValidForKey([${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]))
       return false;
+
+${defines.get("validateMapArguments") || ""}
     return true;
   }
 
@@ -241,7 +243,8 @@ ${docs.buildBlock("isValidSetKeyPrivate", 2)}
       defines.get("strongSetArgList")
     }]))
       return false;
-${defines.get("validateArguments") || ""}
+
+${defines.get("validateSetArguments") || ""}
     return true;
   }
 }

@@ -124,6 +124,7 @@ namespace("test", () => {
 
       "spec/generated/StrongMapSetImportable.mjs",
       "spec/generated/WeakFunctionMultiMap.mjs",
+      "spec/generated/WeakMapWeakSetImportable.mjs",
     ]
   );
 
@@ -148,6 +149,7 @@ generateCollectionTasks("spec/fixtures", "spec/generated", [
   "StrongWeakSet.mjs",
   "WeakMapWeakStrongSet.mjs",
   "StrongMapSetImportable.mjs",
+  "WeakMapWeakSetImportable.mjs",
 ]);
 
 generateCollectionTasks("source/exports", "spec/generated", [

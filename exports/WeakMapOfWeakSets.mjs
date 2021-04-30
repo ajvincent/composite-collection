@@ -315,6 +315,7 @@ export default class WeakMapOfWeakSets {
   __isValidMapKey__(mapKey) {
     if (!this.__mapKeyComposer__.isValidForKey([mapKey], []))
       return false;
+
     return true;
   }
 
