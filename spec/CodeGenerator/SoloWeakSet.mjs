@@ -1,9 +1,10 @@
 import SoloWeakSet from "../generated/SoloWeakSet.mjs";
 import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
+import MockImportable from "../fixtures/MockImportable.mjs";
 
 describe("CodeGenerator(SoloWeakSet.mjs)", () => {
   let testSet, refSet;
-  const key1 = {isKey1: true}, key2 = {isKey2: true};
+  const key1 = new MockImportable({isKey1: true}), key2 = new MockImportable({isKey2: true});
   Object.freeze(key1);
   Object.freeze(key2);
 
@@ -78,19 +79,19 @@ describe("CodeGenerator(SoloWeakSet.mjs)", () => {
 
     it("weakly as the key in .add()", async () => {
       await expectAsync(
-        key => testSet.add(key)
+        key => testSet.add(new MockImportable(key))
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the key in .delete()", async () => {
       await expectAsync(
-        key => testSet.delete(key)
+        key => testSet.delete(new MockImportable(key))
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the key in .has()", async () => {
       await expectAsync(
-        key => testSet.has(key)
+        key => testSet.has(new MockImportable(key))
       ).toHoldReferencesWeakly();
     });
 
@@ -98,6 +99,7 @@ describe("CodeGenerator(SoloWeakSet.mjs)", () => {
       const externalKeys = [];
       await expectAsync(
         externalKey => {
+          externalKey = new MockImportable(externalKey);
           testSet.add(externalKey);
           externalKeys.push(externalKey);
           externalKey = null;

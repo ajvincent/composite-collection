@@ -1,6 +1,6 @@
 export default class MockImportable {
-  constructor(isValid) {
-    this.isValid = isValid;
+  constructor(data) {
+    this.data = data;
     Object.freeze(this);
   }
 }

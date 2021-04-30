@@ -1,5 +1,6 @@
 import SoloStrongMap from "../generated/SoloStrongMap.mjs";
 import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
+import MockImportable from "../fixtures/MockImportable.mjs";
 
 describe("CodeGenerator(SoloStrongMap.mjs)", () => {
   let testMap, refMap = new Map;
@@ -18,7 +19,7 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
   });
 
   it("setting one value", () => {
-    const key = {isKey: true}, value = "value";
+    const key = new MockImportable({isKey: true}), value = "value";
     refMap.set(key, value);
 
     expect(testMap.set(key, value)).toBe(testMap);
@@ -65,9 +66,9 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
   });
 
   it("setting two values", () => {
-    const key1 = {isKey1: true}, value1 = "value1";
+    const key1 = new MockImportable({isKey1: true}), value1 = "value1";
     refMap.set(key1, value1);
-    const key2 = {isKey2: true}, value2 = "value2";
+    const key2 = new MockImportable({isKey2: true}), value2 = "value2";
     refMap.set(key2, value2);
 
     expect(testMap.set(key1, value1)).toBe(testMap);
@@ -154,31 +155,32 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
 
     it("weakly as the key in .delete()", async () => {
       await expectAsync(
-        key => testMap.delete(key)
+        key => testMap.delete(new MockImportable(key))
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the key in .get()", async () => {
       await expectAsync(
-        key => testMap.get(key)
+        key => testMap.get(new MockImportable(key))
       ).toHoldReferencesWeakly();
     });
 
     it("weakly as the key in .has()", async () => {
       await expectAsync(
-        key => testMap.has(key)
+        key => testMap.has(new MockImportable(key))
       ).toHoldReferencesWeakly();
     });
 
     it("strongly as the key in .set()", async () => {
       await expectAsync(
-        key => testMap.set(key, {})
+        key => testMap.set(new MockImportable(key), {})
       ).toHoldReferencesStrongly();
     });
 
     it("weakly as the key in .add(), then .delete()", async () => {
       await expectAsync(
         key => {
+          key = new MockImportable(key);
           testMap.set(key, {});
           testMap.delete(key);
         }
@@ -189,7 +191,7 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
       const externalKeys = [];
       await expectAsync(
         value => {
-          let externalKey = {};
+          let externalKey = new MockImportable({});
           testMap.set(externalKey, value);
           externalKeys.push(externalKey);
           externalKey = null;
@@ -199,7 +201,7 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
 
     it("as values when the keys are not held externally", async () => {
       await expectAsync(
-        value => testMap.set({}, value)
+        value => testMap.set(new MockImportable({}), value)
       ).toHoldReferencesStrongly();
     });
   });

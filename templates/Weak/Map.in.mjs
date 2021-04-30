@@ -167,6 +167,7 @@ ${docs.buildBlock("isValidKeyPrivate", 2)}
       defines.get("strongMapArgList")
     }]))
       return false;
+
 ${defines.get("validateArguments") || ""}
     return true;
   }

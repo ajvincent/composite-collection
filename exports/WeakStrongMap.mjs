@@ -187,6 +187,7 @@ export default class WeakStrongMap {
     if (!this.__keyComposer__.isValidForKey([weakKey], [strongKey]))
       return false;
 
+
     return true;
   }
 }

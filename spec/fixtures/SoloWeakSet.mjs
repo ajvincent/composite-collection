@@ -1,5 +1,14 @@
 import CollectionConfiguration from "composite-collection/Configuration";
 
 const SoloWeakSetConfig = new CollectionConfiguration("SoloWeakSet", "WeakSet");
-SoloWeakSetConfig.addSetKey("key", true);
+SoloWeakSetConfig.importLines(
+  `import MockImportable from "../fixtures/MockImportable.mjs";`
+);
+SoloWeakSetConfig.addSetKey("key", true, {
+  argumentValidator: function(key) {
+    // eslint-disable-next-line no-undef
+    if (!(key instanceof MockImportable))
+      return false;
+  },
+});
 export default SoloWeakSetConfig;

@@ -177,6 +177,7 @@ export default class WeakWeakMap {
     if (!this.__keyComposer__.isValidForKey([key1, key2], []))
       return false;
 
+
     return true;
   }
 }
