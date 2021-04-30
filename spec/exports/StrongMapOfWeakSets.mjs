@@ -183,10 +183,12 @@ describe("CodeGenerator(StrongMapOfWeakSets.mjs)", () => {
       jasmine.addAsyncMatchers(ToHoldRefsMatchers);
     });
 
-    it("weakly as the first key in .add()", async () => {
+    xit("strongly as the first key in .add()", async () => {
       await expectAsync(
-        key => testSet.add(key, externalKey)
-      ).toHoldReferencesWeakly();
+        key => {
+          testSet.add(key, externalKey);
+        }
+      ).toHoldReferencesStrongly();
     });
 
     it("weakly as the first key in .delete()", async () => {
@@ -198,6 +200,15 @@ describe("CodeGenerator(StrongMapOfWeakSets.mjs)", () => {
     it("weakly as the first key in .has()", async () => {
       await expectAsync(
         key => testSet.has(key, externalKey)
+      ).toHoldReferencesWeakly();
+    });
+
+    it("weakly as the first key in .add(), then .delete()", async () => {
+      await expectAsync(
+        key => {
+          testSet.add(key, externalKey);
+          testSet.delete(key, externalKey);
+        }
       ).toHoldReferencesWeakly();
     });
 
