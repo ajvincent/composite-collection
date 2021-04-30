@@ -361,6 +361,16 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
       ).toHoldReferencesStrongly();
     });
 
+    it("weakly as the first key in .set(), then .delete()", async () => {
+      const externalKey = {};
+      await expectAsync(
+        key => {
+          testMap.set(key, externalKey, {});
+          testMap.delete(key, externalKey);
+        }
+      ).toHoldReferencesWeakly();
+    });
+
     it("weakly as the second key in .delete()", async () => {
       await expectAsync(
         key => testMap.delete({}, key)
@@ -389,6 +399,16 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
       await expectAsync(
         key => testMap.set({}, key)
       ).toHoldReferencesStrongly();
+    });
+
+    it("weakly as the second key in .set(), then .delete()", async () => {
+      const externalKey = {};
+      await expectAsync(
+        key => {
+          testMap.set(externalKey, key, {});
+          testMap.delete(externalKey, key);
+        }
+      ).toHoldReferencesWeakly();
     });
 
     it("strongly as values when the keys are held externally", async () => {
