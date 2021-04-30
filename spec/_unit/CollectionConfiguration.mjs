@@ -103,7 +103,7 @@ describe("CollectionConfiguration", () => {
       Object.freeze(type1Args);
     });
 
-    const argumentValidator = mother => {};
+    const argumentValidator = mother => void(mother);
 
     it("defines a collection type when called without an argument filter", () => {
       config.addMapKey(...type1Args);
@@ -402,7 +402,7 @@ describe("CollectionConfiguration", () => {
       Object.freeze(type1Args);
     });
 
-    const argumentValidator = mother => {};
+    const argumentValidator = mother => void(mother);
 
     it("defines a collection type when called without an argument filter", () => {
       config.addSetKey(...type1Args);
@@ -686,7 +686,7 @@ describe("CollectionConfiguration", () => {
   });
 
   describe(".setValueType()", () => {
-    let config, wasCalled, valueFilter = value => { wasCalled = true; };
+    let config, wasCalled, valueFilter = (value) => { void(value); wasCalled = true; };
     beforeEach(() => {
       config = new CollectionConfiguration("FooMap", "WeakMap");
       wasCalled = false;
@@ -703,7 +703,7 @@ describe("CollectionConfiguration", () => {
       expect(data.valueType.argumentName).toBe("value");
       expect(data.valueType.argumentType).toBe("Car");
       expect(data.valueType.description).toBe("The car.");
-      expect(data.valueType.argumentValidator).toBe("{ wasCalled = true; }");
+      expect(data.valueType.argumentValidator).toBe("{ void(value); wasCalled = true; }");
     });
 
     describe("throws for", () => {
@@ -736,9 +736,9 @@ describe("CollectionConfiguration", () => {
 
       it("calling after a successful .setValueType() application", () => {
         config.addMapKey("mother", true);
-        config.setValueType("Car", "The car.", function(value) { return false });
+        config.setValueType("Car", "The car.", value => { void(value); return false; });
         expect(
-          () => config.setValueType("Car", "The car.", function(value) { return false })
+          () => config.setValueType("Car", "The car.", value => { void(value); return false; } )
         ).toThrowError("You can only set the value type once!");
       });
     });
