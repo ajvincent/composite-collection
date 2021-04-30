@@ -209,6 +209,18 @@ export default class CodeGenerator extends CompletionPromise {
         this.#defines.set("validateMapArguments", validatorCode);
     }
 
+    // validateSetArguments
+    {
+      const validatorCode = paramsData.map(pd => {
+        if (!setKeys.includes(pd.argumentName))
+          return "";
+        return pd.argumentValidator || "";
+      }).filter(Boolean).join("\n\n").trim();
+
+      if (validatorCode)
+        this.#defines.set("validateSetArguments", validatorCode);
+    }
+
     // validateValue
     {
       let filter = (data?.valueType?.argumentValidator || "").trim();
