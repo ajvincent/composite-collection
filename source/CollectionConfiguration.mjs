@@ -195,8 +195,14 @@ export default class CollectionConfiguration {
         this.#collectionTemplate += "OfStrongSets";
         break;
       case "WeakSet":
-        if (outerType.endsWith("Set"))
-          throw new Error("outerType must be a Map or WeakMap when an innerType is not null!");
+        /*
+        There can't be a strong map of weak sets, because it's unclear when we would hold strong
+        references to the strong map keys.  Try it as a thought experiment:  add two such sets,
+        then delete one.  Should the map keys be held strongly?  What about after garbage collection
+        removes the other set?
+        */
+        if (outerType !== "WeakMap")
+          throw new Error("outerType must be a WeakMap when the innerType is a WeakSet!");
         this.#collectionTemplate += "OfWeakSets";
         break;
       default:

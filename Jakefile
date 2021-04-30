@@ -116,8 +116,6 @@ namespace("test", () => {
       "spec/generated/StrongWeakSet.mjs",
 
       "spec/generated/StrongMapOfStrongSets.mjs",
-      "spec/generated/StrongMapOfWeakSets.mjs",
-      "spec/generated/StrongMapWeakStrongSet.mjs",
 
       "spec/generated/WeakMapOfStrongSets.mjs",
       "spec/generated/WeakMapOfWeakSets.mjs",
@@ -144,7 +142,6 @@ generateCollectionTasks("spec/fixtures", "spec/generated", [
   "SoloWeakSet.mjs",
   "StrongWeakMap.mjs",
   "StrongWeakSet.mjs",
-  "StrongMapWeakStrongSet.mjs",
   "WeakMapWeakStrongSet.mjs",
 ]);
 
@@ -189,9 +186,6 @@ task(
     "exports/WeakStrongSet.mjs",
 
     "exports/StrongMapOfStrongSets.mjs",
-    /* see https://github.com/ajvincent/composite-collection/issues/41 - this can't ship yet
-    "exports/StrongMapOfWeakSets.mjs",
-    */
     "exports/WeakMapOfStrongSets.mjs",
     "exports/WeakMapOfWeakSets.mjs",
   ]
@@ -214,9 +208,6 @@ generateCollectionTasks("source/exports", "exports", [
   "WeakStrongSet.mjs",
 
   "StrongMapOfStrongSets.mjs",
-  /* see https://github.com/ajvincent/composite-collection/issues/41 - this can't ship yet
-  "StrongMapOfWeakSets.mjs",
-  */
   "WeakMapOfStrongSets.mjs",
   "WeakMapOfWeakSets.mjs",
 ]);

@@ -41,6 +41,12 @@ describe("CollectionConfiguration", () => {
         void(new CollectionConfiguration("WeakSet", "WeakSet"))
       }).toThrowError(`You can't override the WeakSet primordial!`);
     });
+
+    it("throws for StrongMapOfWeakSets", () => {
+      expect(() => {
+        void(new CollectionConfiguration("FooMap", "Map", "WeakSet"))
+      }).toThrowError("outerType must be a WeakMap when the innerType is a WeakSet!");
+    });
   });
 
   it("instances are frozen objects with no own properties", () => {
