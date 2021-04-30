@@ -7,6 +7,7 @@
 export default function preprocess(defines, docs) {
   return `import KeyHasher from "./KeyHasher.mjs"
 import WeakKeyComposer from "./WeakKey-WeakMap.mjs"
+${defines.get("importLines")}
 
 /** @typedef {Map<hash, *[]>} ${defines.get("className")}~InnerMap */
 

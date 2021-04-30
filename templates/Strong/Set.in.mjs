@@ -17,6 +17,7 @@ export default function preprocess(defines, docs) {
   }
 
   return `import KeyHasher from "./KeyHasher.mjs";
+${defines.get("importLines")}
 
 export default class ${defines.get("className")} {
   constructor() {

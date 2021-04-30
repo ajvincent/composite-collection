@@ -1,5 +1,3 @@
-import KeyHasher from "composite-collection/KeyHasher";
-
 /**
  * @type {Map<string, Map<string, Set<string>>>}
  */
@@ -14,6 +12,13 @@ ConfigurationStateGraphs.set(
 
     ["startMap", new Set([
       "mapKeys",
+      "importLines",
+    ])],
+
+    ["importLines", new Set([
+      "mapKeys",
+      "hasValueFilter",
+      "locked",
     ])],
 
     ["mapKeys", new Set([
@@ -43,6 +48,13 @@ ConfigurationStateGraphs.set(
 
     ["startSet", new Set([
       "setElements",
+      "importLines",
+    ])],
+
+    ["importLines", new Set([
+      "setElements",
+      "hasValueFilter",
+      "locked",
     ])],
 
     ["setElements", new Set([
@@ -67,6 +79,13 @@ ConfigurationStateGraphs.set(
 
     ["startMap", new Set([
       "mapKeys",
+      "importLines",
+    ])],
+
+    ["importLines", new Set([
+      "mapKeys",
+      "hasValueFilter",
+      "locked",
     ])],
 
     ["mapKeys", new Set([

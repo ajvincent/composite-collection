@@ -10,6 +10,7 @@ describe("CollectionConfiguration", () => {
       "constructor",
       "setFileOverview",
       "cloneData",
+      "importLines",
       "addMapKey",
       "addSetKey",
       "setValueType",

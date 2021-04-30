@@ -58,6 +58,9 @@ export default class CollectionConfiguration {
   /** @type {string} @readonly */
   #collectionTemplate;
 
+  /** @type {string} */
+  #importLines = "";
+
   /** @type {Map<identifier, CollectionType>} @const */
   #parameterToTypeMap = new Map();
 
@@ -246,6 +249,7 @@ export default class CollectionConfiguration {
       return {
         className: this.#className,
         collectionTemplate: this.#collectionTemplate,
+        importLines: this.#importLines,
         parameterToTypeMap: new Map(this.#parameterToTypeMap),
         weakMapKeys: this.#weakMapKeys.slice(),
         strongMapKeys: this.#strongMapKeys.slice(),
@@ -254,6 +258,16 @@ export default class CollectionConfiguration {
         valueType: this.#valueCollectionType,
         fileOverview: this.#fileoverview,
       }
+    });
+  }
+
+  importLines(lines) {
+    return this.#catchErrorState(() => {
+      if (!this.#doStateTransition("importLines")) {
+        this.#throwIfLocked();
+        throw new Error("You may only define import lines at the start of the configuration!");
+      }
+      this.#importLines = lines.toString().trim();
     });
   }
 

@@ -6,6 +6,7 @@
  */
 export default function preprocess(defines, docs) {
   return `import WeakKeyComposer from "./WeakKey-WeakMap.mjs"
+${defines.get("importLines")}
 
 export default class ${defines.get("className")} {
   constructor() {

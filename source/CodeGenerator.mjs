@@ -6,7 +6,6 @@
 
 import CollectionConfiguration from "./CollectionConfiguration.mjs";
 import CompletionPromise from "./CompletionPromise.mjs";
-import CollectionType from "./CollectionType.mjs";
 import JSDocGenerator from "./JSDocGenerator.mjs";
 import CompileTimeOptions from "./CompileTimeOptions.mjs";
 
@@ -144,6 +143,7 @@ export default class CodeGenerator extends CompletionPromise {
 
     const data = this.#configurationData;
     this.#defines.set("className", data.className);
+    this.#defines.set("importLines", data.importLines);
     {
       const keys = Array.from(data.parameterToTypeMap.keys());
       this.#defines.set("argList", keys.join(", "));
