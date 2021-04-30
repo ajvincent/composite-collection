@@ -167,6 +167,14 @@ task("debug", ["test:fixtures"], async () => {
   return runModule("./node_modules/jasmine/bin/jasmine.js", [], ["--inspect-brk"]);
 });
 
+desc("eslint support");
+task("eslint", async () => {
+  return runModule("./node_modules/eslint/bin/eslint.js", [
+    "spec/generated",
+    "exports",
+  ]);
+});
+
 desc("Exporting files for final distribution");
 task(
   "export",

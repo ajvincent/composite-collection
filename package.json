@@ -7,9 +7,9 @@
     "clean": "jake clean",
     "dogfood": "node dogfood/build.mjs && node --expose-gc ./node_modules/jasmine/bin/jasmine.js",
     "debug": "jake clean debug",
-    "eslint": "eslint spec/generated/ exports/",
+    "eslint": "jake eslint",
     "test": "jake clean test",
-    "all": "jake clean test export"
+    "all": "jake clean test export eslint"
   },
   "repository": {
     "type": "git",
