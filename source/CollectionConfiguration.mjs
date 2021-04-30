@@ -14,12 +14,20 @@ import CollectionType from "./CollectionType.mjs";
 function getNormalFunctionAST(fn) {
   let source = fn.toString().replace(/^function\s*\(/, "function foo(");
 
-  let astNode;
+  let astNode, abort = false;
   try {
-    astNode = acorn.parse(source).body[0];
+    const ast = acorn.parse(source, {
+      onToken(t) {
+        if ((t.type.keyword !== "throw") || (t.value !== "throw"))
+          return;
+        abort = true;
+        throw new Error("Throw statements must not be in validator functions!");
+      }
+    });
+    astNode = ast.body[0];
   }
   catch (ex) {
-    throw new Error("Acorn couldn't parse the function... why?");
+    throw abort ? ex : new Error("Acorn couldn't parse the function... why?");
   }
 
   if (astNode.type === "ExpressionStatement")
@@ -129,7 +137,7 @@ export default class CollectionConfiguration {
    *
    * @private
    */
-  #callbackArg(argumentName, callback, singleParamName, mayOmit = false) {
+  #validatorArg(argumentName, callback, singleParamName, mayOmit = false) {
     if (typeof callback !== "function")
       throw new Error(`${argumentName} must be a function${mayOmit ? " or omitted" : ""}!`);
 
@@ -295,7 +303,7 @@ export default class CollectionConfiguration {
         throw new Error("Strong maps cannot have weak map keys!");
 
       const validatorSource = (argumentValidator !== null) ?
-        this.#callbackArg(
+        this.#validatorArg(
           "argumentValidator",
           argumentValidator,
           argumentName,
@@ -343,7 +351,7 @@ export default class CollectionConfiguration {
         throw new Error("Strong sets cannot have weak set keys!");
 
       const validatorSource = (argumentValidator !== null) ?
-        this.#callbackArg(
+        this.#validatorArg(
           "argumentValidator",
           argumentValidator,
           argumentName,
@@ -375,7 +383,7 @@ export default class CollectionConfiguration {
       this.#jsdocField("description",  description, true);
 
     if (argumentValidator !== null) {
-      this.#callbackArg(
+      this.#validatorArg(
         "argumentValidator",
         argumentValidator,
         argumentName,
@@ -421,7 +429,7 @@ export default class CollectionConfiguration {
       this.#stringArg("type", type, false);
       this.#stringArg("description", description, false);
       const validatorSource = (validator !== null) ?
-        this.#callbackArg("validator", validator, "value", true) :
+        this.#validatorArg("validator", validator, "value", true) :
         null;
 
       this.#valueCollectionType = new CollectionType(

@@ -313,6 +313,16 @@ describe("CollectionConfiguration", () => {
         ).toThrowError(`argumentValidator must be a function or omitted!`);
       });
 
+      it("an argument filter that itself throws", () => {
+        options.argumentValidator = (mother) => {
+          void(mother);
+          throw new Error("Hi, Mom");
+        };
+        expect(
+          () => config.addMapKey(...args)
+        ).toThrowError("Throw statements must not be in validator functions!");
+      });
+
       it("a known argument name being passed in twice", () => {
         config.addMapKey(...args);
         expect(
