@@ -42,12 +42,12 @@ StateMachineMapConfig.setValueType(
 
     {
       const failMessageSet = value.failMessageSet;
-      if (!value.failMessageSet instanceof Set) {
+      if (!(failMessageSet instanceof Set)) {
         if (typeof message !== "string")
-        throw new Error("value.nextStates must be a set of strings!");
+          throw new Error("value.nextStates must be a set of strings!");
       }
 
-      Array.from(value.failMessageSet).forEach(message => {
+      Array.from(failMessageSet).forEach(message => {
         if (typeof message !== "string")
           throw new Error("value.nextStates must be a set of strings!");
       });

@@ -8,7 +8,7 @@ describe("WeakKey-WeakMap composer", () => {
   });
 
   it("class cannot have subclasses", () => {
-    class Subclass extends WeakKeyComposer {};
+    class Subclass extends WeakKeyComposer {}
     expect(() => new Subclass).toThrowError("You cannot subclass WeakKeyComposer!");
   });
 
@@ -183,7 +183,7 @@ describe("WeakKey-WeakMap composer", () => {
       expect(composer.deleteKey([{}, {}, {}])).toBe(false);
       expect(composer.deleteKey([], [{}, {}, {}])).toBe(false);
 
-      const composite1 = composer.getKey(...keySet1);
+      void(composer.getKey(...keySet1));
       composer.deleteKey(...keySet1);
       expect(composer.deleteKey(...keySet1)).toBe(false);
     });

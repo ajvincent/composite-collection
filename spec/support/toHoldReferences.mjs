@@ -16,6 +16,7 @@ function toHoldReferencesWeakly() {
 
       // At this point, there should be no strong references to the keys we just created.
       await new Promise(resolve => setImmediate(resolve));
+      // eslint-disable-next-line no-undef
       gc();
 
       let failPromise = new Promise(resolve => setTimeout(resolve, 10));
@@ -30,7 +31,7 @@ function toHoldReferencesWeakly() {
       };
     }
   }
-};
+}
 
 function toHoldReferencesStrongly() {
   return {
@@ -53,6 +54,7 @@ function toHoldReferencesStrongly() {
       // At this point, calling gc() should force weak keys to be collected.  Abuse it.
       for (let i = 0; i < 20; i++) {
         await new Promise(resolve => setImmediate(resolve));
+        // eslint-disable-next-line no-undef
         gc();
       }
 
@@ -67,9 +69,9 @@ function toHoldReferencesStrongly() {
       };
     }
   };
-};
+}
 
 export default {
   toHoldReferencesWeakly,
   toHoldReferencesStrongly,
-};
+}

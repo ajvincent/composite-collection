@@ -6,7 +6,6 @@ describe("CodeGenerator(WeakMapOfWeakSets.mjs)", () => {
   const key1 = {isKey1: true},
         key2 = {isKey2: true},
         key3 = {isKey3: true};
-  const thisObj = {};
 
   let testSet;
   beforeEach(() => {

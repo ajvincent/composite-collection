@@ -23,7 +23,7 @@ describe("KeyHasher", () => {
   });
 
   it("class cannot have subclasses", () => {
-    class Subclass extends KeyHasher {};
+    class Subclass extends KeyHasher {}
     expect(() => new Subclass).toThrowError("You cannot subclass KeyHasher!");
   });
 

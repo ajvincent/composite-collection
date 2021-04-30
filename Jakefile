@@ -170,7 +170,7 @@ task("debug", ["test:fixtures"], async () => {
 desc("eslint support");
 task("eslint", async () => {
   return runModule("./node_modules/eslint/bin/eslint.js", [
-    "spec/generated",
+    "spec",
     "exports",
   ]);
 });
