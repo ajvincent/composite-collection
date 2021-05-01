@@ -48,8 +48,8 @@ export default class WeakFunctionMultiMap {
   /**
    * Add a key set to this collection.
    *
-   * @param {object} key         
-   * @param {*}      mapFunction 
+   * @param {object}   key         
+   * @param {Function} mapFunction 
    *
    * @returns {WeakFunctionMultiMap} This collection.
    * @public
@@ -121,8 +121,8 @@ export default class WeakFunctionMultiMap {
   /**
    * Delete an element from the collection by the given key sequence.
    *
-   * @param {object} key         
-   * @param {*}      mapFunction 
+   * @param {object}   key         
+   * @param {Function} mapFunction 
    *
    * @returns {boolean} True if we found the value and deleted it.
    * @public
@@ -195,7 +195,7 @@ export default class WeakFunctionMultiMap {
    * @callback WeakFunctionMultiMap~ForEachCallback
    *
    * @param {object}               key            
-   * @param {*}                    mapFunction    
+   * @param {Function}             mapFunction    
    * @param {WeakFunctionMultiMap} __collection__ This collection.
    *
    */
@@ -219,8 +219,8 @@ export default class WeakFunctionMultiMap {
   /**
    * Report if the collection has a value for a key set.
    *
-   * @param {object} key         
-   * @param {*}      mapFunction 
+   * @param {object}   key         
+   * @param {Function} mapFunction 
    *
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
@@ -241,8 +241,8 @@ export default class WeakFunctionMultiMap {
   /**
    * Report if the collection has any sets for a map.
    *
-   * @param {object} key         
-   * @param {*}      mapFunction 
+   * @param {object}   key         
+   * @param {Function} mapFunction 
    *
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
@@ -255,8 +255,8 @@ export default class WeakFunctionMultiMap {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {object} key         
-   * @param {*}      mapFunction 
+   * @param {object}   key         
+   * @param {Function} mapFunction 
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @public
@@ -353,8 +353,8 @@ export default class WeakFunctionMultiMap {
   /**
    * Throw if the key set is not valid.
    *
-   * @param {object} key         
-   * @param {*}      mapFunction 
+   * @param {object}   key         
+   * @param {Function} mapFunction 
    *
    * @throws for an invalid key set.
    */
@@ -366,8 +366,8 @@ export default class WeakFunctionMultiMap {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {object} key         
-   * @param {*}      mapFunction 
+   * @param {object}   key         
+   * @param {Function} mapFunction 
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @private
@@ -407,7 +407,7 @@ export default class WeakFunctionMultiMap {
   /**
    * Determine if a set of set keys is valid.
    *
-   * @param {*} mapFunction 
+   * @param {Function} mapFunction 
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @private
