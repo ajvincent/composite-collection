@@ -13,7 +13,7 @@ export default function preprocess(defines, docs) {
     invokeMapValidate = `\n    this.__requireValidMapKey__(${defines.get("mapArgList")});\n`;
   }
 
-  return `import KeyHasher from "./KeyHasher.mjs";
+  return `
 ${defines.get("importLines")}
 
 export default class ${defines.get("className")} {

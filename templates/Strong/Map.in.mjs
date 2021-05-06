@@ -10,7 +10,7 @@ export default function preprocess(defines, docs) {
     invokeValidate = `\n    this.__requireValidKey__(${defines.get("argList")});\n`;
   }
 
-  return `import KeyHasher from "./KeyHasher.mjs";
+  return `
 ${defines.get("importLines")}
 
 export default class ${defines.get("className")} {

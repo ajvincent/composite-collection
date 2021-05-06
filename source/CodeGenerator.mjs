@@ -143,7 +143,17 @@ export default class CodeGenerator extends CompletionPromise {
 
     const data = this.#configurationData;
     this.#defines.set("className", data.className);
-    this.#defines.set("importLines", data.importLines);
+
+    // importLines
+    {
+      let lines = data.importLines;
+      if (data.requiresWeakKey)
+        lines = `import WeakKeyComposer from "./WeakKey-WeakMap.mjs";\n` + lines;
+      if (data.requiresKeyHasher)
+        lines = `import KeyHasher from "./KeyHasher.mjs";\n` + lines;
+      this.#defines.set("importLines", lines);
+    }
+
     {
       const keys = Array.from(data.parameterToTypeMap.keys());
       this.#defines.set("argList", keys.join(", "));

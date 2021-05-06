@@ -4,20 +4,12 @@
  * Generator: https://github.com/ajvincent/composite-collection/
  */
 
-import KeyHasher from "./KeyHasher.mjs"
-import WeakKeyComposer from "./WeakKey-WeakMap.mjs"
+import WeakKeyComposer from "./WeakKey-WeakMap.mjs";
 
 export default class WeakStrongMap {
   constructor() {
     this.__weakArgCount__ = 1;
     this.__strongArgCount__ = 1;
-
-    /**
-     * @type {KeyHasher}
-     * @private
-     * @const
-     */
-    this.__keyHasher__ = new KeyHasher(["weakKey", "strongKey"]);
 
     /**
      * @type {WeakKeyComposer}

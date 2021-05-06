@@ -265,6 +265,8 @@ export default class CollectionConfiguration {
         strongSetElements: this.#strongSetElements.slice(),
         valueType: this.#valueCollectionType,
         fileOverview: this.#fileoverview,
+        requiresKeyHasher: this.#collectionTemplate.includes("Strong"),
+        requiresWeakKey:   this.#collectionTemplate.includes("Weak"),
       }
     });
   }

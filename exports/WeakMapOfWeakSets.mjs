@@ -4,7 +4,7 @@
  * Generator: https://github.com/ajvincent/composite-collection/
  */
 
-import WeakKeyComposer from "./WeakKey-WeakMap.mjs"
+import WeakKeyComposer from "./WeakKey-WeakMap.mjs";
 
 export default class WeakMapOfWeakSets {
   constructor() {

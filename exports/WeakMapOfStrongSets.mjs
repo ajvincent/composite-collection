@@ -4,8 +4,8 @@
  * Generator: https://github.com/ajvincent/composite-collection/
  */
 
-import KeyHasher from "./KeyHasher.mjs"
-import WeakKeyComposer from "./WeakKey-WeakMap.mjs"
+import KeyHasher from "./KeyHasher.mjs";
+import WeakKeyComposer from "./WeakKey-WeakMap.mjs";
 
 /** @typedef {Map<hash, *[]>} WeakMapOfStrongSets~InnerMap */
 
