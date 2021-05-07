@@ -4,6 +4,7 @@
     "**/*.mjs",
     "!fixtures/**/*.mjs",
     "!generated/**/*.mjs",
+    "!integration/fixtures/**/*.mjs",
     "!support/**/*.mjs"
   ],
   "stopSpecOnExpectationFailure": false,

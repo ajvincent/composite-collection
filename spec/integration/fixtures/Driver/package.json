@@ -1,0 +1,13 @@
+{
+  "name": "temp",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "node test.mjs"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "composite-collection": "__pathToComposites__"
+  }
+}

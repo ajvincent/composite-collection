@@ -29,7 +29,8 @@
     "eslint": "^7.23.0",
     "eslint-plugin-jasmine": "^4.1.2",
     "jake": "^10.8.2",
-    "jasmine": "^3.7.0"
+    "jasmine": "^3.7.0",
+    "which": "^2.0.2"
   },
   "dependencies": {
     "acorn": "^7.4.1",
@@ -38,23 +39,21 @@
     "js-beautify": "^1.13.5"
   },
   "exports": {
-    ".": "./source/CodeGenerator.mjs",
+    "./Driver": "./source/Driver.mjs",
+    "./CodeGenerator": "./source/CodeGenerator.mjs",
     "./Configuration": "./source/CollectionConfiguration.mjs",
     "./CompleTimeOptions": "./source/CompileTimeOptions.mjs",
     "./KeyHasher": "./exports/KeyHasher.mjs",
     "./WeakKeyComposer": "./exports/WeakKey-WeakMap.mjs",
-
     "./StrongStrongMap": "./exports/StrongStrongMap.mjs",
     "./StrongStrongSet": "./exports/StrongStrongSet.mjs",
     "./WeakWeakMap": "./exports/WeakWeakMap.mjs",
     "./WeakStrongMap": "./exports/WeakStrongMap.mjs",
     "./WeakWeakSet": "./exports/WeakWeakSet.mjs",
     "./WeakStrongSet": "./exports/WeakStrongSet.mjs",
-
     "./StrongMapOfStrongSets": "./exports/StrongMapOfStrongSets.mjs",
     "./WeakMapOfStrongSets": "./exports/WeakMapOfStrongSets.mjs",
     "./WeakMapOfWeakSets": "./exports/WeakMapOfWeakSets.mjs",
-
     "./WeakFunctionMultiMap": "./exports/WeakFunctionMultiMap.mjs"
   }
 }
