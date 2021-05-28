@@ -75,7 +75,7 @@ function generateCollectionTasks(configDir, targetDir, leafNames) {
       submodules.concat(configFile),
       async () => {
         console.log(targetFile);
-        await runModule("./jake-targets/compile-collection.mjs", [configFile, targetFile]);
+        await runModule("./command-line.mjs", [configFile, targetFile]);
       }
     );
   });
