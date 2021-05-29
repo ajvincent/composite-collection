@@ -41,7 +41,7 @@
     "./Driver": "./source/Driver.mjs",
     "./CodeGenerator": "./source/CodeGenerator.mjs",
     "./Configuration": "./source/CollectionConfiguration.mjs",
-    "./CompleTimeOptions": "./source/CompileTimeOptions.mjs",
+    "./CompileTimeOptions": "./source/CompileTimeOptions.mjs",
     "./KeyHasher": "./exports/KeyHasher.mjs",
     "./WeakKeyComposer": "./exports/WeakKey-WeakMap.mjs",
     "./StrongStrongMap": "./exports/StrongStrongMap.mjs",
