@@ -14,7 +14,12 @@ function setTwoKeyValue(key1, key2, value) {
 }
 ```
 
-If the answer is "a lot", this package is for you.  The composite-collection package provides several pre-defined two-key collection classes for your use:
+If the answer is "a lot", this package is for you.  It'd be much nicer to just write:
+```javascript
+compositeWeakWeakMap.set(key1, key2, value);
+```
+
+The composite-collection package provides several pre-defined two-key collection classes for your use:
 
 - [composite-collection/StrongStrongMap](exports/StrongStrongMap.mjs)
 - [composite-collection/StrongStrongSet](exports/StrongStrongSet.mjs)
@@ -105,8 +110,8 @@ In the future:
   - `setValueType()` for maps, to specify the type of the value to store
   - `lock()` (optional) to lock the configuration.
 2. The [`templates/Strong`](templates/Strong) and [`templates/Weak`](templates/Weak) directories hold template JavaScript files in [JavaScript template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), enclosed in functions taking a `defines` Map argument and a `docs` "JSDocGenerator" argument.
-1. For strongly held keys, the [`CodeGenerator`](source/CodeGenerator.mjs) module writes an import for a [KeyHasher](source/exports/KeyHasher.mjs) module, which the [`Driver`](source/Driver.mjs) module copies into the destination directory.
-1. For weakly held keys (and strongly held keys associated with them), the `CodeGenerator` module writes an import for a [WeakKeyComposer](exports/WeakKey-WeakMap.mjs) module.  The Driver module copies this module into the destination directory.
+1. For strongly held keys, the [`CodeGenerator`](source/CodeGenerator.mjs) module writes an import for a [`KeyHasher`](source/exports/KeyHasher.mjs) module, which the [`Driver`](source/Driver.mjs) module copies into the destination directory.
+1. For weakly held keys (and strongly held keys associated with them), the `CodeGenerator` module writes an import for a [`WeakKeyComposer`](exports/WeakKey-WeakMap.mjs) module.  The Driver module copies this module into the destination directory.
 1. The `CodeGenerator` uses the configuration and fills a [`JSDocGenerator`](source/JSDocGenerator.mjs) instance with the necessary fields to format JSDoc comments for the code it will generate.
 1. The `CodeGenerator` combines the template, the configuration and the `JSDocGenerator` into a [JavaScript module file](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) ready for either web browsers or [NodeJS](https://www.nodejs.org) applications to use.
 
