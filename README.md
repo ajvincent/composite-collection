@@ -31,7 +31,7 @@ The composite-collection package provides several pre-defined two-key collection
 - [composite-collection/WeakMapOfStrongSets](exports/WeakMapOfStrongSets.mjs)
 - [composite-collection/WeakMapOfWeakSets](exports/WeakMapOfWeakSets.mjs)
 - [composite-collection/WeakFunctionMultiMap](exports/WeakFunctionMultiMap.mjs)
-  - This is a WeakMap of WeakSets, each of which must contain only functions
+  - This is a WeakMap of Sets, each of which must contain only functions
 
 If you want to generate your own composite collections, this package is also for you.  Each of the above collections comes from a short configuration file, some hand-written templates, and a code-generating set of modules to transform the templates into working collection modules, complete with [JSDoc comments](https://jsdoc.app/).  Here's the [WeakFunctionMultiMap configuration file](source/exports/WeakFunctionMultiMap.mjs):
 
