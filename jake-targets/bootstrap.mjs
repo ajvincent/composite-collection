@@ -104,6 +104,7 @@ try {
   }
 
   console.timeLog("stage", "copying back to master directory");
+  await cleanAndRecreate(path.join(masterDirectory, "source/collections"));
   await recursiveCopy(stageDirs[2], masterDirectory, {
     dot: true,
     overwrite: true,
@@ -144,6 +145,10 @@ async function buildCollections(sourceDir, targetDir) {
   console.timeLog("stage", "starting buildCollections");
 
   const configDir = path.join(targetDir, "source/configurations");
+  const collectionsDir = path.join(targetDir, "source/collections");
+
+  await cleanAndRecreate(collectionsDir);
+
   const urlToClass = pathToFileURL(path.join(sourceDir, "source/CollectionConfiguration.mjs"));
   const configFileList = await getAllFiles.default.async.array(configDir);
   /** @type {Map<pathToFile, contents>} */
@@ -177,6 +182,36 @@ async function buildCollections(sourceDir, targetDir) {
     await fs.writeFile(fullPath, contents, { encoding: "utf-8" });
   }));
 
+  // We should remove references to KeyHasher and WeakKey
+  {
+    const commons = [
+      "KeyHasher.mjs",
+      "WeakKey-WeakMap.mjs",
+      "WeakKey-WeakRef.mjs",
+    ];
+    await Promise.all(commons.map(
+      leaf => fs.rm(path.join(collectionsDir, leaf), {force: true})
+    ));
+
+    const collections = await getAllFiles.default.async.array(collectionsDir);
+    await Promise.all(collections.map(async fullPath => {
+      let contents = await fs.readFile(fullPath, { encoding: "utf-8" });
+      contents = contents.replace(
+        `import KeyHasher from "./KeyHasher.mjs";`,
+        `import KeyHasher from "../exports/KeyHasher.mjs";`
+      );
+      contents = contents.replace(
+        `import WeakKeyComposer from "./WeakKey-WeakMap.mjs";`,
+        `import WeakKeyComposer from "../exports/WeakKey-WeakMap.mjs";`
+      );
+      contents = contents.replace(
+        `import WeakKeyComposer from "./WeakKey-WeakRef.mjs";`,
+        `import WeakKeyComposer from "../exports/WeakKey-WeakRef.mjs";`
+      );
+      await fs.writeFile(fullPath, contents, { encoding: "utf-8" });
+    }));
+  }
+
   console.timeLog("stage", "buildCollections completed");
 }
 
@@ -209,4 +244,9 @@ async function npm(stageDir, ...targets) {
   });
 
   return promise;
+}
+
+async function cleanAndRecreate(dir) {
+  await fs.rmdir(dir, {recursive: true});
+  await fs.mkdir(dir);
 }
