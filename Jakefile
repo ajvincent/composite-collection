@@ -20,7 +20,8 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
   });
 
   const child = fork(pathToModule, moduleArgs, {
-    execArgv: process.execArgv.concat("--expose-gc", ...extraNodeArgs)
+    execArgv: process.execArgv.concat("--expose-gc", ...extraNodeArgs),
+    silent: false
   });
   child.on('exit', code => code ? reject(code) : resolve());
 
@@ -75,7 +76,7 @@ function generateCollectionTasks(configDir, targetDir, leafNames) {
       submodules.concat(configFile),
       async () => {
         console.log(targetFile);
-        await runModule("./command-line.mjs", [configFile, targetFile]);
+        await runModule("./jake-targets/generateCollection.mjs", [configFile, targetFile]);
       }
     );
   });
@@ -234,3 +235,8 @@ generateCollectionTasks("source/exports", "exports", [
 
   "WeakFunctionMultiMap.mjs",
 ]);
+
+desc("Bootstrap")
+task("bootstrap", async () => {
+  return runModule("./jake-targets/bootstrap.mjs", [], [/*"--inspect-brk"*/]);
+});

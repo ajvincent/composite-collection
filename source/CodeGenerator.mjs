@@ -4,7 +4,7 @@
  * @fileoverview
  */
 
-import CollectionConfiguration from "./CollectionConfiguration.mjs";
+import CollectionConfiguration from "composite-collection/Configuration";
 import CompletionPromise from "./CompletionPromise.mjs";
 import JSDocGenerator from "./JSDocGenerator.mjs";
 import CompileTimeOptions from "./CompileTimeOptions.mjs";

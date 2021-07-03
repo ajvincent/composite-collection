@@ -4,11 +4,12 @@
   "description": "Composing Maps, WeakMaps, Sets and WeakSets into generated classes",
   "scripts": {
     "clean": "jake clean",
-    "dogfood": "node dogfood/build.mjs && node --expose-gc ./node_modules/jasmine/bin/jasmine.js",
     "debug": "jake clean debug",
     "eslint": "jake eslint",
     "test": "jake clean test",
-    "all": "jake clean test export eslint"
+    "all": "jake clean test export eslint",
+    "bootstrap": "jake bootstrap",
+    "bootstrap-build": "node ./jake-targets/bootstrap-build.mjs"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
     "eslint-plugin-jasmine": "^4.1.2",
     "jake": "^10.8.2",
     "jasmine": "^3.7.0",
+    "recursive-copy": "^2.0.13",
     "which": "^2.0.2"
   },
   "dependencies": {

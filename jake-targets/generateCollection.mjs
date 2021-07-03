@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Required modules.
-import CodeGenerator from "./source/CodeGenerator.mjs";
+import CodeGenerator from "composite-collection/CodeGenerator";
 import url from "url";
 import path from "path";
 

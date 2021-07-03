@@ -23,17 +23,23 @@
    it really shouldn't be too expensive to build out.
 */
 
-import fs from "fs/promises";
-import path from "path";
-import os from "os";
+import recursiveCopy from "recursive-copy";
+
+import which from "which";
+import { spawn } from "child_process";
 
 import { hashAllFiles } from "./hash-all-files.mjs";
 import tempDirWithCleanup from "../spec/support/tempDirWithCleanup.mjs"
 
+import path from "path";
+import fs from "fs/promises";
+import getAllFiles from 'get-all-files';
+import { pathToFileURL } from "url";
+
 const masterDirectory = process.cwd();
 
 const stageDirs = [];
-const cleanupAll = { resolve, promise };
+const cleanupAll = {};
 {
   let resolveSequence = [];
   let promiseSequence = [];
@@ -42,39 +48,70 @@ const cleanupAll = { resolve, promise };
     resolveSequence.push(cleanup.resolve);
     promiseSequence.push(cleanup.promise);
     stageDirs.push(cleanup.tempDir);
-
-    cleanupAll.resolve = () => resolveSequence.forEach(res => res());
-    cleanupAll.promise = Promise.all(promiseSequence);
   }
+
+  cleanupAll.resolve = () => resolveSequence.forEach(res => res());
+  cleanupAll.promise = Promise.all(promiseSequence);
 }
 
-console.log(stageDirs);
+console.time("stage");
 
 try {
   // stage 1
-  await copyToStage(masterDirectory, stageDirs[0]);
-  await buildCollections(masterDirectory, stageDirs[0]);
-  await buildStage(stageDirs[0]);
+  try {
+    console.timeLog("stage", "stage 1 @ " + stageDirs[0]);
+    await copyToStage(masterDirectory, stageDirs[0]);
+    await buildCollections(masterDirectory, stageDirs[0]);
+    await runAllStage(stageDirs[0]);
+  }
+  catch (ex) {
+    console.error("failed at stage 1");
+    throw ex;
+  }
 
   // stage 2
-  await copyToStage(stageDirs[0], stageDirs[1]);
-  await buildCollections(stageDirs[0], stageDirs[1]);
-  await buildStage(stageDirs[1]);
+  try {
+    console.timeLog("stage", "stage 2 @ " + stageDirs[1]);
+    await copyToStage(stageDirs[0], stageDirs[1]);
+    await buildCollections(stageDirs[0], stageDirs[1]);
+    await runAllStage(stageDirs[1]);
+  }
+  catch (ex) {
+    console.error("failed at stage 2");
+    throw ex;
+  }
 
-  const stage2Hash = hashAllFiles(stageDirs[1]);
+  const stage2Hash = await hashAllFiles(stageDirs[1]);
 
   // stage 3
-  await copyToStage(stageDirs[1], stageDirs[2]);
-  await buildCollections(stageDirs[1], stageDirs[2]);
-  await buildStage(stageDirs[2]);
+  try {
+    console.timeLog("stage", "stage 3 @ " + stageDirs[2]);
+    await copyToStage(stageDirs[1], stageDirs[2]);
+    await buildCollections(stageDirs[1], stageDirs[2]);
+    await runAllStage(stageDirs[2]);
+  }
+  catch (ex) {
+    console.error("failed at stage 3");
+    throw ex;
+  }
 
-  const stage3Hash = hashAllFiles(stageDirs[2]);
+  const stage3Hash = await hashAllFiles(stageDirs[2]);
 
   if (stage3Hash !== stage2Hash) {
+    console.error("stage 2: " + stageDirs[1]);
+    console.error("stage 3: " + stageDirs[2]);
     throw new Error("Bootstrap: staged directories are different!");
   }
 
-  await copyToStage(stageDirs[2], masterDirectory);
+  console.timeLog("stage", "copying back to master directory");
+  await recursiveCopy(stageDirs[2], masterDirectory, {
+    dot: true,
+    overwrite: true,
+  });
+  console.timeLog("stage", "master should now be updated");
+
+  cleanupAll.resolve();
+  await cleanupAll.promise;
 }
 catch (ex) {
   //eslint-disable-next-line no-debugger
@@ -82,8 +119,7 @@ catch (ex) {
   throw ex;
 }
 finally {
-  cleanupAll.resolve();
-  await cleanup.promise;
+  console.timeEnd("stage");
 }
 
 /**
@@ -92,7 +128,11 @@ finally {
  * @param {string} targetDir
  */
 async function copyToStage(sourceDir, targetDir) {
-  throw new Error("Not yet implemented!");
+  console.timeLog("stage", "starting copyToStage");
+  await recursiveCopy(sourceDir, targetDir, {
+    dot: true,
+  });
+  console.timeLog("stage", "copyToStage completed");
 }
 
 /**
@@ -101,7 +141,43 @@ async function copyToStage(sourceDir, targetDir) {
  * @param {string} targetDir
  */
 async function buildCollections(sourceDir, targetDir) {
-  throw new Error("Not yet implemented!");
+  console.timeLog("stage", "starting buildCollections");
+
+  const configDir = path.join(targetDir, "source/configurations");
+  const urlToClass = pathToFileURL(path.join(sourceDir, "source/CollectionConfiguration.mjs"));
+  const configFileList = await getAllFiles.default.async.array(configDir);
+  /** @type {Map<pathToFile, contents>} */
+  const configMap = new Map(/* */)
+
+  const sourceString = `import CollectionConfiguration from "composite-collection/Configuration";`
+  const targetString = `import CollectionConfiguration from "${urlToClass}"`;
+
+  /* The import module resolvers in each target stage directory refer to their own CollectionConfiguration
+     module by default, not the source stage's module.  This is due to some quirk of NodeJS I
+     haven't tracked down fully.  The result is that the CollectionConfiguration module we expect in
+     CodeGenerator is different than the one NodeJS actually loads, which causes the CodeGenerator to throw.
+
+     So I temporarily convert each import to an explicit URL to the source stage, and rewrite the file appropriately.
+  */
+  await Promise.all(configFileList.map(async fullPath => {
+    let contents = await fs.readFile(fullPath, { encoding: "utf-8" });
+    configMap.set(fullPath, contents);
+
+    contents = contents.replace(sourceString, targetString);
+
+    await fs.writeFile(fullPath, contents, { encoding: "utf-8" });
+  }));
+
+  // This starts the actual code generation in the target directory, driven by the source directory.
+  await npm(sourceDir, "bootstrap-build", "--", targetDir);
+
+  // For a clean repository, it's important to undo the changes to the import lines.
+  await Promise.all(configFileList.map(async fullPath => {
+    const contents = configMap.get(fullPath);
+    await fs.writeFile(fullPath, contents, { encoding: "utf-8" });
+  }));
+
+  console.timeLog("stage", "buildCollections completed");
 }
 
 /**
@@ -109,6 +185,28 @@ async function buildCollections(sourceDir, targetDir) {
  *
  * @param {string} stageDir
  */
-async function buildStage(stageDir) {
-  throw new Error("Not yet implemented!");
+async function runAllStage(stageDir) {
+  console.timeLog("stage", "starting runAllStage");
+  await npm(stageDir, "all");
+  console.timeLog("stage", "runAllStage completed");
+}
+
+async function npm(stageDir, ...targets) {
+  const npm = await which("npm");
+  // npm run all
+  let resolve, reject;
+  let promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+
+  const runAll = spawn(npm, ["run", ...targets], {
+    stdio: "inherit",
+    cwd: stageDir,
+  });
+  runAll.on('close', code => {
+    code ? reject(code) : resolve(code)
+  });
+
+  return promise;
 }
