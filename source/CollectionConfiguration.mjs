@@ -91,8 +91,7 @@ export default class CollectionConfiguration {
   #fileoverview = null;
 
   #doStateTransition(nextState) {
-    const validStates = this.#stateTransitionsGraph.get(this.#currentState);
-    const mayTransition = validStates.has(nextState);
+    const mayTransition = this.#stateTransitionsGraph.has(this.#currentState, nextState);
     if (mayTransition)
       this.#currentState = nextState;
     return mayTransition;

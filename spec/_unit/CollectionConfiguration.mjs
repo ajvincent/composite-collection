@@ -337,6 +337,13 @@ describe("CollectionConfiguration", () => {
         ).toThrowError("Strong maps cannot have weak map keys!");
       });
 
+      it("a set collection", () => {
+        config = new CollectionConfiguration("FooSet", "WeakSet");
+        expect(
+          () => config.addMapKey(...args)
+        ).toThrowError("You must define map keys before calling .addSetElement(), .setValueFilter() or .lock()!");
+      });
+
       describe("invalid identifiers:", () => {
         it("code injection with assignment", () => {
           expect(
@@ -635,6 +642,13 @@ describe("CollectionConfiguration", () => {
         expect(
           () => config.addSetKey(...args)
         ).toThrowError("Strong sets cannot have weak set keys!");
+      });
+
+      it("a map collection", () => {
+        config = new CollectionConfiguration("FooMap", "WeakMap");
+        expect(
+          () => config.addSetKey(...args)
+        ).toThrowError("You must define set keys before calling .setValueFilter() or .lock()!");
       });
 
       describe("invalid identifiers:", () => {

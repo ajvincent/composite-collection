@@ -1,3 +1,22 @@
+import StringStateMachine from "./collections/StringStateMachine.mjs";
+let machinesLocked = false;
+
+class ConfigurationStateMachine extends StringStateMachine {
+  add(...args) {
+    if (machinesLocked)
+      throw new Error("This state machine is not modifiable!");
+    return super.add(...args);
+  }
+
+  delete() {
+    throw new Error("This state machine is not modifiable!");
+  }
+
+  clear() {
+    throw new Error("This state machine is not modifiable!");
+  }
+}
+
 /**
  * @type {Map<string, Map<string, Set<string>>>}
  */
@@ -5,105 +24,67 @@ const ConfigurationStateGraphs = new Map;
 
 ConfigurationStateGraphs.set(
   "Map",
-  new Map([
-    ["start", new Set([
-      "startMap",
-    ])],
+  new ConfigurationStateMachine([
+    ["start", "startMap"],
 
-    ["startMap", new Set([
-      "mapKeys",
-      "importLines",
-    ])],
+    ["startMap", "mapKeys"],
+    ["startMap", "importLines"],
 
-    ["importLines", new Set([
-      "mapKeys",
-      "hasValueFilter",
-      "locked",
-    ])],
+    ["importLines", "mapKeys"],
+    ["importLines", "hasValueFilter"],
+    ["importLines", "locked"],
 
-    ["mapKeys", new Set([
-      "mapKeys",
-      "hasValueFilter",
-      "locked",
-    ])],
+    ["mapKeys", "mapKeys"],
+    ["mapKeys", "hasValueFilter"],
+    ["mapKeys", "locked"],
 
-    ["hasValueFilter", new Set([
-      "locked",
-    ])],
+    ["hasValueFilter", "locked"],
 
-    ["locked", new Set([
-      "locked",
-    ])],
-
-    ["errored", new Set()],
+    ["locked", "locked"],
   ])
 );
 
 ConfigurationStateGraphs.set(
   "Set",
-  new Map([
-    ["start", new Set([
-      "startSet",
-    ])],
+  new ConfigurationStateMachine([
+    ["start", "startSet"],
 
-    ["startSet", new Set([
-      "setElements",
-      "importLines",
-    ])],
+    ["startSet", "setElements"],
+    ["startSet", "importLines"],
 
-    ["importLines", new Set([
-      "setElements",
-      "hasValueFilter",
-      "locked",
-    ])],
+    ["importLines", "setElements"],
+    ["importLines", "hasValueFilter"],
+    ["importLines", "locked"],
 
-    ["setElements", new Set([
-      "setElements",
-      "locked",
-    ])],
+    ["setElements", "setElements"],
+    ["setElements", "locked"],
 
-    ["locked", new Set([
-      "locked",
-    ])],
-
-    ["errored", new Set()],
+    ["locked", "locked"],
   ])
 );
 
 ConfigurationStateGraphs.set(
   "MapOfSets",
-  new Map([
-    ["start", new Set([
-      "startMap",
-    ])],
+  new ConfigurationStateMachine([
+    ["start", "startMap"],
 
-    ["startMap", new Set([
-      "mapKeys",
-      "importLines",
-    ])],
+    ["startMap", "mapKeys"],
+    ["startMap", "importLines"],
 
-    ["importLines", new Set([
-      "mapKeys",
-      "hasValueFilter",
-      "locked",
-    ])],
+    ["importLines", "mapKeys"],
+    ["importLines", "hasValueFilter"],
+    ["importLines", "locked"],
 
-    ["mapKeys", new Set([
-      "mapKeys",
-      "setElements",
-    ])],
+    ["mapKeys", "mapKeys"],
+    ["mapKeys", "setElements"],
 
-    ["setElements", new Set([
-      "setElements",
-      "locked",
-    ])],
+    ["setElements", "setElements"],
+    ["setElements", "locked"],
 
-    ["locked", new Set([
-      "locked",
-    ])],
-
-    ["errored", new Set()],
+    ["locked", "locked"],
   ])
 );
+
+machinesLocked = true;
 
 export default ConfigurationStateGraphs;
