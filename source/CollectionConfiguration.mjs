@@ -90,6 +90,9 @@ export default class CollectionConfiguration {
   /** @type {string?} */
   #fileoverview = null;
 
+  /** @type {number} */
+  #argCount = 0;
+
   #doStateTransition(nextState) {
     const mayTransition = this.#stateTransitionsGraph.has(this.#currentState, nextState);
     if (mayTransition)
@@ -325,6 +328,8 @@ export default class CollectionConfiguration {
         this.#weakMapKeys.push(argumentName);
       else
         this.#strongMapKeys.push(argumentName);
+
+      this.#argCount++;
     });
   }
 
@@ -373,6 +378,8 @@ export default class CollectionConfiguration {
         this.#weakSetElements.push(argumentName);
       else
         this.#strongSetElements.push(argumentName);
+
+      this.#argCount++;
     });
   }
 
@@ -380,6 +387,7 @@ export default class CollectionConfiguration {
   addSequence() {
     return this.#catchErrorState(() => {
       throw new Error("Not yet implemented");
+      this.#argCount++;
     });
   }
   */
@@ -465,6 +473,19 @@ export default class CollectionConfiguration {
 
       if (/Weak\/?Set/.test(this.#collectionTemplate) && !this.#weakSetElements.length)
         throw new Error("A weak set keyset must have at least one weak key!");
+
+
+      let argCount = this.#argCount;
+      if (argCount === 0) {
+        if (!this.#valueCollectionType)
+          throw new Error("State machine error:  we should have some steps now!");
+        argCount++;
+      }
+
+      if (argCount === 1) {
+        // Use a solo collection template.
+        this.#collectionTemplate = this.#collectionTemplate.replace(/^\w+/g, "Solo");
+      }
     });
   }
 

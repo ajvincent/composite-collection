@@ -162,7 +162,7 @@ export default class CodeGenerator extends CompletionPromise {
 
     const paramsData = Array.from(data.parameterToTypeMap.values());
 
-    if (/Weak\/?Map/.test(data.collectionTemplate)) {
+    if (/Solo|Weak\/?Map/.test(data.collectionTemplate)) {
       this.#defines.set("weakMapCount", data.weakMapKeys.length);
       this.#defines.set("weakMapArgList", data.weakMapKeys.join(", "));
       this.#defines.set("weakMapArgNameList", buildArgNameList(data.weakMapKeys));
@@ -173,7 +173,7 @@ export default class CodeGenerator extends CompletionPromise {
       this.#defines.set("strongMapArgNameList", buildArgNameList(data.strongMapKeys));
     }
 
-    if (/Weak\/?Set/.test(data.collectionTemplate)) {
+    if (/Solo|Weak\/?Set/.test(data.collectionTemplate)) {
       this.#defines.set("weakSetCount", data.weakSetElements.length);
       this.#defines.set("weakSetArgList", data.weakSetElements.join(", "));
       this.#defines.set("weakSetArgNameList", buildArgNameList(data.weakSetElements));

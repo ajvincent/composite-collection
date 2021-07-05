@@ -32,7 +32,7 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
     {
       const testIterator = testSet.values();
       const refIterator  = refSet.values();
-      expect(testIterator.next()).toEqual({value: [key1], done: false});
+      expect(testIterator.next()).toEqual({value: key1, done: false});
       refIterator.next();
       expect(testIterator.next()).toEqual(refIterator.next());
       expect(testIterator.next()).toEqual(refIterator.next());
@@ -59,7 +59,7 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
     /*
     expect(spy.calls.thisFor(0)).toBe(thisObj);
     */
-    expect(spy).toHaveBeenCalledOnceWith(key1, testSet);
+    expect(spy).toHaveBeenCalledOnceWith(key1, key1, testSet);
 
     expect(testSet.clear()).toBe(undefined);
     expect(testSet.size).toBe(0);
@@ -84,9 +84,9 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
     {
       const testIterator = testSet.values();
       const refIterator  = refSet.values();
-      expect(testIterator.next()).toEqual({value: [key1], done: false});
+      expect(testIterator.next()).toEqual({value: key1, done: false});
       refIterator.next();
-      expect(testIterator.next()).toEqual({value: [key2], done: false});
+      expect(testIterator.next()).toEqual({value: key2, done: false});
       refIterator.next();
       expect(testIterator.next()).toEqual(refIterator.next());
       expect(testIterator.next()).toEqual(refIterator.next());
@@ -97,8 +97,8 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
 
     testSet.forEach(spy, thisObj);
     expect(spy).toHaveBeenCalledTimes(2);
-    expect(spy.calls.argsFor(0)).toEqual([key1, testSet]);
-    expect(spy.calls.argsFor(1)).toEqual([key2, testSet]);
+    expect(spy.calls.argsFor(0)).toEqual([key1, key1, testSet]);
+    expect(spy.calls.argsFor(1)).toEqual([key2, key2, testSet]);
     /*
     expect(spy.calls.thisFor(0)).toBe(thisObj);
     expect(spy.calls.thisFor(1)).toBe(thisObj);
@@ -121,9 +121,9 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
     {
       const testIterator = testSet.values();
       const refIterator  = refSet.values();
-      expect(testIterator.next()).toEqual({value: [key2], done: false});
+      expect(testIterator.next()).toEqual({value: key2, done: false});
       refIterator.next();
-      expect(testIterator.next()).toEqual({value: [key1], done: false});
+      expect(testIterator.next()).toEqual({value: key1, done: false});
       refIterator.next();
       expect(testIterator.next()).toEqual(refIterator.next());
       expect(testIterator.next()).toEqual(refIterator.next());
@@ -131,8 +131,8 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
 
     testSet.forEach(spy, thisObj);
     expect(spy).toHaveBeenCalledTimes(2);
-    expect(spy.calls.argsFor(0)).toEqual([key2, testSet]);
-    expect(spy.calls.argsFor(1)).toEqual([key1, testSet]);
+    expect(spy.calls.argsFor(0)).toEqual([key2, key2, testSet]);
+    expect(spy.calls.argsFor(1)).toEqual([key1, key1, testSet]);
     /*
     expect(spy.calls.thisFor(0)).toBe(thisObj);
     expect(spy.calls.thisFor(1)).toBe(thisObj);

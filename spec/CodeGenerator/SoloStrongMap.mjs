@@ -29,7 +29,7 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
 
     {
       const iterator = testMap.keys();
-      expect(iterator.next()).toEqual({value: [key], done: false});
+      expect(iterator.next()).toEqual({value: key, done: false});
       expect(iterator.next()).toEqual({value: undefined, done: true});
       expect(iterator.next()).toEqual({value: undefined, done: true});
     }
@@ -82,8 +82,8 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
 
     {
       const iterator = testMap.keys();
-      expect(iterator.next()).toEqual({value: [key1], done: false});
-      expect(iterator.next()).toEqual({value: [key2], done: false});
+      expect(iterator.next()).toEqual({value: key1, done: false});
+      expect(iterator.next()).toEqual({value: key2, done: false});
       expect(iterator.next()).toEqual({value: undefined, done: true});
       expect(iterator.next()).toEqual({value: undefined, done: true});
     }
@@ -119,8 +119,8 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
 
     {
       const iterator = testMap.keys();
-      expect(iterator.next()).toEqual({value: [key2], done: false});
-      expect(iterator.next()).toEqual({value: [key1], done: false});
+      expect(iterator.next()).toEqual({value: key2, done: false});
+      expect(iterator.next()).toEqual({value: key1, done: false});
       expect(iterator.next()).toEqual({value: undefined, done: true});
       expect(iterator.next()).toEqual({value: undefined, done: true});
     }
