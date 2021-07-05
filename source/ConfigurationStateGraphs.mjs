@@ -32,7 +32,6 @@ ConfigurationStateGraphs.set(
 
     ["importLines", "mapKeys"],
     ["importLines", "hasValueFilter"],
-    ["importLines", "locked"],
 
     ["mapKeys", "mapKeys"],
     ["mapKeys", "hasValueFilter"],
@@ -53,7 +52,6 @@ ConfigurationStateGraphs.set(
     ["startSet", "importLines"],
 
     ["importLines", "setElements"],
-    ["importLines", "locked"],
 
     ["setElements", "setElements"],
     ["setElements", "locked"],
@@ -71,8 +69,6 @@ ConfigurationStateGraphs.set(
     ["startMap", "importLines"],
 
     ["importLines", "mapKeys"],
-    ["importLines", "hasValueFilter"],
-    ["importLines", "locked"],
 
     ["mapKeys", "mapKeys"],
     ["mapKeys", "setElements"],
