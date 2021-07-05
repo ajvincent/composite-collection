@@ -106,6 +106,43 @@ export default class StringStateMachine {
    */
 
   /**
+   * Report if the collection has a value for a key set.
+   *
+   * @param {Function} currentState 
+   * @param {Function} nextState    
+   *
+   * @returns {boolean} True if the key set refers to a value in the collection.
+   * @public
+   */
+  has(currentState, nextState) {
+    const hash = this.__hasher__.buildHash([currentState, nextState]);
+    return this.__root__.has(hash);
+  }
+
+  /**
+   * Determine if a set of keys is valid.
+   *
+   * @param {Function} currentState 
+   * @param {Function} nextState    
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @public
+   */
+  isValidKey(currentState, nextState) {
+    return this.__isValidKey__(currentState, nextState);
+  }
+
+  /**
+   * Return a new iterator for the values of the collection.
+   *
+   * @returns {Iterator<*>}
+   * @public
+   */
+  values() {
+    return this.__root__.values();
+  }
+
+  /**
    * Throw if the key set is not valid.
    *
    * @param {Function} currentState 
@@ -140,29 +177,6 @@ export default class StringStateMachine {
     return true;
   }
 
-  /**
-   * Report if the collection has a value for a key set.
-   *
-   * @param {Function} currentState 
-   * @param {Function} nextState    
-   *
-   * @returns {boolean} True if the key set refers to a value in the collection.
-   * @public
-   */
-  has(currentState, nextState) {
-    const hash = this.__hasher__.buildHash([currentState, nextState]);
-    return this.__root__.has(hash);
-  }
-
-  /**
-   * Return a new iterator for the values of the collection.
-   *
-   * @returns {Iterator<*>}
-   * @public
-   */
-  values() {
-    return this.__root__.values();
-  }
 }
 
 StringStateMachine[Symbol.iterator] = function() {
