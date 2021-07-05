@@ -1,14 +1,7 @@
 /**
- * @callback JSDocCallback
- * @param {string} methodName  The name of the method or callback.
- * @param {string} description The method description.
- */
-
-/**
- *
  * @param {Map} defines
  * @param {JSDocGenerator} docs
- * @returns
+ * @returns {string}
  */
 export default function preprocess(defines, docs) {
   let invokeValidate = "";
@@ -45,11 +38,7 @@ ${docs.buildBlock("getSize", 2)}
   }
 
 ${docs.buildBlock("add", 2)}
-  add(${defines.get("argList")}) {${
-    invokeValidate
-  }${
-    defines.get("validateValue") || ""
-  }
+  add(${defines.get("argList")}) {${invokeValidate}
     const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
     this.__root__.set(hash, Object.freeze([${defines.get("argList")}]));
     return this;
@@ -74,31 +63,38 @@ ${docs.buildBlock("forEachSet", 2)}
   }
 
 ${docs.buildBlock("forEachCallbackSet", 2)}
-${defines.has("invokeValidate") ?
-`
-${docs.buildBlock("requireValidKey", 2)}
-  __requireValidKey__(${defines.get("argList")}) {
-    if (!this.__isValidKey__(${defines.get("argList")}))
-      throw new Error("The ordered key set is not valid!");
-  }
 
-${docs.buildBlock("isValidKeyPrivate", 2)}
-  __isValidKey__(${defines.get("argList")}) {
-${defines.get("validateArguments")}
-    return true;
-  }
-
-` : ``}
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {
     const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
     return this.__root__.has(hash);
   }
 
+${defines.has("validateArguments") ? `
+${docs.buildBlock("isValidKeyPublic", 2)}
+  isValidKey(${defines.get("argList")}) {
+    return this.__isValidKey__(${defines.get("argList")});
+  }
+` : ``}
+
 ${docs.buildBlock("values", 2)}
   values() {
     return this.__root__.values();
   }
+${defines.has("invokeValidate") ?
+  `
+  ${docs.buildBlock("requireValidKey", 2)}
+    __requireValidKey__(${defines.get("argList")}) {
+      if (!this.__isValidKey__(${defines.get("argList")}))
+        throw new Error("The ordered key set is not valid!");
+    }
+
+  ${docs.buildBlock("isValidKeyPrivate", 2)}
+    __isValidKey__(${defines.get("argList")}) {
+  ${defines.get("validateArguments")}
+      return true;
+    }
+` : ``}
 }
 
 ${defines.get("className")}[Symbol.iterator] = function() {

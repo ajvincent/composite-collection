@@ -2,7 +2,7 @@
  *
  * @param {Map} defines
  * @param {JSDocGenerator} docs
- * @returns
+ * @returns {string}
  */
 export default function preprocess(defines, docs) {
   return `

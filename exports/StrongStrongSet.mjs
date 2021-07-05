@@ -126,6 +126,7 @@ export default class StrongStrongSet {
   values() {
     return this.__root__.values();
   }
+
 }
 
 StrongStrongSet[Symbol.iterator] = function() {
