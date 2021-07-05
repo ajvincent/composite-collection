@@ -76,7 +76,10 @@ function generateCollectionTasks(configDir, targetDir, leafNames) {
       submodules.concat(configFile),
       async () => {
         console.log(targetFile);
-        await runModule("./jake-targets/generateCollection.mjs", [configFile, targetFile]);
+        await runModule(
+          "./jake-targets/generateCollection.mjs",
+          [configFile, targetFile],
+          /* leafName === "SoloStrongMap.mjs" ? ["--inspect-brk"] : */ []);
       }
     );
   });
