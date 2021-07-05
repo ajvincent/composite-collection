@@ -53,7 +53,6 @@ ConfigurationStateGraphs.set(
     ["startSet", "importLines"],
 
     ["importLines", "setElements"],
-    ["importLines", "hasValueFilter"],
     ["importLines", "locked"],
 
     ["setElements", "setElements"],
