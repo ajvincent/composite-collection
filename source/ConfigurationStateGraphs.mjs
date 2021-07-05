@@ -84,6 +84,25 @@ ConfigurationStateGraphs.set(
   ])
 );
 
+/*
+ConfigurationStateGraphs.set(
+  "Sequence",
+  new ConfigurationStateMachine([
+    ["start", "startSequence"],
+
+    ["startSequence", "importLines"],
+    ["startSequence", "sequence"],
+
+    ["importLines", "sequence"],
+
+    ["sequence", "sequence"],
+    ["sequence", "locked"],
+
+    ["locked", "locked"],
+  ])
+);
+*/
+
 machinesLocked = true;
 
 export default ConfigurationStateGraphs;

@@ -376,6 +376,14 @@ export default class CollectionConfiguration {
     });
   }
 
+  /*
+  addSequence() {
+    return this.#catchErrorState(() => {
+      throw new Error("Not yet implemented");
+    });
+  }
+  */
+
   #validateKey(argumentName, holdWeak, argumentType, description, argumentValidator) {
     this.#identifierArg("argumentName", argumentName);
     if (argumentType !== null)
