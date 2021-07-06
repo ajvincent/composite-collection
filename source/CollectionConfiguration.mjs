@@ -384,7 +384,7 @@ export default class CollectionConfiguration {
   }
 
   // XXX ajvincent JSDoc!
-  addMapTuple() {
+  addMapKeyTuple() {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("mapTuple")) {
         this.#throwIfLocked();
@@ -397,7 +397,7 @@ export default class CollectionConfiguration {
   }
 
   // XXX ajvincent JSDoc!
-  addSetTuple() {
+  addSetKeyTuple() {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("setTuple")) {
         this.#throwIfLocked();
