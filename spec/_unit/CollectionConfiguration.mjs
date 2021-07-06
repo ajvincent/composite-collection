@@ -13,9 +13,8 @@ describe("CollectionConfiguration", () => {
       "importLines",
       "addMapKey",
       "addSetKey",
-      /*
-      "addSequence",
-      */
+      "addMapTuple",
+      "addSetTuple",
       "setValueType",
       "lock",
     ]);

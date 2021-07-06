@@ -383,14 +383,31 @@ export default class CollectionConfiguration {
     });
   }
 
-  /*
-  addSequence() {
+  // XXX ajvincent JSDoc!
+  addMapTuple() {
     return this.#catchErrorState(() => {
+      if (!this.#doStateTransition("mapTuple")) {
+        this.#throwIfLocked();
+        throw new Error("The .addMapTuple() method only applies to sequences, and only at the start or when importing modules!");
+      }
+
       throw new Error("Not yet implemented");
       this.#argCount++;
     });
   }
-  */
+
+  // XXX ajvincent JSDoc!
+  addSetTuple() {
+    return this.#catchErrorState(() => {
+      if (!this.#doStateTransition("setTuple")) {
+        this.#throwIfLocked();
+        throw new Error("The .addSetTuple() method only applies to sequences, and only after all map steps!");
+      }
+
+      throw new Error("Not yet implemented");
+      this.#argCount++;
+    });
+  }
 
   #validateKey(argumentName, holdWeak, argumentType, description, argumentValidator) {
     this.#identifierArg("argumentName", argumentName);

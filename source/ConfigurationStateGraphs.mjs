@@ -80,24 +80,28 @@ ConfigurationStateGraphs.set(
   ])
 );
 
-/*
 ConfigurationStateGraphs.set(
   "Sequence",
   new ConfigurationStateMachine([
     ["start", "startSequence"],
 
     ["startSequence", "importLines"],
-    ["startSequence", "sequence"],
+    ["startSequence", "mapTuple"],
+    ["startSequence", "setTuple"],
 
-    ["importLines", "sequence"],
+    ["importLines", "mapTuple"],
+    ["importLines", "setTuple"],
 
-    ["sequence", "sequence"],
-    ["sequence", "locked"],
+    ["mapTuple", "mapTuple"],
+    ["mapTuple", "setTuple"],
+    ["mapTuple", "locked"],
+
+    ["setTuple", "setTuple"],
+    ["setTuple", "locked"],
 
     ["locked", "locked"],
   ])
 );
-*/
 
 machinesLocked = true;
 
