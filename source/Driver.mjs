@@ -4,7 +4,7 @@ import CodeGenerator from "./CodeGenerator.mjs";
 import url from "url";
 import fs from "fs/promises";
 import path from "path";
-import getAllFiles from 'get-all-files';
+import { getAllFiles } from 'get-all-files';
 
 const projectRoot = url.fileURLToPath(new URL("..", import.meta.url));
 
@@ -112,7 +112,7 @@ export default class Driver extends CompletionPromise {
    * @note This is a placeholder for
    */
   async #getFileList() {
-    const fullPaths = await getAllFiles.default.async.array(this.#sourcesPath);
+    const fullPaths = await getAllFiles(this.#sourcesPath).toArray();
     return fullPaths.map(path => path.replace(this.#sourcesPath + "/", ""));
   }
 

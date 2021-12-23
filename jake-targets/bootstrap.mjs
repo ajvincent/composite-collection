@@ -33,7 +33,7 @@ import tempDirWithCleanup from "../spec/support/tempDirWithCleanup.mjs"
 
 import path from "path";
 import fs from "fs/promises";
-import getAllFiles from 'get-all-files';
+import { getAllFiles } from 'get-all-files';
 import { pathToFileURL } from "url";
 
 const masterDirectory = process.cwd();
@@ -150,7 +150,7 @@ async function buildCollections(sourceDir, targetDir) {
   await cleanAndRecreate(collectionsDir);
 
   const urlToClass = pathToFileURL(path.join(sourceDir, "source/CollectionConfiguration.mjs"));
-  const configFileList = await getAllFiles.default.async.array(configDir);
+  const configFileList = await getAllFiles(configDir).toArray();
   /** @type {Map<pathToFile, contents>} */
   const configMap = new Map(/* */)
 
@@ -193,7 +193,7 @@ async function buildCollections(sourceDir, targetDir) {
       leaf => fs.rm(path.join(collectionsDir, leaf), {force: true})
     ));
 
-    const collections = await getAllFiles.default.async.array(collectionsDir);
+    const collections = await getAllFiles(collectionsDir).toArray();
     await Promise.all(collections.map(async fullPath => {
       let contents = await fs.readFile(fullPath, { encoding: "utf-8" });
       contents = contents.replace(

@@ -11,7 +11,7 @@ import CompileTimeOptions from "./CompileTimeOptions.mjs";
 
 import fs from "fs/promises";
 import { pathToFileURL } from "url";
-import getAllFiles from 'get-all-files';
+import { getAllFiles } from 'get-all-files';
 import beautify from "js-beautify";
 
 /**
@@ -22,7 +22,7 @@ const TemplateGenerators = new Map();
 {
   const templateDirURL = new URL("../templates", import.meta.url);
   const templateDir = templateDirURL.pathname;
-  const allFiles = await getAllFiles.default.async.array(templateDir);
+  const allFiles = await getAllFiles(templateDir).toArray();
   await Promise.all(allFiles.map(async fullPath => {
     let baseName = fullPath.substr(templateDir.length + 1);
     if (!baseName.endsWith(".in.mjs"))

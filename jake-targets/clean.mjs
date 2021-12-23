@@ -1,5 +1,5 @@
 import fs from "fs/promises";
-import getAllFiles from 'get-all-files';
+import { getAllFiles } from 'get-all-files';
 import path from "path";
 
 const fileRoots = [
@@ -7,9 +7,9 @@ const fileRoots = [
   "exports",
 ].map(root => path.join(process.cwd(), root));
 
-let allFiles = await Promise.all(fileRoots.map(root => {
-  return getAllFiles.default.async.array(root)
-}));
+let allFiles = await Promise.all(fileRoots.map(
+  root => getAllFiles(root).toArray()
+));
 
 allFiles = allFiles.flat().filter(file => file.endsWith(".mjs"));
 

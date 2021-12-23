@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import fs from "fs/promises";
-import getAllFiles from 'get-all-files';
+import { getAllFiles } from 'get-all-files';
 
 /* Why does this file exist?
    https://en.wikipedia.org/wiki/Bootstrapping_(compilers)
@@ -29,12 +29,12 @@ import getAllFiles from 'get-all-files';
 export async function getHashFileList(root) {
   const ignoredDirs = ["node_modules", "spec/generated", "."];
 
-  let allFiles = await getAllFiles.default.async.array(root, {
+  let allFiles = await getAllFiles(root, {
     isExcludedDir: dir => {
       dir = dir.replace(root, "");
       return ignoredDirs.some(ignorable => dir.startsWith(ignorable));
     },
-  });
+  }).toArray();
 
   allFiles = allFiles.filter(Boolean);
   allFiles.sort();

@@ -3,7 +3,7 @@ import tempDirWithCleanup from "../support/tempDirWithCleanup.mjs";
 import url from "url";
 import fs from "fs/promises";
 import path from "path";
-import getAllFiles from "get-all-files";
+import { getAllFiles } from "get-all-files";
 import which from "which";
 import { exec } from "child_process";
 import { promisify } from "util";
@@ -19,7 +19,7 @@ it("Driver generates a valid set of classes", async () => {
   try {
     // copy package files
     {
-      const fileList = await getAllFiles.default.async.array(sourceDir);
+      const fileList = await getAllFiles(sourceDir).toArray();
       await Promise.all(fileList.map(sourceFile => {
         const targetFile = sourceFile.replace(sourceDir, targetDir);
         return fs.copyFile(
