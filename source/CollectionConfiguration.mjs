@@ -6,7 +6,7 @@
  * This defines a data structure for configuring a composite of Maps and Sets.
  */
 
-import acorn from "acorn";
+import { parse } from "acorn";
 
 import ConfigurationStateGraphs from "./ConfigurationStateGraphs.mjs";
 import CollectionType from "./CollectionType.mjs";
@@ -16,7 +16,8 @@ function getNormalFunctionAST(fn) {
 
   let astNode, abort = false;
   try {
-    const ast = acorn.parse(source, {
+    const ast = parse(source, {
+      ecmaVersion: 2021,
       onToken(t) {
         if ((t.type.keyword !== "throw") || (t.value !== "throw"))
           return;
@@ -121,7 +122,7 @@ export default class CollectionConfiguration {
     {
       let idToken;
       try {
-        idToken = acorn.parse("let " + identifier).body[0].declarations[0].id.name;
+        idToken = parse("let " + identifier, {ecmaVersion: 2021}).body[0].declarations[0].id.name;
       }
       catch (ex) {
         // do nothing

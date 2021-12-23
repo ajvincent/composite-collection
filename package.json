@@ -34,7 +34,7 @@
     "which": "^2.0.2"
   },
   "dependencies": {
-    "acorn": "^7.4.1",
+    "acorn": "^8.6.0",
     "argparse": "^2.0.1",
     "get-all-files": "^3.0.0",
     "js-beautify": "^1.13.5"
