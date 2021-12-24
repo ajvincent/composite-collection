@@ -37,7 +37,7 @@
     "acorn": "^8.6.0",
     "argparse": "^2.0.1",
     "get-all-files": "^4.1.0",
-    "js-beautify": "^1.13.5"
+    "js-beautify": "^1.14.0"
   },
   "exports": {
     "./Driver": "./source/Driver.mjs",
