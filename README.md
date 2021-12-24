@@ -70,7 +70,7 @@ await driver.completionPromise;
 
 To use it:
 ```javascript
-import WeakFunctionMultMap from "./collections/WeakFunctionMultiMap.mjs";
+import WeakFunctionMultiMap from "./collections/WeakFunctionMultiMap.mjs";
 
 const wfMM = new WeakFunctionMultiMap();
 const key1 = {}, callback1 = function() {}, callback2 = function() {};
@@ -80,7 +80,7 @@ wfMM.add(key1, callback2);
 
 ## Features
 
-Currently supported (version 0.1):
+Currently supported (version 0.1.1):
 - ECMAScript class modules with all the pieces you need
 - A simple configuration API
 - Generating code and matching JSDoc comments
@@ -91,9 +91,9 @@ Currently supported (version 0.1):
 - Maps, Sets and Maps of Sets available
 - Weak keys subject to garbage collection
 - Pre-compiled collections available as exports
+- [Private class fields and methods](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_class_fields)
 
 In the future:
-- [Private class fields and methods](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_class_fields) (once [ESLint](https://www.eslint.org) supports them)
 - Declaring key groups
   - Key groups can be equal: `[arg1, arg2] === [arg3, arg4]` for the purpose of this collection
 - One-to-one hash tables with two-part keys:  `(arg1, "green") === (arg2, "green")` if the collection allows marking `arg1` equal to `arg2`, and the user actually does so
