@@ -1,5 +1,5 @@
 import StrongStrongSet from "../generated/StrongStrongSet.mjs";
-import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
+import ToHoldRefsMatchers from "../../support/toHoldReferences.mjs";
 
 describe("CodeGenerator(StrongStrongSet.mjs)", () => {
   const refSet = new Set;

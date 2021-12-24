@@ -3,7 +3,8 @@ import { getAllFiles } from 'get-all-files';
 import path from "path";
 
 const fileRoots = [
-  "spec/generated",
+  "spec/_02_collection-generator/generated",
+  "spec/_04_exports/generated",
   "exports",
 ].map(root => path.join(process.cwd(), root));
 

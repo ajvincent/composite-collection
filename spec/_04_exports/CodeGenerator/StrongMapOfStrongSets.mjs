@@ -1,5 +1,5 @@
 import StrongMapOfStrongSets from "../generated/StrongMapOfStrongSets.mjs";
-import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
+import ToHoldRefsMatchers from "../../support/toHoldReferences.mjs";
 
 describe("CodeGenerator(StrongMapOfStrongSets.mjs)", () => {
   const refSet = new Set;

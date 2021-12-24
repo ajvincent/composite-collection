@@ -1,5 +1,5 @@
 import SoloStrongSet from "../generated/SoloStrongSet.mjs";
-import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
+import ToHoldRefsMatchers from "../../support/toHoldReferences.mjs";
 import MockImportable from "../fixtures/MockImportable.mjs";
 
 describe("CodeGenerator(SoloStrongSet.mjs)", () => {

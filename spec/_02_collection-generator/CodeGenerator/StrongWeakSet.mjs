@@ -1,5 +1,5 @@
 import StrongWeakSet from "../generated/StrongWeakSet.mjs";
-import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
+import ToHoldRefsMatchers from "../../support/toHoldReferences.mjs";
 
 describe("CodeGenerator(StrongWeakSet.mjs)", () => {
   const refSet = new Set;

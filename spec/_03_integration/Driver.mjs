@@ -13,7 +13,7 @@ const execPromise = promisify(exec);
 it("Driver generates a valid set of classes", async () => {
   const projectRoot = url.fileURLToPath(new URL("../..", import.meta.url));
 
-  const sourceDir = path.join(projectRoot, "spec/integration/fixtures/Driver");
+  const sourceDir = path.join(projectRoot, "spec/_03_integration/fixtures/Driver");
   const cleanup = await tempDirWithCleanup();
   const targetDir = cleanup.tempDir;
   try {
@@ -27,8 +27,9 @@ it("Driver generates a valid set of classes", async () => {
         )
       }));
 
-      const packagePath = path.join(targetDir, "package.json");
+      // fix package.json
       {
+        const packagePath = path.join(targetDir, "package.json");
         let packageJSON = await fs.readFile(packagePath, "utf-8");
         let pathToComposites = "file:" + projectRoot
         pathToComposites = pathToComposites.replace(/\/$/, "");

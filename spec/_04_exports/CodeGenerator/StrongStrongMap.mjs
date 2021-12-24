@@ -1,5 +1,5 @@
 import StrongStrongMap from "../generated/StrongStrongMap.mjs";
-import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
+import ToHoldRefsMatchers from "../../support/toHoldReferences.mjs";
 
 describe("CodeGenerator(StrongStrongMap.mjs),", () => {
   let testMap, refMap = new Map;
