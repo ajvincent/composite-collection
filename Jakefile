@@ -89,7 +89,7 @@ desc("Testing");
 task(
   "test",
   [
-    "test:fixtures",
+    "test:generated",
     "test:all",
   ]
 );
@@ -101,7 +101,7 @@ task("clean", async () => {
 // eslint-disable-next-line no-undef
 namespace("test", () => {
   task(
-    "fixtures",
+    "generated",
     [
       "spec/_02_collection-generator/generated/KeyHasher.mjs",
       "spec/_02_collection-generator/generated/SoloStrongMap.mjs",
@@ -230,7 +230,7 @@ generateCollectionTasks(
 );
 
 desc("Debugging tests");
-task("debug", ["test:fixtures"], async () => {
+task("debug", ["test:generated"], async () => {
   return runModule("./node_modules/jasmine/bin/jasmine.js", [], ["--inspect-brk"]);
 });
 
