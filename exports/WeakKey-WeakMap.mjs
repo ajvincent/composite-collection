@@ -1,6 +1,23 @@
 import KeyHasher from "./KeyHasher.mjs";
 
 export default class WeakKeyComposer {
+  #keyRoot = new WeakMap;
+
+  /** @type {string[]} */
+  #weakArgList;
+
+  /** @type {string[]} */
+  #strongArgList;
+
+  /** @type {KeyHasher} */
+  #keyHasher;
+
+  /** @type {WeakSet{object}} @readonly */
+  #hasKeyParts = new WeakSet;
+
+  /** @type {Map<string, WeakSet<*>>} @readonly */
+  #strongKeyToObject = new Map;
+
   /**
    * @param {string[]} weakArgList   The list of weak argument names.
    * @param {string[]} strongArgList The list of strong argument names.
@@ -24,16 +41,15 @@ export default class WeakKeyComposer {
         throw new Error("There is a duplicate argument among weakArgList and strongArgList!");
     }
 
-    this.__keyRoot__ = new WeakMap;
-    this.__weakArgList__ = weakArgList.slice();
-    this.__strongArgList__ = strongArgList.slice();
-    this.__keyHasher__ = new KeyHasher(strongArgList);
+    this.#weakArgList = weakArgList.slice();
+    this.#strongArgList = strongArgList.slice();
+    this.#keyHasher = new KeyHasher(strongArgList);
 
     /** @type {WeakSet{object}} */
-    this.__hasKeyParts__ = new WeakSet;
+    this.#hasKeyParts = new WeakSet;
 
     /** @type {Map<string, WeakSet<*>>} */
-    this.__strongKeyToObject__ = new Map;
+    this.#strongKeyToObject = new Map;
 
     Object.freeze(this);
   }
@@ -49,14 +65,14 @@ export default class WeakKeyComposer {
    * @public
    */
   getKey(weakArguments, strongArguments) {
-    const weakKeys = this.__fillWeakArguments__(weakArguments, strongArguments);
+    const weakKeys = this.#fillWeakArguments(weakArguments, strongArguments);
     if (!weakKeys)
       return null;
 
-    weakArguments.forEach(arg => this.__hasKeyParts__.add(arg));
+    weakArguments.forEach(arg => this.#hasKeyParts.add(arg));
     strongArguments.forEach(arg => {
       if (Object(arg) === arg)
-        this.__hasKeyParts__.add(arg);
+        this.#hasKeyParts.add(arg);
     });
 
     const finalKey = weakKeys.pop();
@@ -65,7 +81,7 @@ export default class WeakKeyComposer {
       if (!map.has(currentKey))
         map.set(currentKey, new WeakMap);
       return map.get(currentKey);
-    }, this.__keyRoot__);
+    }, this.#keyRoot);
 
     if (!finalMap.has(finalKey))
       finalMap.set(finalKey, Object.freeze({}));
@@ -73,15 +89,15 @@ export default class WeakKeyComposer {
   }
 
   hasKey(weakArguments, strongArguments) {
-    if (weakArguments.some(arg => !this.__hasKeyParts__.has(arg)))
+    if (weakArguments.some(arg => !this.#hasKeyParts.has(arg)))
       return false;
 
     if (strongArguments.some(
-      arg => (Object(arg) === arg) && !this.__hasKeyParts__.has(arg)
+      arg => (Object(arg) === arg) && !this.#hasKeyParts.has(arg)
     ))
       return false;
 
-    const weakKeys = this.__fillWeakArguments__(weakArguments, strongArguments);
+    const weakKeys = this.#fillWeakArguments(weakArguments, strongArguments);
     if (!weakKeys)
       return false;
 
@@ -91,7 +107,7 @@ export default class WeakKeyComposer {
       if (!map || !map.has(currentKey))
         return null;
       return map.get(currentKey);
-    }, this.__keyRoot__);
+    }, this.#keyRoot);
     if (!finalMap)
       return false;
 
@@ -109,15 +125,15 @@ export default class WeakKeyComposer {
    * @public
    */
   deleteKey(weakArguments, strongArguments) {
-    if (weakArguments.some(arg => !this.__hasKeyParts__.has(arg)))
+    if (weakArguments.some(arg => !this.#hasKeyParts.has(arg)))
       return false;
 
     if (strongArguments.some(
-      arg => (Object(arg) === arg) && !this.__hasKeyParts__.has(arg)
+      arg => (Object(arg) === arg) && !this.#hasKeyParts.has(arg)
     ))
       return false;
 
-    const weakKeys = this.__fillWeakArguments__(weakArguments, strongArguments);
+    const weakKeys = this.#fillWeakArguments(weakArguments, strongArguments);
     if (!weakKeys)
       return false;
 
@@ -127,7 +143,7 @@ export default class WeakKeyComposer {
       if (!map || !map.has(currentKey))
         return null;
       return map.get(currentKey);
-    }, this.__keyRoot__);
+    }, this.#keyRoot);
 
     return finalMap ? finalMap.delete(finalKey) : false;
   }
@@ -138,15 +154,14 @@ export default class WeakKeyComposer {
    * @param {*[]} strongArguments
    *
    * @returns {*[]?}
-   * @private
    */
-  __fillWeakArguments__(weakArguments, strongArguments) {
+  #fillWeakArguments(weakArguments, strongArguments) {
     if (!this.isValidForKey(weakArguments, strongArguments))
       return null;
 
     weakArguments = weakArguments.slice();
     if (strongArguments.length) {
-      weakArguments.push(this.__getStrongKey__(strongArguments));
+      weakArguments.push(this.#getStrongKey(strongArguments));
     }
 
     return weakArguments;
@@ -161,11 +176,11 @@ export default class WeakKeyComposer {
    * @public
    */
   isValidForKey(weakArguments, strongArguments) {
-    if (weakArguments.length !== this.__weakArgList__.length)
+    if (weakArguments.length !== this.#weakArgList.length)
       return false;
     if (weakArguments.some(arg => Object(arg) !== arg))
       return false;
-    if (strongArguments.length !== this.__strongArgList__.length)
+    if (strongArguments.length !== this.#strongArgList.length)
       return false;
     return true;
   }
@@ -174,16 +189,14 @@ export default class WeakKeyComposer {
    * 
    * @param {*[]} strongArguments
    * @returns {Object}
-   *
-   * @private
    */
-  __getStrongKey__(strongArguments) {
-    const strongHash = this.__keyHasher__.buildHash(strongArguments);
-    if (!this.__strongKeyToObject__.has(strongHash)) {
+  #getStrongKey(strongArguments) {
+    const strongHash = this.#keyHasher.buildHash(strongArguments);
+    if (!this.#strongKeyToObject.has(strongHash)) {
       let newSet = new WeakSet(strongArguments.filter(value => Object(value) === value));
-      this.__strongKeyToObject__.set(strongHash, newSet);
+      this.#strongKeyToObject.set(strongHash, newSet);
     }
-    return this.__strongKeyToObject__.get(strongHash);
+    return this.#strongKeyToObject.get(strongHash);
   }
 }
 Object.freeze(WeakKeyComposer);
