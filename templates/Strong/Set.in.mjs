@@ -6,24 +6,23 @@
 export default function preprocess(defines, docs) {
   let invokeValidate = "";
   if (defines.has("invokeValidate")) {
-    invokeValidate = `\n    this.__requireValidKey__(${defines.get("argList")});\n`;
+    invokeValidate = `\n    this.#requireValidKey(${defines.get("argList")});\n`;
   }
 
   return `
 ${defines.get("importLines")}
 
 export default class ${defines.get("className")} {
+  ${docs.buildBlock("rootContainerSet", 4)}
+  #root = new Map;
+
+  /**
+   * @type {KeyHasher}
+   * @const
+   */
+  #hasher = new KeyHasher(${defines.get("argNameList")});
+
   constructor() {
-${docs.buildBlock("rootContainerSet", 4)}
-    this.__root__ = new Map;
-
-    /**
-     * @type {KeyHasher}
-     * @private
-     * @const
-     */
-    this.__hasher__ = new KeyHasher(${defines.get("argNameList")});
-
     if (arguments.length > 0) {
       const iterable = arguments[0];
       for (let entry of iterable) {
@@ -34,30 +33,30 @@ ${docs.buildBlock("rootContainerSet", 4)}
 
 ${docs.buildBlock("getSize", 2)}
   get size() {
-    return this.__root__.size;
+    return this.#root.size;
   }
 
 ${docs.buildBlock("add", 2)}
   add(${defines.get("argList")}) {${invokeValidate}
-    const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
-    this.__root__.set(hash, Object.freeze([${defines.get("argList")}]));
+    const hash = this.#hasher.buildHash([${defines.get("argList")}]);
+    this.#root.set(hash, Object.freeze([${defines.get("argList")}]));
     return this;
   }
 
 ${docs.buildBlock("clear", 2)}
   clear() {
-    this.__root__.clear();
+    this.#root.clear();
   }
 
 ${docs.buildBlock("delete", 2)}
   delete(${defines.get("argList")}) {
-    const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
-    return this.__root__.delete(hash);
+    const hash = this.#hasher.buildHash([${defines.get("argList")}]);
+    return this.#root.delete(hash);
   }
 
 ${docs.buildBlock("forEachSet", 2)}
   forEach(__callback__, __thisArg__) {
-    this.__root__.forEach(valueSet => {
+    this.#root.forEach(valueSet => {
       __callback__.apply(__thisArg__, valueSet.concat(this));
     });
   }
@@ -66,31 +65,31 @@ ${docs.buildBlock("forEachCallbackSet", 2)}
 
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {
-    const hash = this.__hasher__.buildHash([${defines.get("argList")}]);
-    return this.__root__.has(hash);
+    const hash = this.#hasher.buildHash([${defines.get("argList")}]);
+    return this.#root.has(hash);
   }
 
 ${defines.has("validateArguments") ? `
 ${docs.buildBlock("isValidKeyPublic", 2)}
   isValidKey(${defines.get("argList")}) {
-    return this.__isValidKey__(${defines.get("argList")});
+    return this.#isValidKey(${defines.get("argList")});
   }
 ` : ``}
 
 ${docs.buildBlock("values", 2)}
   values() {
-    return this.__root__.values();
+    return this.#root.values();
   }
 ${defines.has("invokeValidate") ?
   `
   ${docs.buildBlock("requireValidKey", 2)}
-    __requireValidKey__(${defines.get("argList")}) {
-      if (!this.__isValidKey__(${defines.get("argList")}))
+    #requireValidKey(${defines.get("argList")}) {
+      if (!this.#isValidKey(${defines.get("argList")}))
         throw new Error("The ordered key set is not valid!");
     }
 
   ${docs.buildBlock("isValidKeyPrivate", 2)}
-    __isValidKey__(${defines.get("argList")}) {
+    #isValidKey(${defines.get("argList")}) {
   ${defines.get("validateArguments")}
       return true;
     }

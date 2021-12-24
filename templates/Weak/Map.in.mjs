@@ -8,33 +8,30 @@ export default function preprocess(defines, docs) {
 ${defines.get("importLines")}
 
 export default class ${defines.get("className")} {
-  constructor() {
-    this.__weakArgCount__ = ${defines.get("weakMapCount")};
-    this.__strongArgCount__ = ${defines.get("strongMapCount")};
+  /**
+   * @type {WeakKeyComposer}
+   * @const
+   */
+  #keyComposer = new WeakKeyComposer(${
+    defines.get("weakMapArgNameList")
+  }, ${
+    defines.get("strongMapArgNameList")
+  });
 
+  ${docs.buildBlock("rootContainerWeakMap", 4)}
+  #root = new WeakMap;
+
+  ${
+    defines.get("strongMapCount") ? `
     /**
-     * @type {WeakKeyComposer}
-     * @private
+     * @type {WeakMap<WeakKey, Set<*>>}
      * @const
      */
-    this.__keyComposer__ = new WeakKeyComposer(${
-      defines.get("weakMapArgNameList")
-    }, ${
-      defines.get("strongMapArgNameList")
-    });
-
-${docs.buildBlock("rootContainerWeakMap", 4)}
-    this.__root__ = new WeakMap;
-${
-      defines.get("strongMapCount") ? `
-        /**
-         * @type {WeakMap<WeakKey, Set<*>>}
-         * @const
-         * @private
-         */
-        this.__weakKeyToStrongKeys__ = new WeakMap;
+    #weakKeyToStrongKeys = new WeakMap;
 ` : ``
 }
+
+  constructor() {
     if (arguments.length > 0) {
       const iterable = arguments[0];
       for (let entry of iterable) {
@@ -46,24 +43,24 @@ ${
 
 ${docs.buildBlock("delete", 2)}
   delete(${defines.get("argList")}) {
-    this.__requireValidKey__(${defines.get("argList")});
-    const __keyMap__ = this.__root__.get(${defines.get("weakMapArgument0")});
+    this.#requireValidKey(${defines.get("argList")});
+    const __keyMap__ = this.#root.get(${defines.get("weakMapArgument0")});
     if (!__keyMap__)
       return false;
 
-    if (!this.__keyComposer__.hasKey([${
+    if (!this.#keyComposer.hasKey([${
       defines.get("weakMapArgList")
     }], [${
       defines.get("strongMapArgList")
     }]))
       return false;
 
-    const __key__ = this.__keyComposer__.getKey([${
+    const __key__ = this.#keyComposer.getKey([${
       defines.get("weakMapArgList")
     }], [${
       defines.get("strongMapArgList")
     }]);
-    this.__keyComposer__.deleteKey([${
+    this.#keyComposer.deleteKey([${
       defines.get("weakMapArgList")
     }], [${
       defines.get("strongMapArgList")
@@ -73,19 +70,19 @@ ${docs.buildBlock("delete", 2)}
 
 ${docs.buildBlock("get", 2)}
   get(${defines.get("argList")}) {
-    this.__requireValidKey__(${defines.get("argList")});
-    const __keyMap__ = this.__root__.get(${defines.get("weakMapArgument0")});
+    this.#requireValidKey(${defines.get("argList")});
+    const __keyMap__ = this.#root.get(${defines.get("weakMapArgument0")});
     if (!__keyMap__)
       return undefined;
 
-    if (!this.__keyComposer__.hasKey([${
+    if (!this.#keyComposer.hasKey([${
       defines.get("weakMapArgList")
     }], [${
       defines.get("strongMapArgList")
     }]))
       return undefined;
 
-    const __key__ = this.__keyComposer__.getKey([${
+    const __key__ = this.#keyComposer.getKey([${
       defines.get("weakMapArgList")
     }], [${
       defines.get("strongMapArgList")
@@ -97,33 +94,33 @@ ${docs.buildBlock("get", 2)}
 
 ${docs.buildBlock("isValidKeyPublic", 2)}
   isValidKey(${defines.get("argList")}) {
-    return this.__isValidKey__(${defines.get("argList")});
+    return this.#isValidKey(${defines.get("argList")});
   }
 
 ${
   defines.has("validateValue") ? `
 ${docs.buildBlock("isValidValuePublic", 2)}
   isValidValue(value) {
-    return this.__isValidValue__(value);
+    return this.#isValidValue(value);
   }
   ` : ``
 }
 
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {
-    this.__requireValidKey__(${defines.get("argList")});
-    const __keyMap__ = this.__root__.get(${defines.get("weakMapArgument0")});
+    this.#requireValidKey(${defines.get("argList")});
+    const __keyMap__ = this.#root.get(${defines.get("weakMapArgument0")});
     if (!__keyMap__)
       return false;
 
-    if (!this.__keyComposer__.hasKey([${
+    if (!this.#keyComposer.hasKey([${
       defines.get("weakMapArgList")
     }], [${
       defines.get("strongMapArgList")
     }]))
       return false;
 
-    const __key__ = this.__keyComposer__.getKey([${
+    const __key__ = this.#keyComposer.getKey([${
       defines.get("weakMapArgList")
     }], [${
       defines.get("strongMapArgList")
@@ -135,40 +132,40 @@ ${docs.buildBlock("has", 2)}
 
 ${docs.buildBlock("set", 2)}
   set(${defines.get("argList")}, value) {
-    this.__requireValidKey__(${defines.get("argList")});
+    this.#requireValidKey(${defines.get("argList")});
     ${
       defines.has("validateValue") ? `
-      if (!this.__isValidValue__(value))
+      if (!this.#isValidValue(value))
         throw new Error("The value is not valid!");
     ` : ``
     }
 
-    if (!this.__root__.has(${defines.get("weakMapArgument0")}))
-      this.__root__.set(${defines.get("weakMapArgument0")}, new WeakMap);
+    if (!this.#root.has(${defines.get("weakMapArgument0")}))
+      this.#root.set(${defines.get("weakMapArgument0")}, new WeakMap);
 
-    const __keyMap__ = this.__root__.get(${defines.get("weakMapArgument0")});
-    const __key__ = this.__keyComposer__.getKey([${
+    const __keyMap__ = this.#root.get(${defines.get("weakMapArgument0")});
+    const __key__ = this.#keyComposer.getKey([${
       defines.get("weakMapArgList")
     }], [${
       defines.get("strongMapArgList")
     }]);${
 defines.get("strongMapCount") ? `
-    if (!this.__weakKeyToStrongKeys__.has(__key__))
-      this.__weakKeyToStrongKeys__.set(__key__, new Set([${defines.get("strongMapArgList")}]));
+    if (!this.#weakKeyToStrongKeys.has(__key__))
+      this.#weakKeyToStrongKeys.set(__key__, new Set([${defines.get("strongMapArgList")}]));
 ` : ``}
     __keyMap__.set(__key__, value);
     return this;
   }
 
 ${docs.buildBlock("requireValidKey", 2)}
-  __requireValidKey__(${defines.get("argList")}) {
-    if (!this.__isValidKey__(${defines.get("argList")}))
+  #requireValidKey(${defines.get("argList")}) {
+    if (!this.#isValidKey(${defines.get("argList")}))
       throw new Error("The ordered key set is not valid!");
   }
 
 ${docs.buildBlock("isValidKeyPrivate", 2)}
-  __isValidKey__(${defines.get("argList")}) {
-    if (!this.__keyComposer__.isValidForKey([${
+  #isValidKey(${defines.get("argList")}) {
+    if (!this.#keyComposer.isValidForKey([${
       defines.get("weakMapArgList")
     }], [${
       defines.get("strongMapArgList")
@@ -181,7 +178,7 @@ ${defines.get("validateArguments") || ""}
 
 ${defines.has("validateValue") ? `
 ${docs.buildBlock("isValidValuePrivate", 2)}
-  __isValidValue__(value) {
+  #isValidValue(value) {
     ${defines.get("validateValue")}
     return true;
   }

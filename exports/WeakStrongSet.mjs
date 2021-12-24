@@ -7,17 +7,16 @@
 import WeakKeyComposer from "./WeakKey-WeakMap.mjs";
 
 export default class WeakStrongSet {
+  /** @type {WeakKeyComposer} @const */
+  #keyComposer = new WeakKeyComposer(["weakKey"], ["strongKey"]);
+
+  /**
+   * @type {WeakMap<WeakKey, Set<*>>}
+   * @const
+   */
+  #weakKeyToStrongKeys = new WeakMap;
+
   constructor() {
-    /** @type {WeakKeyComposer} @const @private */
-    this.__keyComposer__ = new WeakKeyComposer(["weakKey"], ["strongKey"]);
-
-    /**
-     * @type {WeakMap<WeakKey, Set<*>>}
-     * @const
-     * @private
-     */
-    this.__weakKeyToStrongKeys__ = new WeakMap;
-
     if (arguments.length > 0) {
       const iterable = arguments[0];
       for (let entry of iterable) {
@@ -36,13 +35,13 @@ export default class WeakStrongSet {
    * @public
    */
   add(weakKey, strongKey) {
-    this.__requireValidKey__(weakKey, strongKey);
+    this.#requireValidKey(weakKey, strongKey);
 
-    const __key__ = this.__keyComposer__.getKey([weakKey], [strongKey]);
+    const __key__ = this.#keyComposer.getKey([weakKey], [strongKey]);
     if (!__key__)
       return null;
-    if (!this.__weakKeyToStrongKeys__.has(__key__))
-      this.__weakKeyToStrongKeys__.set(__key__, new Set([strongKey]));
+    if (!this.#weakKeyToStrongKeys.has(__key__))
+      this.#weakKeyToStrongKeys.set(__key__, new Set([strongKey]));
 
     return this;
   }
@@ -57,16 +56,16 @@ export default class WeakStrongSet {
    * @public
    */
   delete(weakKey, strongKey) {
-    this.__requireValidKey__(weakKey, strongKey);
+    this.#requireValidKey(weakKey, strongKey);
 
-    if (!this.__keyComposer__.hasKey([weakKey], [strongKey]))
+    if (!this.#keyComposer.hasKey([weakKey], [strongKey]))
       return false;
 
-    const __key__ = this.__keyComposer__.getKey([weakKey], [strongKey]);
+    const __key__ = this.#keyComposer.getKey([weakKey], [strongKey]);
 
-    const __returnValue__ = this.__weakKeyToStrongKeys__.delete(__key__);
+    const __returnValue__ = this.#weakKeyToStrongKeys.delete(__key__);
     if (__returnValue__)
-      this.__keyComposer__.deleteKey([weakKey], [strongKey]);
+      this.#keyComposer.deleteKey([weakKey], [strongKey]);
 
     return __returnValue__;
   }
@@ -81,7 +80,7 @@ export default class WeakStrongSet {
    * @public
    */
   isValidKey(weakKey, strongKey) {
-    return this.__isValidKey__(weakKey, strongKey);
+    return this.#isValidKey(weakKey, strongKey);
   }
 
   /**
@@ -94,14 +93,14 @@ export default class WeakStrongSet {
    * @public
    */
   has(weakKey, strongKey) {
-    this.__requireValidKey__(weakKey, strongKey);
+    this.#requireValidKey(weakKey, strongKey);
 
-    if (!this.__keyComposer__.hasKey([weakKey], [strongKey]))
+    if (!this.#keyComposer.hasKey([weakKey], [strongKey]))
       return false;
 
-    const __key__ = this.__keyComposer__.getKey([weakKey], [strongKey]);
+    const __key__ = this.#keyComposer.getKey([weakKey], [strongKey]);
 
-    return this.__weakKeyToStrongKeys__.has(__key__);
+    return this.#weakKeyToStrongKeys.has(__key__);
   }
 
   /**
@@ -112,8 +111,8 @@ export default class WeakStrongSet {
    *
    * @throws for an invalid key set.
    */
-  __requireValidKey__(weakKey, strongKey) {
-    if (!this.__isValidKey__(weakKey, strongKey))
+  #requireValidKey(weakKey, strongKey) {
+    if (!this.#isValidKey(weakKey, strongKey))
       throw new Error("The ordered key set is not valid!");
   }
 
@@ -124,10 +123,9 @@ export default class WeakStrongSet {
    * @param {*}      strongKey 
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @private
    */
-  __isValidKey__(weakKey, strongKey) {
-    if (!this.__keyComposer__.isValidForKey([weakKey], [strongKey]))
+  #isValidKey(weakKey, strongKey) {
+    if (!this.#keyComposer.isValidForKey([weakKey], [strongKey]))
       return false;
 
     return true;

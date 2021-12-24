@@ -49,22 +49,22 @@ export default class CodeGenerator extends CompletionPromise {
     "KeyHasher.mjs",
   ];
 
-  /** @type {Object}  @const  @private */
+  /** @type {Object}  @const*/
   #configurationData;
 
-  /** @type {string} @const @private */
+  /** @type {string} @const */
   #targetPath;
 
-  /** @type {RuntimeOptions} @const @private */
+  /** @type {RuntimeOptions} @const */
   #compileOptions;
 
-  /** @type {string} @private */
+  /** @type {string} */
   #status = "not started yet";
 
-  /** @type {Map<string, *>} @const @private */
+  /** @type {Map<string, *>} @const */
   #defines = new Map();
 
-  /** @type {JSDocGenerator} @private */
+  /** @type {JSDocGenerator} */
   #docGenerator;
 
   /** @type {string} */

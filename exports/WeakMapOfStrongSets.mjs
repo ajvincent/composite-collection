@@ -10,33 +10,32 @@ import WeakKeyComposer from "./WeakKey-WeakMap.mjs";
 /** @typedef {Map<hash, *[]>} WeakMapOfStrongSets~InnerMap */
 
 export default class WeakMapOfStrongSets {
+  /**
+   * @type {WeakMap<object, WeakMap<WeakKey, WeakMapOfStrongSets~InnerMap>>}
+   * @const
+   * @note This is three levels.  The first level is the first weak argument.
+   * The second level is the WeakKey.  The third level is the strong set.
+   */
+  #root = new WeakMap();
+
+  /** @type {WeakKeyComposer} @const */
+  #mapKeyComposer = new WeakKeyComposer(
+    ["mapKey"], []
+  );
+
+  /**
+   * @type {KeyHasher}
+   * @const
+   */
+  #setHasher = new KeyHasher(["setKey"]);
+
+  /**
+   * @type {WeakMap<WeakKey, Map<hash, Set<*>>>}
+   * @const
+   */
+  #weakKeyToStrongKeys = new WeakMap;
+
   constructor() {
-    /**
-     * @type {WeakMap<object, WeakMap<WeakKey, WeakMapOfStrongSets~InnerMap>>}
-     * @note This is three levels.  The first level is the first weak argument.
-     * The second level is the WeakKey.  The third level is the strong set.
-     */
-    this.__root__ = new WeakMap();
-
-    /** @type {WeakKeyComposer} @private */
-    this.__mapKeyComposer__ = new WeakKeyComposer(
-      ["mapKey"], []
-    );
-
-    /**
-     * @type {KeyHasher}
-     * @private
-     * @const
-     */
-    this.__setHasher__ = new KeyHasher(["setKey"]);
-
-    /**
-     * @type {WeakMap<WeakKey, Map<hash, Set<*>>>}
-     * @const
-     * @private
-     */
-    this.__weakKeyToStrongKeys__ = new WeakMap;
-
     if (arguments.length > 0) {
       const iterable = arguments[0];
       for (let entry of iterable) {
@@ -55,12 +54,12 @@ export default class WeakMapOfStrongSets {
    * @public
    */
   add(mapKey, setKey) {
-    this.__requireValidKey__(mapKey, setKey);
-    const __innerMap__ = this.__requireInnerMap__(mapKey);
+    this.#requireValidKey(mapKey, setKey);
+    const __innerMap__ = this.#requireInnerMap(mapKey);
 
     // level 3: inner map to set
     {
-      const __setKeyHash__ = this.__setHasher__.buildHash([setKey]);
+      const __setKeyHash__ = this.#setHasher.buildHash([setKey]);
       if (!__innerMap__.has(__setKeyHash__)) {
         __innerMap__.set(__setKeyHash__, [mapKey, setKey]);
       }
@@ -79,21 +78,21 @@ export default class WeakMapOfStrongSets {
    * @public
    */
   addSets(mapKey, __sets__) {
-    this.__requireValidMapKey__(mapKey);
+    this.#requireValidMapKey(mapKey);
     const __array__ = Array.from(__sets__).map((__set__, __index__) => {
       __set__ = Array.from(__set__);
       if (__set__.length !== 1) {
         throw new Error(`Set at index ${__index__} doesn't have exactly 1 set argument!`);
       }
-      this.__requireValidKey__(mapKey, ...__set__);
+      this.#requireValidKey(mapKey, ...__set__);
       return __set__;
     });
 
-    const __innerMap__ = this.__requireInnerMap__(mapKey);
+    const __innerMap__ = this.#requireInnerMap(mapKey);
 
     // level 3: inner map to set
     __array__.forEach(__set__ => {
-      const __setKeyHash__ = this.__setHasher__.buildHash(__set__);
+      const __setKeyHash__ = this.#setHasher.buildHash(__set__);
       if (!__innerMap__.has(__setKeyHash__)) {
         __innerMap__.set(__setKeyHash__, [mapKey, ...__set__]);
       }
@@ -110,8 +109,8 @@ export default class WeakMapOfStrongSets {
    * @public
    */
   clearSets(mapKey) {
-    this.__requireValidMapKey__(mapKey);
-    const __innerMap__ = this.__getExistingInnerMap__(mapKey);
+    this.#requireValidMapKey(mapKey);
+    const __innerMap__ = this.#getExistingInnerMap(mapKey);
     if (!__innerMap__)
       return;
 
@@ -128,13 +127,13 @@ export default class WeakMapOfStrongSets {
    * @public
    */
   delete(mapKey, setKey) {
-    this.__requireValidKey__(mapKey, setKey);
-    const __innerMap__ = this.__getExistingInnerMap__(mapKey);
+    this.#requireValidKey(mapKey, setKey);
+    const __innerMap__ = this.#getExistingInnerMap(mapKey);
     if (!__innerMap__)
       return false;
 
     // level 3: inner map to set
-    const __setKeyHash__ = this.__setHasher__.buildHash([setKey]);
+    const __setKeyHash__ = this.#setHasher.buildHash([setKey]);
     const __returnValue__ = __innerMap__.delete(__setKeyHash__);
 
     if (__innerMap__.size === 0) {
@@ -153,20 +152,20 @@ export default class WeakMapOfStrongSets {
    * @public
    */
   deleteSets(mapKey) {
-    this.__requireValidMapKey__(mapKey);
+    this.#requireValidMapKey(mapKey);
     let __weakKeyMap__;
 
     // level 1:  first weak argument to weak map key
     {
-      if (!this.__root__.has(mapKey)) {
+      if (!this.#root.has(mapKey)) {
         return false;
       }
-      __weakKeyMap__ = this.__root__.get(mapKey);
+      __weakKeyMap__ = this.#root.get(mapKey);
     }
 
     // level 2:  weak map key to inner map
     {
-      const __mapKey__ = this.__mapKeyComposer__.getKey(
+      const __mapKey__ = this.#mapKeyComposer.getKey(
         [mapKey], []
       );
       return __weakKeyMap__.delete(__mapKey__);
@@ -181,8 +180,8 @@ export default class WeakMapOfStrongSets {
    * @public
    */
   forEachSet(mapKey, __callback__, __thisArg__) {
-    this.__requireValidMapKey__(mapKey);
-    const __innerMap__ = this.__getExistingInnerMap__(mapKey);
+    this.#requireValidMapKey(mapKey);
+    const __innerMap__ = this.#getExistingInnerMap(mapKey);
     if (!__innerMap__)
       return;
 
@@ -197,7 +196,6 @@ export default class WeakMapOfStrongSets {
    * @param {object}              mapKey         
    * @param {*}                   setKey         
    * @param {WeakMapOfStrongSets} __collection__ This collection.
-   *
    */
 
   /**
@@ -208,8 +206,8 @@ export default class WeakMapOfStrongSets {
    * @public
    */
   getSizeOfSet(mapKey) {
-    this.__requireValidMapKey__(mapKey);
-    const __innerMap__ = this.__getExistingInnerMap__(mapKey);
+    this.#requireValidMapKey(mapKey);
+    const __innerMap__ = this.#getExistingInnerMap(mapKey);
     if (!__innerMap__)
       return 0;
 
@@ -226,14 +224,14 @@ export default class WeakMapOfStrongSets {
    * @public
    */
   has(mapKey, setKey) {
-    this.__requireValidKey__(mapKey, setKey);
-    const __innerMap__ = this.__getExistingInnerMap__(mapKey);
+    this.#requireValidKey(mapKey, setKey);
+    const __innerMap__ = this.#getExistingInnerMap(mapKey);
     if (!__innerMap__)
       return false;
 
     // level 3: inner map to set
     {
-      const __setKeyHash__ = this.__setHasher__.buildHash([setKey]);
+      const __setKeyHash__ = this.#setHasher.buildHash([setKey]);
       return __innerMap__.has(__setKeyHash__);
     }
   }
@@ -248,8 +246,8 @@ export default class WeakMapOfStrongSets {
    * @public
    */
   hasSets(mapKey) {
-    this.__requireValidMapKey__(mapKey);
-    return Boolean(this.__getExistingInnerMap__(mapKey));
+    this.#requireValidMapKey(mapKey);
+    return Boolean(this.#getExistingInnerMap(mapKey));
   }
 
   /**
@@ -262,7 +260,7 @@ export default class WeakMapOfStrongSets {
    * @public
    */
   isValidKey(mapKey, setKey) {
-    return this.__isValidKey__(mapKey, setKey);
+    return this.#isValidKey(mapKey, setKey);
   }
 
   /**
@@ -272,8 +270,8 @@ export default class WeakMapOfStrongSets {
    * @public
    */
   valuesSet(mapKey) {
-    this.__requireValidMapKey__(mapKey);
-    const __innerMap__ = this.__getExistingInnerMap__(mapKey);
+    this.#requireValidMapKey(mapKey);
+    const __innerMap__ = this.#getExistingInnerMap(mapKey);
     if (!__innerMap__)
       return {
         next() {
@@ -291,22 +289,20 @@ export default class WeakMapOfStrongSets {
    * Require an inner collection exist for the given map keys.
    *
    * @param {object} mapKey 
-   *
-   * @private
    */
-  __requireInnerMap__(mapKey) {
+  #requireInnerMap(mapKey) {
     let __weakKeyMap__, __innerMap__;
     // level 1:  first weak argument to weak map key
     {
-      if (!this.__root__.has(mapKey)) {
-        this.__root__.set(mapKey, new WeakMap);
+      if (!this.#root.has(mapKey)) {
+        this.#root.set(mapKey, new WeakMap);
       }
-      __weakKeyMap__ = this.__root__.get(mapKey);
+      __weakKeyMap__ = this.#root.get(mapKey);
     }
 
     // level 2:  weak map key to inner map
     {
-      const __mapKey__ = this.__mapKeyComposer__.getKey(
+      const __mapKey__ = this.#mapKeyComposer.getKey(
         [mapKey], []
       );
       if (!__weakKeyMap__.has(__mapKey__)) {
@@ -314,8 +310,8 @@ export default class WeakMapOfStrongSets {
       }
       __innerMap__ = __weakKeyMap__.get(__mapKey__);
 
-      if (!this.__weakKeyToStrongKeys__.has(__mapKey__)) {
-        this.__weakKeyToStrongKeys__.set(__mapKey__, new Set([]));
+      if (!this.#weakKeyToStrongKeys.has(__mapKey__)) {
+        this.#weakKeyToStrongKeys.set(__mapKey__, new Set([]));
       }
 
       return __innerMap__;
@@ -328,21 +324,20 @@ export default class WeakMapOfStrongSets {
    * @param {object} mapKey 
    *
    * @returns {WeakMapOfStrongSets~InnerMap}
-   * @private
    */
-  __getExistingInnerMap__(mapKey) {
+  #getExistingInnerMap(mapKey) {
     let __weakKeyMap__;
 
     // level 1:  first weak argument to weak map key
     {
-      __weakKeyMap__ = this.__root__.get(mapKey);
+      __weakKeyMap__ = this.#root.get(mapKey);
       if (!__weakKeyMap__)
         return undefined;
     }
 
     // level 2:  weak map key to inner map
     {
-      const __mapKey__ = this.__mapKeyComposer__.getKey(
+      const __mapKey__ = this.#mapKeyComposer.getKey(
         [mapKey], []
       );
 
@@ -358,8 +353,8 @@ export default class WeakMapOfStrongSets {
    *
    * @throws for an invalid key set.
    */
-  __requireValidKey__(mapKey, setKey) {
-    if (!this.__isValidKey__(mapKey, setKey))
+  #requireValidKey(mapKey, setKey) {
+    if (!this.#isValidKey(mapKey, setKey))
       throw new Error("The ordered key set is not valid!");
   }
 
@@ -370,10 +365,9 @@ export default class WeakMapOfStrongSets {
    * @param {*}      setKey 
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @private
    */
-  __isValidKey__(mapKey, setKey) {
-    return this.__isValidMapKey__(mapKey) && this.__isValidSetKey__(setKey);
+  #isValidKey(mapKey, setKey) {
+    return this.#isValidMapKey(mapKey) && this.#isValidSetKey(setKey);
   }
 
   /**
@@ -382,10 +376,9 @@ export default class WeakMapOfStrongSets {
    * @param {object} mapKey 
    *
    * @throws for an invalid key set.
-   * @private
    */
-  __requireValidMapKey__(mapKey) {
-    if (!this.__isValidMapKey__(mapKey))
+  #requireValidMapKey(mapKey) {
+    if (!this.#isValidMapKey(mapKey))
       throw new Error("The ordered map key set is not valid!");
   }
 
@@ -395,10 +388,9 @@ export default class WeakMapOfStrongSets {
    * @param {object} mapKey 
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @private
    */
-  __isValidMapKey__(mapKey) {
-    if (!this.__mapKeyComposer__.isValidForKey([mapKey], []))
+  #isValidMapKey(mapKey) {
+    if (!this.#mapKeyComposer.isValidForKey([mapKey], []))
       return false;
 
     return true;
@@ -410,9 +402,8 @@ export default class WeakMapOfStrongSets {
    * @param {*} setKey 
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @private
    */
-  __isValidSetKey__(setKey) {
+  #isValidSetKey(setKey) {
     void(setKey);
 
     return true;

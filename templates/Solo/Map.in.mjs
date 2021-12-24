@@ -7,7 +7,7 @@
 export default function preprocess(defines, docs) {
   let invokeValidate = "";
   if (defines.has("invokeValidate")) {
-    invokeValidate = `\n    this.__requireValidKey__(${defines.get("argList")});\n`;
+    invokeValidate = `\n    this.#requireValidKey(${defines.get("argList")});\n`;
   }
 
   return `
@@ -32,14 +32,14 @@ ${defines.has("invokeValidate") ? `
 ${defines.has("validateArguments") ? `
 ${docs.buildBlock("isValidKeyPublic", 2)}
   isValidKey(${defines.get("argList")}) {
-    return this.__isValidKey__(${defines.get("argList")});
+    return this.#isValidKey(${defines.get("argList")});
   }
 
 ${
   defines.has("validateValue") ? `
 ${docs.buildBlock("isValidValuePublic", 2)}
   isValidValue(value) {
-    return this.__isValidValue__(value);
+    return this.#isValidValue(value);
   }
   ` : ``
   }
@@ -51,7 +51,7 @@ ${docs.buildBlock("set", 2)}
   set(${defines.get("argList")}, value) {${invokeValidate}
   ${
     defines.has("validateValue") ? `
-    if (!this.__isValidValue__(value))
+    if (!this.#isValidValue(value))
       throw new Error("The value is not valid!");
   ` : ``
   }
@@ -61,20 +61,20 @@ ${docs.buildBlock("set", 2)}
 
 ${defines.has("validateArguments") ? `
 ${docs.buildBlock("requireValidKey", 2)}
-  __requireValidKey__(${defines.get("argList")}) {
-    if (!this.__isValidKey__(${defines.get("argList")}))
+  #requireValidKey(${defines.get("argList")}) {
+    if (!this.#isValidKey(${defines.get("argList")}))
       throw new Error("The ordered key set is not valid!");
   }
 
 ${docs.buildBlock("isValidKeyPrivate", 2)}
-  __isValidKey__(${defines.get("argList")}) {
+  #isValidKey(${defines.get("argList")}) {
 ${defines.get("validateArguments")}
     return true;
   }
 ` : ``}
 ${defines.has("validateValue") ? `
 ${docs.buildBlock("isValidValuePrivate", 2)}
-  __isValidValue__(value) {
+  #isValidValue(value) {
     ${defines.get("validateValue")}
     return true;
   }

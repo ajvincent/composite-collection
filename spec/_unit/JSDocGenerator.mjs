@@ -26,7 +26,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @type {Map<string, SoloStrongMap~valueAndKeySet>}
    *
-   * @private
    * @const
    */`);
     });
@@ -38,21 +37,17 @@ describe("JSDocGenerator for maps", () => {
    *
    * @type {WeakMap<object, WeakMap<WeakKey, *>>}
    *
-   * @private
    * @const
    */`);
     });
 
     it("valueAndKeySet", () => {
       const generated = generator.buildBlock("valueAndKeySet", 2);
-      expect(generated).toEqual(`  /**
+      expect("\n" + generated + "\n").toEqual(`\n  /**
    * @typedef SoloStrongMap~valueAndKeySet
    * @property {*}   value  The actual value we store.
    * @property {*[]} keySet The set of keys we hashed.
-   *
-   * @private
-   * @const
-   */`);
+   */\n`);
     });
 
     it("getSize", () => {
@@ -117,7 +112,6 @@ describe("JSDocGenerator for maps", () => {
    * @param {Car}           car            The car.
    * @param {Person}        driver         The driver of the car.
    * @param {SoloStrongMap} __collection__ This collection.
-   *
    */`);
     });
 
@@ -203,7 +197,6 @@ describe("JSDocGenerator for maps", () => {
    * @param {Person} driver The driver of the car.
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @private
    */`);
     });
 
@@ -235,7 +228,6 @@ describe("JSDocGenerator for maps", () => {
    * Determine if a value is valid.
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @private
    */`);
     });
 
@@ -248,7 +240,6 @@ describe("JSDocGenerator for maps", () => {
    * @param {function} unpacker The transforming function for values.
    *
    * @returns {Iterator<*>}
-   * @private
    */`);
     });
   });
@@ -268,7 +259,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @type {Map<string, SoloStrongMap~valueAndKeySet>}
    *
-   * @private
    * @const
    */`);
     });
@@ -279,9 +269,6 @@ describe("JSDocGenerator for maps", () => {
    * @typedef SoloStrongMap~valueAndKeySet
    * @property {*}   value  The actual value we store.
    * @property {*[]} keySet The set of keys we hashed.
-   *
-   * @private
-   * @const
    */`);
     });
 
@@ -347,7 +334,6 @@ describe("JSDocGenerator for maps", () => {
    * @param {Car}           car            The car.
    * @param {Person}        driver         The driver of the car.
    * @param {SoloStrongMap} __collection__ This collection.
-   *
    */`);
     });
 
@@ -432,7 +418,6 @@ describe("JSDocGenerator for maps", () => {
    * @param {function} unpacker The transforming function for values.
    *
    * @returns {Iterator<*>}
-   * @private
    */`);
     });
 
@@ -458,7 +443,6 @@ describe("JSDocGenerator for maps", () => {
    * @param {Person} driver The driver of the car.
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @private
    */`);
     });
 
@@ -484,7 +468,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {*}             value          The value.
    * @param {SoloStrongMap} __collection__ This collection.
-   *
    */`);
   });
 
@@ -499,7 +482,6 @@ describe("JSDocGenerator for maps", () => {
      *
      * @type {Map<string, SoloStrongMap~valueAndKeySet>}
      *
-     * @private
      * @const
      */`);
   });
@@ -535,7 +517,6 @@ describe("JSDocGenerator for sets", () => {
    *
    * @type {Map<hash, *[]>}
    *
-   * @private
    * @const
    */`);
     });
@@ -546,9 +527,6 @@ describe("JSDocGenerator for sets", () => {
    * @typedef SoloStrongSet~valueAndKeySet
    * @property {*}   value  The actual value we store.
    * @property {*[]} keySet The set of keys we hashed.
-   *
-   * @private
-   * @const
    */`);
     });
 
@@ -603,7 +581,6 @@ describe("JSDocGenerator for sets", () => {
    * @param {Car}           car            The car.
    * @param {Person}        driver         The driver of the car.
    * @param {SoloStrongSet} __collection__ This collection.
-   *
    */`);
     });
 
@@ -651,7 +628,6 @@ describe("JSDocGenerator for sets", () => {
    * @param {function} unpacker The transforming function for values.
    *
    * @returns {Iterator<*>}
-   * @private
    */`);
     });
 
@@ -677,7 +653,6 @@ describe("JSDocGenerator for sets", () => {
    * @param {Person} driver The driver of the car.
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @private
    */`);
     });
 
@@ -708,21 +683,17 @@ describe("JSDocGenerator for sets", () => {
    *
    * @type {Map<hash, *[]>}
    *
-   * @private
    * @const
    */`);
     });
 
     it("valueAndKeySet", () => {
       const generated = generator.buildBlock("valueAndKeySet", 2);
-      expect(generated).toEqual(`  /**
+      expect("\n" + generated + "\n").toEqual(`\n  /**
    * @typedef SoloStrongSet~valueAndKeySet
    * @property {*}   value  The actual value we store.
    * @property {*[]} keySet The set of keys we hashed.
-   *
-   * @private
-   * @const
-   */`);
+   */\n`);
     });
 
     it("getSize", () => {
@@ -788,7 +759,6 @@ describe("JSDocGenerator for sets", () => {
    * @param {Person}        driver         The driver of the car.
    * @param {State}         value          The state of registration.
    * @param {SoloStrongSet} __collection__ This collection.
-   *
    */`);
     });
 
@@ -838,7 +808,6 @@ describe("JSDocGenerator for sets", () => {
    * @param {function} unpacker The transforming function for values.
    *
    * @returns {Iterator<*>}
-   * @private
    */`);
     });
 
@@ -866,7 +835,6 @@ describe("JSDocGenerator for sets", () => {
    * @param {State}  value  The state of registration.
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @private
    */`);
     });
 
@@ -893,7 +861,6 @@ describe("JSDocGenerator for sets", () => {
    *
    * @param {State}         value          The state of registration.
    * @param {SoloStrongSet} __collection__ This collection.
-   *
    */`);
   });
 
@@ -907,7 +874,6 @@ describe("JSDocGenerator for sets", () => {
      *
      * @type {Map<string, SoloStrongSet~valueAndKeySet>}
      *
-     * @private
      * @const
      */`);
   });
@@ -944,8 +910,6 @@ describe("JSDocGenerator for maps of sets", () => {
    * Require an inner collection exist for the given map keys.
    *
    * @param {Car} car The car.
-   *
-   * @private
    */`);
   });
 
@@ -957,7 +921,6 @@ describe("JSDocGenerator for maps of sets", () => {
    * @param {Car} car The car.
    *
    * @returns {WeakMapOfStrongSets~InnerMap}
-   * @private
    */`);
   });
 
@@ -969,7 +932,6 @@ describe("JSDocGenerator for maps of sets", () => {
    * @param {Car} car The car.
    *
    * @throws for an invalid key set.
-   * @private
    */`);
   });
 
@@ -981,7 +943,6 @@ describe("JSDocGenerator for maps of sets", () => {
    * @param {Car} car The car.
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @private
    */`);
   });
 
@@ -993,7 +954,6 @@ describe("JSDocGenerator for maps of sets", () => {
    * @param {Person} driver The driver of the car.
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @private
    */`);
   });
 });

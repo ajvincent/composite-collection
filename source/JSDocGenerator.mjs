@@ -61,7 +61,7 @@ export default class JSDocGenerator {
       headers: [
         "@type {Map<string, __className__~valueAndKeySet>}",
       ],
-      footers: ["@private", "@const"],
+      footers: ["@const"],
     }],
 
     ["rootContainerWeakMap", {
@@ -70,7 +70,7 @@ export default class JSDocGenerator {
       headers: [
         "@type {WeakMap<object, WeakMap<WeakKey, *>>}"
       ],
-      footers: ["@private", "@const"],
+      footers: ["@const"],
     }],
 
     ["rootContainerSet", {
@@ -79,7 +79,7 @@ export default class JSDocGenerator {
       headers: [
         "@type {Map<hash, *[]>}",
       ],
-      footers: ["@private", "@const"],
+      footers: ["@const"],
     }],
 
     ["valueAndKeySet", {
@@ -89,8 +89,6 @@ export default class JSDocGenerator {
         "@property {*}   value  The actual value we store.",
         "@property {*[]} keySet The set of keys we hashed.",
       ],
-
-      footers: ["@private", "@const"],
     }],
 
     ["getSize", {
@@ -271,7 +269,6 @@ export default class JSDocGenerator {
       ],
       includeArgs: "none",
       returnType: "Iterator<*>",
-      footers: ["@private"],
     }],
 
     ["isValidKeyPublic", {
@@ -287,7 +284,6 @@ export default class JSDocGenerator {
       includeArgs: "excludeValue",
       returnType: "boolean",
       returnDescription: "True if the validation passes, false if it doesn't.",
-      footers: ["@private"],
     }],
 
     ["requireValidKey", {
@@ -299,20 +295,18 @@ export default class JSDocGenerator {
     ["requireInnerCollectionPrivate", {
       description: "Require an inner collection exist for the given map keys.",
       includeArgs: "mapArguments",
-      footers: ["@private"],
     }],
 
     ["getExistingInnerCollectionPrivate", {
       description: "Get an existing inner collection for the given map keys.",
       includeArgs: "mapArguments",
       returnType: "__className__~InnerMap",
-      footers: ["@private"],
     }],
 
     ["requireValidMapKey", {
       description: "Throw if the map key set is not valid.",
       includeArgs: "mapArguments",
-      footers: ["@throws for an invalid key set.", "@private"]
+      footers: ["@throws for an invalid key set."]
     }],
 
     ["isValidMapKeyPrivate", {
@@ -320,7 +314,6 @@ export default class JSDocGenerator {
       includeArgs: "mapArguments",
       returnType: "boolean",
       returnDescription: "True if the validation passes, false if it doesn't.",
-      footers: ["@private"],
     }],
 
     ["isValidSetKeyPrivate", {
@@ -328,7 +321,6 @@ export default class JSDocGenerator {
       includeArgs: "setArguments",
       returnType: "boolean",
       returnDescription: "True if the validation passes, false if it doesn't.",
-      footers: ["@private"],
     }],
 
     ["isValidValuePublic", {
@@ -344,7 +336,6 @@ export default class JSDocGenerator {
       includeArgs: "none",
       returnType: "boolean",
       returnDescription: "True if the validation passes, false if it doesn't.",
-      footers: ["@private"],
     }],
   ]);
 
@@ -360,16 +351,16 @@ export default class JSDocGenerator {
    * @property {string[]}   footers
    */
 
-  /** @type {string} @private */
+  /** @type {string} */
   #className = "";
 
-  /** @type {string} @private */
+  /** @type {string} */
   #valueType = "*";
 
-  /** @type {string?} @private */
+  /** @type {string?} */
   #valueDesc = undefined;
 
-  /** @type {Param[]} @const @private */
+  /** @type {Param[]} @const */
   #params = [];
 
   /**
@@ -414,8 +405,6 @@ export default class JSDocGenerator {
 
   /**
    * Replace all keys in our method templates.
-   *
-   * @private
    */
   #replaceAllKeys() {
     if (this.#methodTemplates.keysReplaced)
@@ -570,6 +559,9 @@ export default class JSDocGenerator {
     if (Array.isArray(template.footers)) {
       lines.push(...template.footers.map(line => " * " + line));
     }
+
+    while (lines[lines.length - 1] === " *")
+      lines.pop();
 
     lines.push(" */");
 

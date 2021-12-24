@@ -7,33 +7,28 @@
 import KeyHasher from "./KeyHasher.mjs";
 
 export default class StrongStrongMap {
+  /**
+   * @typedef StrongStrongMap~valueAndKeySet
+   * @property {*}   value  The actual value we store.
+   * @property {*[]} keySet The set of keys we hashed.
+   */
+
+  /**
+   * The root map holding keys and values.
+   *
+   * @type {Map<string, StrongStrongMap~valueAndKeySet>}
+   *
+   * @const
+   */
+  #root = new Map;
+
+  /**
+   * @type {KeyHasher}
+   * @const
+   */
+  #hasher = new KeyHasher(["key1", "key2"]);
+
   constructor() {
-    /**
-     * The root map holding keys and values.
-     *
-     * @type {Map<string, StrongStrongMap~valueAndKeySet>}
-     *
-     * @private
-     * @const
-     */
-    this.__root__ = new Map;
-
-    /**
-     * @typedef StrongStrongMap~valueAndKeySet
-     * @property {*}   value  The actual value we store.
-     * @property {*[]} keySet The set of keys we hashed.
-     *
-     * @private
-     * @const
-     */
-
-    /**
-     * @type {KeyHasher}
-     * @private
-     * @const
-     */
-    this.__hasher__ = new KeyHasher(["key1", "key2"]);
-
     if (arguments.length > 0) {
       const iterable = arguments[0];
       for (let entry of iterable) {
@@ -49,7 +44,7 @@ export default class StrongStrongMap {
    * @const
    */
   get size() {
-    return this.__root__.size;
+    return this.#root.size;
   }
 
   /**
@@ -58,7 +53,7 @@ export default class StrongStrongMap {
    * @public
    */
   clear() {
-    this.__root__.clear();
+    this.#root.clear();
   }
 
   /**
@@ -71,8 +66,8 @@ export default class StrongStrongMap {
    * @public
    */
   delete(key1, key2) {
-    const hash = this.__hasher__.buildHash([key1, key2]);
-    return this.__root__.delete(hash);
+    const hash = this.#hasher.buildHash([key1, key2]);
+    return this.#root.delete(hash);
   }
 
   /**
@@ -82,7 +77,7 @@ export default class StrongStrongMap {
    * @public
    */
   entries() {
-    return this.__wrapIterator__(
+    return this.#wrapIterator(
       valueAndKeySet => valueAndKeySet.keySet.concat(valueAndKeySet.value)
     );
   }
@@ -95,7 +90,7 @@ export default class StrongStrongMap {
    * @public
    */
   forEach(callback, thisArg) {
-    this.__root__.forEach((valueAndKeySet) => {
+    this.#root.forEach((valueAndKeySet) => {
       const args = valueAndKeySet.keySet.concat(this);
       args.unshift(valueAndKeySet.value);
       callback.apply(thisArg, [...args]);
@@ -109,7 +104,6 @@ export default class StrongStrongMap {
    * @param {*}               key1           
    * @param {*}               key2           
    * @param {StrongStrongMap} __collection__ This collection.
-   *
    */
 
   /**
@@ -122,8 +116,8 @@ export default class StrongStrongMap {
    * @public
    */
   get(key1, key2) {
-    const hash = this.__hasher__.buildHash([key1, key2]);
-    const valueAndKeySet = this.__root__.get(hash);
+    const hash = this.#hasher.buildHash([key1, key2]);
+    const valueAndKeySet = this.#root.get(hash);
     return valueAndKeySet ? valueAndKeySet.value : valueAndKeySet;
   }
 
@@ -137,8 +131,8 @@ export default class StrongStrongMap {
    * @public
    */
   has(key1, key2) {
-    const hash = this.__hasher__.buildHash([key1, key2]);
-    return this.__root__.has(hash);
+    const hash = this.#hasher.buildHash([key1, key2]);
+    return this.#root.has(hash);
   }
 
   /**
@@ -148,7 +142,7 @@ export default class StrongStrongMap {
    * @public
    */
   keys() {
-    return this.__wrapIterator__(
+    return this.#wrapIterator(
       valueAndKeySet => valueAndKeySet.keySet.slice()
     );
   }
@@ -165,10 +159,10 @@ export default class StrongStrongMap {
    */
   set(key1, key2, value) {
 
-    const hash = this.__hasher__.buildHash([key1, key2]);
+    const hash = this.#hasher.buildHash([key1, key2]);
     const keySet = [key1, key2];
     Object.freeze(keySet);
-    this.__root__.set(hash, {
+    this.#root.set(hash, {
       value,
       keySet
     });
@@ -183,7 +177,7 @@ export default class StrongStrongMap {
    * @public
    */
   values() {
-    return this.__wrapIterator__(
+    return this.#wrapIterator(
       valueAndKeySet => valueAndKeySet.value
     );
   }
@@ -194,10 +188,9 @@ export default class StrongStrongMap {
    * @param {function} unpacker The transforming function for values.
    *
    * @returns {Iterator<*>}
-   * @private
    */
-  __wrapIterator__(unpacker) {
-    const rootIter = this.__root__.values();
+  #wrapIterator(unpacker) {
+    const rootIter = this.#root.values();
     return {
       next() {
         const {

@@ -7,24 +7,22 @@
 import KeyHasher from "./KeyHasher.mjs";
 
 export default class StrongStrongSet {
+  /**
+   * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.
+   *
+   * @type {Map<hash, *[]>}
+   *
+   * @const
+   */
+  #root = new Map;
+
+  /**
+   * @type {KeyHasher}
+   * @const
+   */
+  #hasher = new KeyHasher(["key1", "key2"]);
+
   constructor() {
-    /**
-     * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.
-     *
-     * @type {Map<hash, *[]>}
-     *
-     * @private
-     * @const
-     */
-    this.__root__ = new Map;
-
-    /**
-     * @type {KeyHasher}
-     * @private
-     * @const
-     */
-    this.__hasher__ = new KeyHasher(["key1", "key2"]);
-
     if (arguments.length > 0) {
       const iterable = arguments[0];
       for (let entry of iterable) {
@@ -40,7 +38,7 @@ export default class StrongStrongSet {
    * @const
    */
   get size() {
-    return this.__root__.size;
+    return this.#root.size;
   }
 
   /**
@@ -53,8 +51,8 @@ export default class StrongStrongSet {
    * @public
    */
   add(key1, key2) {
-    const hash = this.__hasher__.buildHash([key1, key2]);
-    this.__root__.set(hash, Object.freeze([key1, key2]));
+    const hash = this.#hasher.buildHash([key1, key2]);
+    this.#root.set(hash, Object.freeze([key1, key2]));
     return this;
   }
 
@@ -64,7 +62,7 @@ export default class StrongStrongSet {
    * @public
    */
   clear() {
-    this.__root__.clear();
+    this.#root.clear();
   }
 
   /**
@@ -77,8 +75,8 @@ export default class StrongStrongSet {
    * @public
    */
   delete(key1, key2) {
-    const hash = this.__hasher__.buildHash([key1, key2]);
-    return this.__root__.delete(hash);
+    const hash = this.#hasher.buildHash([key1, key2]);
+    return this.#root.delete(hash);
   }
 
   /**
@@ -89,7 +87,7 @@ export default class StrongStrongSet {
    * @public
    */
   forEach(__callback__, __thisArg__) {
-    this.__root__.forEach(valueSet => {
+    this.#root.forEach(valueSet => {
       __callback__.apply(__thisArg__, valueSet.concat(this));
     });
   }
@@ -100,7 +98,6 @@ export default class StrongStrongSet {
    * @param {*}               key1           
    * @param {*}               key2           
    * @param {StrongStrongSet} __collection__ This collection.
-   *
    */
 
   /**
@@ -113,8 +110,8 @@ export default class StrongStrongSet {
    * @public
    */
   has(key1, key2) {
-    const hash = this.__hasher__.buildHash([key1, key2]);
-    return this.__root__.has(hash);
+    const hash = this.#hasher.buildHash([key1, key2]);
+    return this.#root.has(hash);
   }
 
   /**
@@ -124,7 +121,7 @@ export default class StrongStrongSet {
    * @public
    */
   values() {
-    return this.__root__.values();
+    return this.#root.values();
   }
 
 }

@@ -7,24 +7,22 @@
 import KeyHasher from "../exports/KeyHasher.mjs";
 
 export default class StringStateMachine {
+  /**
+   * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.
+   *
+   * @type {Map<hash, *[]>}
+   *
+   * @const
+   */
+  #root = new Map;
+
+  /**
+   * @type {KeyHasher}
+   * @const
+   */
+  #hasher = new KeyHasher(["currentState", "nextState"]);
+
   constructor() {
-    /**
-     * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.
-     *
-     * @type {Map<hash, *[]>}
-     *
-     * @private
-     * @const
-     */
-    this.__root__ = new Map;
-
-    /**
-     * @type {KeyHasher}
-     * @private
-     * @const
-     */
-    this.__hasher__ = new KeyHasher(["currentState", "nextState"]);
-
     if (arguments.length > 0) {
       const iterable = arguments[0];
       for (let entry of iterable) {
@@ -40,7 +38,7 @@ export default class StringStateMachine {
    * @const
    */
   get size() {
-    return this.__root__.size;
+    return this.#root.size;
   }
 
   /**
@@ -53,10 +51,10 @@ export default class StringStateMachine {
    * @public
    */
   add(currentState, nextState) {
-    this.__requireValidKey__(currentState, nextState);
+    this.#requireValidKey(currentState, nextState);
 
-    const hash = this.__hasher__.buildHash([currentState, nextState]);
-    this.__root__.set(hash, Object.freeze([currentState, nextState]));
+    const hash = this.#hasher.buildHash([currentState, nextState]);
+    this.#root.set(hash, Object.freeze([currentState, nextState]));
     return this;
   }
 
@@ -66,7 +64,7 @@ export default class StringStateMachine {
    * @public
    */
   clear() {
-    this.__root__.clear();
+    this.#root.clear();
   }
 
   /**
@@ -79,8 +77,8 @@ export default class StringStateMachine {
    * @public
    */
   delete(currentState, nextState) {
-    const hash = this.__hasher__.buildHash([currentState, nextState]);
-    return this.__root__.delete(hash);
+    const hash = this.#hasher.buildHash([currentState, nextState]);
+    return this.#root.delete(hash);
   }
 
   /**
@@ -91,7 +89,7 @@ export default class StringStateMachine {
    * @public
    */
   forEach(__callback__, __thisArg__) {
-    this.__root__.forEach(valueSet => {
+    this.#root.forEach(valueSet => {
       __callback__.apply(__thisArg__, valueSet.concat(this));
     });
   }
@@ -102,7 +100,6 @@ export default class StringStateMachine {
    * @param {Function}           currentState   
    * @param {Function}           nextState      
    * @param {StringStateMachine} __collection__ This collection.
-   *
    */
 
   /**
@@ -115,8 +112,8 @@ export default class StringStateMachine {
    * @public
    */
   has(currentState, nextState) {
-    const hash = this.__hasher__.buildHash([currentState, nextState]);
-    return this.__root__.has(hash);
+    const hash = this.#hasher.buildHash([currentState, nextState]);
+    return this.#root.has(hash);
   }
 
   /**
@@ -129,7 +126,7 @@ export default class StringStateMachine {
    * @public
    */
   isValidKey(currentState, nextState) {
-    return this.__isValidKey__(currentState, nextState);
+    return this.#isValidKey(currentState, nextState);
   }
 
   /**
@@ -139,7 +136,7 @@ export default class StringStateMachine {
    * @public
    */
   values() {
-    return this.__root__.values();
+    return this.#root.values();
   }
 
   /**
@@ -150,8 +147,8 @@ export default class StringStateMachine {
    *
    * @throws for an invalid key set.
    */
-  __requireValidKey__(currentState, nextState) {
-    if (!this.__isValidKey__(currentState, nextState))
+  #requireValidKey(currentState, nextState) {
+    if (!this.#isValidKey(currentState, nextState))
       throw new Error("The ordered key set is not valid!");
   }
 
@@ -162,9 +159,8 @@ export default class StringStateMachine {
    * @param {Function} nextState    
    *
    * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @private
    */
-  __isValidKey__(currentState, nextState) {
+  #isValidKey(currentState, nextState) {
     {
       if (typeof currentState !== "string")
         return false;
