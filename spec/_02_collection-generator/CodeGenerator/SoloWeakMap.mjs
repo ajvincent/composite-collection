@@ -1,5 +1,6 @@
+import ToHoldRefsMatchers from "#support/toHoldReferences.mjs";
+
 import SoloWeakMap from "../generated/SoloWeakMap.mjs";
-import ToHoldRefsMatchers from "../../support/toHoldReferences.mjs";
 import MockImportable from "../fixtures/MockImportable.mjs";
 
 describe("CodeGenerator(SoloWeakMap.mjs)", () => {

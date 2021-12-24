@@ -1,4 +1,4 @@
-import CollectionConfiguration from "../../source/CollectionConfiguration.mjs";
+import CollectionConfiguration from "#source/CollectionConfiguration.mjs";
 
 const WeakMatrixConfig = new CollectionConfiguration("WeakMatrixMap");
 WeakMatrixConfig.addMapKey(

@@ -1,5 +1,5 @@
-import KeyHasher from "../../source/exports/KeyHasher.mjs";
-import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
+import KeyHasher from "#source/exports/KeyHasher.mjs";
+import ToHoldRefsMatchers from "#support/toHoldReferences.mjs";
 
 describe("KeyHasher", () => {
   let hasher;

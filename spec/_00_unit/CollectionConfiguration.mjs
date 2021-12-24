@@ -1,4 +1,4 @@
-import CollectionConfiguration from "../../source/CollectionConfiguration.mjs";
+import CollectionConfiguration from "#source/CollectionConfiguration.mjs";
 
 describe("CollectionConfiguration", () => {
   it("class is frozen", () => {

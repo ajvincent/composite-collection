@@ -1,4 +1,4 @@
-import tempDirWithCleanup from "../support/tempDirWithCleanup.mjs";
+import tempDirWithCleanup from "#support/tempDirWithCleanup.mjs";
 
 import url from "url";
 import fs from "fs/promises";

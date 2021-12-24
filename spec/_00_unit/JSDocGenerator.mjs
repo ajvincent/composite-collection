@@ -1,5 +1,5 @@
-import JSDocGenerator from "../../source/JSDocGenerator.mjs";
-import CollectionType from "../../source/CollectionType.mjs";
+import JSDocGenerator from "#source/JSDocGenerator.mjs";
+import CollectionType from "#source/CollectionType.mjs";
 
 describe("JSDocGenerator for maps", () => {
   let generator;

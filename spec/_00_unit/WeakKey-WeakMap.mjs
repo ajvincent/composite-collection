@@ -1,5 +1,5 @@
-import WeakKeyComposer from "../../source/exports/WeakKey-WeakMap.mjs";
-import ToHoldRefsMatchers from "../support/toHoldReferences.mjs";
+import WeakKeyComposer from "#source/exports/WeakKey-WeakMap.mjs";
+import ToHoldRefsMatchers from "#support/toHoldReferences.mjs";
 
 describe("WeakKey-WeakMap composer", () => {
   it("class is frozen", () => {

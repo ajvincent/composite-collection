@@ -1,7 +1,7 @@
-import CollectionConfiguration from "../../source/CollectionConfiguration.mjs";
-import CodeGenerator from "../../source/CodeGenerator.mjs";
+import CollectionConfiguration from "#source/CollectionConfiguration.mjs";
+import CodeGenerator from "#source/CodeGenerator.mjs";
 
-import tempDirWithCleanup from "../support/tempDirWithCleanup.mjs";
+import tempDirWithCleanup from "#support/tempDirWithCleanup.mjs";
 
 import fs from "fs/promises";
 import path from "path";
