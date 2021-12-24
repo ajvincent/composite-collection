@@ -183,8 +183,10 @@ task("debug", ["test:fixtures"], async () => {
 desc("eslint support");
 task("eslint", async () => {
   return runModule("./node_modules/eslint/bin/eslint.js", [
-    "Jakefile",
     "exports",
+    "jake-targets",
+    "Jakefile",
+    "source",
     "spec",
     "templates",
   ]);

@@ -92,7 +92,7 @@ export default class CodeGenerator extends CompletionPromise {
     this.#compileOptions = (compileOptions instanceof CompileTimeOptions) ? compileOptions : {};
 
     this.completionPromise.catch(
-      exn => this.#status = "aborted"
+      () => this.#status = "aborted"
     );
     Object.seal(this);
   }

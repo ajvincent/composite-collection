@@ -38,7 +38,6 @@ class ParamBlock {
    */
   getLines() {
     return this.#rows.map(row => {
-      let otherDescLines = [];
       const type = `{${row.type}}`.padEnd(this.#typeColumnWidth);
       const name = row.name.padEnd(this.#nameColumnWidth);
       let firstDescLine = `@param ${type} ${name} ${row.firstDescLine}`;

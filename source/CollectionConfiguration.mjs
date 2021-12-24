@@ -393,7 +393,9 @@ export default class CollectionConfiguration {
       }
 
       throw new Error("Not yet implemented");
+      /*
       this.#argCount++;
+      */
     });
   }
 
@@ -406,7 +408,9 @@ export default class CollectionConfiguration {
       }
 
       throw new Error("Not yet implemented");
+      /*
       this.#argCount++;
+      */
     });
   }
 

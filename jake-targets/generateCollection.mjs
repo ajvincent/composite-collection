@@ -30,6 +30,7 @@ parser.add_argument("--mpl-license", {
 
 const Arguments = parser.parse_args();
 
+// eslint-disable-next-line no-unused-vars
 const MPL_BOILERPLATE = `
 /**
  * @license
