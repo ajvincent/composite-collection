@@ -12,38 +12,40 @@
  */
 export default class KeyHasher {
   /**
+   * @type {Number}
+   * @private
+   */
+  #hashCount = 0;
+
+  /**
+  * @type {WeakMap<Object>}
+  * @const
+  * @private
+  */
+  #weakValueToHash = new WeakMap();
+
+  /**
+  * @type {Map<value>}
+  * @const
+  * @private
+  */
+  #strongValueToHash = new Map();
+
+  /**
+  * @type {string[]}
+  * @private
+  * @const
+  */
+  #argList;
+
+  /**
    * @param {string[]} argList The list of keys.
    */
   constructor(argList) {
     if (new.target !== KeyHasher)
       throw new Error("You cannot subclass KeyHasher!");
 
-    /**
-     * @type {Number}
-     * @private
-     */
-    this.__hashCount__ = 0;
-
-    /**
-     * @type {WeakMap<Object>}
-     * @const
-     * @private
-     */
-    this.__weakValueToHash__ = new WeakMap();
-
-    /**
-     * @type {Map<value>}
-     * @const
-     * @private
-     */
-    this.__strongValueToHash__ = new Map();
-
-    /**
-     * @type {string[]}
-     * @private
-     * @const
-     */
-    this.__argList__ = argList.slice();
+    this.#argList = argList;
 
     // freeze when we can convert the above to private class fields.
     Object.seal(this);
@@ -59,15 +61,15 @@ export default class KeyHasher {
    */
   buildHash(valueList) {
     const rv = {};
-    if (!Array.isArray(valueList) || (valueList.length !== this.__argList__.length))
+    if (!Array.isArray(valueList) || (valueList.length !== this.#argList.length))
       return null;
 
     valueList.forEach((value, index) => {
-      const key = this.__argList__[index];
+      const key = this.#argList[index];
 
-      const map = Object(value) === value ? this.__weakValueToHash__ : this.__strongValueToHash__;
+      const map = Object(value) === value ? this.#weakValueToHash : this.#strongValueToHash;
       if (!map.has(value))
-        map.set(value, this.__hashCount__++);
+        map.set(value, this.#hashCount++);
 
       rv[key] = map.get(value);
     });

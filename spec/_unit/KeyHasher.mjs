@@ -31,8 +31,8 @@ describe("KeyHasher", () => {
     expect(Object.isSealed(hasher)).toBe(true);
   });
 
-  xit("instance exposes no private properties", () => {
-    expect(Reflect.ownKeys(hasher)).toEqual(["buildHash"]);
+  it("instance exposes no private properties", () => {
+    expect(Reflect.ownKeys(hasher)).toEqual([]);
   });
 
   describe(".buildHash()", () => {
