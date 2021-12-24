@@ -1,6 +1,35 @@
 import KeyHasher from "./KeyHasher.mjs";
 
 export default class WeakKeyComposer {
+  /** @type {WeakMap<object, Map<hash, WeakKey>>} @const */
+  #keyOwner = new WeakMap;
+
+  /** @type {string[]} @const */
+  #weakArgList;
+
+  /** @type {string[]} @const */
+  #strongArgList;
+
+  /** @type {KeyHasher} @const */
+  #keyHasher;
+
+  /** @type {WeakMap<WeakKey, WeakRef<object>} @const */
+  #weakKeyToFirstWeak = new WeakMap;
+
+  /** @type {WeakMap<WeakKey, hash>} @const */
+  #weakKeyToHash = new WeakMap;
+
+  /** @type {WeakMap<WeakKey, Set<*>>?} @const */
+  #weakKeyToStrongRefs;
+
+  /** @type {FinalizationRegistry} @const */
+  #keyFinalizer = new FinalizationRegistry(
+    weakKey => this.#deleteWeakKey(weakKey)
+  );
+
+  /** @type {WeakSet{object}} */
+  #hasKeyParts = new WeakSet;
+
   /**
    * @param {string[]} weakArgList   The list of weak argument names.
    * @param {string[]} strongArgList The list of strong argument names.
@@ -24,34 +53,10 @@ export default class WeakKeyComposer {
         throw new Error("There is a duplicate argument among weakArgList and strongArgList!");
     }
 
-    /** @type {WeakMap<object, Map<hash, WeakKey>>} @const @private */
-    this.__keyOwner__ = new WeakMap;
-
-    /** @type {string[]} @const @private */
-    this.__weakArgList__ = weakArgList.slice();
-
-    /** @type {string[]} @const @private */
-    this.__strongArgList__ = strongArgList.slice();
-
-    /** @type {KeyHasher} @const @private */
-    this.__keyHasher__ = new KeyHasher(weakArgList.concat(strongArgList));
-
-    /** @type {WeakMap<WeakKey, WeakRef<object>} @const @private */
-    this.__weakKeyToFirstWeak__ = new WeakMap;
-
-    /** @type {WeakMap<WeakKey, hash>} @const @private */
-    this.__weakKeyToHash__ = new WeakMap;
-
-    /** @type {WeakMap<WeakKey, Set<*>>?} @const @private */
-    this.__weakKeyToStrongRefs__ = strongArgList.length ? new WeakMap : null;
-
-    /** @type {FinalizationRegistry} @const @private */
-    this.__keyFinalizer__ = new FinalizationRegistry(
-      weakKey => this.__deleteWeakKey__(weakKey)
-    );
-
-    /** @type {WeakSet{object}} */
-    this.__hasKeyParts__ = new WeakSet;
+    this.#weakArgList = weakArgList.slice();
+    this.#strongArgList = strongArgList.slice();
+    this.#keyHasher = new KeyHasher(weakArgList.concat(strongArgList));
+    this.#weakKeyToStrongRefs = strongArgList.length ? new WeakMap : null;
 
     Object.freeze(this);
   }
@@ -67,33 +72,33 @@ export default class WeakKeyComposer {
    * @public
    */
   getKey(weakArguments, strongArguments) {
-    const hash = this.__getHash__(weakArguments, strongArguments);
+    const hash = this.#getHash(weakArguments, strongArguments);
     if (!hash)
       return null;
 
-    weakArguments.forEach(arg => this.__hasKeyParts__.add(arg));
+    weakArguments.forEach(arg => this.#hasKeyParts.add(arg));
     strongArguments.forEach(arg => {
       if (Object(arg) === arg)
-        this.__hasKeyParts__.add(arg);
+        this.#hasKeyParts.add(arg);
     });
 
     const firstWeak = weakArguments[0];
-    if (!this.__keyOwner__.has(firstWeak)) {
-      this.__keyOwner__.set(firstWeak, new Map);
+    if (!this.#keyOwner.has(firstWeak)) {
+      this.#keyOwner.set(firstWeak, new Map);
     }
-    const hashMap = this.__keyOwner__.get(firstWeak);
+    const hashMap = this.#keyOwner.get(firstWeak);
 
     if (!hashMap.has(hash)) {
       weakArguments.forEach(arg => {
-        this.__keyFinalizer__.register(arg, this, this);
+        this.#keyFinalizer.register(arg, this, this);
       });
 
       const weakKey = Object.freeze({});
 
-      this.__weakKeyToFirstWeak__.set(weakKey, new WeakRef(weakArguments[0]));
-      this.__weakKeyToHash__.set(weakKey, hash);
+      this.#weakKeyToFirstWeak.set(weakKey, new WeakRef(weakArguments[0]));
+      this.#weakKeyToHash.set(weakKey, hash);
       if (strongArguments.length) {
-        this.__weakKeyToStrongRefs__.set(weakKey, new Set(strongArguments));
+        this.#weakKeyToStrongRefs.set(weakKey, new Set(strongArguments));
       }
       hashMap.set(hash, weakKey);
     }
@@ -102,21 +107,21 @@ export default class WeakKeyComposer {
   }
 
   hasKey(weakArguments, strongArguments) {
-    if (weakArguments.some(arg => !this.__hasKeyParts__.has(arg)))
+    if (weakArguments.some(arg => !this.#hasKeyParts.has(arg)))
       return false;
 
     if (strongArguments.some(
-      arg => (Object(arg) === arg) && !this.__hasKeyParts__.has(arg)
+      arg => (Object(arg) === arg) && !this.#hasKeyParts.has(arg)
     ))
       return false;
 
     const firstWeak = weakArguments[0];
-    if (!this.__keyOwner__.has(firstWeak)) {
+    if (!this.#keyOwner.has(firstWeak)) {
       return false;
     }
-    const hashMap = this.__keyOwner__.get(firstWeak);
+    const hashMap = this.#keyOwner.get(firstWeak);
 
-    const hash = this.__getHash__(weakArguments, strongArguments);
+    const hash = this.#getHash(weakArguments, strongArguments);
     if (!hash)
       return false;
 
@@ -134,27 +139,27 @@ export default class WeakKeyComposer {
    * @public
    */
   deleteKey(weakArguments, strongArguments) {
-    if (weakArguments.some(arg => !this.__hasKeyParts__.has(arg)))
+    if (weakArguments.some(arg => !this.#hasKeyParts.has(arg)))
       return false;
 
     if (strongArguments.some(
-      arg => (Object(arg) === arg) && !this.__hasKeyParts__.has(arg)
+      arg => (Object(arg) === arg) && !this.#hasKeyParts.has(arg)
     ))
       return false;
 
-    const hash = this.__getHash__(weakArguments, strongArguments);
+    const hash = this.#getHash(weakArguments, strongArguments);
     if (!hash)
       return false;
 
     const firstWeak = weakArguments[0];
-    if (!this.__keyOwner__.has(firstWeak))
+    if (!this.#keyOwner.has(firstWeak))
       return false;
 
-    const hashMap = this.__keyOwner__.get(firstWeak);
+    const hashMap = this.#keyOwner.get(firstWeak);
     const weakKey = hashMap.get(hash);
     if (weakKey) {
-      this.__keyFinalizer__.unregister(weakKey);
-      this.__weakKeyToFirstWeak__.delete(weakKey);
+      this.#keyFinalizer.unregister(weakKey);
+      this.#weakKeyToFirstWeak.delete(weakKey);
       hashMap.delete(hash);
     }
     return Boolean(weakKey);
@@ -167,12 +172,11 @@ export default class WeakKeyComposer {
    * @param {*[]} strongArguments The list of strong arguments.
    *
    * @returns {hash?} The generated hash.
-   * @private
    */
-   __getHash__(weakArguments, strongArguments) {
+  #getHash(weakArguments, strongArguments) {
     if (!this.isValidForKey(weakArguments, strongArguments))
       return null;
-    return this.__keyHasher__.buildHash(weakArguments.concat(strongArguments));
+    return this.#keyHasher.buildHash(weakArguments.concat(strongArguments));
   }
 
   /**
@@ -183,11 +187,11 @@ export default class WeakKeyComposer {
    * @returns {boolean}
    */
   isValidForKey(weakArguments, strongArguments) {
-    if (weakArguments.length !== this.__weakArgList__.length)
+    if (weakArguments.length !== this.#weakArgList.length)
       return false;
     if (weakArguments.some(arg => Object(arg) !== arg))
       return false;
-    if (strongArguments.length !== this.__strongArgList__.length)
+    if (strongArguments.length !== this.#strongArgList.length)
       return false;
     return true;
   }
@@ -197,19 +201,19 @@ export default class WeakKeyComposer {
    *
    * @param {Object} weakKey The key to delete.
    */
-  __deleteWeakKey__(weakKey) {
-    const firstKeyRef = this.__weakKeyToFirstWeak__.get(weakKey);
+  #deleteWeakKey(weakKey) {
+    const firstKeyRef = this.#weakKeyToFirstWeak.get(weakKey);
     if (!firstKeyRef)
       return;
     const firstWeak = firstKeyRef.deref();
     if (!firstWeak)
       return;
 
-    const hash = this.__weakKeyToHash__.get(weakKey);
-    this.__weakKeyToHash__.delete(weakKey);
-    this.__weakKeyToFirstWeak__.delete(weakKey);
+    const hash = this.#weakKeyToHash.get(weakKey);
+    this.#weakKeyToHash.delete(weakKey);
+    this.#weakKeyToFirstWeak.delete(weakKey);
 
-    const hashMap = this.__keyOwner__.get(firstWeak);
+    const hashMap = this.#keyOwner.get(firstWeak);
     hashMap.delete(hash);
   }
 }
