@@ -13,29 +13,25 @@
 export default class KeyHasher {
   /**
    * @type {Number}
-   * @private
    */
   #hashCount = 0;
 
   /**
-  * @type {WeakMap<Object>}
-  * @const
-  * @private
-  */
+   * @type {WeakMap<Object>}
+   * @const
+   */
   #weakValueToHash = new WeakMap();
 
   /**
-  * @type {Map<value>}
-  * @const
-  * @private
-  */
+   * @type {Map<value>}
+   * @const
+   */
   #strongValueToHash = new Map();
 
   /**
-  * @type {string[]}
-  * @private
-  * @const
-  */
+   * @type {string[]}
+   * @const
+   */
   #argList;
 
   /**

@@ -106,8 +106,6 @@ export default class CollectionConfiguration {
    * @param {string}  argumentName The name of the argument.
    * @param {string}  value        The argument value.
    * @param {boolean} mayOmit      True if the caller may omit the argument.
-   *
-   * @private
    */
   #stringArg(argumentName, value, mayOmit = false) {
     if ((typeof value !== "string") || (value.length === 0))
@@ -137,8 +135,6 @@ export default class CollectionConfiguration {
    *
    * @param argumentName The name of the function.
    * @param callback        The function.
-   *
-   * @private
    */
   #validatorArg(argumentName, callback, singleParamName, mayOmit = false) {
     if (typeof callback !== "function")

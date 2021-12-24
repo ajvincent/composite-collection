@@ -1,14 +1,12 @@
 export default class CompletionPromise {
   /**
    * @type {*}
-   * @private
    */
   #abortException = null;
 
   /**
    * @type {Promise<string, Error>}
    * @readonly
-   * @private
    */
   #completionPromise;
 

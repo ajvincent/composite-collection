@@ -11,14 +11,12 @@ const projectRoot = url.fileURLToPath(new URL("..", import.meta.url));
 export default class Driver extends CompletionPromise {
   /**
    * @type {string}
-   * @private
    * @const
    */
   #sourcesPath;
 
   /**
    * @type {string}
-   * @private
    * @const
    */
   #targetsPath;
