@@ -50,6 +50,12 @@ describe("CollectionConfiguration", () => {
         void(new CollectionConfiguration("FooMap", "Map", "WeakSet"))
       }).toThrowError("outerType must be a WeakMap when the innerType is a WeakSet!");
     });
+
+    it("throws for a constructor starting and ending with double underscores", () => {
+      expect(() => {
+        void(new CollectionConfiguration("__FooMap__", "Map"));
+      }).toThrowError("This module reserves variable names starting and ending with a double underscore for itself.");
+    });
   });
 
   it("instances are frozen objects with no own properties", () => {

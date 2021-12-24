@@ -117,6 +117,14 @@ export default class CollectionConfiguration {
     if (identifier !== identifier.trim())
       throw new Error(argName + " must not have leading or trailing whitespace!");
 
+    /* A little explanation is in order.  Simply put, the compiler will need a set of variable names it can define
+    which should only minimally reduce the set of variable names the user may need.  A double underscore at the
+    start and the end of the argument name isn't too much to ask - and why would you have that for a function
+    argument name anyway?
+    */
+    if (/^__.*__$/.test(identifier))
+      throw new Error("This module reserves variable names starting and ending with a double underscore for itself.");
+
     {
       let idToken;
       try {
@@ -431,14 +439,6 @@ export default class CollectionConfiguration {
 
     if ((argumentName === "value") && !this.#collectionTemplate.includes("Set"))
       throw new Error(`The argument name "value" is reserved!`);
-
-    /* A little explanation is in order.  Simply put, the compiler will need a set of variable names it can define
-    which should only minimally reduce the set of variable names the user may need.  A double underscore at the
-    start and the end of the argument name isn't too much to ask - and why would you have that for a function
-    argument name anyway?
-    */
-    if (/^__.*__$/.test(argumentName))
-      throw new Error("This module reserves variable names starting and ending with a double underscore for itself.");
 
     if (typeof holdWeak !== "boolean")
       throw new Error("holdWeak must be true or false!");
