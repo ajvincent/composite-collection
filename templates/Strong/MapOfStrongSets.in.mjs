@@ -279,16 +279,6 @@ ${docs.buildBlock("isValidMapKeyPrivate", 2)}
   }
 
   ` : ``}
-
-${defines.has("validateSetArguments") ? `
-${docs.buildBlock("isValidSetKeyPrivate", 2)}
-  #isValidSetKey(${defines.get("setArgList")}) {
-    void(${defines.get("setArgList")});
-
-    ${defines.get("validateSetArguments") || ""}
-    return true;
-  }
-  ` : ``}
 }
 
 ${defines.get("className")}[Symbol.iterator] = function() {

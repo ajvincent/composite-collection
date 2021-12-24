@@ -20,5 +20,6 @@
     "jasmine"
   ],
   "rules": {
+    "no-unused-private-class-members": "error"
   }
 }
