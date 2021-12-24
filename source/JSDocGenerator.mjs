@@ -53,7 +53,7 @@ class ParamBlock {
  * @package
  */
 export default class JSDocGenerator {
-  /** @type {Map<string, MethodTemplate>} @const @private */
+  /** @type {Map<string, MethodTemplate>} @const */
   #methodTemplates = new Map([
     ["rootContainerMap", {
       description: "The root map holding keys and values.",
