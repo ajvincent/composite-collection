@@ -90,11 +90,6 @@ ${
     return this.#weakKeySet.delete(__key__);
 `}  }
 
-${docs.buildBlock("isValidKeyPublic", 2)}
-  isValidKey(${defines.get("argList")}) {
-    return this.#isValidKey(${defines.get("argList")});
-  }
-
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {
     this.#requireValidKey(${defines.get("argList")});
@@ -117,6 +112,11 @@ ${
 ` : `
     return this.#weakKeySet.has(__key__);
 `}  }
+
+${docs.buildBlock("isValidKeyPublic", 2)}
+  isValidKey(${defines.get("argList")}) {
+    return this.#isValidKey(${defines.get("argList")});
+  }
 
 ${docs.buildBlock("requireValidKey", 2)}
   #requireValidKey(${defines.get("argList")}) {

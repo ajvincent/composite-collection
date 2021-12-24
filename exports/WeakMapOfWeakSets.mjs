@@ -201,6 +201,19 @@ export default class WeakMapOfWeakSets {
   }
 
   /**
+   * Determine if a set of keys is valid.
+   *
+   * @param {object} mapKey 
+   * @param {object} setKey 
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @public
+   */
+  isValidKey(mapKey, setKey) {
+    return this.#isValidKey(mapKey, setKey);
+  }
+
+  /**
    * Require an inner collection exist for the given map keys.
    *
    * @param {object} mapKey 

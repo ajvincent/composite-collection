@@ -18,8 +18,19 @@ describe("CodeGenerator(SoloStrongSet.mjs)", () => {
     expect(Object.isFrozen(SoloStrongSet.prototype)).toBe(true);
   });
 
-  xit("class only exposes public methods", () => {
-    // not implemented yet
+  it("class only exposes public methods", () => {
+    expect(SoloStrongSet.prototype).toBeInstanceOf(Set);
+
+    expect(Reflect.ownKeys(SoloStrongSet.prototype)).toEqual([
+      "constructor",
+      "add",
+      "isValidKey",
+    ]);
+  });
+
+  it("instances have no public properties", () => {
+    const map = new SoloStrongSet();
+    expect(Reflect.ownKeys(map)).toEqual([]);
   });
 
   it("adding one value", () => {

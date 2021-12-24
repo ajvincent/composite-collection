@@ -66,19 +66,6 @@ export default class WeakWeakSet {
   }
 
   /**
-   * Determine if a set of keys is valid.
-   *
-   * @param {object} key1 
-   * @param {object} key2 
-   *
-   * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @public
-   */
-  isValidKey(key1, key2) {
-    return this.#isValidKey(key1, key2);
-  }
-
-  /**
    * Report if the collection has a value for a key set.
    *
    * @param {object} key1 
@@ -96,6 +83,19 @@ export default class WeakWeakSet {
     const __key__ = this.#keyComposer.getKey([key1, key2], []);
 
     return this.#weakKeySet.has(__key__);
+  }
+
+  /**
+   * Determine if a set of keys is valid.
+   *
+   * @param {object} key1 
+   * @param {object} key2 
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @public
+   */
+  isValidKey(key1, key2) {
+    return this.#isValidKey(key1, key2);
   }
 
   /**

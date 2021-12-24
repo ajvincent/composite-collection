@@ -79,19 +79,6 @@ export default class WeakWeakMap {
   }
 
   /**
-   * Determine if a set of keys is valid.
-   *
-   * @param {object} key1 
-   * @param {object} key2 
-   *
-   * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @public
-   */
-  isValidKey(key1, key2) {
-    return this.#isValidKey(key1, key2);
-  }
-
-  /**
    * Report if the collection has a value for a key set.
    *
    * @param {object} key1 
@@ -113,6 +100,19 @@ export default class WeakWeakMap {
     if (!__key__)
       return false;
     return __keyMap__.has(__key__);
+  }
+
+  /**
+   * Determine if a set of keys is valid.
+   *
+   * @param {object} key1 
+   * @param {object} key2 
+   *
+   * @returns {boolean} True if the validation passes, false if it doesn't.
+   * @public
+   */
+  isValidKey(key1, key2) {
+    return this.#isValidKey(key1, key2);
   }
 
   /**

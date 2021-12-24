@@ -19,8 +19,26 @@ describe("CodeGenerator(WeakMapOfStrongSets.mjs)", () => {
     expect(Object.isFrozen(WeakMapOfStrongSets.prototype)).toBe(true);
   });
 
-  xit("class only exposes public methods", () => {
-    // not implemented yet
+  it("class only exposes public methods", () => {
+    expect(Reflect.ownKeys(WeakMapOfStrongSets.prototype)).toEqual([
+      "constructor",
+      "add",
+      "addSets",
+      "clearSets",
+      "delete",
+      "deleteSets",
+      "forEachSet",
+      "getSizeOfSet",
+      "has",
+      "hasSets",
+      "isValidKey",
+      "valuesSet",
+    ]);
+  });
+
+  it("instances have no public properties", () => {
+    const map = new WeakMapOfStrongSets();
+    expect(Reflect.ownKeys(map)).toEqual([]);
   });
 
   it("adding one value", () => {

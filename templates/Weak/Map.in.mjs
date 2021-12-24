@@ -92,20 +92,6 @@ ${docs.buildBlock("get", 2)}
     return __keyMap__.get(__key__);
   }
 
-${docs.buildBlock("isValidKeyPublic", 2)}
-  isValidKey(${defines.get("argList")}) {
-    return this.#isValidKey(${defines.get("argList")});
-  }
-
-${
-  defines.has("validateValue") ? `
-${docs.buildBlock("isValidValuePublic", 2)}
-  isValidValue(value) {
-    return this.#isValidValue(value);
-  }
-  ` : ``
-}
-
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {
     this.#requireValidKey(${defines.get("argList")});
@@ -129,6 +115,21 @@ ${docs.buildBlock("has", 2)}
       return false;
     return __keyMap__.has(__key__);
   }
+
+
+${docs.buildBlock("isValidKeyPublic", 2)}
+  isValidKey(${defines.get("argList")}) {
+    return this.#isValidKey(${defines.get("argList")});
+  }
+
+${
+  defines.has("validateValue") ? `
+${docs.buildBlock("isValidValuePublic", 2)}
+  isValidValue(value) {
+    return this.#isValidValue(value);
+  }
+  ` : ``
+}
 
 ${docs.buildBlock("set", 2)}
   set(${defines.get("argList")}, value) {

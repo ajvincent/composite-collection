@@ -14,8 +14,23 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
     expect(Object.isFrozen(SoloStrongMap.prototype)).toBe(true);
   });
 
-  xit("class only exposes public methods", () => {
-    // not implemented yet
+  it("class only exposes public methods", () => {
+    expect(SoloStrongMap.prototype).toBeInstanceOf(Map);
+
+    expect(Reflect.ownKeys(SoloStrongMap.prototype)).toEqual([
+      "constructor",
+      "delete",
+      "get",
+      "has",
+      "isValidKey",
+      "isValidValue",
+      "set",
+    ]);
+  });
+
+  it("instances have no public properties", () => {
+    const map = new SoloStrongMap();
+    expect(Reflect.ownKeys(map)).toEqual([]);
   });
 
   it("setting one value", () => {

@@ -12,13 +12,13 @@ describe("WeakKey-WeakRef composer", () => {
     expect(() => new Subclass).toThrowError("You cannot subclass WeakKeyComposer!");
   });
 
-  xit("class exposes only the public methods", () => {
-    expect(Reflect.ownKeys(WeakKeyComposer)).toEqual([
+  it("class exposes only the public methods", () => {
+    expect(Reflect.ownKeys(WeakKeyComposer.prototype)).toEqual([
       "constructor",
       "getKey",
       "hasKey",
-      "isValidKey",
       "deleteKey",
+      "isValidForKey",
     ]);
   });
 
@@ -27,8 +27,7 @@ describe("WeakKey-WeakRef composer", () => {
     expect(Object.isFrozen(composer)).toBe(true);
   });
 
-  xit("instances have no public properties", () => {
-    // I disabled this test because Mozilla Firefox and Safari don't support private properties.
+  it("instances have no public properties", () => {
     const composer = new WeakKeyComposer(["foo"]);
     expect(Reflect.ownKeys(composer)).toEqual([]);
   });

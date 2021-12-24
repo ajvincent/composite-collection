@@ -13,8 +13,25 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     expect(Object.isFrozen(StrongStrongMap.prototype)).toBe(true);
   });
 
-  xit("class only exposes public methods", () => {
-    // not implemented yet
+  it("class only exposes public methods", () => {
+    expect(Reflect.ownKeys(StrongStrongMap.prototype)).toEqual([
+      "constructor",
+      "size",
+      "clear",
+      "delete",
+      "entries",
+      "forEach",
+      "get",
+      "has",
+      "keys",
+      "set",
+      "values",
+    ]);
+  });
+
+  it("instances have no public properties", () => {
+    const map = new StrongStrongMap();
+    expect(Reflect.ownKeys(map)).toEqual([]);
   });
 
   it("setting one value", () => {

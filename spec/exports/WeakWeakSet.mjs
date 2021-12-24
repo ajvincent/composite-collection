@@ -17,8 +17,19 @@ describe("CodeGenerator(WeakWeakSet.mjs)", () => {
     expect(Object.isFrozen(WeakWeakSet.prototype)).toBe(true);
   });
 
-  xit("class only exposes public methods", () => {
-    // not implemented yet
+  it("class only exposes public methods", () => {
+    expect(Reflect.ownKeys(WeakWeakSet.prototype)).toEqual([
+      "constructor",
+      "add",
+      "delete",
+      "has",
+      "isValidKey",
+    ]);
+  });
+
+  it("instances have no public properties", () => {
+    const map = new WeakWeakSet();
+    expect(Reflect.ownKeys(map)).toEqual([]);
   });
 
   it("exposes all methods of a weak set, but not those of a strong set", () => {

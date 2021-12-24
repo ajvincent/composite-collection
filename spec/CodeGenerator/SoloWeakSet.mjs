@@ -18,8 +18,18 @@ describe("CodeGenerator(SoloWeakSet.mjs)", () => {
     expect(Object.isFrozen(SoloWeakSet.prototype)).toBe(true);
   });
 
-  xit("class only exposes public methods", () => {
-    // not implemented yet
+  it("class only exposes public methods", () => {
+    expect(SoloWeakSet.prototype).toBeInstanceOf(WeakSet);
+    expect(Reflect.ownKeys(SoloWeakSet.prototype)).toEqual([
+      "constructor", // implicit
+      "add",
+      "isValidKey",
+    ]);
+  });
+
+  it("instances have no public properties", () => {
+    const map = new SoloWeakSet();
+    expect(Reflect.ownKeys(map)).toEqual([]);
   });
 
   it("exposes all methods of a weak set, but not those of a strong set", () => {

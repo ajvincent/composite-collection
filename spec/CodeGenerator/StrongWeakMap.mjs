@@ -13,8 +13,20 @@ describe("CodeGenerator(StrongWeakMap.mjs),", () => {
     expect(Object.isFrozen(StrongWeakMap.prototype)).toBe(true);
   });
 
-  xit("class only exposes public methods", () => {
-    // not implemented yet
+  it("class only exposes public methods", () => {
+    expect(Reflect.ownKeys(StrongWeakMap.prototype)).toEqual([
+      "constructor",
+      "delete",
+      "get",
+      "has",
+      "isValidKey",
+      "set",
+    ]);
+  });
+
+  it("instances have no public properties", () => {
+    const map = new StrongWeakMap();
+    expect(Reflect.ownKeys(map)).toEqual([]);
   });
 
   it("exposes all methods of a weak map, but not those of a strong map", () => {

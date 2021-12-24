@@ -156,6 +156,11 @@ ${docs.buildBlock("hasSet", 2)}
     return Boolean(this.#getExistingInnerSet(${defines.get("mapArgList")}));
   }
 
+${docs.buildBlock("isValidKeyPublic", 2)}
+  isValidKey(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
+    return this.#isValidKey(${defines.get("mapArgList")}, ${defines.get("setArgList")});
+  }
+
 ${docs.buildBlock("requireInnerCollectionPrivate", 2)}
   #requireInnerSet(${defines.get("mapArgList")}) {
     let __weakKeyMap__, __innerSet__;

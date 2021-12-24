@@ -22,8 +22,26 @@ describe("CodeGenerator(WeakFunctionMultiMap.mjs)", () => {
     expect(Object.isFrozen(WeakFunctionMultiMap.prototype)).toBe(true);
   });
 
-  xit("class only exposes public methods", () => {
-    // not implemented yet
+  it("class only exposes public methods", () => {
+    expect(Reflect.ownKeys(WeakFunctionMultiMap.prototype)).toEqual([
+      "constructor",
+      "add",
+      "addSets",
+      "clearSets",
+      "delete",
+      "deleteSets",
+      "forEachSet",
+      "getSizeOfSet",
+      "has",
+      "hasSets",
+      "isValidKey",
+      "valuesSet",
+    ]);
+  });
+
+  it("instances have no public properties", () => {
+    const map = new WeakFunctionMultiMap();
+    expect(Reflect.ownKeys(map)).toEqual([]);
   });
 
   it("adding one value", () => {

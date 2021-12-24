@@ -17,8 +17,22 @@ describe("CodeGenerator(StrongStrongSet.mjs)", () => {
     expect(Object.isFrozen(StrongStrongSet.prototype)).toBe(true);
   });
 
-  xit("class only exposes public methods", () => {
-    // not implemented yet
+  it("class only exposes public methods", () => {
+    expect(Reflect.ownKeys(StrongStrongSet.prototype)).toEqual([
+      "constructor",
+      "size",
+      "add",
+      "clear",
+      "delete",
+      "forEach",
+      "has",
+      "values",
+    ]);
+  });
+
+  it("instances have no public properties", () => {
+    const map = new StrongStrongSet();
+    expect(Reflect.ownKeys(map)).toEqual([]);
   });
 
   it("adding one value", () => {

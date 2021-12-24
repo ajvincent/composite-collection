@@ -19,8 +19,31 @@ describe("CodeGenerator(StrongMapSetImportable.mjs)", () => {
     expect(Object.isFrozen(StrongMapSetMockImportable.prototype)).toBe(true);
   });
 
-  xit("class only exposes public methods", () => {
-    // not implemented yet
+  it("class only exposes public methods", () => {
+    expect(Reflect.ownKeys(StrongMapSetMockImportable.prototype)).toEqual([
+      "constructor",
+      "size",
+      "getSizeOfSet",
+      "mapSize",
+      "add",
+      "addSets",
+      "clear",
+      "clearSets",
+      "delete",
+      "deleteSets",
+      "forEach",
+      "forEachSet",
+      "has",
+      "hasSets",
+      "isValidKey",
+      "values",
+      "valuesSet",
+    ]);
+  });
+
+  it("instances have no public properties", () => {
+    const map = new StrongMapSetMockImportable();
+    expect(Reflect.ownKeys(map)).toEqual([]);
   });
 
   it("adding one value", () => {
