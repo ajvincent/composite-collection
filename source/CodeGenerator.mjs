@@ -8,34 +8,10 @@ import CollectionConfiguration from "composite-collection/Configuration";
 import CompletionPromise from "./CompletionPromise.mjs";
 import JSDocGenerator from "./JSDocGenerator.mjs";
 import CompileTimeOptions from "./CompileTimeOptions.mjs";
+import TemplateGenerators from "./TemplateGenerators.mjs";
 
 import fs from "fs/promises";
-import { pathToFileURL } from "url";
-import { getAllFiles } from 'get-all-files';
 import beautify from "js-beautify";
-
-/**
- * @type {Map<string, string>}
- * @package
- */
-const TemplateGenerators = new Map();
-{
-  const templateDirURL = new URL("../templates", import.meta.url);
-  const templateDir = templateDirURL.pathname;
-  const allFiles = await getAllFiles(templateDir).toArray();
-  await Promise.all(allFiles.map(async fullPath => {
-    let baseName = fullPath.substr(templateDir.length + 1);
-    if (!baseName.endsWith(".in.mjs"))
-      return;
-
-    const targetFileURL = pathToFileURL(fullPath);
-    const generator = (await import(targetFileURL)).default;
-    if (typeof generator === "function")
-      TemplateGenerators.set(baseName.replace(/\.in\.mjs$/, ""), generator);
-    else
-      throw new Error("generator isn't a function?");
-  }));
-}
 
 function buildArgNameList(keys) {
   return '[' + keys.map(key => `"${key}"`).join(", ") + ']'

@@ -2,6 +2,7 @@ const { fork } = require('child_process');
 const fs  = require('fs/promises');
 const path = require("path");
 const { task, desc } = require('jake');
+const url = require("url");
 
 /**
  * Run a specific submodule.
@@ -75,15 +76,38 @@ function generateCollectionTasks(configDir, targetDir, leafNames) {
       targetFile,
       submodules.concat(configFile),
       async () => {
-        console.log(targetFile);
         await runModule(
           "./jake-targets/generateCollection.mjs",
           [configFile, targetFile],
-          /* leafName === "SoloStrongMap.mjs" ? ["--inspect-brk"] : */ []);
+          /* leafName === "SoloStrongMap.mjs" ? ["--inspect-brk"] : */ []
+        );
       }
     );
   });
 }
+
+function generateKeyClassTasks(leafNames) {
+  leafNames.forEach(leafName => {
+    const configFile = "spec/_01_key-classes/fixtures/" + leafName,
+          targetFile = "spec/_01_key-classes/generated/" + leafName;
+
+    task(
+      targetFile,
+      async () => {
+        const configFileURL = url.pathToFileURL(path.join(process.cwd(), configFile));
+        const targetModule = (await import(configFileURL)).default;
+        if (typeof targetModule !== "string")
+          throw new Error("Compilation failed for spec/_01_key-classes/generated/" + leafName);
+
+        await fs.writeFile(path.join(process.cwd(), targetFile), targetModule);
+      }
+    )
+  });
+}
+
+generateKeyClassTasks([
+  "HashClass.mjs",
+]);
 
 desc("Testing");
 task(
@@ -103,6 +127,8 @@ namespace("test", () => {
   task(
     "generated",
     [
+      "spec/_01_key-classes/generated/HashClass.mjs",
+
       "spec/_02_collection-generator/generated/KeyHasher.mjs",
       "spec/_02_collection-generator/generated/SoloStrongMap.mjs",
       "spec/_02_collection-generator/generated/SoloStrongSet.mjs",
