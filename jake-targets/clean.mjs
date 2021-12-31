@@ -3,7 +3,6 @@ import { getAllFiles } from 'get-all-files';
 import path from "path";
 
 const fileRoots = [
-  "spec/_01_key-classes/generated",
   "spec/_02_collection-generator/generated",
   "spec/_04_exports/generated",
   "exports",

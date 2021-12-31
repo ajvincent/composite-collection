@@ -1,7 +1,7 @@
-import WeakKeyComposer from "#source/exports/WeakKey-WeakRef.mjs";
+import WeakKeyComposer from "#source/exports/keys/Composite.mjs";
 import ToHoldRefsMatchers from "#support/toHoldReferences.mjs";
 
-describe("WeakKey-WeakRef composer", () => {
+describe("WeakKey-WeakRefNew composer", () => {
   it("class is frozen", () => {
     expect(Object.isFrozen(WeakKeyComposer)).toBe(true);
     expect(Object.isFrozen(WeakKeyComposer.prototype)).toBe(true);
@@ -142,18 +142,26 @@ describe("WeakKey-WeakRef composer", () => {
       */
     });
 
-    it(".getKey() returns null for an incorrect number of weak arguments", () => {
-      expect(composer.getKey([], [])).toBe(null);
-      expect(composer.getKey([{}, {}, {}])).toBe(null);
-      expect(composer.getKey([], [{}, {}, {}])).toBe(null);
+    it(".getKey() throws for an incorrect number of weak arguments", () => {
+      expect(
+        () => composer.getKey([], [])
+      ).toThrowError("Argument lists do not form a valid key!");
+      expect(
+        () => composer.getKey([{}, {}, {}])
+      ).toThrowError("Argument lists do not form a valid key!");
+      expect(
+        () => composer.getKey([], [{}, {}, {}])
+      ).toThrowError("Argument lists do not form a valid key!");
     });
 
-    it(".getKey() returns null for a non-weak key passed as a weak argument", () => {
+    it(".getKey() throws for a non-weak key passed as a weak argument", () => {
       const key = keySet1.slice();
       key[0] = key[0].slice();
       key[0][0] = Symbol("foo");
 
-      expect(composer.getKey(...key)).toBe(null);
+      expect(
+        () => composer.getKey(...key)
+      ).toThrowError("Argument lists do not form a valid key!");
     });
 
     it(".deleteKey() can delete the key when specifically directed to", () => {
@@ -294,15 +302,6 @@ describe("WeakKey-WeakRef composer", () => {
       ).toHoldReferencesStrongly();
     });
 
-    it("weakly when we pass them as strong arguments to .getKey() with invalid arguments", async () => {
-      await expectAsync(
-        key => expect(composer.getKey([], [key])).toBe(null)
-      ).toHoldReferencesWeakly();
-
-      await expectAsync(
-        key => composer.getKey([weakExternalKey, weakExternalKey], [key, {}, {}])
-      ).toHoldReferencesWeakly();
-    });
 
     it("weakly when we pass them as strong arguments to .hasKey()", async () => {
       await expectAsync(
