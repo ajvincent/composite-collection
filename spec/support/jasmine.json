@@ -2,9 +2,8 @@
   "spec_dir": "spec",
   "spec_files": [
     "**/*.mjs",
-    "!fixtures/**/*.mjs",
-    "!generated/**/*.mjs",
-    "!integration/fixtures/**/*.mjs",
+    "!*/fixtures/**/*.mjs",
+    "!*/generated/**/*.mjs",
     "!support/**/*.mjs"
   ],
   "stopSpecOnExpectationFailure": false,

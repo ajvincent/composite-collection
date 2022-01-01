@@ -75,11 +75,11 @@ function generateCollectionTasks(configDir, targetDir, leafNames) {
       targetFile,
       submodules.concat(configFile),
       async () => {
-        console.log(targetFile);
         await runModule(
           "./jake-targets/generateCollection.mjs",
           [configFile, targetFile],
-          /* leafName === "SoloStrongMap.mjs" ? ["--inspect-brk"] : */ []);
+          /* leafName === "SoloStrongMap.mjs" ? ["--inspect-brk"] : */ []
+        );
       }
     );
   });
@@ -89,7 +89,7 @@ desc("Testing");
 task(
   "test",
   [
-    "test:fixtures",
+    "test:generated",
     "test:all",
   ]
 );
@@ -101,34 +101,52 @@ task("clean", async () => {
 // eslint-disable-next-line no-undef
 namespace("test", () => {
   task(
-    "fixtures",
+    "generated",
     [
-      "spec/generated/KeyHasher.mjs",
-      "spec/generated/SoloStrongMap.mjs",
-      "spec/generated/SoloStrongSet.mjs",
-      "spec/generated/SoloWeakMap.mjs",
-      "spec/generated/SoloWeakSet.mjs",
+      "spec/_02_collection-generator/generated/KeyHasher.mjs",
+      "spec/_02_collection-generator/generated/SoloStrongMap.mjs",
+      "spec/_02_collection-generator/generated/SoloStrongSet.mjs",
+      "spec/_02_collection-generator/generated/SoloWeakMap.mjs",
+      "spec/_02_collection-generator/generated/SoloWeakSet.mjs",
 
-      "spec/generated/StrongStrongMap.mjs",
-      "spec/generated/StrongStrongSet.mjs",
+      "spec/_02_collection-generator/generated/StrongStrongMap.mjs",
+      "spec/_02_collection-generator/generated/StrongStrongSet.mjs",
 
-      "spec/generated/WeakWeakMap.mjs",
-      "spec/generated/WeakStrongMap.mjs",
-      "spec/generated/StrongWeakMap.mjs",
+      "spec/_02_collection-generator/generated/WeakWeakMap.mjs",
+      "spec/_02_collection-generator/generated/WeakStrongMap.mjs",
+      "spec/_02_collection-generator/generated/StrongWeakMap.mjs",
 
-      "spec/generated/WeakWeakSet.mjs",
-      "spec/generated/WeakStrongSet.mjs",
-      "spec/generated/StrongWeakSet.mjs",
+      "spec/_02_collection-generator/generated/WeakWeakSet.mjs",
+      "spec/_02_collection-generator/generated/WeakStrongSet.mjs",
+      "spec/_02_collection-generator/generated/StrongWeakSet.mjs",
 
-      "spec/generated/StrongMapOfStrongSets.mjs",
+      "spec/_02_collection-generator/generated/StrongMapOfStrongSets.mjs",
 
-      "spec/generated/WeakMapOfStrongSets.mjs",
-      "spec/generated/WeakMapOfWeakSets.mjs",
-      "spec/generated/WeakMapWeakStrongSet.mjs",
+      "spec/_02_collection-generator/generated/WeakMapOfStrongSets.mjs",
+      "spec/_02_collection-generator/generated/WeakMapOfWeakSets.mjs",
+      "spec/_02_collection-generator/generated/WeakMapWeakStrongSet.mjs",
 
-      "spec/generated/StrongMapSetImportable.mjs",
-      "spec/generated/WeakFunctionMultiMap.mjs",
-      "spec/generated/WeakMapWeakSetImportable.mjs",
+      "spec/_02_collection-generator/generated/StrongMapSetImportable.mjs",
+      "spec/_02_collection-generator/generated/WeakFunctionMultiMap.mjs",
+      "spec/_02_collection-generator/generated/WeakMapWeakSetImportable.mjs",
+
+
+      "spec/_04_exports/generated/KeyHasher.mjs",
+      "spec/_04_exports/generated/StrongStrongMap.mjs",
+      "spec/_04_exports/generated/StrongStrongSet.mjs",
+
+      "spec/_04_exports/generated/WeakWeakMap.mjs",
+      "spec/_04_exports/generated/WeakStrongMap.mjs",
+
+      "spec/_04_exports/generated/WeakWeakSet.mjs",
+      "spec/_04_exports/generated/WeakStrongSet.mjs",
+
+      "spec/_04_exports/generated/StrongMapOfStrongSets.mjs",
+
+      "spec/_04_exports/generated/WeakMapOfStrongSets.mjs",
+      "spec/_04_exports/generated/WeakMapOfWeakSets.mjs",
+
+      "spec/_04_exports/generated/WeakFunctionMultiMap.mjs",
     ]
   );
 
@@ -138,45 +156,81 @@ namespace("test", () => {
   );
 });
 
-copyFileTasks("source/exports", "spec/generated", [
+copyFileTasks("source/exports", "spec/_02_collection-generator/generated", [
   "KeyHasher.mjs",
   "WeakKey-WeakMap.mjs",
   "WeakKey-WeakRef.mjs",
 ]);
 
-generateCollectionTasks("spec/fixtures", "spec/generated", [
-  "SoloStrongMap.mjs",
-  "SoloStrongSet.mjs",
-  "SoloWeakMap.mjs",
-  "SoloWeakSet.mjs",
-  "StrongWeakMap.mjs",
-  "StrongWeakSet.mjs",
-  "WeakMapWeakStrongSet.mjs",
-  "StrongMapSetImportable.mjs",
-  "WeakMapWeakSetImportable.mjs",
+generateCollectionTasks(
+  "spec/_02_collection-generator/fixtures",
+  "spec/_02_collection-generator/generated",
+  [
+    "SoloStrongMap.mjs",
+    "SoloStrongSet.mjs",
+    "SoloWeakMap.mjs",
+    "SoloWeakSet.mjs",
+    "StrongWeakMap.mjs",
+    "StrongWeakSet.mjs",
+    "WeakMapWeakStrongSet.mjs",
+    "StrongMapSetImportable.mjs",
+    "WeakMapWeakSetImportable.mjs",
+  ]
+);
+
+generateCollectionTasks(
+  "source/exports",
+  "spec/_02_collection-generator/generated",
+  [
+    "StrongStrongMap.mjs",
+    "StrongStrongSet.mjs",
+
+    "WeakWeakMap.mjs",
+    "WeakStrongMap.mjs",
+
+    "WeakWeakSet.mjs",
+    "WeakStrongSet.mjs",
+
+    "StrongMapOfStrongSets.mjs",
+    "StrongMapOfWeakSets.mjs",
+
+    "WeakMapOfStrongSets.mjs",
+    "WeakMapOfWeakSets.mjs",
+
+    "WeakFunctionMultiMap.mjs",
+  ]
+);
+
+copyFileTasks("source/exports", "spec/_04_exports/generated", [
+  "KeyHasher.mjs",
+  "WeakKey-WeakMap.mjs",
+  "WeakKey-WeakRef.mjs",
 ]);
 
-generateCollectionTasks("source/exports", "spec/generated", [
-  "StrongStrongMap.mjs",
-  "StrongStrongSet.mjs",
+generateCollectionTasks(
+  "source/exports",
+  "spec/_04_exports/generated",
+  [
+    "StrongStrongMap.mjs",
+    "StrongStrongSet.mjs",
 
-  "WeakWeakMap.mjs",
-  "WeakStrongMap.mjs",
+    "WeakWeakMap.mjs",
+    "WeakStrongMap.mjs",
 
-  "WeakWeakSet.mjs",
-  "WeakStrongSet.mjs",
+    "WeakWeakSet.mjs",
+    "WeakStrongSet.mjs",
 
-  "StrongMapOfStrongSets.mjs",
-  "StrongMapOfWeakSets.mjs",
+    "StrongMapOfStrongSets.mjs",
 
-  "WeakMapOfStrongSets.mjs",
-  "WeakMapOfWeakSets.mjs",
+    "WeakMapOfStrongSets.mjs",
+    "WeakMapOfWeakSets.mjs",
 
-  "WeakFunctionMultiMap.mjs",
-]);
+    "WeakFunctionMultiMap.mjs",
+  ]
+);
 
 desc("Debugging tests");
-task("debug", ["test:fixtures"], async () => {
+task("debug", ["test:generated"], async () => {
   return runModule("./node_modules/jasmine/bin/jasmine.js", [], ["--inspect-brk"]);
 });
 

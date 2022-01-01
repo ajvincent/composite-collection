@@ -247,6 +247,6 @@ async function npm(stageDir, ...targets) {
 }
 
 async function cleanAndRecreate(dir) {
-  await fs.rmdir(dir, {recursive: true});
+  await fs.rm(dir, {recursive: true});
   await fs.mkdir(dir);
 }

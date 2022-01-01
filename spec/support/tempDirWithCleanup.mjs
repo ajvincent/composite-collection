@@ -6,7 +6,7 @@ export default async function tempDirWithCleanup() {
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "composite-collection-"));
   let resolve;
   let promise = new Promise(res => resolve = res);
-  promise = promise.then(() => fs.rmdir(tempDir, { recursive: true }));
+  promise = promise.then(() => fs.rm(tempDir, { recursive: true }));
 
   return {
     tempDir,
