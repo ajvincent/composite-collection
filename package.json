@@ -60,5 +60,10 @@
   "imports": {
     "#source/*": "./source/*",
     "#support/*": "./spec/support/*"
-  }
+  },
+  "files": [
+    "exports/**",
+    "source/**",
+    "templates/**"
+  ]
 }
