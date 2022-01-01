@@ -16,13 +16,15 @@ it("Driver generates a valid set of classes", async () => {
   const sourceDir = path.join(projectRoot, "spec/_03_integration/fixtures/Driver");
   const cleanup = await tempDirWithCleanup();
   const targetDir = cleanup.tempDir;
+
   try {
     // copy package files
     {
       const fileList = await getAllFiles(sourceDir).toArray();
-      await Promise.all(fileList.map(sourceFile => {
+      await Promise.all(fileList.map(async sourceFile => {
         const targetFile = sourceFile.replace(sourceDir, targetDir);
-        return fs.copyFile(
+        await fs.mkdir(path.dirname(targetFile), { recursive: true });
+        await fs.copyFile(
           sourceFile, targetFile
         )
       }));
@@ -43,7 +45,7 @@ it("Driver generates a valid set of classes", async () => {
       const configSourceDir = path.join(projectRoot, "source/exports");
       const configTargetDir = path.join(targetDir, "configurations");
 
-      await fs.mkdir(configTargetDir);
+      await fs.mkdir(configTargetDir, { recursive: true });
       await fs.copyFile(
         path.join(configSourceDir, "WeakFunctionMultiMap.mjs"),
         path.join(configTargetDir, "WeakFunctionMultiMap.mjs")

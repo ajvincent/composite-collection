@@ -8,28 +8,16 @@ export default function preprocess(defines, docs) {
 ${defines.get("importLines")}
 
 export default class ${defines.get("className")} {
-  /** @type {WeakKeyComposer} @const */
+  /** @type {WeakKeyComposer} @constant */
   #keyComposer = new WeakKeyComposer(${
     defines.get("weakSetArgNameList")
   }, ${
     defines.get("strongSetArgNameList")
   });
 
-  ${
-    defines.get("strongSetCount") ? `
-    /**
-     * @type {WeakMap<WeakKey, Set<*>>}
-     * @const
-     */
-    #weakKeyToStrongKeys = new WeakMap;
-  ` : `
-    /**
-     * @type {WeakSet<WeakKey>}
-     * @const
-     */
-    #weakKeySet = new WeakSet;
-  `
-  }
+  /** @type {WeakSet<WeakKey>} @constant */
+  #weakKeySet = new WeakSet;
+
   constructor() {
     if (arguments.length > 0) {
       const iterable = arguments[0];
@@ -49,13 +37,9 @@ ${docs.buildBlock("add", 2)}
       defines.get("strongSetArgList")
     }]);
     if (!__key__)
-      return null;${
-  defines.get("strongSetCount") ? `
-    if (!this.#weakKeyToStrongKeys.has(__key__))
-      this.#weakKeyToStrongKeys.set(__key__, new Set([${defines.get("strongSetArgList")}]));
-` : `
+      return null;
+
     this.#weakKeySet.add(__key__);
-`}
     return this;
   }
 
@@ -75,20 +59,15 @@ ${docs.buildBlock("delete", 2)}
     }], [${
       defines.get("strongSetArgList")
     }]);
-${
-  defines.get("strongSetCount") ? `
-    const __returnValue__ = this.#weakKeyToStrongKeys.delete(__key__);
-    if (__returnValue__)
-      this.#keyComposer.deleteKey([${
-        defines.get("weakSetArgList")
-      }], [${
-        defines.get("strongSetArgList")
-      }]);
 
+    const __returnValue__ = this.#weakKeySet.delete(__key__);
+    this.#keyComposer.deleteKey([${
+      defines.get("weakSetArgList")
+    }], [${
+      defines.get("strongSetArgList")
+    }]);
     return __returnValue__;
-` : `
-    return this.#weakKeySet.delete(__key__);
-`}  }
+  }
 
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {
@@ -106,12 +85,9 @@ ${docs.buildBlock("has", 2)}
     }], [${
       defines.get("strongSetArgList")
     }]);
-${
-  defines.get("strongSetCount") ? `
-    return this.#weakKeyToStrongKeys.has(__key__);
-` : `
+
     return this.#weakKeySet.has(__key__);
-`}  }
+  }
 
 ${docs.buildBlock("isValidKeyPublic", 2)}
   isValidKey(${defines.get("argList")}) {

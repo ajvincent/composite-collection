@@ -4,17 +4,14 @@
  * Generator: https://github.com/ajvincent/composite-collection/
  */
 
-import WeakKeyComposer from "./WeakKey-WeakMap.mjs";
+import WeakKeyComposer from "./keys/Composite.mjs";
 
 export default class WeakStrongSet {
-  /** @type {WeakKeyComposer} @const */
+  /** @type {WeakKeyComposer} @constant */
   #keyComposer = new WeakKeyComposer(["weakKey"], ["strongKey"]);
 
-  /**
-   * @type {WeakMap<WeakKey, Set<*>>}
-   * @const
-   */
-  #weakKeyToStrongKeys = new WeakMap;
+  /** @type {WeakSet<WeakKey>} @constant */
+  #weakKeySet = new WeakSet;
 
   constructor() {
     if (arguments.length > 0) {
@@ -40,9 +37,8 @@ export default class WeakStrongSet {
     const __key__ = this.#keyComposer.getKey([weakKey], [strongKey]);
     if (!__key__)
       return null;
-    if (!this.#weakKeyToStrongKeys.has(__key__))
-      this.#weakKeyToStrongKeys.set(__key__, new Set([strongKey]));
 
+    this.#weakKeySet.add(__key__);
     return this;
   }
 
@@ -63,10 +59,8 @@ export default class WeakStrongSet {
 
     const __key__ = this.#keyComposer.getKey([weakKey], [strongKey]);
 
-    const __returnValue__ = this.#weakKeyToStrongKeys.delete(__key__);
-    if (__returnValue__)
-      this.#keyComposer.deleteKey([weakKey], [strongKey]);
-
+    const __returnValue__ = this.#weakKeySet.delete(__key__);
+    this.#keyComposer.deleteKey([weakKey], [strongKey]);
     return __returnValue__;
   }
 
@@ -87,7 +81,7 @@ export default class WeakStrongSet {
 
     const __key__ = this.#keyComposer.getKey([weakKey], [strongKey]);
 
-    return this.#weakKeyToStrongKeys.has(__key__);
+    return this.#weakKeySet.has(__key__);
   }
 
   /**

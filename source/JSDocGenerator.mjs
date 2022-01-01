@@ -53,7 +53,7 @@ class ParamBlock {
  * @package
  */
 export default class JSDocGenerator {
-  /** @type {Map<string, MethodTemplate>} @const */
+  /** @type {Map<string, MethodTemplate>} @constant */
   #methodTemplates = new Map([
     ["rootContainerMap", {
       description: "The root map holding keys and values.",
@@ -61,16 +61,16 @@ export default class JSDocGenerator {
       headers: [
         "@type {Map<string, __className__~valueAndKeySet>}",
       ],
-      footers: ["@const"],
+      footers: ["@constant"],
     }],
 
     ["rootContainerWeakMap", {
       description: "The root map holding weak composite keys and values.",
       includeArgs: "none",
       headers: [
-        "@type {WeakMap<object, WeakMap<WeakKey, *>>}"
+        "@type {WeakMap<WeakKey, *>}"
       ],
-      footers: ["@const"],
+      footers: ["@constant"],
     }],
 
     ["rootContainerSet", {
@@ -79,7 +79,7 @@ export default class JSDocGenerator {
       headers: [
         "@type {Map<hash, *[]>}",
       ],
-      footers: ["@const"],
+      footers: ["@constant"],
     }],
 
     ["valueAndKeySet", {
@@ -94,7 +94,7 @@ export default class JSDocGenerator {
     ["getSize", {
       description: "The number of elements in this collection.",
       includeArgs: "none",
-      footers: ["@public", "@const"],
+      footers: ["@public", "@constant"],
     }],
 
     ["getSizeOfSet", {
@@ -106,7 +106,7 @@ export default class JSDocGenerator {
     ["mapSize", {
       description: "The number of maps in this collection.",
       includeArgs: "none",
-      footers: ["@public", "@const"],
+      footers: ["@public", "@constant"],
     }],
 
     ["clear", {
@@ -360,7 +360,7 @@ export default class JSDocGenerator {
   /** @type {string?} */
   #valueDesc = undefined;
 
-  /** @type {Param[]} @const */
+  /** @type {Param[]} @constant */
   #params = [];
 
   /**
@@ -373,7 +373,7 @@ export default class JSDocGenerator {
   /**
    * True if we should replace the word "map" with "set" in our main descriptions.
    * @type {boolean}
-   * @const
+   * @constant
    */
   #isSet;
 

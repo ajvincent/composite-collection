@@ -4,25 +4,16 @@
  * Generator: https://github.com/ajvincent/composite-collection/
  */
 
-import KeyHasher from "./KeyHasher.mjs";
+import KeyHasher from "./keys/Hasher.mjs";
 
 export default class StrongMapOfStrongSets {
-  /**
-   * @type {Map<hash, Map<hash, *[]>>}
-   * @const
-   */
+  /** @type {Map<hash, Map<hash, *[]>>} @constant */
   #outerMap = new Map();
 
-  /**
-   * @type {KeyHasher}
-   * @const
-   */
+  /** @type {KeyHasher} @constant */
   #mapHasher = new KeyHasher(["mapKey"]);
 
-  /**
-   * @type {KeyHasher}
-   * @const
-   */
+  /** @type {KeyHasher} @constant */
   #setHasher = new KeyHasher(["setKey"]);
 
   /** @type {Number} */
@@ -41,7 +32,7 @@ export default class StrongMapOfStrongSets {
    * The number of elements in this collection.
    *
    * @public
-   * @const
+   * @constant
    */
   get size() {
     return this.#sizeOfAll;
@@ -63,7 +54,7 @@ export default class StrongMapOfStrongSets {
    * The number of maps in this collection.
    *
    * @public
-   * @const
+   * @constant
    */
   get mapSize() {
     return this.#outerMap.size;
@@ -79,13 +70,13 @@ export default class StrongMapOfStrongSets {
    * @public
    */
   add(mapKey, setKey) {
-    const __mapHash__ = this.#mapHasher.buildHash([mapKey]);
+    const __mapHash__ = this.#mapHasher.getHash(mapKey);
     if (!this.#outerMap.has(__mapHash__))
       this.#outerMap.set(__mapHash__, new Map);
 
     const __innerMap__ = this.#outerMap.get(__mapHash__);
 
-    const __setHash__ = this.#setHasher.buildHash([setKey]);
+    const __setHash__ = this.#setHasher.getHash(setKey);
     if (!__innerMap__.has(__setHash__)) {
       __innerMap__.set(__setHash__, Object.freeze([mapKey, setKey]));
       this.#sizeOfAll++;
@@ -113,7 +104,7 @@ export default class StrongMapOfStrongSets {
       return __set__;
     });
 
-    const __mapHash__ = this.#mapHasher.buildHash([mapKey]);
+    const __mapHash__ = this.#mapHasher.getHash(mapKey);
     if (!this.#outerMap.has(__mapHash__))
       this.#outerMap.set(__mapHash__, new Map);
 
@@ -121,7 +112,7 @@ export default class StrongMapOfStrongSets {
     const __mapArgs__ = [mapKey];
 
     __array__.forEach(__set__ => {
-      const __setHash__ = this.#setHasher.buildHash(__set__);
+      const __setHash__ = this.#setHasher.getHash(...__set__);
       if (!__innerMap__.has(__setHash__)) {
         __innerMap__.set(__setHash__, Object.freeze(__mapArgs__.concat(__set__)));
         this.#sizeOfAll++;
@@ -171,7 +162,10 @@ export default class StrongMapOfStrongSets {
     if (!__innerMap__)
       return false;
 
-    const __setHash__ = this.#setHasher.buildHash([setKey]);
+    if (!this.#setHasher.hasHash(setKey))
+      return false;
+
+    const __setHash__ = this.#setHasher.getHash(setKey);
     if (!__innerMap__.has(__setHash__))
       return false;
 
@@ -257,7 +251,10 @@ export default class StrongMapOfStrongSets {
     if (!__innerMap__)
       return false;
 
-    const __setHash__ = this.#setHasher.buildHash([setKey]);
+    if (!this.#setHasher.hasHash(setKey))
+      return false;
+
+    const __setHash__ = this.#setHasher.getHash(setKey);
     return __innerMap__.has(__setHash__);
   }
 
@@ -335,8 +332,11 @@ export default class StrongMapOfStrongSets {
   }
 
   #getInnerMap(...__mapArguments__) {
-    const __hash__ = this.#mapHasher.buildHash(__mapArguments__);
-    return [this.#outerMap.get(__hash__), __hash__] || [];
+    if (!this.#mapHasher.hasHash(...__mapArguments__))
+      return [null];
+
+    const __hash__ = this.#mapHasher.getHash(...__mapArguments__);
+    return [this.#outerMap.get(__hash__), __hash__];
   }
 
 }

@@ -9,16 +9,10 @@ import { getAllFiles } from 'get-all-files';
 const projectRoot = url.fileURLToPath(new URL("..", import.meta.url));
 
 export default class Driver extends CompletionPromise {
-  /**
-   * @type {string}
-   * @const
-   */
+  /** @type {string} @constant */
   #sourcesPath;
 
-  /**
-   * @type {string}
-   * @const
-   */
+  /** @type {string} @constant */
   #targetsPath;
 
   /**
@@ -84,19 +78,29 @@ export default class Driver extends CompletionPromise {
       return generator.completionPromise;
     });
 
-    await fs.mkdir(this.#targetsPath, { recursive: true });
+    await fs.mkdir(path.join(this.#targetsPath, "keys"), { recursive: true });
 
     if (requiresKeyHasher) {
       promises.push(fs.copyFile(
-        path.join(projectRoot, "exports/KeyHasher.mjs"),
+        path.join(projectRoot, "source/exports/KeyHasher.mjs"),
         path.join(this.#targetsPath, "KeyHasher.mjs")
+      ));
+
+      promises.push(fs.copyFile(
+        path.join(projectRoot, "source/exports/keys/Hasher.mjs"),
+        path.join(this.#targetsPath, "keys/Hasher.mjs")
       ));
     }
 
     if (requiresWeakKey) {
       promises.push(fs.copyFile(
-        path.join(projectRoot, "exports/WeakKey-WeakMap.mjs"),
+        path.join(projectRoot, "source/exports/WeakKey-WeakMap.mjs"),
         path.join(this.#targetsPath, "WeakKey-WeakMap.mjs")
+      ));
+
+      promises.push(fs.copyFile(
+        path.join(projectRoot, "source/exports/keys/Composite.mjs"),
+        path.join(this.#targetsPath, "keys/Composite.mjs")
       ));
     }
 

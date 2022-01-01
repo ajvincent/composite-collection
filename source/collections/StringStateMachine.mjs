@@ -4,7 +4,7 @@
  * Generator: https://github.com/ajvincent/composite-collection/
  */
 
-import KeyHasher from "../exports/KeyHasher.mjs";
+import KeyHasher from "./keys/Hasher.mjs";
 
 export default class StringStateMachine {
   /**
@@ -12,14 +12,11 @@ export default class StringStateMachine {
    *
    * @type {Map<hash, *[]>}
    *
-   * @const
+   * @constant
    */
   #root = new Map;
 
-  /**
-   * @type {KeyHasher}
-   * @const
-   */
+  /** @type {KeyHasher} @constant */
   #hasher = new KeyHasher(["currentState", "nextState"]);
 
   constructor() {
@@ -35,7 +32,7 @@ export default class StringStateMachine {
    * The number of elements in this collection.
    *
    * @public
-   * @const
+   * @constant
    */
   get size() {
     return this.#root.size;
@@ -53,7 +50,7 @@ export default class StringStateMachine {
   add(currentState, nextState) {
     this.#requireValidKey(currentState, nextState);
 
-    const hash = this.#hasher.buildHash([currentState, nextState]);
+    const hash = this.#hasher.getHash(currentState, nextState);
     this.#root.set(hash, Object.freeze([currentState, nextState]));
     return this;
   }
@@ -77,7 +74,9 @@ export default class StringStateMachine {
    * @public
    */
   delete(currentState, nextState) {
-    const hash = this.#hasher.buildHash([currentState, nextState]);
+    if (!this.#hasher.hasHash(currentState, nextState))
+      return false;
+    const hash = this.#hasher.getHash(currentState, nextState);
     return this.#root.delete(hash);
   }
 
@@ -112,7 +111,9 @@ export default class StringStateMachine {
    * @public
    */
   has(currentState, nextState) {
-    const hash = this.#hasher.buildHash([currentState, nextState]);
+    if (!this.#hasher.hasHash(currentState, nextState))
+      return false;
+    const hash = this.#hasher.getHash(currentState, nextState);
     return this.#root.has(hash);
   }
 

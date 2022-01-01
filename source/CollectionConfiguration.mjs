@@ -61,7 +61,7 @@ export default class CollectionConfiguration {
   /** @type {string} */
   #currentState = "start";
 
-  /** @type {string} @const */
+  /** @type {string} @constant */
   #className;
 
   /** @type {string} @readonly */
@@ -70,7 +70,7 @@ export default class CollectionConfiguration {
   /** @type {string} */
   #importLines = "";
 
-  /** @type {Map<identifier, CollectionType>} @const */
+  /** @type {Map<identifier, CollectionType>} @constant */
   #parameterToTypeMap = new Map();
 
   /** @type {identifier[]} */

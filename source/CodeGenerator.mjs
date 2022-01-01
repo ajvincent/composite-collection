@@ -17,27 +17,21 @@ function buildArgNameList(keys) {
   return '[' + keys.map(key => `"${key}"`).join(", ") + ']'
 }
 
-/**
- * @package
- */
+/** @package */
 export default class CodeGenerator extends CompletionPromise {
-  static UTILITIES = [
-    "KeyHasher.mjs",
-  ];
-
-  /** @type {Object}  @const*/
+  /** @type {Object}  @constant */
   #configurationData;
 
-  /** @type {string} @const */
+  /** @type {string} @constant */
   #targetPath;
 
-  /** @type {RuntimeOptions} @const */
+  /** @type {RuntimeOptions} @constant */
   #compileOptions;
 
   /** @type {string} */
   #status = "not started yet";
 
-  /** @type {Map<string, *>} @const */
+  /** @type {Map<string, *>} @constant */
   #defines = new Map();
 
   /** @type {JSDocGenerator} */
@@ -124,9 +118,9 @@ export default class CodeGenerator extends CompletionPromise {
     {
       let lines = data.importLines;
       if (data.requiresWeakKey)
-        lines = `import WeakKeyComposer from "./WeakKey-WeakMap.mjs";\n` + lines;
+        lines = `import WeakKeyComposer from "./keys/Composite.mjs";\n` + lines;
       if (data.requiresKeyHasher)
-        lines = `import KeyHasher from "./KeyHasher.mjs";\n` + lines;
+        lines = `import KeyHasher from "./keys/Hasher.mjs";\n` + lines;
       this.#defines.set("importLines", lines);
     }
 
@@ -260,4 +254,3 @@ export default class CodeGenerator extends CompletionPromise {
 }
 Object.freeze(CodeGenerator);
 Object.freeze(CodeGenerator.prototype);
-Object.freeze(CodeGenerator.UTILITIES);

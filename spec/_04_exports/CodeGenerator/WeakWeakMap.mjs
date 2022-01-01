@@ -283,8 +283,10 @@ describe("CodeGenerator(WeakWeakMap.mjs),", () => {
 
     it("value when the keys are not held externally", async () => {
       await expectAsync(
-        key => testMap.set({}, {}, key)
-      ).toHoldReferencesWeakly();
+        value => {
+          testMap.set({}, {}, value)
+        }
+      ).toHoldReferencesWeakly()
     });
   });
 });

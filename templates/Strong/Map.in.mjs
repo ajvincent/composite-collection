@@ -20,7 +20,7 @@ export default class ${defines.get("className")} {
 
   /**
    * @type {KeyHasher}
-   * @const
+   * @constant
    */
   #hasher = new KeyHasher(${defines.get("argNameList")});
 
@@ -45,7 +45,10 @@ ${docs.buildBlock("clear", 2)}
 
 ${docs.buildBlock("delete", 2)}
   delete(${defines.get("argList")}) {${invokeValidate}
-    const hash = this.#hasher.buildHash([${defines.get("argList")}]);
+    if (!this.#hasher.hasHash(${defines.get("argList")}))
+      return false;
+
+    const hash = this.#hasher.getHash(${defines.get("argList")});
     return this.#root.delete(hash);
   }
 
@@ -69,14 +72,20 @@ ${docs.buildBlock("forEachCallbackMap", 2)}
 
 ${docs.buildBlock("get", 2)}
   get(${defines.get("argList")}) {${invokeValidate}
-    const hash = this.#hasher.buildHash([${defines.get("argList")}]);
+    if (!this.#hasher.hasHash(${defines.get("argList")}))
+      return undefined;
+
+    const hash = this.#hasher.getHash(${defines.get("argList")});
     const valueAndKeySet = this.#root.get(hash);
-    return valueAndKeySet ? valueAndKeySet.value : valueAndKeySet;
+    return valueAndKeySet?.value;
   }
 
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {${invokeValidate}
-    const hash = this.#hasher.buildHash([${defines.get("argList")}]);
+    if (!this.#hasher.hasHash(${defines.get("argList")}))
+      return false;
+
+    const hash = this.#hasher.getHash(${defines.get("argList")});
     return this.#root.has(hash);
   }
 
@@ -114,7 +123,7 @@ ${
     throw new Error("The value is not valid!");
 ` : ``
 }
-    const hash = this.#hasher.buildHash([${defines.get("argList")}]);
+    const hash = this.#hasher.getHash(${defines.get("argList")});
     const keySet = [${defines.get("argList")}];
     Object.freeze(keySet);
     this.#root.set(hash, {value, keySet});

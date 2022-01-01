@@ -26,7 +26,7 @@ describe("JSDocGenerator for maps", () => {
    *
    * @type {Map<string, SoloStrongMap~valueAndKeySet>}
    *
-   * @const
+   * @constant
    */`);
     });
 
@@ -35,9 +35,9 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * The root map holding weak composite keys and values.
    *
-   * @type {WeakMap<object, WeakMap<WeakKey, *>>}
+   * @type {WeakMap<WeakKey, *>}
    *
-   * @const
+   * @constant
    */`);
     });
 
@@ -56,7 +56,7 @@ describe("JSDocGenerator for maps", () => {
    * The number of elements in this collection.
    *
    * @public
-   * @const
+   * @constant
    */`);
     });
 
@@ -259,7 +259,7 @@ describe("JSDocGenerator for maps", () => {
    *
    * @type {Map<string, SoloStrongMap~valueAndKeySet>}
    *
-   * @const
+   * @constant
    */`);
     });
 
@@ -278,7 +278,7 @@ describe("JSDocGenerator for maps", () => {
    * The number of elements in this collection.
    *
    * @public
-   * @const
+   * @constant
    */`);
     });
 
@@ -482,7 +482,7 @@ describe("JSDocGenerator for maps", () => {
      *
      * @type {Map<string, SoloStrongMap~valueAndKeySet>}
      *
-     * @const
+     * @constant
      */`);
   });
 
@@ -517,7 +517,7 @@ describe("JSDocGenerator for sets", () => {
    *
    * @type {Map<hash, *[]>}
    *
-   * @const
+   * @constant
    */`);
     });
 
@@ -536,7 +536,7 @@ describe("JSDocGenerator for sets", () => {
    * The number of elements in this collection.
    *
    * @public
-   * @const
+   * @constant
    */`);
     });
 
@@ -683,7 +683,7 @@ describe("JSDocGenerator for sets", () => {
    *
    * @type {Map<hash, *[]>}
    *
-   * @const
+   * @constant
    */`);
     });
 
@@ -702,7 +702,7 @@ describe("JSDocGenerator for sets", () => {
    * The number of elements in this collection.
    *
    * @public
-   * @const
+   * @constant
    */`);
     });
 
@@ -874,7 +874,7 @@ describe("JSDocGenerator for sets", () => {
      *
      * @type {Map<string, SoloStrongSet~valueAndKeySet>}
      *
-     * @const
+     * @constant
      */`);
   });
 

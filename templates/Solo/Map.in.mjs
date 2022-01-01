@@ -28,7 +28,6 @@ ${defines.has("invokeValidate") ? `
   }
 ` : ``}
 
-
 ${defines.has("validateArguments") ? `
 ${docs.buildBlock("isValidKeyPublic", 2)}
   isValidKey(${defines.get("argList")}) {

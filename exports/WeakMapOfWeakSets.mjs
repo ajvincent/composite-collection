@@ -4,13 +4,13 @@
  * Generator: https://github.com/ajvincent/composite-collection/
  */
 
-import WeakKeyComposer from "./WeakKey-WeakMap.mjs";
+import WeakKeyComposer from "./keys/Composite.mjs";
 
 export default class WeakMapOfWeakSets {
   /**
-   * @type {WeakMap<object, WeakMap<WeakKey, WeakSet<WeakKey>>>}
-   * @note This is three levels.  The first level is the first weak argument.
-   * The second level is the WeakKey.  The third level is the weak set.
+   * @type {WeakMap<WeakKey, WeakSet<WeakKey>>}
+   * @note This is two levels.  The first level is the map's weak key.
+   * The second level is the weak set of weak keys.
    */
   #root = new WeakMap();
 
@@ -23,12 +23,6 @@ export default class WeakMapOfWeakSets {
   #setKeyComposer = new WeakKeyComposer(
     ["setKey"], []
   );
-
-  /**
-   * @type {WeakMap<WeakKey, Map<hash, Set<*>>>}
-   * @const
-   */
-  #weakKeyToStrongKeys = new WeakMap;
 
   constructor() {
     if (arguments.length > 0) {
@@ -52,12 +46,10 @@ export default class WeakMapOfWeakSets {
     this.#requireValidKey(mapKey, setKey);
     const __innerSet__ = this.#requireInnerSet(mapKey);
 
-    // level 3: inner WeakSet
+    // level 2: inner WeakSet
     const __weakSetKey__ = this.#setKeyComposer.getKey(
       [setKey], []
     );
-    if (!this.#weakKeyToStrongKeys.has(__weakSetKey__))
-      this.#weakKeyToStrongKeys.set(__weakSetKey__, new Set([]));
 
     __innerSet__.add(__weakSetKey__);
     return this;
@@ -90,8 +82,6 @@ export default class WeakMapOfWeakSets {
       const __weakSetKey__ = this.#setKeyComposer.getKey(
         [setKey], []
       );
-      if (!this.#weakKeyToStrongKeys.has(__weakSetKey__))
-        this.#weakKeyToStrongKeys.set(__weakSetKey__, new Set([]));
 
       __innerSet__.add(__weakSetKey__);
     });
@@ -117,15 +107,9 @@ export default class WeakMapOfWeakSets {
       ))
       return false;
 
-    const __weakSetKey__ = this.#setKeyComposer.getKey(
+    const __returnValue__ = this.#setKeyComposer.deleteKey(
       [setKey], []
     );
-
-    const __returnValue__ = this.#weakKeyToStrongKeys.delete(__weakSetKey__);
-    if (__returnValue__)
-      this.#setKeyComposer.deleteKey(
-        [setKey], []
-      );
 
     return __returnValue__;
   }
@@ -140,23 +124,15 @@ export default class WeakMapOfWeakSets {
    */
   deleteSets(mapKey) {
     this.#requireValidMapKey(mapKey);
-    let __weakKeyMap__;
-
-    // level 1:  first weak argument to weak map key
-    {
-      if (!this.#root.has(mapKey)) {
-        return false;
-      }
-      __weakKeyMap__ = this.#root.get(mapKey);
-    }
-
-    // level 2:  weak map key to inner map
-    {
-      const __mapKey__ = this.#mapKeyComposer.getKey(
+    if (!this.#mapKeyComposer.hasKey(
         [mapKey], []
-      );
-      return __weakKeyMap__.delete(__mapKey__);
-    }
+      ))
+      return false;
+
+    const __mapKey__ = this.#mapKeyComposer.getKey(
+      [mapKey], []
+    );
+    return this.#root.delete(__mapKey__);
   }
 
   /**
@@ -219,31 +195,13 @@ export default class WeakMapOfWeakSets {
    * @param {object} mapKey 
    */
   #requireInnerSet(mapKey) {
-    let __weakKeyMap__, __innerSet__;
-    // level 1:  first weak argument to weak map key
-    {
-      if (!this.#root.has(mapKey)) {
-        this.#root.set(mapKey, new WeakMap);
-      }
-      __weakKeyMap__ = this.#root.get(mapKey);
+    const __mapKey__ = this.#mapKeyComposer.getKey(
+      [mapKey], []
+    );
+    if (!this.#root.has(__mapKey__)) {
+      this.#root.set(__mapKey__, new WeakSet);
     }
-
-    // level 2:  weak map key to inner map
-    {
-      const __mapKey__ = this.#mapKeyComposer.getKey(
-        [mapKey], []
-      );
-      if (!__weakKeyMap__.has(__mapKey__)) {
-        __weakKeyMap__.set(__mapKey__, new WeakSet);
-      }
-      __innerSet__ = __weakKeyMap__.get(__mapKey__);
-
-      if (!this.#weakKeyToStrongKeys.has(__mapKey__)) {
-        this.#weakKeyToStrongKeys.set(__mapKey__, new WeakSet([]));
-      }
-
-      return __innerSet__;
-    }
+    return this.#root.get(__mapKey__);
   }
 
   /**
@@ -254,23 +212,16 @@ export default class WeakMapOfWeakSets {
    * @returns {WeakMapOfWeakSets~InnerMap}
    */
   #getExistingInnerSet(mapKey) {
-    let __weakKeyMap__;
-
-    // level 1:  first weak argument to weak map key
-    {
-      __weakKeyMap__ = this.#root.get(mapKey);
-      if (!__weakKeyMap__)
-        return undefined;
-    }
-
-    // level 2:  weak map key to inner map
-    {
-      const __mapKey__ = this.#mapKeyComposer.getKey(
+    if (!this.#mapKeyComposer.hasKey(
         [mapKey], []
-      );
+      ))
+      return undefined;
 
-      return __weakKeyMap__.get(__mapKey__);
-    }
+    const __mapKey__ = this.#mapKeyComposer.getKey(
+      [mapKey], []
+    );
+
+    return this.#root.get(__mapKey__);
   }
 
   /**

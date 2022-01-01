@@ -330,4 +330,50 @@ describe("WeakKey-WeakRefNew composer", () => {
       ).toHoldReferencesWeakly();
     });
   });
+
+  describe("holds references to getKey() returns weakly", () => {
+    let composer;
+    const key1 = {}, key2 = {};
+    beforeEach(() => {
+      jasmine.addAsyncMatchers(ToHoldRefsMatchers);
+      composer = new WeakKeyComposer(["weakKey1", "weakKey2"], ["strongKey"]);
+    });
+
+    afterEach(() => {
+      composer = null;
+    });
+
+    it("weakly when no key is held strongly", async () => {
+      await expectAsync(
+        () => composer.getKey([{}, {}], [{}])
+      ).toHoldValuesWeakly();
+    });
+
+    it("weakly when only the first key is held strongly", async () => {
+      // should be weak because the second key isn't held strongly
+      await expectAsync(
+        () => composer.getKey([key1, {}], [{}])
+      ).toHoldValuesWeakly();
+    });
+
+    it("weakly when only the second key is held strongly", async () => {
+      // should be weak because the first key isn't held strongly
+      await expectAsync(
+        () => composer.getKey([{}, key2], [{}])
+      ).toHoldValuesWeakly();
+    });
+
+    it("strongly when both weak keys are held strongly", async () => {
+      // should be weak because the first key isn't held strongly
+      await expectAsync(
+        () => composer.getKey([key1, key2], [{}])
+      ).toHoldValuesStrongly();
+    });
+
+    it("weakly when the third key is held strongly", async () => {
+      await expectAsync(
+        () => composer.getKey([{}, {}], [key1])
+      ).toHoldValuesWeakly();
+    })
+  });
 });

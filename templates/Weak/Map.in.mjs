@@ -8,10 +8,7 @@ export default function preprocess(defines, docs) {
 ${defines.get("importLines")}
 
 export default class ${defines.get("className")} {
-  /**
-   * @type {WeakKeyComposer}
-   * @const
-   */
+  /** @type {WeakKeyComposer} @constant */
   #keyComposer = new WeakKeyComposer(${
     defines.get("weakMapArgNameList")
   }, ${
@@ -20,16 +17,6 @@ export default class ${defines.get("className")} {
 
   ${docs.buildBlock("rootContainerWeakMap", 4)}
   #root = new WeakMap;
-
-  ${
-    defines.get("strongMapCount") ? `
-    /**
-     * @type {WeakMap<WeakKey, Set<*>>}
-     * @const
-     */
-    #weakKeyToStrongKeys = new WeakMap;
-` : ``
-}
 
   constructor() {
     if (arguments.length > 0) {
@@ -44,10 +31,6 @@ export default class ${defines.get("className")} {
 ${docs.buildBlock("delete", 2)}
   delete(${defines.get("argList")}) {
     this.#requireValidKey(${defines.get("argList")});
-    const __keyMap__ = this.#root.get(${defines.get("weakMapArgument0")});
-    if (!__keyMap__)
-      return false;
-
     if (!this.#keyComposer.hasKey([${
       defines.get("weakMapArgList")
     }], [${
@@ -65,16 +48,12 @@ ${docs.buildBlock("delete", 2)}
     }], [${
       defines.get("strongMapArgList")
     }]);
-    return __keyMap__.delete(__key__);
+    return this.#root.delete(__key__);
   }
 
 ${docs.buildBlock("get", 2)}
   get(${defines.get("argList")}) {
     this.#requireValidKey(${defines.get("argList")});
-    const __keyMap__ = this.#root.get(${defines.get("weakMapArgument0")});
-    if (!__keyMap__)
-      return undefined;
-
     if (!this.#keyComposer.hasKey([${
       defines.get("weakMapArgList")
     }], [${
@@ -87,17 +66,12 @@ ${docs.buildBlock("get", 2)}
     }], [${
       defines.get("strongMapArgList")
     }]);
-    if (!__key__)
-      return undefined;
-    return __keyMap__.get(__key__);
+    return this.#root.get(__key__);
   }
 
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {
     this.#requireValidKey(${defines.get("argList")});
-    const __keyMap__ = this.#root.get(${defines.get("weakMapArgument0")});
-    if (!__keyMap__)
-      return false;
 
     if (!this.#keyComposer.hasKey([${
       defines.get("weakMapArgList")
@@ -113,7 +87,7 @@ ${docs.buildBlock("has", 2)}
     }]);
     if (!__key__)
       return false;
-    return __keyMap__.has(__key__);
+    return this.#root.has(__key__);
   }
 
 
@@ -141,20 +115,12 @@ ${docs.buildBlock("set", 2)}
     ` : ``
     }
 
-    if (!this.#root.has(${defines.get("weakMapArgument0")}))
-      this.#root.set(${defines.get("weakMapArgument0")}, new WeakMap);
-
-    const __keyMap__ = this.#root.get(${defines.get("weakMapArgument0")});
     const __key__ = this.#keyComposer.getKey([${
       defines.get("weakMapArgList")
     }], [${
       defines.get("strongMapArgList")
-    }]);${
-defines.get("strongMapCount") ? `
-    if (!this.#weakKeyToStrongKeys.has(__key__))
-      this.#weakKeyToStrongKeys.set(__key__, new Set([${defines.get("strongMapArgList")}]));
-` : ``}
-    __keyMap__.set(__key__, value);
+    }]);
+    this.#root.set(__key__, value);
     return this;
   }
 

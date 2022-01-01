@@ -16,22 +16,13 @@ export default function preprocess(defines, docs) {
 ${defines.get("importLines")}
 
 export default class ${defines.get("className")} {
-  /**
-   * @type {Map<hash, Map<hash, *[]>>}
-   * @const
-   */
+  /** @type {Map<hash, Map<hash, *[]>>} @constant */
   #outerMap = new Map();
 
-  /**
-   * @type {KeyHasher}
-   * @const
-   */
+  /** @type {KeyHasher} @constant */
   #mapHasher = new KeyHasher(${defines.get("mapArgNameList")});
 
-  /**
-   * @type {KeyHasher}
-   * @const
-   */
+  /** @type {KeyHasher} @constant */
   #setHasher = new KeyHasher(${defines.get("setArgNameList")});
 
   /** @type {Number} */
@@ -64,13 +55,13 @@ ${docs.buildBlock("mapSize", 2)}
 
 ${docs.buildBlock("add", 2)}
   add(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {${invokeValidate}
-    const __mapHash__ = this.#mapHasher.buildHash([${defines.get("mapArgList")}]);
+    const __mapHash__ = this.#mapHasher.getHash(${defines.get("mapArgList")});
     if (!this.#outerMap.has(__mapHash__))
       this.#outerMap.set(__mapHash__, new Map);
 
     const __innerMap__ = this.#outerMap.get(__mapHash__);
 
-    const __setHash__ = this.#setHasher.buildHash([${defines.get("setArgList")}]);
+    const __setHash__ = this.#setHasher.getHash(${defines.get("setArgList")});
     if (!__innerMap__.has(__setHash__)) {
       __innerMap__.set(__setHash__, Object.freeze([${defines.get("argList")}]));
       this.#sizeOfAll++;
@@ -93,7 +84,7 @@ ${docs.buildBlock("addSets", 2)}
       return __set__;
     });
 
-    const __mapHash__ = this.#mapHasher.buildHash([${defines.get("mapArgList")}]);
+    const __mapHash__ = this.#mapHasher.getHash(${defines.get("mapArgList")});
     if (!this.#outerMap.has(__mapHash__))
       this.#outerMap.set(__mapHash__, new Map);
 
@@ -101,7 +92,7 @@ ${docs.buildBlock("addSets", 2)}
     const __mapArgs__ = [${defines.get("mapArgList")}];
 
     __array__.forEach(__set__ => {
-      const __setHash__ = this.#setHasher.buildHash(__set__);
+      const __setHash__ = this.#setHasher.getHash(...__set__);
       if (!__innerMap__.has(__setHash__)) {
         __innerMap__.set(__setHash__, Object.freeze(__mapArgs__.concat(__set__)));
         this.#sizeOfAll++;
@@ -133,7 +124,10 @@ ${docs.buildBlock("delete", 2)}
     if (!__innerMap__)
       return false;
 
-    const __setHash__ = this.#setHasher.buildHash([${defines.get("setArgList")}]);
+    if (!this.#setHasher.hasHash(${defines.get("setArgList")}))
+      return false;
+
+    const __setHash__ = this.#setHasher.getHash(${defines.get("setArgList")});
     if (!__innerMap__.has(__setHash__))
       return false;
 
@@ -186,7 +180,10 @@ ${docs.buildBlock("has", 2)}
     if (!__innerMap__)
       return false;
 
-    const __setHash__ = this.#setHasher.buildHash([${defines.get("setArgList")}]);
+    if (!this.#setHasher.hasHash(${defines.get("setArgList")}))
+      return false;
+
+    const __setHash__ = this.#setHasher.getHash(${defines.get("setArgList")});
     return __innerMap__.has(__setHash__);
   }
 
@@ -242,8 +239,11 @@ ${docs.buildBlock("valuesSet", 2)}
   }
 
   #getInnerMap(...__mapArguments__) {
-    const __hash__ = this.#mapHasher.buildHash(__mapArguments__);
-    return [this.#outerMap.get(__hash__), __hash__] || [];
+    if (!this.#mapHasher.hasHash(...__mapArguments__))
+      return [null];
+
+    const __hash__ = this.#mapHasher.getHash(...__mapArguments__);
+    return [this.#outerMap.get(__hash__), __hash__];
   }
 
 ${defines.has("validateArguments") ? `

@@ -18,10 +18,14 @@ describe("Combinations of auto-generated configurations:", () => {
       "KeyHasher.mjs",
       "WeakKey-WeakMap.mjs",
       "WeakKey-WeakRef.mjs",
-    ].map(leafName => fs.copyFile(
-      path.join(process.cwd(), "source", "exports", leafName),
-      path.join(cleanup.tempDir, leafName)
-    )));
+      "keys/Hasher.mjs",
+      "keys/Composite.mjs",
+    ].map(async leafName => {
+      const sourceFile = path.join(process.cwd(), "source", "exports", leafName);
+      const targetFile = path.join(cleanup.tempDir, leafName);
+      await fs.mkdir(path.dirname(targetFile), { recursive: true });
+      await fs.copyFile(sourceFile, targetFile);
+    }));
   });
 
   afterAll(async () => {

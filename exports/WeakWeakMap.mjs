@@ -4,21 +4,18 @@
  * Generator: https://github.com/ajvincent/composite-collection/
  */
 
-import WeakKeyComposer from "./WeakKey-WeakMap.mjs";
+import WeakKeyComposer from "./keys/Composite.mjs";
 
 export default class WeakWeakMap {
-  /**
-   * @type {WeakKeyComposer}
-   * @const
-   */
+  /** @type {WeakKeyComposer} @constant */
   #keyComposer = new WeakKeyComposer(["key1", "key2"], []);
 
   /**
    * The root map holding weak composite keys and values.
    *
-   * @type {WeakMap<object, WeakMap<WeakKey, *>>}
+   * @type {WeakMap<WeakKey, *>}
    *
-   * @const
+   * @constant
    */
   #root = new WeakMap;
 
@@ -42,16 +39,12 @@ export default class WeakWeakMap {
    */
   delete(key1, key2) {
     this.#requireValidKey(key1, key2);
-    const __keyMap__ = this.#root.get(key1);
-    if (!__keyMap__)
-      return false;
-
     if (!this.#keyComposer.hasKey([key1, key2], []))
       return false;
 
     const __key__ = this.#keyComposer.getKey([key1, key2], []);
     this.#keyComposer.deleteKey([key1, key2], []);
-    return __keyMap__.delete(__key__);
+    return this.#root.delete(__key__);
   }
 
   /**
@@ -65,17 +58,11 @@ export default class WeakWeakMap {
    */
   get(key1, key2) {
     this.#requireValidKey(key1, key2);
-    const __keyMap__ = this.#root.get(key1);
-    if (!__keyMap__)
-      return undefined;
-
     if (!this.#keyComposer.hasKey([key1, key2], []))
       return undefined;
 
     const __key__ = this.#keyComposer.getKey([key1, key2], []);
-    if (!__key__)
-      return undefined;
-    return __keyMap__.get(__key__);
+    return this.#root.get(__key__);
   }
 
   /**
@@ -89,9 +76,6 @@ export default class WeakWeakMap {
    */
   has(key1, key2) {
     this.#requireValidKey(key1, key2);
-    const __keyMap__ = this.#root.get(key1);
-    if (!__keyMap__)
-      return false;
 
     if (!this.#keyComposer.hasKey([key1, key2], []))
       return false;
@@ -99,7 +83,7 @@ export default class WeakWeakMap {
     const __key__ = this.#keyComposer.getKey([key1, key2], []);
     if (!__key__)
       return false;
-    return __keyMap__.has(__key__);
+    return this.#root.has(__key__);
   }
 
   /**
@@ -128,12 +112,8 @@ export default class WeakWeakMap {
   set(key1, key2, value) {
     this.#requireValidKey(key1, key2);
 
-    if (!this.#root.has(key1))
-      this.#root.set(key1, new WeakMap);
-
-    const __keyMap__ = this.#root.get(key1);
     const __key__ = this.#keyComposer.getKey([key1, key2], []);
-    __keyMap__.set(__key__, value);
+    this.#root.set(__key__, value);
     return this;
   }
 

@@ -4,36 +4,26 @@
  * Generator: https://github.com/ajvincent/composite-collection/
  */
 
-import KeyHasher from "./KeyHasher.mjs";
-import WeakKeyComposer from "./WeakKey-WeakMap.mjs";
+import KeyHasher from "./keys/Hasher.mjs";
+import WeakKeyComposer from "./keys/Composite.mjs";
 
 /** @typedef {Map<hash, *[]>} WeakFunctionMultiMap~InnerMap */
 
 export default class WeakFunctionMultiMap {
   /**
-   * @type {WeakMap<object, WeakMap<WeakKey, WeakFunctionMultiMap~InnerMap>>}
-   * @const
-   * @note This is three levels.  The first level is the first weak argument.
-   * The second level is the WeakKey.  The third level is the strong set.
+   * @type {WeakMap<WeakKey, WeakFunctionMultiMap~InnerMap>}
+   * @constant
+   * @note This is two levels. The first level is the WeakKey.  The second level is the strong set.
    */
   #root = new WeakMap();
 
-  /** @type {WeakKeyComposer} @const */
+  /** @type {WeakKeyComposer} @constant */
   #mapKeyComposer = new WeakKeyComposer(
     ["key"], []
   );
 
-  /**
-   * @type {KeyHasher}
-   * @const
-   */
+  /** @type {KeyHasher} @constant */
   #setHasher = new KeyHasher(["mapFunction"]);
-
-  /**
-   * @type {WeakMap<WeakKey, Map<hash, Set<*>>>}
-   * @const
-   */
-  #weakKeyToStrongKeys = new WeakMap;
 
   constructor() {
     if (arguments.length > 0) {
@@ -57,11 +47,11 @@ export default class WeakFunctionMultiMap {
     this.#requireValidKey(key, mapFunction);
     const __innerMap__ = this.#requireInnerMap(key);
 
-    // level 3: inner map to set
+    // level 2: inner map to set
     {
-      const __setKeyHash__ = this.#setHasher.buildHash([mapFunction]);
+      const __setKeyHash__ = this.#setHasher.getHash(mapFunction);
       if (!__innerMap__.has(__setKeyHash__)) {
-        __innerMap__.set(__setKeyHash__, [key, mapFunction]);
+        __innerMap__.set(__setKeyHash__, [mapFunction]);
       }
     }
 
@@ -90,11 +80,11 @@ export default class WeakFunctionMultiMap {
 
     const __innerMap__ = this.#requireInnerMap(key);
 
-    // level 3: inner map to set
+    // level 2: inner map to set
     __array__.forEach(__set__ => {
-      const __setKeyHash__ = this.#setHasher.buildHash(__set__);
+      const __setKeyHash__ = this.#setHasher.getHash(...__set__);
       if (!__innerMap__.has(__setKeyHash__)) {
-        __innerMap__.set(__setKeyHash__, [key, ...__set__]);
+        __innerMap__.set(__setKeyHash__, __set__);
       }
     });
 
@@ -132,8 +122,10 @@ export default class WeakFunctionMultiMap {
     if (!__innerMap__)
       return false;
 
-    // level 3: inner map to set
-    const __setKeyHash__ = this.#setHasher.buildHash([mapFunction]);
+    // level 2: inner map to set
+    if (!this.#setHasher.hasHash(mapFunction))
+      return false;
+    const __setKeyHash__ = this.#setHasher.getHash(mapFunction);
     const __returnValue__ = __innerMap__.delete(__setKeyHash__);
 
     if (__innerMap__.size === 0) {
@@ -153,23 +145,17 @@ export default class WeakFunctionMultiMap {
    */
   deleteSets(key) {
     this.#requireValidMapKey(key);
-    let __weakKeyMap__;
 
-    // level 1:  first weak argument to weak map key
-    {
-      if (!this.#root.has(key)) {
-        return false;
-      }
-      __weakKeyMap__ = this.#root.get(key);
-    }
-
-    // level 2:  weak map key to inner map
-    {
-      const __mapKey__ = this.#mapKeyComposer.getKey(
+    if (!this.#mapKeyComposer.hasKey(
         [key], []
-      );
-      return __weakKeyMap__.delete(__mapKey__);
-    }
+      ))
+      return false;
+
+    const __mapKey__ = this.#mapKeyComposer.getKey(
+      [key], []
+    );
+
+    return this.#root.delete(__mapKey__);
   }
 
   /**
@@ -186,7 +172,7 @@ export default class WeakFunctionMultiMap {
       return;
 
     __innerMap__.forEach(
-      __keySet__ => __callback__.apply(__thisArg__, __keySet__.concat(this))
+      __keySet__ => __callback__.apply(__thisArg__, [key, ...__keySet__, this])
     );
   }
 
@@ -229,9 +215,11 @@ export default class WeakFunctionMultiMap {
     if (!__innerMap__)
       return false;
 
-    // level 3: inner map to set
+    // level 2: inner map to set
     {
-      const __setKeyHash__ = this.#setHasher.buildHash([mapFunction]);
+      if (!this.#setHasher.hasHash(mapFunction))
+        return false;
+      const __setKeyHash__ = this.#setHasher.getHash(mapFunction);
       return __innerMap__.has(__setKeyHash__);
     }
   }
@@ -282,7 +270,26 @@ export default class WeakFunctionMultiMap {
         }
       };
 
-    return __innerMap__.values();
+    const __outerIter__ = __innerMap__.values();
+    return {
+      next() {
+        let {
+          value,
+          done
+        } = __outerIter__.next();
+        if (done)
+          return {
+            value: undefined,
+            done
+          };
+
+        value = [key, ...value];
+        return {
+          value,
+          done
+        };
+      }
+    }
   }
 
   /**
@@ -291,31 +298,13 @@ export default class WeakFunctionMultiMap {
    * @param {object} key 
    */
   #requireInnerMap(key) {
-    let __weakKeyMap__, __innerMap__;
-    // level 1:  first weak argument to weak map key
-    {
-      if (!this.#root.has(key)) {
-        this.#root.set(key, new WeakMap);
-      }
-      __weakKeyMap__ = this.#root.get(key);
+    const __mapKey__ = this.#mapKeyComposer.getKey(
+      [key], []
+    );
+    if (!this.#root.has(__mapKey__)) {
+      this.#root.set(__mapKey__, new Map);
     }
-
-    // level 2:  weak map key to inner map
-    {
-      const __mapKey__ = this.#mapKeyComposer.getKey(
-        [key], []
-      );
-      if (!__weakKeyMap__.has(__mapKey__)) {
-        __weakKeyMap__.set(__mapKey__, new Map);
-      }
-      __innerMap__ = __weakKeyMap__.get(__mapKey__);
-
-      if (!this.#weakKeyToStrongKeys.has(__mapKey__)) {
-        this.#weakKeyToStrongKeys.set(__mapKey__, new Set([]));
-      }
-
-      return __innerMap__;
-    }
+    return this.#root.get(__mapKey__);
   }
 
   /**
@@ -326,23 +315,16 @@ export default class WeakFunctionMultiMap {
    * @returns {WeakFunctionMultiMap~InnerMap}
    */
   #getExistingInnerMap(key) {
-    let __weakKeyMap__;
-
-    // level 1:  first weak argument to weak map key
-    {
-      __weakKeyMap__ = this.#root.get(key);
-      if (!__weakKeyMap__)
-        return undefined;
-    }
-
-    // level 2:  weak map key to inner map
-    {
-      const __mapKey__ = this.#mapKeyComposer.getKey(
+    if (!this.#mapKeyComposer.hasKey(
         [key], []
-      );
+      ))
+      return undefined;
 
-      return __weakKeyMap__.get(__mapKey__);
-    }
+    const __mapKey__ = this.#mapKeyComposer.getKey(
+      [key], []
+    );
+
+    return this.#root.get(__mapKey__);
   }
 
   /**

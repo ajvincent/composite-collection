@@ -4,16 +4,13 @@
  * Generator: https://github.com/ajvincent/composite-collection/
  */
 
-import WeakKeyComposer from "./WeakKey-WeakMap.mjs";
+import WeakKeyComposer from "./keys/Composite.mjs";
 
 export default class WeakWeakSet {
-  /** @type {WeakKeyComposer} @const */
+  /** @type {WeakKeyComposer} @constant */
   #keyComposer = new WeakKeyComposer(["key1", "key2"], []);
 
-  /**
-   * @type {WeakSet<WeakKey>}
-   * @const
-   */
+  /** @type {WeakSet<WeakKey>} @constant */
   #weakKeySet = new WeakSet;
 
   constructor() {
@@ -40,8 +37,8 @@ export default class WeakWeakSet {
     const __key__ = this.#keyComposer.getKey([key1, key2], []);
     if (!__key__)
       return null;
-    this.#weakKeySet.add(__key__);
 
+    this.#weakKeySet.add(__key__);
     return this;
   }
 
@@ -62,7 +59,9 @@ export default class WeakWeakSet {
 
     const __key__ = this.#keyComposer.getKey([key1, key2], []);
 
-    return this.#weakKeySet.delete(__key__);
+    const __returnValue__ = this.#weakKeySet.delete(__key__);
+    this.#keyComposer.deleteKey([key1, key2], []);
+    return __returnValue__;
   }
 
   /**

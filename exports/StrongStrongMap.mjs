@@ -4,7 +4,7 @@
  * Generator: https://github.com/ajvincent/composite-collection/
  */
 
-import KeyHasher from "./KeyHasher.mjs";
+import KeyHasher from "./keys/Hasher.mjs";
 
 export default class StrongStrongMap {
   /**
@@ -18,13 +18,13 @@ export default class StrongStrongMap {
    *
    * @type {Map<string, StrongStrongMap~valueAndKeySet>}
    *
-   * @const
+   * @constant
    */
   #root = new Map;
 
   /**
    * @type {KeyHasher}
-   * @const
+   * @constant
    */
   #hasher = new KeyHasher(["key1", "key2"]);
 
@@ -41,7 +41,7 @@ export default class StrongStrongMap {
    * The number of elements in this collection.
    *
    * @public
-   * @const
+   * @constant
    */
   get size() {
     return this.#root.size;
@@ -66,7 +66,10 @@ export default class StrongStrongMap {
    * @public
    */
   delete(key1, key2) {
-    const hash = this.#hasher.buildHash([key1, key2]);
+    if (!this.#hasher.hasHash(key1, key2))
+      return false;
+
+    const hash = this.#hasher.getHash(key1, key2);
     return this.#root.delete(hash);
   }
 
@@ -116,9 +119,12 @@ export default class StrongStrongMap {
    * @public
    */
   get(key1, key2) {
-    const hash = this.#hasher.buildHash([key1, key2]);
+    if (!this.#hasher.hasHash(key1, key2))
+      return undefined;
+
+    const hash = this.#hasher.getHash(key1, key2);
     const valueAndKeySet = this.#root.get(hash);
-    return valueAndKeySet ? valueAndKeySet.value : valueAndKeySet;
+    return valueAndKeySet?.value;
   }
 
   /**
@@ -131,7 +137,10 @@ export default class StrongStrongMap {
    * @public
    */
   has(key1, key2) {
-    const hash = this.#hasher.buildHash([key1, key2]);
+    if (!this.#hasher.hasHash(key1, key2))
+      return false;
+
+    const hash = this.#hasher.getHash(key1, key2);
     return this.#root.has(hash);
   }
 
@@ -159,7 +168,7 @@ export default class StrongStrongMap {
    */
   set(key1, key2, value) {
 
-    const hash = this.#hasher.buildHash([key1, key2]);
+    const hash = this.#hasher.getHash(key1, key2);
     const keySet = [key1, key2];
     Object.freeze(keySet);
     this.#root.set(hash, {

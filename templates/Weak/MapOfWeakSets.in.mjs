@@ -9,9 +9,9 @@ ${defines.get("importLines")}
 
 export default class ${defines.get("className")} {
   /**
-   * @type {WeakMap<object, WeakMap<WeakKey, WeakSet<WeakKey>>>}
-   * @note This is three levels.  The first level is the first weak argument.
-   * The second level is the WeakKey.  The third level is the weak set.
+   * @type {WeakMap<WeakKey, WeakSet<WeakKey>>}
+   * @note This is two levels.  The first level is the map's weak key.
+   * The second level is the weak set of weak keys.
    */
   #root = new WeakMap();
 
@@ -24,12 +24,6 @@ export default class ${defines.get("className")} {
   #setKeyComposer = new WeakKeyComposer(
     ${defines.get("weakSetArgNameList")}, ${defines.get("strongSetArgNameList")}
   );
-
-  /**
-   * @type {WeakMap<WeakKey, Map<hash, Set<*>>>}
-   * @const
-   */
-  #weakKeyToStrongKeys = new WeakMap;
 
   constructor() {
     if (arguments.length > 0) {
@@ -45,12 +39,10 @@ ${docs.buildBlock("add", 2)}
     this.#requireValidKey(${defines.get("mapArgList")}, ${defines.get("setArgList")});
     const __innerSet__ = this.#requireInnerSet(${defines.get("mapArgList")});
 
-    // level 3: inner WeakSet
+    // level 2: inner WeakSet
     const __weakSetKey__ = this.#setKeyComposer.getKey(
       [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
     );
-    if (!this.#weakKeyToStrongKeys.has(__weakSetKey__))
-      this.#weakKeyToStrongKeys.set(__weakSetKey__, new Set([${defines.get("strongSetArgList")}]));
 
     __innerSet__.add(__weakSetKey__);
     return this;
@@ -77,9 +69,7 @@ ${docs.buildBlock("addSets", 2)}
       const __weakSetKey__ = this.#setKeyComposer.getKey(
         [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
       );
-      if (!this.#weakKeyToStrongKeys.has(__weakSetKey__))
-        this.#weakKeyToStrongKeys.set(__weakSetKey__, new Set([${defines.get("strongSetArgList")}]));
-  
+
       __innerSet__.add(__weakSetKey__);
     });
   }
@@ -96,15 +86,9 @@ ${docs.buildBlock("delete", 2)}
     ))
       return false;
 
-    const __weakSetKey__ = this.#setKeyComposer.getKey(
+    const __returnValue__ = this.#setKeyComposer.deleteKey(
       [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
     );
-
-    const __returnValue__ = this.#weakKeyToStrongKeys.delete(__weakSetKey__);
-    if (__returnValue__)
-      this.#setKeyComposer.deleteKey(
-        [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
-      );
 
     return __returnValue__;
   }
@@ -112,23 +96,15 @@ ${docs.buildBlock("delete", 2)}
 ${docs.buildBlock("deleteSets", 2)}
   deleteSets(${defines.get("mapArgList")}) {
     this.#requireValidMapKey(${defines.get("mapArgList")});
-    let __weakKeyMap__;
+    if (!this.#mapKeyComposer.hasKey(
+      [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
+    ))
+      return false;
 
-    // level 1:  first weak argument to weak map key
-    {
-      if (!this.#root.has(${defines.get("weakMapArgument0")})) {
-        return false;
-      }
-      __weakKeyMap__ = this.#root.get(${defines.get("weakMapArgument0")});
-    }
-
-    // level 2:  weak map key to inner map
-    {
-      const __mapKey__ = this.#mapKeyComposer.getKey(
-        [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
-      );
-      return __weakKeyMap__.delete(__mapKey__);
-    }
+    const __mapKey__ = this.#mapKeyComposer.getKey(
+      [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
+    );
+    return this.#root.delete(__mapKey__);
   }
 
 ${docs.buildBlock("has", 2)}
@@ -163,52 +139,27 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
 
 ${docs.buildBlock("requireInnerCollectionPrivate", 2)}
   #requireInnerSet(${defines.get("mapArgList")}) {
-    let __weakKeyMap__, __innerSet__;
-    // level 1:  first weak argument to weak map key
-    {
-      if (!this.#root.has(${defines.get("weakMapArgument0")})) {
-        this.#root.set(${defines.get("weakMapArgument0")}, new WeakMap);
-      }
-      __weakKeyMap__ = this.#root.get(${defines.get("weakMapArgument0")});
+    const __mapKey__ = this.#mapKeyComposer.getKey(
+      [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
+    );
+    if (!this.#root.has(__mapKey__)) {
+      this.#root.set(__mapKey__, new WeakSet);
     }
-
-    // level 2:  weak map key to inner map
-    {
-      const __mapKey__ = this.#mapKeyComposer.getKey(
-        [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
-      );
-      if (!__weakKeyMap__.has(__mapKey__)) {
-        __weakKeyMap__.set(__mapKey__, new WeakSet);
-      }
-      __innerSet__ = __weakKeyMap__.get(__mapKey__);
-
-      if (!this.#weakKeyToStrongKeys.has(__mapKey__)) {
-        this.#weakKeyToStrongKeys.set(__mapKey__, new WeakSet([${defines.get("strongMapArgList")}]));
-      }
-
-      return __innerSet__;
-    }
+    return this.#root.get(__mapKey__);
   }
 
 ${docs.buildBlock("getExistingInnerCollectionPrivate", 2)}
   #getExistingInnerSet(${defines.get("mapArgList")}) {
-    let __weakKeyMap__;
+    if (!this.#mapKeyComposer.hasKey(
+      [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
+    ))
+      return undefined;
 
-    // level 1:  first weak argument to weak map key
-    {
-      __weakKeyMap__ = this.#root.get(${defines.get("weakMapArgument0")});
-      if (!__weakKeyMap__)
-        return undefined;
-    }
+    const __mapKey__ = this.#mapKeyComposer.getKey(
+      [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
+    );
 
-    // level 2:  weak map key to inner map
-    {
-      const __mapKey__ = this.#mapKeyComposer.getKey(
-        [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
-      );
-
-      return __weakKeyMap__.get(__mapKey__);
-    }
+    return this.#root.get(__mapKey__);
   }
 
 ${docs.buildBlock("requireValidKey", 2)}

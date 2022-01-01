@@ -4,7 +4,7 @@
  * Generator: https://github.com/ajvincent/composite-collection/
  */
 
-import KeyHasher from "./KeyHasher.mjs";
+import KeyHasher from "./keys/Hasher.mjs";
 
 export default class StrongStrongSet {
   /**
@@ -12,14 +12,11 @@ export default class StrongStrongSet {
    *
    * @type {Map<hash, *[]>}
    *
-   * @const
+   * @constant
    */
   #root = new Map;
 
-  /**
-   * @type {KeyHasher}
-   * @const
-   */
+  /** @type {KeyHasher} @constant */
   #hasher = new KeyHasher(["key1", "key2"]);
 
   constructor() {
@@ -35,7 +32,7 @@ export default class StrongStrongSet {
    * The number of elements in this collection.
    *
    * @public
-   * @const
+   * @constant
    */
   get size() {
     return this.#root.size;
@@ -51,7 +48,7 @@ export default class StrongStrongSet {
    * @public
    */
   add(key1, key2) {
-    const hash = this.#hasher.buildHash([key1, key2]);
+    const hash = this.#hasher.getHash(key1, key2);
     this.#root.set(hash, Object.freeze([key1, key2]));
     return this;
   }
@@ -75,7 +72,9 @@ export default class StrongStrongSet {
    * @public
    */
   delete(key1, key2) {
-    const hash = this.#hasher.buildHash([key1, key2]);
+    if (!this.#hasher.hasHash(key1, key2))
+      return false;
+    const hash = this.#hasher.getHash(key1, key2);
     return this.#root.delete(hash);
   }
 
@@ -110,7 +109,9 @@ export default class StrongStrongSet {
    * @public
    */
   has(key1, key2) {
-    const hash = this.#hasher.buildHash([key1, key2]);
+    if (!this.#hasher.hasHash(key1, key2))
+      return false;
+    const hash = this.#hasher.getHash(key1, key2);
     return this.#root.has(hash);
   }
 
