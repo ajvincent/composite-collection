@@ -15,9 +15,6 @@ describe("Combinations of auto-generated configurations:", () => {
     cleanup = await tempDirWithCleanup();
 
     filesCopied = Promise.all([
-      "KeyHasher.mjs",
-      "WeakKey-WeakMap.mjs",
-      "WeakKey-WeakRef.mjs",
       "keys/Hasher.mjs",
       "keys/Composite.mjs",
     ].map(async leafName => {

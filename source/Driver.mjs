@@ -82,22 +82,12 @@ export default class Driver extends CompletionPromise {
 
     if (requiresKeyHasher) {
       promises.push(fs.copyFile(
-        path.join(projectRoot, "source/exports/KeyHasher.mjs"),
-        path.join(this.#targetsPath, "KeyHasher.mjs")
-      ));
-
-      promises.push(fs.copyFile(
         path.join(projectRoot, "source/exports/keys/Hasher.mjs"),
         path.join(this.#targetsPath, "keys/Hasher.mjs")
       ));
     }
 
     if (requiresWeakKey) {
-      promises.push(fs.copyFile(
-        path.join(projectRoot, "source/exports/WeakKey-WeakMap.mjs"),
-        path.join(this.#targetsPath, "WeakKey-WeakMap.mjs")
-      ));
-
       promises.push(fs.copyFile(
         path.join(projectRoot, "source/exports/keys/Composite.mjs"),
         path.join(this.#targetsPath, "keys/Composite.mjs")

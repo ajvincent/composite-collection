@@ -62,9 +62,6 @@ function copyFileTasks(sourceDir, targetDir, leafNames) {
  */
 function generateCollectionTasks(configDir, targetDir, leafNames) {
   const submodules = [
-    "KeyHasher.mjs",
-    "WeakKey-WeakMap.mjs",
-    "WeakKey-WeakRef.mjs",
     "keys/Hasher.mjs",
     "keys/Composite.mjs",
   ].map(required => targetDir + "/" + required);
@@ -106,7 +103,6 @@ namespace("test", () => {
   task(
     "generated",
     [
-      "spec/_01_collection-generator/generated/KeyHasher.mjs",
       "spec/_01_collection-generator/generated/keys/Hasher.mjs",
       "spec/_01_collection-generator/generated/keys/Composite.mjs",
 
@@ -137,7 +133,6 @@ namespace("test", () => {
       "spec/_01_collection-generator/generated/WeakMapWeakSetImportable.mjs",
 
 
-      "spec/_03_exports/generated/KeyHasher.mjs",
       "spec/_03_exports/generated/keys/Hasher.mjs",
       "spec/_03_exports/generated/keys/Composite.mjs",
 
@@ -166,9 +161,6 @@ namespace("test", () => {
 });
 
 copyFileTasks("source/exports", "spec/_01_collection-generator/generated", [
-  "KeyHasher.mjs",
-  "WeakKey-WeakMap.mjs",
-  "WeakKey-WeakRef.mjs",
   "keys/Hasher.mjs",
   "keys/Composite.mjs",
 ]);
@@ -213,9 +205,6 @@ generateCollectionTasks(
 );
 
 copyFileTasks("source/exports", "spec/_03_exports/generated", [
-  "KeyHasher.mjs",
-  "WeakKey-WeakMap.mjs",
-  "WeakKey-WeakRef.mjs",
   "keys/Hasher.mjs",
   "keys/Composite.mjs",
 ]);
@@ -264,9 +253,6 @@ task(
   "export",
   [
     "test",
-    "exports/KeyHasher.mjs",
-    "exports/WeakKey-WeakMap.mjs",
-    "exports/WeakKey-WeakRef.mjs",
     "exports/keys/Hasher.mjs",
     "exports/keys/Composite.mjs",
 
@@ -288,9 +274,6 @@ task(
 );
 
 copyFileTasks("source/exports", "exports", [
-  "KeyHasher.mjs",
-  "WeakKey-WeakMap.mjs",
-  "WeakKey-WeakRef.mjs",
   "keys/Hasher.mjs",
   "keys/Composite.mjs",
 ]);

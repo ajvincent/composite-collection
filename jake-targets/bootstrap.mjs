@@ -182,36 +182,6 @@ async function buildCollections(sourceDir, targetDir) {
     await fs.writeFile(fullPath, contents, { encoding: "utf-8" });
   }));
 
-  // We should remove references to KeyHasher and WeakKey
-  {
-    const commons = [
-      "KeyHasher.mjs",
-      "WeakKey-WeakMap.mjs",
-      "WeakKey-WeakRef.mjs",
-    ];
-    await Promise.all(commons.map(
-      leaf => fs.rm(path.join(collectionsDir, leaf), {force: true})
-    ));
-
-    const collections = await getAllFiles(collectionsDir).toArray();
-    await Promise.all(collections.map(async fullPath => {
-      let contents = await fs.readFile(fullPath, { encoding: "utf-8" });
-      contents = contents.replace(
-        `import KeyHasher from "./KeyHasher.mjs";`,
-        `import KeyHasher from "../exports/KeyHasher.mjs";`
-      );
-      contents = contents.replace(
-        `import WeakKeyComposer from "./WeakKey-WeakMap.mjs";`,
-        `import WeakKeyComposer from "../exports/WeakKey-WeakMap.mjs";`
-      );
-      contents = contents.replace(
-        `import WeakKeyComposer from "./WeakKey-WeakRef.mjs";`,
-        `import WeakKeyComposer from "../exports/WeakKey-WeakRef.mjs";`
-      );
-      await fs.writeFile(fullPath, contents, { encoding: "utf-8" });
-    }));
-  }
-
   console.timeLog("stage", "buildCollections completed");
 }
 
