@@ -29,8 +29,8 @@ import { getAllFiles } from 'get-all-files';
 export async function getHashFileList(root) {
   const ignoredDirs = [
     "node_modules",
-    "spec/_02_collection-generator/generated",
-    "spec/_04_exports/generated",
+    "spec/_01_collection-generator/generated",
+    "spec/_03_exports/generated",
     "."
   ];
 

@@ -106,56 +106,56 @@ namespace("test", () => {
   task(
     "generated",
     [
-      "spec/_02_collection-generator/generated/KeyHasher.mjs",
-      "spec/_02_collection-generator/generated/keys/Hasher.mjs",
-      "spec/_02_collection-generator/generated/keys/Composite.mjs",
+      "spec/_01_collection-generator/generated/KeyHasher.mjs",
+      "spec/_01_collection-generator/generated/keys/Hasher.mjs",
+      "spec/_01_collection-generator/generated/keys/Composite.mjs",
 
-      "spec/_02_collection-generator/generated/SoloStrongMap.mjs",
-      "spec/_02_collection-generator/generated/SoloStrongSet.mjs",
-      "spec/_02_collection-generator/generated/SoloWeakMap.mjs",
-      "spec/_02_collection-generator/generated/SoloWeakSet.mjs",
+      "spec/_01_collection-generator/generated/SoloStrongMap.mjs",
+      "spec/_01_collection-generator/generated/SoloStrongSet.mjs",
+      "spec/_01_collection-generator/generated/SoloWeakMap.mjs",
+      "spec/_01_collection-generator/generated/SoloWeakSet.mjs",
 
-      "spec/_02_collection-generator/generated/StrongStrongMap.mjs",
-      "spec/_02_collection-generator/generated/StrongStrongSet.mjs",
+      "spec/_01_collection-generator/generated/StrongStrongMap.mjs",
+      "spec/_01_collection-generator/generated/StrongStrongSet.mjs",
 
-      "spec/_02_collection-generator/generated/WeakWeakMap.mjs",
-      "spec/_02_collection-generator/generated/WeakStrongMap.mjs",
-      "spec/_02_collection-generator/generated/StrongWeakMap.mjs",
+      "spec/_01_collection-generator/generated/WeakWeakMap.mjs",
+      "spec/_01_collection-generator/generated/WeakStrongMap.mjs",
+      "spec/_01_collection-generator/generated/StrongWeakMap.mjs",
 
-      "spec/_02_collection-generator/generated/WeakWeakSet.mjs",
-      "spec/_02_collection-generator/generated/WeakStrongSet.mjs",
-      "spec/_02_collection-generator/generated/StrongWeakSet.mjs",
+      "spec/_01_collection-generator/generated/WeakWeakSet.mjs",
+      "spec/_01_collection-generator/generated/WeakStrongSet.mjs",
+      "spec/_01_collection-generator/generated/StrongWeakSet.mjs",
 
-      "spec/_02_collection-generator/generated/StrongMapOfStrongSets.mjs",
+      "spec/_01_collection-generator/generated/StrongMapOfStrongSets.mjs",
 
-      "spec/_02_collection-generator/generated/WeakMapOfStrongSets.mjs",
-      "spec/_02_collection-generator/generated/WeakMapOfWeakSets.mjs",
-      "spec/_02_collection-generator/generated/WeakMapWeakStrongSet.mjs",
+      "spec/_01_collection-generator/generated/WeakMapOfStrongSets.mjs",
+      "spec/_01_collection-generator/generated/WeakMapOfWeakSets.mjs",
+      "spec/_01_collection-generator/generated/WeakMapWeakStrongSet.mjs",
 
-      "spec/_02_collection-generator/generated/StrongMapSetImportable.mjs",
-      "spec/_02_collection-generator/generated/WeakFunctionMultiMap.mjs",
-      "spec/_02_collection-generator/generated/WeakMapWeakSetImportable.mjs",
+      "spec/_01_collection-generator/generated/StrongMapSetImportable.mjs",
+      "spec/_01_collection-generator/generated/WeakFunctionMultiMap.mjs",
+      "spec/_01_collection-generator/generated/WeakMapWeakSetImportable.mjs",
 
 
-      "spec/_04_exports/generated/KeyHasher.mjs",
-      "spec/_04_exports/generated/keys/Hasher.mjs",
-      "spec/_04_exports/generated/keys/Composite.mjs",
+      "spec/_03_exports/generated/KeyHasher.mjs",
+      "spec/_03_exports/generated/keys/Hasher.mjs",
+      "spec/_03_exports/generated/keys/Composite.mjs",
 
-      "spec/_04_exports/generated/StrongStrongMap.mjs",
-      "spec/_04_exports/generated/StrongStrongSet.mjs",
+      "spec/_03_exports/generated/StrongStrongMap.mjs",
+      "spec/_03_exports/generated/StrongStrongSet.mjs",
 
-      "spec/_04_exports/generated/WeakWeakMap.mjs",
-      "spec/_04_exports/generated/WeakStrongMap.mjs",
+      "spec/_03_exports/generated/WeakWeakMap.mjs",
+      "spec/_03_exports/generated/WeakStrongMap.mjs",
 
-      "spec/_04_exports/generated/WeakWeakSet.mjs",
-      "spec/_04_exports/generated/WeakStrongSet.mjs",
+      "spec/_03_exports/generated/WeakWeakSet.mjs",
+      "spec/_03_exports/generated/WeakStrongSet.mjs",
 
-      "spec/_04_exports/generated/StrongMapOfStrongSets.mjs",
+      "spec/_03_exports/generated/StrongMapOfStrongSets.mjs",
 
-      "spec/_04_exports/generated/WeakMapOfStrongSets.mjs",
-      "spec/_04_exports/generated/WeakMapOfWeakSets.mjs",
+      "spec/_03_exports/generated/WeakMapOfStrongSets.mjs",
+      "spec/_03_exports/generated/WeakMapOfWeakSets.mjs",
 
-      "spec/_04_exports/generated/WeakFunctionMultiMap.mjs",
+      "spec/_03_exports/generated/WeakFunctionMultiMap.mjs",
     ]
   );
 
@@ -165,7 +165,7 @@ namespace("test", () => {
   );
 });
 
-copyFileTasks("source/exports", "spec/_02_collection-generator/generated", [
+copyFileTasks("source/exports", "spec/_01_collection-generator/generated", [
   "KeyHasher.mjs",
   "WeakKey-WeakMap.mjs",
   "WeakKey-WeakRef.mjs",
@@ -174,8 +174,8 @@ copyFileTasks("source/exports", "spec/_02_collection-generator/generated", [
 ]);
 
 generateCollectionTasks(
-  "spec/_02_collection-generator/fixtures",
-  "spec/_02_collection-generator/generated",
+  "spec/_01_collection-generator/fixtures",
+  "spec/_01_collection-generator/generated",
   [
     "SoloStrongMap.mjs",
     "SoloStrongSet.mjs",
@@ -191,7 +191,7 @@ generateCollectionTasks(
 
 generateCollectionTasks(
   "source/exports",
-  "spec/_02_collection-generator/generated",
+  "spec/_01_collection-generator/generated",
   [
     "StrongStrongMap.mjs",
     "StrongStrongSet.mjs",
@@ -212,7 +212,7 @@ generateCollectionTasks(
   ]
 );
 
-copyFileTasks("source/exports", "spec/_04_exports/generated", [
+copyFileTasks("source/exports", "spec/_03_exports/generated", [
   "KeyHasher.mjs",
   "WeakKey-WeakMap.mjs",
   "WeakKey-WeakRef.mjs",
@@ -222,7 +222,7 @@ copyFileTasks("source/exports", "spec/_04_exports/generated", [
 
 generateCollectionTasks(
   "source/exports",
-  "spec/_04_exports/generated",
+  "spec/_03_exports/generated",
   [
     "StrongStrongMap.mjs",
     "StrongStrongSet.mjs",

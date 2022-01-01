@@ -13,7 +13,7 @@ const execPromise = promisify(exec);
 it("Driver generates a valid set of classes", async () => {
   const projectRoot = url.fileURLToPath(new URL("../..", import.meta.url));
 
-  const sourceDir = path.join(projectRoot, "spec/_03_integration/fixtures/Driver");
+  const sourceDir = path.join(projectRoot, "spec/_02_integration/fixtures/Driver");
   const cleanup = await tempDirWithCleanup();
   const targetDir = cleanup.tempDir;
 
