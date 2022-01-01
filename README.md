@@ -80,7 +80,7 @@ wfMM.add(key1, callback2);
 
 ## Features
 
-Currently supported (version 0.1.1):
+Currently supported (version 0.2.0):
 - ECMAScript class modules with all the pieces you need
 - A simple configuration API
 - Generating code and matching JSDoc comments
@@ -92,12 +92,12 @@ Currently supported (version 0.1.1):
 - Weak keys subject to garbage collection
 - Pre-compiled collections available as exports
 - [Private class fields and methods](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_class_fields)
+- Using [WeakRef](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakRef) and [FinalizationRegistry](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/FinalizationRegistry) to reduce the number of WeakMaps
 
 In the future:
 - Declaring key groups
   - Key groups can be equal: `[arg1, arg2] === [arg3, arg4]` for the purpose of this collection
 - One-to-one hash tables with two-part keys:  `(arg1, "green") === (arg2, "green")` if the collection allows marking `arg1` equal to `arg2`, and the user actually does so
-- Using [WeakRef](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakRef) and [FinalizationRegistry](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/FinalizationRegistry) to reduce the number of WeakMaps
 - Eliminating redundant use of KeyHasher, WeakKeyComposer when there's only one map key and/or one set key
 
 ## How It All Works
