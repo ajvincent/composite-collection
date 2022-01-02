@@ -80,6 +80,13 @@ ${docs.buildBlock("isValidValuePrivate", 2)}
   ` : ``}
 }
 
+Reflect.defineProperty(${defines.get("className")}, Symbol.toStringTag, {
+  value: "${defines.get("className")}",
+  writable: false,
+  enumerable: false,
+  configurable: true
+});
+
 Object.freeze(${defines.get("className")});
 Object.freeze(${defines.get("className")}.prototype);
 `;

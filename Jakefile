@@ -128,10 +128,19 @@ namespace("test", () => {
       "spec/_01_collection-generator/generated/WeakMapOfWeakSets.mjs",
       "spec/_01_collection-generator/generated/WeakMapWeakStrongSet.mjs",
 
+      "spec/_01_collection-generator/generated/StrongStrongMapImportable.mjs",
+      "spec/_01_collection-generator/generated/WeakStrongMapImportable.mjs",
+      "spec/_01_collection-generator/generated/WeakWeakMapImportable.mjs",
+
+      "spec/_01_collection-generator/generated/StrongStrongSetImportable.mjs",
+      "spec/_01_collection-generator/generated/WeakStrongSetImportable.mjs",
+      "spec/_01_collection-generator/generated/WeakWeakSetImportable.mjs",
+
       "spec/_01_collection-generator/generated/StrongMapSetImportable.mjs",
-      "spec/_01_collection-generator/generated/WeakFunctionMultiMap.mjs",
+      "spec/_01_collection-generator/generated/WeakMapStrongSetImportable.mjs",
       "spec/_01_collection-generator/generated/WeakMapWeakSetImportable.mjs",
 
+      "spec/_01_collection-generator/generated/WeakFunctionMultiMap.mjs",
 
       "spec/_03_exports/generated/keys/Hasher.mjs",
       "spec/_03_exports/generated/keys/Composite.mjs",
@@ -177,7 +186,14 @@ generateCollectionTasks(
     "StrongWeakSet.mjs",
     "WeakMapWeakStrongSet.mjs",
     "StrongMapSetImportable.mjs",
+    "WeakMapStrongSetImportable.mjs",
     "WeakMapWeakSetImportable.mjs",
+    "StrongStrongMapImportable.mjs",
+    "WeakStrongMapImportable.mjs",
+    "WeakWeakMapImportable.mjs",
+    "StrongStrongSetImportable.mjs",
+    "WeakStrongSetImportable.mjs",
+    "WeakWeakSetImportable.mjs",
   ]
 );
 
