@@ -96,7 +96,7 @@ export default class WeakKeyComposer {
   * @param {*[]} weakArguments   The list of weak arguments.
   * @param {*[]} strongArguments The list of strong arguments.
   *
-  * @returns {WeakSet?} The key if found, null if not.
+  * @returns {WeakKey}
   *
   * @public
   */
