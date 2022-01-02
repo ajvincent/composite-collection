@@ -43,9 +43,6 @@ ConfigurationStateGraphs.set(
     ["keyLink", "locked"],
 
     ["hasValueFilter", "locked"],
-    ["hasValueFilter", "keyLinkWithValue"],
-
-    ["keyLinkWithValue", "locked"],
 
     ["locked", "locked"],
   ])
