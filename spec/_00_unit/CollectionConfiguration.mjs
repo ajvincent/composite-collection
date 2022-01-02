@@ -13,8 +13,6 @@ describe("CollectionConfiguration", () => {
       "importLines",
       "addMapKey",
       "addSetKey",
-      "addMapKeyTuple",
-      "addSetKeyTuple",
       "setValueType",
       "lock",
     ]);
@@ -349,7 +347,7 @@ describe("CollectionConfiguration", () => {
         config = new CollectionConfiguration("FooSet", "WeakSet");
         expect(
           () => config.addMapKey(...args)
-        ).toThrowError("You must define map keys before calling .addSetElement(), .setValueFilter() or .lock()!");
+        ).toThrowError("You must define map keys before calling .addSetElement(), .setValueType() or .lock()!");
       });
 
       describe("invalid identifiers:", () => {
@@ -656,7 +654,7 @@ describe("CollectionConfiguration", () => {
         config = new CollectionConfiguration("FooMap", "WeakMap");
         expect(
           () => config.addSetKey(...args)
-        ).toThrowError("You must define set keys before calling .setValueFilter() or .lock()!");
+        ).toThrowError("You must define set keys before calling .setValueType() or .lock()!");
       });
 
       describe("invalid identifiers:", () => {

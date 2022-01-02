@@ -294,11 +294,19 @@ export default class CollectionConfiguration {
    * @property {string?}   description       A JSDoc-printable description.
    * @property {Function?} argumentValidator A method to use for testing the argument.
    */
+
+  /**
+   * Define a map key.
+   *
+   * @param {string} argumentName
+   * @param {boolean} holdWeak
+   * @param {CollectionTypeOptions} options
+   */
   addMapKey(argumentName, holdWeak, options = {}) {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("mapKeys")) {
         this.#throwIfLocked();
-        throw new Error("You must define map keys before calling .addSetElement(), .setValueFilter() or .lock()!");
+        throw new Error("You must define map keys before calling .addSetElement(), .setValueType() or .lock()!");
       }
 
       const {
@@ -339,16 +347,18 @@ export default class CollectionConfiguration {
   }
 
   /**
-   * @typedef CollectionTypeOptions
-   * @property {string?}   argumentType      A JSDoc-printable type for the argument.
-   * @property {string?}   description       A JSDoc-printable description.
-   * @property {Function?} argumentValidator A method to use for testing the argument.
+   * Define a set key.
+   *
+   * @param {string} argumentName
+   * @param {boolean} holdWeak
+   * @param {CollectionTypeOptions} options
+   * @returns 
    */
   addSetKey(argumentName, holdWeak, options = {}) {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("setElements")) {
         this.#throwIfLocked();
-        throw new Error("You must define set keys before calling .setValueFilter() or .lock()!");
+        throw new Error("You must define set keys before calling .setValueType() or .lock()!");
       }
 
       const {
@@ -385,36 +395,6 @@ export default class CollectionConfiguration {
         this.#strongSetElements.push(argumentName);
 
       this.#argCount++;
-    });
-  }
-
-  // XXX ajvincent JSDoc!
-  addMapKeyTuple() {
-    return this.#catchErrorState(() => {
-      if (!this.#doStateTransition("mapTuple")) {
-        this.#throwIfLocked();
-        throw new Error("The .addMapTuple() method only applies to sequences, and only at the start or when importing modules!");
-      }
-
-      throw new Error("Not yet implemented");
-      /*
-      this.#argCount++;
-      */
-    });
-  }
-
-  // XXX ajvincent JSDoc!
-  addSetKeyTuple() {
-    return this.#catchErrorState(() => {
-      if (!this.#doStateTransition("setTuple")) {
-        this.#throwIfLocked();
-        throw new Error("The .addSetTuple() method only applies to sequences, and only after all map steps!");
-      }
-
-      throw new Error("Not yet implemented");
-      /*
-      this.#argCount++;
-      */
     });
   }
 

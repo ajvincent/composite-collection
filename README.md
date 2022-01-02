@@ -96,7 +96,7 @@ Currently supported (version 0.2.0):
 
 In the future:
 - Declaring key groups
-  - Key groups can be equal: `[arg1, arg2] === [arg3, arg4]` for the purpose of this collection
+  - Key groups can be equal: `(arg1, arg2) === (arg3, arg4)` for the purpose of this collection
 - One-to-one hash tables with two-part keys:  `(arg1, "green") === (arg2, "green")` if the collection allows marking `arg1` equal to `arg2`, and the user actually does so
 - Eliminating redundant use of KeyHasher, WeakKeyComposer when there's only one map key and/or one set key
 
