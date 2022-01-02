@@ -146,6 +146,23 @@ export default class WeakKeyComposer {
   }
 
   /**
+   * Get the unique key for an ordered set of weak and strong arguments if it exists.
+   * @param {*[]} weakArguments   The list of weak arguments.
+   * @param {*[]} strongArguments The list of strong arguments.
+   *
+   * @returns {WeakKey?}
+   *
+   * @public
+   */
+  getKeyIfExists(weakArguments, strongArguments) {
+    let [result, hash] = this.#keyHasher.getHashIfExists(...weakArguments, ...strongArguments);
+    if (!result)
+      return null;
+    let properties = this.#hashToPropertyMap.get(hash);
+    return properties ? properties.weakKeyRef.deref() : null;
+  }
+
+  /**
   * Delete an unique key for an ordered set of weak and strong arguments.
   *
   * @param {*[]} weakArguments   The list of weak arguments.

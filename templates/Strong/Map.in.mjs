@@ -45,11 +45,8 @@ ${docs.buildBlock("clear", 2)}
 
 ${docs.buildBlock("delete", 2)}
   delete(${defines.get("argList")}) {${invokeValidate}
-    if (!this.#hasher.hasHash(${defines.get("argList")}))
-      return false;
-
-    const hash = this.#hasher.getHash(${defines.get("argList")});
-    return this.#root.delete(hash);
+    const [__found__, __hash__] = this.#hasher.getHashIfExists(${defines.get("argList")});
+    return __found__ && this.#root.delete(__hash__);
   }
 
 ${docs.buildBlock("entries", 2)}
@@ -72,21 +69,18 @@ ${docs.buildBlock("forEachCallbackMap", 2)}
 
 ${docs.buildBlock("get", 2)}
   get(${defines.get("argList")}) {${invokeValidate}
-    if (!this.#hasher.hasHash(${defines.get("argList")}))
+    const [__found__, __hash__] = this.#hasher.getHashIfExists(${defines.get("argList")});
+    if (!__found__)
       return undefined;
 
-    const hash = this.#hasher.getHash(${defines.get("argList")});
-    const valueAndKeySet = this.#root.get(hash);
+    const valueAndKeySet = this.#root.get(__hash__);
     return valueAndKeySet?.value;
   }
 
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {${invokeValidate}
-    if (!this.#hasher.hasHash(${defines.get("argList")}))
-      return false;
-
-    const hash = this.#hasher.getHash(${defines.get("argList")});
-    return this.#root.has(hash);
+    const [__found__, __hash__] = this.#hasher.getHashIfExists(${defines.get("argList")});
+    return __found__ && this.#root.has(__hash__);
   }
 
 ${defines.has("validateArguments") ? `
@@ -123,10 +117,10 @@ ${
     throw new Error("The value is not valid!");
 ` : ``
 }
-    const hash = this.#hasher.getHash(${defines.get("argList")});
-    const keySet = [${defines.get("argList")}];
-    Object.freeze(keySet);
-    this.#root.set(hash, {value, keySet});
+    const __hash__ = this.#hasher.getHash(${defines.get("argList")});
+    const __keySet__ = [${defines.get("argList")}];
+    Object.freeze(__keySet__);
+    this.#root.set(__hash__, {value, keySet: __keySet__});
 
     return this;
   }

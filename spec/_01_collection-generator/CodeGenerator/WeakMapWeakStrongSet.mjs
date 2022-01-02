@@ -234,13 +234,23 @@ describe("CodeGenerator(WeakMapWeakStrongSet.mjs)", () => {
       ).toHoldReferencesWeakly();
     });
 
-    it("weakly as the third key through .add(), then .delete()", async () => {
+    it("weakly as the third key through .add(), then .delete() when the weak set key is weakly held", async () => {
+      await expectAsync(
+        key => {
+          const otherKey = {};
+          testSet.add(externalKey1, otherKey, key);
+          testSet.delete(externalKey1, otherKey, key);
+        }
+      ).toHoldReferencesWeakly();
+    });
+
+    it("strongly as the third key through .add(), then .delete() when the weak set key is strongly held", async () => {
       await expectAsync(
         key => {
           testSet.add(externalKey1, externalKey2, key);
           testSet.delete(externalKey1, externalKey2, key);
         }
-      ).toHoldReferencesWeakly();
+      ).toHoldReferencesStrongly();
     });
   });
 });

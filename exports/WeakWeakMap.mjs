@@ -39,10 +39,10 @@ export default class WeakWeakMap {
    */
   delete(key1, key2) {
     this.#requireValidKey(key1, key2);
-    if (!this.#keyComposer.hasKey([key1, key2], []))
+    const __key__ = this.#keyComposer.getKeyIfExists([key1, key2], []);
+    if (!__key__)
       return false;
 
-    const __key__ = this.#keyComposer.getKey([key1, key2], []);
     this.#keyComposer.deleteKey([key1, key2], []);
     return this.#root.delete(__key__);
   }
@@ -58,11 +58,8 @@ export default class WeakWeakMap {
    */
   get(key1, key2) {
     this.#requireValidKey(key1, key2);
-    if (!this.#keyComposer.hasKey([key1, key2], []))
-      return undefined;
-
-    const __key__ = this.#keyComposer.getKey([key1, key2], []);
-    return this.#root.get(__key__);
+    const __key__ = this.#keyComposer.getKeyIfExists([key1, key2], []);
+    return __key__ ? this.#root.get(__key__) : undefined;
   }
 
   /**
@@ -77,13 +74,8 @@ export default class WeakWeakMap {
   has(key1, key2) {
     this.#requireValidKey(key1, key2);
 
-    if (!this.#keyComposer.hasKey([key1, key2], []))
-      return false;
-
-    const __key__ = this.#keyComposer.getKey([key1, key2], []);
-    if (!__key__)
-      return false;
-    return this.#root.has(__key__);
+    const __key__ = this.#keyComposer.getKeyIfExists([key1, key2], []);
+    return __key__ ? this.#root.has(__key__) : false;
   }
 
   /**

@@ -102,16 +102,8 @@ export default class WeakMapOfWeakSets {
     if (!__innerSet__)
       return false;
 
-    if (!this.#setKeyComposer.hasKey(
-        [setKey], []
-      ))
-      return false;
-
-    const __returnValue__ = this.#setKeyComposer.deleteKey(
-      [setKey], []
-    );
-
-    return __returnValue__;
+    const __weakSetKey__ = this.#setKeyComposer.getKeyIfExists([setKey], []);
+    return __weakSetKey__ ? __innerSet__.delete(__weakSetKey__) : false;
   }
 
   /**
@@ -124,15 +116,10 @@ export default class WeakMapOfWeakSets {
    */
   deleteSets(mapKey) {
     this.#requireValidMapKey(mapKey);
-    if (!this.#mapKeyComposer.hasKey(
-        [mapKey], []
-      ))
-      return false;
-
-    const __mapKey__ = this.#mapKeyComposer.getKey(
+    const __mapKey__ = this.#mapKeyComposer.getKeyIfExists(
       [mapKey], []
     );
-    return this.#root.delete(__mapKey__);
+    return __mapKey__ ? this.#root.delete(__mapKey__) : false;
   }
 
   /**
@@ -150,16 +137,11 @@ export default class WeakMapOfWeakSets {
     if (!__innerSet__)
       return false;
 
-    if (!this.#setKeyComposer.hasKey(
-        [setKey], []
-      ))
-      return false;
-
-    const __weakSetKey__ = this.#setKeyComposer.getKey(
+    const __weakSetKey__ = this.#setKeyComposer.getKeyIfExists(
       [setKey], []
     );
 
-    return __innerSet__.has(__weakSetKey__);
+    return __weakSetKey__ ? __innerSet__.has(__weakSetKey__) : false;
   }
 
   /**
@@ -212,16 +194,11 @@ export default class WeakMapOfWeakSets {
    * @returns {WeakMapOfWeakSets~InnerMap}
    */
   #getExistingInnerSet(mapKey) {
-    if (!this.#mapKeyComposer.hasKey(
-        [mapKey], []
-      ))
-      return undefined;
-
-    const __mapKey__ = this.#mapKeyComposer.getKey(
+    const __mapKey__ = this.#mapKeyComposer.getKeyIfExists(
       [mapKey], []
     );
 
-    return this.#root.get(__mapKey__);
+    return __mapKey__ ? this.#root.get(__mapKey__) : undefined;
   }
 
   /**

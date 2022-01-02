@@ -128,8 +128,11 @@ describe("CodeGenerator(WeakStrongSet.mjs)", () => {
     expect(testSet.has(key1, key3)).toBe(true);
 
     expect(testSet.delete(key3, key1)).toBe(false);
+    expect(testSet.has(key2, key3)).toBe(true);
     expect(testSet.delete(key1, key3)).toBe(true);
+    expect(testSet.has(key2, key3)).toBe(true);
     expect(testSet.delete(key1, key3)).toBe(false);
+    expect(testSet.has(key2, key3)).toBe(true);
 
     refSet.delete(key1);
     refSet.add(key1);
@@ -153,8 +156,11 @@ describe("CodeGenerator(WeakStrongSet.mjs)", () => {
     expect(testSet.has(key3, key1)).toBe(true);
 
     expect(testSet.delete(key2, key1)).toBe(false);
+    expect(testSet.has(key3, key2)).toBe(true);
     expect(testSet.delete(key3, key1)).toBe(true);
+    expect(testSet.has(key3, key2)).toBe(true);
     expect(testSet.delete(key3, key1)).toBe(false);
+    expect(testSet.has(key3, key2)).toBe(true);
 
     refSet.delete(key1);
     refSet.add(key1);

@@ -32,6 +32,16 @@ export default class KeyHasher {
   hasHash(...args) {
     return args.every(arg => this.#getMap(arg).has(arg));
   }
+
+  getHashIfExists(...args) {
+    const values = [];
+    const result = args.every(arg => {
+      const map = this.#getMap(arg);
+      values.push(map.get(arg));
+      return map.has(arg);
+    });
+    return result ? [true, values.join(",")] : [false, ""];
+  }
 }
 
 Object.freeze(KeyHasher.prototype);

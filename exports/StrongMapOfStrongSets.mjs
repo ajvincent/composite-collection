@@ -162,11 +162,8 @@ export default class StrongMapOfStrongSets {
     if (!__innerMap__)
       return false;
 
-    if (!this.#setHasher.hasHash(setKey))
-      return false;
-
-    const __setHash__ = this.#setHasher.getHash(setKey);
-    if (!__innerMap__.has(__setHash__))
+    const [__foundSet__, __setHash__] = this.#setHasher.getHashIfExists(setKey);
+    if (!__foundSet__ || !__innerMap__.has(__setHash__))
       return false;
 
     __innerMap__.delete(__setHash__);
@@ -251,11 +248,8 @@ export default class StrongMapOfStrongSets {
     if (!__innerMap__)
       return false;
 
-    if (!this.#setHasher.hasHash(setKey))
-      return false;
-
-    const __setHash__ = this.#setHasher.getHash(setKey);
-    return __innerMap__.has(__setHash__);
+    const [__foundSet__, __setHash__] = this.#setHasher.getHashIfExists(setKey);
+    return __foundSet__ && __innerMap__.has(__setHash__);
   }
 
   /**
@@ -332,11 +326,8 @@ export default class StrongMapOfStrongSets {
   }
 
   #getInnerMap(...__mapArguments__) {
-    if (!this.#mapHasher.hasHash(...__mapArguments__))
-      return [null];
-
-    const __hash__ = this.#mapHasher.getHash(...__mapArguments__);
-    return [this.#outerMap.get(__hash__), __hash__];
+    const [__found__, __hash__] = this.#mapHasher.getHashIfExists(...__mapArguments__);
+    return __found__ ? [this.#outerMap.get(__hash__), __hash__] : [null];
   }
 
 }

@@ -96,9 +96,9 @@ ${docs.buildBlock("delete", 2)}
       return false;
 
     // level 2: inner map to set
-    if (!this.#setHasher.hasHash(${defines.get("setArgList")}))
+    const [__found__, __setKeyHash__] = this.#setHasher.getHashIfExists(${defines.get("setArgList")});
+    if (!__found__)
       return false;
-    const __setKeyHash__ = this.#setHasher.getHash(${defines.get("setArgList")});
     const __returnValue__ = __innerMap__.delete(__setKeyHash__);
 
     if (__innerMap__.size === 0) {
@@ -112,16 +112,11 @@ ${docs.buildBlock("deleteSets", 2)}
   deleteSets(${defines.get("mapArgList")}) {
     this.#requireValidMapKey(${defines.get("mapArgList")});
 
-    if (!this.#mapKeyComposer.hasKey(
-      [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
-    ))
-      return false;
-
-    const __mapKey__ = this.#mapKeyComposer.getKey(
+    const __mapKey__ = this.#mapKeyComposer.getKeyIfExists(
       [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
     );
 
-    return this.#root.delete(__mapKey__);
+    return __mapKey__ ? this.#root.delete(__mapKey__) : false;
   }
 
 ${docs.buildBlock("forEachMapSet", 2)}
@@ -157,10 +152,8 @@ ${docs.buildBlock("has", 2)}
 
     // level 2: inner map to set
     {
-      if (!this.#setHasher.hasHash(${defines.get("setArgList")}))
-        return false;
-      const __setKeyHash__ = this.#setHasher.getHash(${defines.get("setArgList")});
-      return __innerMap__.has(__setKeyHash__);
+      const [__found__, __setKeyHash__] = this.#setHasher.getHashIfExists(${defines.get("setArgList")});
+      return __found__ && __innerMap__.has(__setKeyHash__);
     }
   }
 
@@ -210,16 +203,11 @@ ${docs.buildBlock("requireInnerCollectionPrivate", 2)}
 
 ${docs.buildBlock("getExistingInnerCollectionPrivate", 2)}
   #getExistingInnerMap(${defines.get("mapArgList")}) {
-    if (!this.#mapKeyComposer.hasKey(
-      [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
-    ))
-      return undefined;
-
-    const __mapKey__ = this.#mapKeyComposer.getKey(
+    const __mapKey__ = this.#mapKeyComposer.getKeyIfExists(
       [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
     );
 
-    return this.#root.get(__mapKey__);
+    return __mapKey__ ? this.#root.get(__mapKey__) : undefined;
   }
 
 ${docs.buildBlock("requireValidKey", 2)}

@@ -81,30 +81,17 @@ ${docs.buildBlock("delete", 2)}
     if (!__innerSet__)
       return false;
 
-    if (!this.#setKeyComposer.hasKey(
-      [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
-    ))
-      return false;
-
-    const __returnValue__ = this.#setKeyComposer.deleteKey(
-      [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
-    );
-
-    return __returnValue__;
+    const __weakSetKey__ = this.#setKeyComposer.getKeyIfExists([${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]);
+    return __weakSetKey__ ? __innerSet__.delete(__weakSetKey__) : false;
   }
 
 ${docs.buildBlock("deleteSets", 2)}
   deleteSets(${defines.get("mapArgList")}) {
     this.#requireValidMapKey(${defines.get("mapArgList")});
-    if (!this.#mapKeyComposer.hasKey(
-      [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
-    ))
-      return false;
-
-    const __mapKey__ = this.#mapKeyComposer.getKey(
+    const __mapKey__ = this.#mapKeyComposer.getKeyIfExists(
       [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
     );
-    return this.#root.delete(__mapKey__);
+    return __mapKey__ ? this.#root.delete(__mapKey__) : false;
   }
 
 ${docs.buildBlock("has", 2)}
@@ -114,16 +101,11 @@ ${docs.buildBlock("has", 2)}
     if (!__innerSet__)
       return false;
 
-    if (!this.#setKeyComposer.hasKey(
-      [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
-    ))
-      return false;
-
-    const __weakSetKey__ = this.#setKeyComposer.getKey(
+    const __weakSetKey__ = this.#setKeyComposer.getKeyIfExists(
       [${defines.get("weakSetArgList")}], [${defines.get("strongSetArgList")}]
     );
 
-    return __innerSet__.has(__weakSetKey__);
+    return __weakSetKey__ ? __innerSet__.has(__weakSetKey__) : false;
   }
 
 ${docs.buildBlock("hasSet", 2)}
@@ -150,16 +132,11 @@ ${docs.buildBlock("requireInnerCollectionPrivate", 2)}
 
 ${docs.buildBlock("getExistingInnerCollectionPrivate", 2)}
   #getExistingInnerSet(${defines.get("mapArgList")}) {
-    if (!this.#mapKeyComposer.hasKey(
-      [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
-    ))
-      return undefined;
-
-    const __mapKey__ = this.#mapKeyComposer.getKey(
+    const __mapKey__ = this.#mapKeyComposer.getKeyIfExists(
       [${defines.get("weakMapArgList")}], [${defines.get("strongMapArgList")}]
     );
 
-    return this.#root.get(__mapKey__);
+    return __mapKey__ ? this.#root.get(__mapKey__) : undefined;
   }
 
 ${docs.buildBlock("requireValidKey", 2)}

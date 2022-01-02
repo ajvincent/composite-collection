@@ -17,6 +17,7 @@ describe("WeakKey-WeakRefNew composer", () => {
       "constructor",
       "getKey",
       "hasKey",
+      "getKeyIfExists",
       "deleteKey",
       "isValidForKey",
     ]);
@@ -232,6 +233,17 @@ describe("WeakKey-WeakRefNew composer", () => {
         expect(composer.hasKey(...keySet1)).toBe(true);
       });
     });
+
+    describe(".getKeyIfExists() returns", () => {
+      it(`the existing key if there is one`, () => {
+        const composite1 = composer.getKey(...keySet1);
+        expect(composer.getKeyIfExists(...keySet1)).toBe(composite1);
+      });
+
+      it("null if there is no key", () => {
+        expect(composer.getKeyIfExists(...keySet1)).toBe(null);
+      });
+    });
   }
 
   describe("holds references to objects", () => {
@@ -331,7 +343,7 @@ describe("WeakKey-WeakRefNew composer", () => {
     });
   });
 
-  describe("holds references to getKey() returns weakly", () => {
+  describe("holds references to getKey() results weakly", () => {
     let composer;
     const key1 = {}, key2 = {};
     beforeEach(() => {

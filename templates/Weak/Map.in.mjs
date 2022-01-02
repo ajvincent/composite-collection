@@ -31,18 +31,14 @@ export default class ${defines.get("className")} {
 ${docs.buildBlock("delete", 2)}
   delete(${defines.get("argList")}) {
     this.#requireValidKey(${defines.get("argList")});
-    if (!this.#keyComposer.hasKey([${
-      defines.get("weakMapArgList")
-    }], [${
-      defines.get("strongMapArgList")
-    }]))
-      return false;
-
-    const __key__ = this.#keyComposer.getKey([${
+    const __key__ = this.#keyComposer.getKeyIfExists([${
       defines.get("weakMapArgList")
     }], [${
       defines.get("strongMapArgList")
     }]);
+    if (!__key__)
+      return false;
+
     this.#keyComposer.deleteKey([${
       defines.get("weakMapArgList")
     }], [${
@@ -54,40 +50,24 @@ ${docs.buildBlock("delete", 2)}
 ${docs.buildBlock("get", 2)}
   get(${defines.get("argList")}) {
     this.#requireValidKey(${defines.get("argList")});
-    if (!this.#keyComposer.hasKey([${
-      defines.get("weakMapArgList")
-    }], [${
-      defines.get("strongMapArgList")
-    }]))
-      return undefined;
-
-    const __key__ = this.#keyComposer.getKey([${
+    const __key__ = this.#keyComposer.getKeyIfExists([${
       defines.get("weakMapArgList")
     }], [${
       defines.get("strongMapArgList")
     }]);
-    return this.#root.get(__key__);
+    return __key__ ? this.#root.get(__key__) : undefined;
   }
 
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {
     this.#requireValidKey(${defines.get("argList")});
 
-    if (!this.#keyComposer.hasKey([${
-      defines.get("weakMapArgList")
-    }], [${
-      defines.get("strongMapArgList")
-    }]))
-      return false;
-
-    const __key__ = this.#keyComposer.getKey([${
+    const __key__ = this.#keyComposer.getKeyIfExists([${
       defines.get("weakMapArgList")
     }], [${
       defines.get("strongMapArgList")
     }]);
-    if (!__key__)
-      return false;
-    return this.#root.has(__key__);
+    return __key__ ? this.#root.has(__key__) : false;
   }
 
 

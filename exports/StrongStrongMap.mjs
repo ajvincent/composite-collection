@@ -66,11 +66,8 @@ export default class StrongStrongMap {
    * @public
    */
   delete(key1, key2) {
-    if (!this.#hasher.hasHash(key1, key2))
-      return false;
-
-    const hash = this.#hasher.getHash(key1, key2);
-    return this.#root.delete(hash);
+    const [__found__, __hash__] = this.#hasher.getHashIfExists(key1, key2);
+    return __found__ && this.#root.delete(__hash__);
   }
 
   /**
@@ -119,11 +116,11 @@ export default class StrongStrongMap {
    * @public
    */
   get(key1, key2) {
-    if (!this.#hasher.hasHash(key1, key2))
+    const [__found__, __hash__] = this.#hasher.getHashIfExists(key1, key2);
+    if (!__found__)
       return undefined;
 
-    const hash = this.#hasher.getHash(key1, key2);
-    const valueAndKeySet = this.#root.get(hash);
+    const valueAndKeySet = this.#root.get(__hash__);
     return valueAndKeySet?.value;
   }
 
@@ -137,11 +134,8 @@ export default class StrongStrongMap {
    * @public
    */
   has(key1, key2) {
-    if (!this.#hasher.hasHash(key1, key2))
-      return false;
-
-    const hash = this.#hasher.getHash(key1, key2);
-    return this.#root.has(hash);
+    const [__found__, __hash__] = this.#hasher.getHashIfExists(key1, key2);
+    return __found__ && this.#root.has(__hash__);
   }
 
   /**
@@ -168,12 +162,12 @@ export default class StrongStrongMap {
    */
   set(key1, key2, value) {
 
-    const hash = this.#hasher.getHash(key1, key2);
-    const keySet = [key1, key2];
-    Object.freeze(keySet);
-    this.#root.set(hash, {
+    const __hash__ = this.#hasher.getHash(key1, key2);
+    const __keySet__ = [key1, key2];
+    Object.freeze(__keySet__);
+    this.#root.set(__hash__, {
       value,
-      keySet
+      keySet: __keySet__
     });
 
     return this;

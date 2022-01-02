@@ -50,8 +50,8 @@ export default class StringStateMachine {
   add(currentState, nextState) {
     this.#requireValidKey(currentState, nextState);
 
-    const hash = this.#hasher.getHash(currentState, nextState);
-    this.#root.set(hash, Object.freeze([currentState, nextState]));
+    const __hash__ = this.#hasher.getHash(currentState, nextState);
+    this.#root.set(__hash__, Object.freeze([currentState, nextState]));
     return this;
   }
 
@@ -74,10 +74,8 @@ export default class StringStateMachine {
    * @public
    */
   delete(currentState, nextState) {
-    if (!this.#hasher.hasHash(currentState, nextState))
-      return false;
-    const hash = this.#hasher.getHash(currentState, nextState);
-    return this.#root.delete(hash);
+    const [__found__, __hash__] = this.#hasher.getHashIfExists(currentState, nextState);
+    return __found__ && this.#root.delete(__hash__);
   }
 
   /**
@@ -111,10 +109,8 @@ export default class StringStateMachine {
    * @public
    */
   has(currentState, nextState) {
-    if (!this.#hasher.hasHash(currentState, nextState))
-      return false;
-    const hash = this.#hasher.getHash(currentState, nextState);
-    return this.#root.has(hash);
+    const [__found__, __hash__] = this.#hasher.getHashIfExists(currentState, nextState);
+    return __found__ && this.#root.has(__hash__);
   }
 
   /**

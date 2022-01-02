@@ -54,10 +54,9 @@ export default class WeakStrongSet {
   delete(weakKey, strongKey) {
     this.#requireValidKey(weakKey, strongKey);
 
-    if (!this.#keyComposer.hasKey([weakKey], [strongKey]))
+    const __key__ = this.#keyComposer.getKeyIfExists([weakKey], [strongKey]);
+    if (!__key__)
       return false;
-
-    const __key__ = this.#keyComposer.getKey([weakKey], [strongKey]);
 
     const __returnValue__ = this.#weakKeySet.delete(__key__);
     this.#keyComposer.deleteKey([weakKey], [strongKey]);
@@ -76,12 +75,9 @@ export default class WeakStrongSet {
   has(weakKey, strongKey) {
     this.#requireValidKey(weakKey, strongKey);
 
-    if (!this.#keyComposer.hasKey([weakKey], [strongKey]))
-      return false;
+    const __key__ = this.#keyComposer.getKeyIfExists([weakKey], [strongKey]);
 
-    const __key__ = this.#keyComposer.getKey([weakKey], [strongKey]);
-
-    return this.#weakKeySet.has(__key__);
+    return __key__ ? this.#weakKeySet.has(__key__) : false;
   }
 
   /**

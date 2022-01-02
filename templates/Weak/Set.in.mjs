@@ -47,18 +47,13 @@ ${docs.buildBlock("delete", 2)}
   delete(${defines.get("argList")}) {
     this.#requireValidKey(${defines.get("argList")});
 
-    if (!this.#keyComposer.hasKey([${
-      defines.get("weakSetArgList")
-    }], [${
-      defines.get("strongSetArgList")
-    }]))
-      return false;
-
-    const __key__ = this.#keyComposer.getKey([${
+    const __key__ = this.#keyComposer.getKeyIfExists([${
       defines.get("weakSetArgList")
     }], [${
       defines.get("strongSetArgList")
     }]);
+    if (!__key__)
+      return false;
 
     const __returnValue__ = this.#weakKeySet.delete(__key__);
     this.#keyComposer.deleteKey([${
@@ -73,20 +68,13 @@ ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {
     this.#requireValidKey(${defines.get("argList")});
 
-    if (!this.#keyComposer.hasKey([${
-      defines.get("weakSetArgList")
-    }], [${
-      defines.get("strongSetArgList")
-    }]))
-      return false;
-
-    const __key__ = this.#keyComposer.getKey([${
+    const __key__ = this.#keyComposer.getKeyIfExists([${
       defines.get("weakSetArgList")
     }], [${
       defines.get("strongSetArgList")
     }]);
 
-    return this.#weakKeySet.has(__key__);
+    return __key__ ? this.#weakKeySet.has(__key__) : false;
   }
 
 ${docs.buildBlock("isValidKeyPublic", 2)}

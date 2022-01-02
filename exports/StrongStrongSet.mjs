@@ -48,8 +48,8 @@ export default class StrongStrongSet {
    * @public
    */
   add(key1, key2) {
-    const hash = this.#hasher.getHash(key1, key2);
-    this.#root.set(hash, Object.freeze([key1, key2]));
+    const __hash__ = this.#hasher.getHash(key1, key2);
+    this.#root.set(__hash__, Object.freeze([key1, key2]));
     return this;
   }
 
@@ -72,10 +72,8 @@ export default class StrongStrongSet {
    * @public
    */
   delete(key1, key2) {
-    if (!this.#hasher.hasHash(key1, key2))
-      return false;
-    const hash = this.#hasher.getHash(key1, key2);
-    return this.#root.delete(hash);
+    const [__found__, __hash__] = this.#hasher.getHashIfExists(key1, key2);
+    return __found__ && this.#root.delete(__hash__);
   }
 
   /**
@@ -109,10 +107,8 @@ export default class StrongStrongSet {
    * @public
    */
   has(key1, key2) {
-    if (!this.#hasher.hasHash(key1, key2))
-      return false;
-    const hash = this.#hasher.getHash(key1, key2);
-    return this.#root.has(hash);
+    const [__found__, __hash__] = this.#hasher.getHashIfExists(key1, key2);
+    return __found__ && this.#root.has(__hash__);
   }
 
   /**

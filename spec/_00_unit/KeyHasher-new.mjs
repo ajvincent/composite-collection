@@ -20,6 +20,7 @@ describe("KeyHasher-new", () => {
       "constructor",
       "getHash",
       "hasHash",
+      "getHashIfExists",
     ]);
   });
 
@@ -87,6 +88,20 @@ describe("KeyHasher-new", () => {
       expect(actual).toEqual(expected);
 
       expect(hasher.getHash(...keyList)).toEqual(expected);
+    });
+  });
+
+  describe(".getHashIfExists()", () => {
+    it("returns [true, hash] for a known hash", () => {
+      const keyList = objects.slice(0, 3);
+      const expected = hasher.getHash(...keyList);
+
+      expect(hasher.getHashIfExists(...keyList)).toEqual([true, expected]);
+    });
+
+    it("returns [false, ''] for an unknown hash", () => {
+      const keyList = objects.slice(0, 3);
+      expect(hasher.getHashIfExists(...keyList)).toEqual([false, ""]);
     });
   });
 
