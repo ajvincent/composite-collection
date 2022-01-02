@@ -34,10 +34,18 @@ ConfigurationStateGraphs.set(
     ["importLines", "hasValueFilter"],
 
     ["mapKeys", "mapKeys"],
+    ["mapKeys", "keyLink"],
     ["mapKeys", "hasValueFilter"],
     ["mapKeys", "locked"],
 
+    ["keyLink", "keyLink"],
+    ["keyLink", "hasValueFilter"],
+    ["keyLink", "locked"],
+
     ["hasValueFilter", "locked"],
+    ["hasValueFilter", "keyLinkWithValue"],
+
+    ["keyLinkWithValue", "locked"],
 
     ["locked", "locked"],
   ])
@@ -54,7 +62,11 @@ ConfigurationStateGraphs.set(
     ["importLines", "setElements"],
 
     ["setElements", "setElements"],
+    ["setElements", "keyLink"],
     ["setElements", "locked"],
+
+    ["keyLink", "keyLink"],
+    ["keyLink", "locked"],
 
     ["locked", "locked"],
   ])
@@ -74,30 +86,11 @@ ConfigurationStateGraphs.set(
     ["mapKeys", "setElements"],
 
     ["setElements", "setElements"],
+    ["setElements", "keyLink"],
     ["setElements", "locked"],
 
-    ["locked", "locked"],
-  ])
-);
-
-ConfigurationStateGraphs.set(
-  "Sequence",
-  new ConfigurationStateMachine([
-    ["start", "startSequence"],
-
-    ["startSequence", "importLines"],
-    ["startSequence", "mapTuple"],
-    ["startSequence", "setTuple"],
-
-    ["importLines", "mapTuple"],
-    ["importLines", "setTuple"],
-
-    ["mapTuple", "mapTuple"],
-    ["mapTuple", "setTuple"],
-    ["mapTuple", "locked"],
-
-    ["setTuple", "setTuple"],
-    ["setTuple", "locked"],
+    ["keyLink", "keyLink"],
+    ["keyLink", "locked"],
 
     ["locked", "locked"],
   ])
