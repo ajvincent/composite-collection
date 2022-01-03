@@ -41,11 +41,9 @@ ${docs.buildBlock("add", 2)}
     const __innerMap__ = this.#requireInnerMap(${defines.get("mapArgList")});
 
     // level 2: inner map to set
-    {
-      const __setKeyHash__ = this.#setHasher.getHash(${defines.get("setArgList")});
-      if (!__innerMap__.has(__setKeyHash__)) {
-        __innerMap__.set(__setKeyHash__, [${defines.get("setArgList")}]);
-      }
+    const __setKeyHash__ = this.#setHasher.getHash(${defines.get("setArgList")});
+    if (!__innerMap__.has(__setKeyHash__)) {
+      __innerMap__.set(__setKeyHash__, [${defines.get("setArgList")}]);
     }
 
     return this;
@@ -96,8 +94,8 @@ ${docs.buildBlock("delete", 2)}
       return false;
 
     // level 2: inner map to set
-    const [__found__, __setKeyHash__] = this.#setHasher.getHashIfExists(${defines.get("setArgList")});
-    if (!__found__)
+    const __setKeyHash__ = this.#setHasher.getHashIfExists(${defines.get("setArgList")});
+    if (!__setKeyHash__)
       return false;
     const __returnValue__ = __innerMap__.delete(__setKeyHash__);
 
@@ -151,10 +149,8 @@ ${docs.buildBlock("has", 2)}
       return false;
 
     // level 2: inner map to set
-    {
-      const [__found__, __setKeyHash__] = this.#setHasher.getHashIfExists(${defines.get("setArgList")});
-      return __found__ && __innerMap__.has(__setKeyHash__);
-    }
+    const __setKeyHash__ = this.#setHasher.getHashIfExists(${defines.get("setArgList")});
+    return __setKeyHash__ ? __innerMap__.has(__setKeyHash__) : false;
   }
 
 ${docs.buildBlock("hasSet", 2)}

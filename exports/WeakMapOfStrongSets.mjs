@@ -48,11 +48,9 @@ export default class WeakMapOfStrongSets {
     const __innerMap__ = this.#requireInnerMap(mapKey);
 
     // level 2: inner map to set
-    {
-      const __setKeyHash__ = this.#setHasher.getHash(setKey);
-      if (!__innerMap__.has(__setKeyHash__)) {
-        __innerMap__.set(__setKeyHash__, [setKey]);
-      }
+    const __setKeyHash__ = this.#setHasher.getHash(setKey);
+    if (!__innerMap__.has(__setKeyHash__)) {
+      __innerMap__.set(__setKeyHash__, [setKey]);
     }
 
     return this;
@@ -123,8 +121,8 @@ export default class WeakMapOfStrongSets {
       return false;
 
     // level 2: inner map to set
-    const [__found__, __setKeyHash__] = this.#setHasher.getHashIfExists(setKey);
-    if (!__found__)
+    const __setKeyHash__ = this.#setHasher.getHashIfExists(setKey);
+    if (!__setKeyHash__)
       return false;
     const __returnValue__ = __innerMap__.delete(__setKeyHash__);
 
@@ -211,10 +209,8 @@ export default class WeakMapOfStrongSets {
       return false;
 
     // level 2: inner map to set
-    {
-      const [__found__, __setKeyHash__] = this.#setHasher.getHashIfExists(setKey);
-      return __found__ && __innerMap__.has(__setKeyHash__);
-    }
+    const __setKeyHash__ = this.#setHasher.getHashIfExists(setKey);
+    return __setKeyHash__ ? __innerMap__.has(__setKeyHash__) : false;
   }
 
   /**

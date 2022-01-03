@@ -74,8 +74,8 @@ export default class StringStateMachine {
    * @public
    */
   delete(currentState, nextState) {
-    const [__found__, __hash__] = this.#hasher.getHashIfExists(currentState, nextState);
-    return __found__ && this.#root.delete(__hash__);
+    const __hash__ = this.#hasher.getHashIfExists(currentState, nextState);
+    return __hash__ ? this.#root.delete(__hash__) : false;
   }
 
   /**
@@ -109,8 +109,8 @@ export default class StringStateMachine {
    * @public
    */
   has(currentState, nextState) {
-    const [__found__, __hash__] = this.#hasher.getHashIfExists(currentState, nextState);
-    return __found__ && this.#root.has(__hash__);
+    const __hash__ = this.#hasher.getHashIfExists(currentState, nextState);
+    return __hash__ ? this.#root.has(__hash__) : false;
   }
 
   /**

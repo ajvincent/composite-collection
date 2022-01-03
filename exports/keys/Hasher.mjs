@@ -15,7 +15,7 @@ export default class KeyHasher {
   #requireKey(key) {
     const map = this.#getMap(key);
     if (!map.has(key))
-      map.set(key, (this.#hashCount++).toString(36));
+      map.set(key, (++this.#hashCount).toString(36));
     return map.get(key);
   }
 
@@ -37,10 +37,11 @@ export default class KeyHasher {
     const values = [];
     const result = args.every(arg => {
       const map = this.#getMap(arg);
-      values.push(map.get(arg));
-      return map.has(arg);
+      const rv = map.get(arg);
+      values.push(rv);
+      return rv;
     });
-    return result ? [true, values.join(",")] : [false, ""];
+    return result ? values.join(",") : "";
   }
 }
 

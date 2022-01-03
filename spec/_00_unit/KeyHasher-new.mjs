@@ -44,7 +44,7 @@ describe("KeyHasher-new", () => {
 
   describe(".getHash()", () => {
     it("generates a consistent hash for an initial key", () => {
-      const expected = [0,1,2].join(",");
+      const expected = [1,2,3].join(",");
 
       const keyList = objects.slice(0, 3);
 
@@ -57,7 +57,7 @@ describe("KeyHasher-new", () => {
     });
 
     it("accepts primitives for keys", () => {
-      const expected = [0,1,2].join(",");
+      const expected = [1,2,3].join(",");
 
       const keyList = ["row", "column", "floor"];
       const actual = hasher.getHash(...keyList);
@@ -67,7 +67,7 @@ describe("KeyHasher-new", () => {
     });
 
     it("generates a consistent hash for a repeated key", () => {
-      const expected = [0,0,1].join(",");
+      const expected = [1,1,2].join(",");
 
       const keyList = objects.slice(0, 3);
       keyList[1] = keyList[0];
@@ -79,7 +79,7 @@ describe("KeyHasher-new", () => {
     });
 
     it("generates new hash indexes for unknown objects", () => {
-      const expected = [3,4,5].join(",");
+      const expected = [4,5,6].join(",");
 
       const keyList = objects.slice(0, 3);
 
@@ -92,16 +92,16 @@ describe("KeyHasher-new", () => {
   });
 
   describe(".getHashIfExists()", () => {
-    it("returns [true, hash] for a known hash", () => {
+    it("returns a non-empty string for a known hash", () => {
       const keyList = objects.slice(0, 3);
       const expected = hasher.getHash(...keyList);
 
-      expect(hasher.getHashIfExists(...keyList)).toEqual([true, expected]);
+      expect(hasher.getHashIfExists(...keyList)).toEqual(expected);
     });
 
-    it("returns [false, ''] for an unknown hash", () => {
+    it("returns an empty string for an unknown hash", () => {
       const keyList = objects.slice(0, 3);
-      expect(hasher.getHashIfExists(...keyList)).toEqual([false, ""]);
+      expect(hasher.getHashIfExists(...keyList)).toEqual("");
     });
   });
 

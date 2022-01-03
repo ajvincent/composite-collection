@@ -47,8 +47,8 @@ ${docs.buildBlock("clear", 2)}
 
 ${docs.buildBlock("delete", 2)}
   delete(${defines.get("argList")}) {
-    const [__found__, __hash__] = this.#hasher.getHashIfExists(${defines.get("argList")});
-    return __found__ && this.#root.delete(__hash__);
+    const __hash__ = this.#hasher.getHashIfExists(${defines.get("argList")});
+    return __hash__ ? this.#root.delete(__hash__) : false;
   }
 
 ${docs.buildBlock("forEachSet", 2)}
@@ -62,8 +62,8 @@ ${docs.buildBlock("forEachCallbackSet", 2)}
 
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {
-    const [__found__, __hash__] = this.#hasher.getHashIfExists(${defines.get("argList")});
-    return __found__ && this.#root.has(__hash__);
+    const __hash__ = this.#hasher.getHashIfExists(${defines.get("argList")});
+    return __hash__ ? this.#root.has(__hash__) : false;
   }
 
 ${defines.has("validateArguments") ? `

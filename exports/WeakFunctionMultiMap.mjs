@@ -48,11 +48,9 @@ export default class WeakFunctionMultiMap {
     const __innerMap__ = this.#requireInnerMap(key);
 
     // level 2: inner map to set
-    {
-      const __setKeyHash__ = this.#setHasher.getHash(mapFunction);
-      if (!__innerMap__.has(__setKeyHash__)) {
-        __innerMap__.set(__setKeyHash__, [mapFunction]);
-      }
+    const __setKeyHash__ = this.#setHasher.getHash(mapFunction);
+    if (!__innerMap__.has(__setKeyHash__)) {
+      __innerMap__.set(__setKeyHash__, [mapFunction]);
     }
 
     return this;
@@ -123,8 +121,8 @@ export default class WeakFunctionMultiMap {
       return false;
 
     // level 2: inner map to set
-    const [__found__, __setKeyHash__] = this.#setHasher.getHashIfExists(mapFunction);
-    if (!__found__)
+    const __setKeyHash__ = this.#setHasher.getHashIfExists(mapFunction);
+    if (!__setKeyHash__)
       return false;
     const __returnValue__ = __innerMap__.delete(__setKeyHash__);
 
@@ -211,10 +209,8 @@ export default class WeakFunctionMultiMap {
       return false;
 
     // level 2: inner map to set
-    {
-      const [__found__, __setKeyHash__] = this.#setHasher.getHashIfExists(mapFunction);
-      return __found__ && __innerMap__.has(__setKeyHash__);
-    }
+    const __setKeyHash__ = this.#setHasher.getHashIfExists(mapFunction);
+    return __setKeyHash__ ? __innerMap__.has(__setKeyHash__) : false;
   }
 
   /**

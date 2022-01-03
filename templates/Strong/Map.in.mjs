@@ -45,8 +45,8 @@ ${docs.buildBlock("clear", 2)}
 
 ${docs.buildBlock("delete", 2)}
   delete(${defines.get("argList")}) {${invokeValidate}
-    const [__found__, __hash__] = this.#hasher.getHashIfExists(${defines.get("argList")});
-    return __found__ && this.#root.delete(__hash__);
+    const __hash__ = this.#hasher.getHashIfExists(${defines.get("argList")});
+    return __hash__ ? this.#root.delete(__hash__) : false;
   }
 
 ${docs.buildBlock("entries", 2)}
@@ -69,8 +69,8 @@ ${docs.buildBlock("forEachCallbackMap", 2)}
 
 ${docs.buildBlock("get", 2)}
   get(${defines.get("argList")}) {${invokeValidate}
-    const [__found__, __hash__] = this.#hasher.getHashIfExists(${defines.get("argList")});
-    if (!__found__)
+    const __hash__ = this.#hasher.getHashIfExists(${defines.get("argList")});
+    if (!__hash__)
       return undefined;
 
     const valueAndKeySet = this.#root.get(__hash__);
@@ -79,8 +79,8 @@ ${docs.buildBlock("get", 2)}
 
 ${docs.buildBlock("has", 2)}
   has(${defines.get("argList")}) {${invokeValidate}
-    const [__found__, __hash__] = this.#hasher.getHashIfExists(${defines.get("argList")});
-    return __found__ && this.#root.has(__hash__);
+    const __hash__ = this.#hasher.getHashIfExists(${defines.get("argList")});
+    return __hash__ ? this.#root.has(__hash__) : false;
   }
 
 ${defines.has("validateArguments") ? `
