@@ -45,20 +45,23 @@ export default class CodeGenerator extends CompletionPromise {
 
   static #internalFlagsSymbol = Symbol("package flags");
 
+  #oneToOneSubGenerator = null;
+
   /**
    * @param {CollectionConfiguration} configuration  The configuration to use.
    * @param {string}                  targetPath     The directory to write the collection to.
    * @param {Promise}                 startPromise   Where we should attach our asynchronous operations to.
    * @param {CompileTimeOptions}      compileOptions Flags from an owner which may override configurations.
    */
-  constructor(configuration, targetPath, startPromise, compileOptions) {
+  constructor(configuration, targetPath, startPromise, compileOptions = {}) {
     super(startPromise, () => this.buildCollection());
 
     this.#compileOptions = (compileOptions instanceof CompileTimeOptions) ? compileOptions : {};
 
-    this.#internalFlagSet = (CodeGenerator.#internalFlagsSymbol in this.#compileOptions) ?
-                            this.#compileOptions[CodeGenerator.#internalFlagsSymbol] :
+    this.#internalFlagSet = (CodeGenerator.#internalFlagsSymbol in compileOptions) ?
+                            compileOptions[CodeGenerator.#internalFlagsSymbol] :
                             null;
+    delete this.#compileOptions[CodeGenerator.#internalFlagsSymbol];
 
     if (!(configuration instanceof CollectionConfiguration) && !this.#internalFlagSet?.has("configuration ok")) {
       throw new Error("Configuration isn't a CollectionConfiguration");
@@ -87,11 +90,15 @@ export default class CodeGenerator extends CompletionPromise {
   async buildCollection() {
     this.#status = "in progress";
 
-    if (this.#configurationData.collectionTemplate === "OneToOne/Map")
+    if (this.#configurationData.collectionTemplate === "OneToOne/Map") {
       await this.#buildOneToOneBase();
-
-    this.#buildDefines();
-    this.#buildDocGenerator();
+      this.#buildOneToOneDefines();
+      this.#buildOneToOneDocGenerator();
+    }
+    else {
+      this.#buildDefines();
+      this.#buildDocGenerator();
+    }
     this.#generateSource();
 
     if (!this.#internalFlagSet?.has("prevent export"))
@@ -229,6 +236,26 @@ export default class CodeGenerator extends CompletionPromise {
     }
   }
 
+  #buildOneToOneDefines() {
+    this.#defines.clear();
+
+    const data = this.#configurationData;
+    const baseData = data.oneToOneBase.cloneData();
+    this.#defines.set("className", data.className);
+    this.#defines.set("baseClassName", baseData.className);
+    this.#defines.set("configureOptions", data.oneToOneOptions);
+
+    const weakKeyName = data.oneToOneKeyName;
+    this.#defines.set("weakKeyName", weakKeyName);
+
+    // bindOneToOne arguments
+    let keys = Array.from(baseData.parameterToTypeMap.keys());
+    this.#defines.set("baseArgList", keys.slice());
+
+    keys.splice(keys.indexOf(weakKeyName), 1);
+    this.#defines.set("bindArgList", keys);
+  }
+
   #buildDocGenerator() {
     this.#docGenerator = new JSDocGenerator(
       this.#configurationData.className,
@@ -242,6 +269,10 @@ export default class CodeGenerator extends CompletionPromise {
     if (this.#configurationData.valueType && !this.#configurationData.parameterToTypeMap.has("value")) {
       this.#docGenerator.addParameter(this.#configurationData.valueType);
     }
+  }
+
+  #buildOneToOneDocGenerator() {
+
   }
 
   #generateSource() {
@@ -286,16 +317,12 @@ export default class CodeGenerator extends CompletionPromise {
     let resolve, subStartPromise = new Promise(res => resolve = res);
 
     const subCompileOptions = Object.create(this.#compileOptions);
-    {
-      const flags = new Set([
-        "prevent export",
-        "configuration ok",
-      ]);
+    subCompileOptions[CodeGenerator.#internalFlagsSymbol] = new Set([
+      "prevent export",
+      "configuration ok",
+    ]);
 
-      subCompileOptions[CodeGenerator.#internalFlagsSymbol] = flags;
-    }
-
-    const subGenerator = new CodeGenerator(
+    this.#oneToOneSubGenerator = new CodeGenerator(
       this.#configurationData.oneToOneBase,
       this.#targetPath,
       subStartPromise,
@@ -303,9 +330,9 @@ export default class CodeGenerator extends CompletionPromise {
     );
 
     resolve();
-    await subGenerator.completionPromise;
+    await this.#oneToOneSubGenerator.completionPromise;
 
-    this.#generatedCode += subGenerator.generatedCode + "\n";
+    this.#generatedCode += this.#oneToOneSubGenerator.generatedCode + "\n";
   }
 }
 Object.freeze(CodeGenerator);

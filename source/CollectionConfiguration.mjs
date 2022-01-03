@@ -502,7 +502,7 @@ export default class CollectionConfiguration {
         throw new Error("configureOneToOne can only be used for OneToOne collections, and exactly once!");
       }
 
-      this.#identifierArg(privateKeyName);
+      this.#identifierArg("privateKeyName", privateKeyName);
 
       this.#oneToOneKeyName = privateKeyName;
 
@@ -516,7 +516,6 @@ export default class CollectionConfiguration {
       }
       else if (typeof baseConfiguration === "string") {
         this.#oneToOneBase = await CollectionConfiguration.#getOneToOneBaseByString(baseConfiguration, privateKeyName);
-        configData = this.#oneToOneBase?.cloneData();
       }
 
       if (!this.#oneToOneBase) {
@@ -546,13 +545,13 @@ export default class CollectionConfiguration {
     }
 
     if (baseConfiguration === "composite-collection/WeakStrongMap") {
-      const config = (await import("./exports/WeakStrongMap.mjs"));
+      const config = (await import("./exports/WeakStrongMap.mjs")).default;
       CollectionConfiguration.#oneToOneLockedPrivateKey(config, privateKeyName);
       return config;
     }
 
     if (baseConfiguration === "composite-collection/WeakWeakMap") {
-      const config = (await import("./exports/WeakWeakMap.mjs"));
+      const config = (await import("./exports/WeakWeakMap.mjs")).default;
       CollectionConfiguration.#oneToOneLockedPrivateKey(config, privateKeyName);
       return config;
     }
@@ -578,12 +577,14 @@ export default class CollectionConfiguration {
       if (!this.#doStateTransition("locked"))
         throw new Error("You must define a map key or set element first!");
 
+      if (this.#collectionTemplate === "OneToOne/Map")
+        return;
+
       if (this.#collectionTemplate.startsWith("Weak/Map") && !this.#weakMapKeys.length)
         throw new Error("A weak map keyset must have at least one weak key!");
 
       if (/Weak\/?Set/.test(this.#collectionTemplate) && !this.#weakSetElements.length)
         throw new Error("A weak set keyset must have at least one weak key!");
-
 
       let argCount = this.#argCount;
       if (argCount === 0) {
