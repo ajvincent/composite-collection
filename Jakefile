@@ -142,24 +142,24 @@ namespace("test", () => {
 
       "spec/_01_collection-generator/generated/WeakFunctionMultiMap.mjs",
 
-      "spec/_03_exports/generated/keys/Hasher.mjs",
-      "spec/_03_exports/generated/keys/Composite.mjs",
+      "spec/_04_exports/generated/keys/Hasher.mjs",
+      "spec/_04_exports/generated/keys/Composite.mjs",
 
-      "spec/_03_exports/generated/StrongStrongMap.mjs",
-      "spec/_03_exports/generated/StrongStrongSet.mjs",
+      "spec/_04_exports/generated/StrongStrongMap.mjs",
+      "spec/_04_exports/generated/StrongStrongSet.mjs",
 
-      "spec/_03_exports/generated/WeakWeakMap.mjs",
-      "spec/_03_exports/generated/WeakStrongMap.mjs",
+      "spec/_04_exports/generated/WeakWeakMap.mjs",
+      "spec/_04_exports/generated/WeakStrongMap.mjs",
 
-      "spec/_03_exports/generated/WeakWeakSet.mjs",
-      "spec/_03_exports/generated/WeakStrongSet.mjs",
+      "spec/_04_exports/generated/WeakWeakSet.mjs",
+      "spec/_04_exports/generated/WeakStrongSet.mjs",
 
-      "spec/_03_exports/generated/StrongMapOfStrongSets.mjs",
+      "spec/_04_exports/generated/StrongMapOfStrongSets.mjs",
 
-      "spec/_03_exports/generated/WeakMapOfStrongSets.mjs",
-      "spec/_03_exports/generated/WeakMapOfWeakSets.mjs",
+      "spec/_04_exports/generated/WeakMapOfStrongSets.mjs",
+      "spec/_04_exports/generated/WeakMapOfWeakSets.mjs",
 
-      "spec/_03_exports/generated/WeakFunctionMultiMap.mjs",
+      "spec/_04_exports/generated/WeakFunctionMultiMap.mjs",
     ]
   );
 
@@ -220,14 +220,14 @@ generateCollectionTasks(
   ]
 );
 
-copyFileTasks("source/exports", "spec/_03_exports/generated", [
+copyFileTasks("source/exports", "spec/_04_exports/generated", [
   "keys/Hasher.mjs",
   "keys/Composite.mjs",
 ]);
 
 generateCollectionTasks(
   "source/exports",
-  "spec/_03_exports/generated",
+  "spec/_04_exports/generated",
   [
     "StrongStrongMap.mjs",
     "StrongStrongSet.mjs",
