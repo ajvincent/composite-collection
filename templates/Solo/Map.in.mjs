@@ -13,7 +13,7 @@ export default function preprocess(defines, docs) {
   return `
 ${defines.get("importLines")}
 
-export default class ${defines.get("className")} extends ${defines.get("weakMapCount") ? "Weak" : ""}Map {
+class ${defines.get("className")} extends ${defines.get("weakMapCount") ? "Weak" : ""}Map {
 ${defines.has("invokeValidate") ? `
   delete(${defines.get("argList")}) {${invokeValidate}
     return super.delete(${defines.get("argList")});

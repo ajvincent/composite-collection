@@ -12,7 +12,7 @@ export default function preprocess(defines, docs) {
   return `
 ${defines.get("importLines")}
 
-export default class ${defines.get("className")} extends ${defines.get("weakSetCount") ? "Weak" : ""}Set {
+class ${defines.get("className")} extends ${defines.get("weakSetCount") ? "Weak" : ""}Set {
 ${defines.get("invokeValidate") ? `
 ${docs.buildBlock("add", 2)}
   add(${defines.get("argList")}) {${invokeValidate}

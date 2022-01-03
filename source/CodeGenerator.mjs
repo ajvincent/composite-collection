@@ -40,6 +40,11 @@ export default class CodeGenerator extends CompletionPromise {
   /** @type {string} */
   #generatedCode = "";
 
+  /** @type {Set?} @constant */
+  #internalFlagSet;
+
+  static #internalFlagsSymbol = Symbol("package flags");
+
   /**
    * @param {CollectionConfiguration} configuration  The configuration to use.
    * @param {string}                  targetPath     The directory to write the collection to.
@@ -49,8 +54,15 @@ export default class CodeGenerator extends CompletionPromise {
   constructor(configuration, targetPath, startPromise, compileOptions) {
     super(startPromise, () => this.buildCollection());
 
-    if (!(configuration instanceof CollectionConfiguration))
+    this.#compileOptions = (compileOptions instanceof CompileTimeOptions) ? compileOptions : {};
+
+    this.#internalFlagSet = (CodeGenerator.#internalFlagsSymbol in this.#compileOptions) ?
+                            this.#compileOptions[CodeGenerator.#internalFlagsSymbol] :
+                            null;
+
+    if (!(configuration instanceof CollectionConfiguration) && !this.#internalFlagSet?.has("configuration ok")) {
       throw new Error("Configuration isn't a CollectionConfiguration");
+    }
 
     if (typeof targetPath !== "string")
       throw new Error("Target path should be a path to a file that doesn't exist!");
@@ -59,7 +71,7 @@ export default class CodeGenerator extends CompletionPromise {
     configuration.lock(); // this may throw, but if so, it's good that it does so.
     this.#configurationData = configuration.cloneData();
     this.#targetPath = targetPath;
-    this.#compileOptions = (compileOptions instanceof CompileTimeOptions) ? compileOptions : {};
+
 
     this.completionPromise.catch(
       () => this.#status = "aborted"
@@ -75,17 +87,25 @@ export default class CodeGenerator extends CompletionPromise {
   async buildCollection() {
     this.#status = "in progress";
 
+    if (this.#configurationData.collectionTemplate === "OneToOne/Map")
+      await this.#buildOneToOneBase();
+
     this.#buildDefines();
     this.#buildDocGenerator();
     this.#generateSource();
-    await this.#writeSource();
+
+    if (!this.#internalFlagSet?.has("prevent export"))
+      await this.#writeSource();
 
     this.#status = "completed";
     return this.#configurationData.className;
   }
 
-  #filePrologue() {
+  get generatedCode() {
+    return this.#generatedCode;
+  }
 
+  #filePrologue() {
     let generatedCodeNotice =
       `
 /**
@@ -227,10 +247,20 @@ export default class CodeGenerator extends CompletionPromise {
   #generateSource() {
     const generator = TemplateGenerators.get(this.#configurationData.collectionTemplate);
 
-    this.#generatedCode = [
-      this.#filePrologue(),
-      generator(this.#defines, this.#docGenerator),
-    ].flat(Infinity).filter(Boolean).join("\n\n");
+    let codeSegments = [
+      this.#generatedCode,
+      generator(this.#defines, this.#docGenerator)
+    ];
+
+    if (!this.#internalFlagSet?.has("prevent export")) {
+      codeSegments = [
+        this.#filePrologue(),
+        ...codeSegments,
+        `export default ${this.#configurationData.className};`
+      ];
+    }
+
+    this.#generatedCode = codeSegments.flat(Infinity).filter(Boolean).join("\n\n");
 
     this.#generatedCode = beautify(
       this.#generatedCode,
@@ -250,6 +280,32 @@ export default class CodeGenerator extends CompletionPromise {
       this.#generatedCode,
       { encoding: "utf-8" }
     );
+  }
+
+  async #buildOneToOneBase() {
+    let resolve, subStartPromise = new Promise(res => resolve = res);
+
+    const subCompileOptions = Object.create(this.#compileOptions);
+    {
+      const flags = new Set([
+        "prevent export",
+        "configuration ok",
+      ]);
+
+      subCompileOptions[CodeGenerator.#internalFlagsSymbol] = flags;
+    }
+
+    const subGenerator = new CodeGenerator(
+      this.#configurationData.oneToOneBase,
+      this.#targetPath,
+      subStartPromise,
+      subCompileOptions
+    );
+
+    resolve();
+    await subGenerator.completionPromise;
+
+    this.#generatedCode += subGenerator.generatedCode + "\n";
   }
 }
 Object.freeze(CodeGenerator);

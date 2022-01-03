@@ -6,7 +6,7 @@
 
 import KeyHasher from "./keys/Hasher.mjs";
 
-export default class StrongStrongMap {
+class StrongStrongMap {
   /**
    * @typedef StrongStrongMap~valueAndKeySet
    * @property {*}   value  The actual value we store.
@@ -222,3 +222,5 @@ Reflect.defineProperty(StrongStrongMap, Symbol.toStringTag, {
 
 Object.freeze(StrongStrongMap);
 Object.freeze(StrongStrongMap.prototype);
+
+export default StrongStrongMap;

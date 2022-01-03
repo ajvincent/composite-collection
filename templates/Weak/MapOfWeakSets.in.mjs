@@ -7,7 +7,7 @@ export default function preprocess(defines, docs) {
   return `
 ${defines.get("importLines")}
 
-export default class ${defines.get("className")} {
+class ${defines.get("className")} {
   /**
    * @type {WeakMap<WeakKey, WeakSet<WeakKey>>}
    * @note This is two levels.  The first level is the map's weak key.

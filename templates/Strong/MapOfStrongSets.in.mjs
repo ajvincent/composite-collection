@@ -15,7 +15,7 @@ export default function preprocess(defines, docs) {
   return `
 ${defines.get("importLines")}
 
-export default class ${defines.get("className")} {
+class ${defines.get("className")} {
   /** @type {Map<hash, Map<hash, *[]>>} @constant */
   #outerMap = new Map();
 

@@ -8,12 +8,14 @@ describe("CollectionConfiguration", () => {
 
     expect(Reflect.ownKeys(CollectionConfiguration.prototype)).toEqual([
       "constructor",
+      "currentState",
       "setFileOverview",
       "cloneData",
       "importLines",
       "addMapKey",
       "addSetKey",
       "setValueType",
+      "configureOneToOne",
       "lock",
     ]);
   });

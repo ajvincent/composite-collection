@@ -6,7 +6,7 @@
 
 import KeyHasher from "./keys/Hasher.mjs";
 
-export default class StringStateMachine {
+class StringStateMachine {
   /**
    * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.
    *
@@ -185,3 +185,5 @@ Reflect.defineProperty(StringStateMachine, Symbol.toStringTag, {
 
 Object.freeze(StringStateMachine);
 Object.freeze(StringStateMachine.prototype);
+
+export default StringStateMachine;

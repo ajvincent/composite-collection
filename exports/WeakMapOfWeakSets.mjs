@@ -6,7 +6,7 @@
 
 import WeakKeyComposer from "./keys/Composite.mjs";
 
-export default class WeakMapOfWeakSets {
+class WeakMapOfWeakSets {
   /**
    * @type {WeakMap<WeakKey, WeakSet<WeakKey>>}
    * @note This is two levels.  The first level is the map's weak key.
@@ -277,3 +277,5 @@ Reflect.defineProperty(WeakMapOfWeakSets, Symbol.toStringTag, {
 
 Object.freeze(WeakMapOfWeakSets);
 Object.freeze(WeakMapOfWeakSets.prototype);
+
+export default WeakMapOfWeakSets;

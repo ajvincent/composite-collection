@@ -47,7 +47,14 @@ function getNormalFunctionAST(fn) {
   return [source, astNode.params, astNode.body];
 }
 
-const PREDEFINED_TYPES = new Set(["WeakMap", "Map", "WeakSet", "Set"]);
+/** @readonly */
+const PREDEFINED_TYPES = new Map([
+  ["Map", "Strong/Map"],
+  ["WeakMap", "Weak/Map"],
+  ["Set", "Strong/Set"],
+  ["WeakSet", "Weak/Set"],
+  ["OneToOne", "OneToOne/Map"],
+]);
 
 /**
  * A configuration manager for a single composite collection.
@@ -174,6 +181,19 @@ export default class CollectionConfiguration {
     }
   }
 
+  async #catchErrorAsync(callback) {
+    if (this.#currentState === "errored")
+      throw new Error("This configuration is dead due to a previous error!");
+
+    try {
+      return await callback();
+    }
+    catch (ex) {
+      this.#currentState = "errored";
+      throw ex;
+    }
+  }
+
   /**
    * @param {string}  className The name of the class to define.
    * @param {string}  outerType One of "Map", "WeakMap", "Set", "WeakSet".
@@ -181,37 +201,28 @@ export default class CollectionConfiguration {
    * @constructor
    */
   constructor(className, outerType, innerType = null) {
+    /* This is a defensive measure for one-to-one configurations, where the base configuration must be for a WeakMap. */
+    if (new.target !== CollectionConfiguration)
+      throw new Error("You cannot subclass CollectionConfiguration!");
+
     this.#identifierArg("className", className);
     if (PREDEFINED_TYPES.has(className))
       throw new Error(`You can't override the ${className} primordial!`);
 
-    switch (outerType) {
-      case "Map":
-        this.#collectionTemplate = "Strong/Map";
-        break;
-      case "WeakMap":
-        this.#collectionTemplate = "Weak/Map";
-        break;
-
-      case "Set":
-        this.#collectionTemplate = "Strong/Set";
-        break;
-      case "WeakSet":
-        this.#collectionTemplate = "Weak/Set";
-        break;
-
-      default:
-        throw new Error(`outerType must be a ${Array.from(PREDEFINED_TYPES).join(", ")}!`);
-    }
+    this.#collectionTemplate = PREDEFINED_TYPES.get(outerType);
+    if (!this.#collectionTemplate)
+      throw new Error(`outerType must be one of ${Array.from(PREDEFINED_TYPES.keys()).join(", ")}!`);
 
     switch (innerType) {
       case null:
         break;
+
       case "Set":
-        if (outerType.endsWith("Set"))
+        if (!outerType.endsWith("Map"))
           throw new Error("outerType must be a Map or WeakMap when an innerType is not null!");
         this.#collectionTemplate += "OfStrongSets";
         break;
+
       case "WeakSet":
         /*
         There can't be a strong map of weak sets, because it's unclear when we would hold strong
@@ -223,6 +234,7 @@ export default class CollectionConfiguration {
           throw new Error("outerType must be a WeakMap when the innerType is a WeakSet!");
         this.#collectionTemplate += "OfWeakSets";
         break;
+
       default:
         throw new Error("innerType must be a WeakSet, Set, or null!");
     }
@@ -235,14 +247,25 @@ export default class CollectionConfiguration {
       this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Map");
       this.#doStateTransition("startMap");
     }
-    else {
+    else if (outerType.endsWith("Set")) {
       this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Set");
       this.#doStateTransition("startSet");
+    }
+    else if (outerType === "OneToOne") {
+      this.#stateTransitionsGraph = ConfigurationStateGraphs.get("OneToOne");
+      this.#doStateTransition("startOneToOne");
+    }
+    else {
+      throw new Error("Internal error, not reachable");
     }
 
     this.#className = className;
 
     Reflect.preventExtensions(this);
+  }
+
+  get currentState() {
+    return this.#currentState;
   }
 
   /**
@@ -274,6 +297,11 @@ export default class CollectionConfiguration {
         fileOverview: this.#fileoverview,
         requiresKeyHasher: this.#collectionTemplate.includes("Strong"),
         requiresWeakKey:   this.#collectionTemplate.includes("Weak"),
+
+        /* OneToOne-specific fields */
+        oneToOneKeyName: this.#oneToOneKeyName,
+        oneToOneBase: this.#oneToOneBase,
+        oneToOneOptions: this.#oneToOneOptions,
       }
     });
   }
@@ -459,6 +487,90 @@ export default class CollectionConfiguration {
           this.#strongMapKeys.push("value");
       }
     });
+  }
+
+  /*
+  OneToOne-specific fields
+   */
+  #oneToOneKeyName = "";
+  #oneToOneBase = null;
+  #oneToOneOptions = null;
+
+  configureOneToOne(baseConfiguration, privateKeyName, options = {}) {
+    return this.#catchErrorAsync(async () => {
+      if (!this.#doStateTransition("configureOneToOne")) {
+        throw new Error("configureOneToOne can only be used for OneToOne collections, and exactly once!");
+      }
+
+      this.#identifierArg(privateKeyName);
+
+      this.#oneToOneKeyName = privateKeyName;
+
+      let configData;
+      if (baseConfiguration instanceof CollectionConfiguration) {
+        CollectionConfiguration.#oneToOneLockedPrivateKey(baseConfiguration, privateKeyName);
+
+        configData = baseConfiguration.cloneData();
+        if (configData.collectionTemplate === "Weak/Map")
+          this.#oneToOneBase = baseConfiguration;
+      }
+      else if (typeof baseConfiguration === "string") {
+        this.#oneToOneBase = await CollectionConfiguration.#getOneToOneBaseByString(baseConfiguration, privateKeyName);
+        configData = this.#oneToOneBase?.cloneData();
+      }
+
+      if (!this.#oneToOneBase) {
+        throw new Error("The nase configuration must be a WeakMap CollectionConfiguration, 'WeakMap', 'composite-collection/WeakStrongMap', or 'composite-collection/WeakWeakMap'!");
+      }
+
+      this.#oneToOneOptions = Object.freeze(JSON.parse(JSON.stringify(options)));
+    });
+  }
+
+  static async #getOneToOneBaseByString(baseConfiguration, privateKeyName) {
+    if (baseConfiguration === "WeakMap") {
+      const baseData = {
+        className: "WeakMap",
+        importLines: "",
+        collectionTemplate: "",
+        weakMapKeys: [privateKeyName],
+        strongMapKeys: [],
+        weakSetElements: [],
+        strongSetElements: [],
+        valueType: null,
+        fileOverview: null,
+        requiresKeyHasher: false,
+        requiresWeakKey: false,
+      };
+      return { cloneData: () => baseData, lock: () => null };
+    }
+
+    if (baseConfiguration === "composite-collection/WeakStrongMap") {
+      const config = (await import("./exports/WeakStrongMap.mjs"));
+      CollectionConfiguration.#oneToOneLockedPrivateKey(config, privateKeyName);
+      return config;
+    }
+
+    if (baseConfiguration === "composite-collection/WeakWeakMap") {
+      const config = (await import("./exports/WeakWeakMap.mjs"));
+      CollectionConfiguration.#oneToOneLockedPrivateKey(config, privateKeyName);
+      return config;
+    }
+
+    return null;
+  }
+
+  static #oneToOneLockedPrivateKey(baseConfiguration, privateKeyName) {
+    if (baseConfiguration.currentState !== "locked") {
+      /* We dare not modify the base configuration lest other code use it to generate a different file. */
+      throw new Error("The base configuration must be locked!");
+    }
+
+    const weakKeys = baseConfiguration.cloneData().weakMapKeys;
+    if (weakKeys.includes(privateKeyName))
+      return;
+    const names = weakKeys.map(name => `"${name}"`).join(", ");
+    throw new Error(`Invalid weak key name for the base configuration.  Valid names are ${names}.`);
   }
 
   lock() {

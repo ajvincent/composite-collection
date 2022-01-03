@@ -6,7 +6,7 @@
 
 import KeyHasher from "./keys/Hasher.mjs";
 
-export default class StrongMapOfStrongSets {
+class StrongMapOfStrongSets {
   /** @type {Map<hash, Map<hash, *[]>>} @constant */
   #outerMap = new Map();
 
@@ -345,3 +345,5 @@ Reflect.defineProperty(StrongMapOfStrongSets, Symbol.toStringTag, {
 
 Object.freeze(StrongMapOfStrongSets);
 Object.freeze(StrongMapOfStrongSets.prototype);
+
+export default StrongMapOfStrongSets;

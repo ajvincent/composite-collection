@@ -12,7 +12,7 @@ export default function preprocess(defines, docs) {
   return `
 ${defines.get("importLines")}
 
-export default class ${defines.get("className")} {
+class ${defines.get("className")} {
   ${docs.buildBlock("rootContainerSet", 4)}
   #root = new Map;
 

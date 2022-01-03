@@ -9,7 +9,7 @@ import WeakKeyComposer from "./keys/Composite.mjs";
 
 /** @typedef {Map<hash, *[]>} WeakMapOfStrongSets~InnerMap */
 
-export default class WeakMapOfStrongSets {
+class WeakMapOfStrongSets {
   /**
    * @type {WeakMap<WeakKey, WeakMapOfStrongSets~InnerMap>}
    * @constant
@@ -385,3 +385,5 @@ Reflect.defineProperty(WeakMapOfStrongSets, Symbol.toStringTag, {
 
 Object.freeze(WeakMapOfStrongSets);
 Object.freeze(WeakMapOfStrongSets.prototype);
+
+export default WeakMapOfStrongSets;

@@ -93,6 +93,19 @@ ConfigurationStateGraphs.set(
   ])
 );
 
+ConfigurationStateGraphs.set(
+  "OneToOne",
+  new ConfigurationStateMachine([
+    ["start", "startOneToOne"],
+
+    ["startOneToOne", "configureOneToOne"],
+
+    ["configureOneToOne", "locked"],
+
+    ["locked", "locked"],
+  ])
+);
+
 machinesLocked = true;
 
 export default ConfigurationStateGraphs;

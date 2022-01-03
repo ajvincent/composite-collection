@@ -6,7 +6,7 @@
 
 import KeyHasher from "./keys/Hasher.mjs";
 
-export default class StrongStrongSet {
+class StrongStrongSet {
   /**
    * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.
    *
@@ -136,3 +136,5 @@ Reflect.defineProperty(StrongStrongSet, Symbol.toStringTag, {
 
 Object.freeze(StrongStrongSet);
 Object.freeze(StrongStrongSet.prototype);
+
+export default StrongStrongSet;

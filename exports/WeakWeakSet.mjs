@@ -6,7 +6,7 @@
 
 import WeakKeyComposer from "./keys/Composite.mjs";
 
-export default class WeakWeakSet {
+class WeakWeakSet {
   /** @type {WeakKeyComposer} @constant */
   #keyComposer = new WeakKeyComposer(["key1", "key2"], []);
 
@@ -131,3 +131,5 @@ Reflect.defineProperty(WeakWeakSet, Symbol.toStringTag, {
 
 Object.freeze(WeakWeakSet);
 Object.freeze(WeakWeakSet.prototype);
+
+export default WeakWeakSet;
