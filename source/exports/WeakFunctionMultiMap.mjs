@@ -10,5 +10,6 @@ WeakFunctionMultiMap.addSetKey("mapFunction", false, {
       return false;
   }
 });
+WeakFunctionMultiMap.lock();
 
 export default WeakFunctionMultiMap;
