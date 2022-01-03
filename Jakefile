@@ -85,6 +85,10 @@ function generateCollectionTasks(configDir, targetDir, leafNames) {
   });
 }
 
+function prefixFileList(prefix, items) {
+  return items.map(item => prefix + item);
+}
+
 desc("Testing");
 task(
   "test",
@@ -102,65 +106,85 @@ task("clean", async () => {
 namespace("test", () => {
   task(
     "generated",
-    [
-      "spec/_01_collection-generator/generated/keys/Hasher.mjs",
-      "spec/_01_collection-generator/generated/keys/Composite.mjs",
+    prefixFileList("spec/_01_collection-generator/generated/", [
+      "keys/Hasher.mjs",
+      "keys/Composite.mjs",
 
-      "spec/_01_collection-generator/generated/SoloStrongMap.mjs",
-      "spec/_01_collection-generator/generated/SoloStrongSet.mjs",
-      "spec/_01_collection-generator/generated/SoloWeakMap.mjs",
-      "spec/_01_collection-generator/generated/SoloWeakSet.mjs",
+      "SoloStrongMap.mjs",
+      "SoloStrongSet.mjs",
+      "SoloWeakMap.mjs",
+      "SoloWeakSet.mjs",
 
-      "spec/_01_collection-generator/generated/StrongStrongMap.mjs",
-      "spec/_01_collection-generator/generated/StrongStrongSet.mjs",
+      "StrongStrongMap.mjs",
+      "StrongStrongSet.mjs",
 
-      "spec/_01_collection-generator/generated/WeakWeakMap.mjs",
-      "spec/_01_collection-generator/generated/WeakStrongMap.mjs",
-      "spec/_01_collection-generator/generated/StrongWeakMap.mjs",
+      "WeakWeakMap.mjs",
+      "WeakStrongMap.mjs",
+      "StrongWeakMap.mjs",
 
-      "spec/_01_collection-generator/generated/WeakWeakSet.mjs",
-      "spec/_01_collection-generator/generated/WeakStrongSet.mjs",
-      "spec/_01_collection-generator/generated/StrongWeakSet.mjs",
+      "WeakWeakSet.mjs",
+      "WeakStrongSet.mjs",
+      "StrongWeakSet.mjs",
 
-      "spec/_01_collection-generator/generated/StrongMapOfStrongSets.mjs",
+      "StrongMapOfStrongSets.mjs",
 
-      "spec/_01_collection-generator/generated/WeakMapOfStrongSets.mjs",
-      "spec/_01_collection-generator/generated/WeakMapOfWeakSets.mjs",
-      "spec/_01_collection-generator/generated/WeakMapWeakStrongSet.mjs",
+      "WeakMapOfStrongSets.mjs",
+      "WeakMapOfWeakSets.mjs",
+      "WeakMapWeakStrongSet.mjs",
 
-      "spec/_01_collection-generator/generated/StrongStrongMapImportable.mjs",
-      "spec/_01_collection-generator/generated/WeakStrongMapImportable.mjs",
-      "spec/_01_collection-generator/generated/WeakWeakMapImportable.mjs",
+      "StrongStrongMapImportable.mjs",
+      "WeakStrongMapImportable.mjs",
+      "WeakWeakMapImportable.mjs",
 
-      "spec/_01_collection-generator/generated/StrongStrongSetImportable.mjs",
-      "spec/_01_collection-generator/generated/WeakStrongSetImportable.mjs",
-      "spec/_01_collection-generator/generated/WeakWeakSetImportable.mjs",
+      "StrongStrongSetImportable.mjs",
+      "WeakStrongSetImportable.mjs",
+      "WeakWeakSetImportable.mjs",
 
-      "spec/_01_collection-generator/generated/StrongMapSetImportable.mjs",
-      "spec/_01_collection-generator/generated/WeakMapStrongSetImportable.mjs",
-      "spec/_01_collection-generator/generated/WeakMapWeakSetImportable.mjs",
+      "StrongMapSetImportable.mjs",
+      "WeakMapStrongSetImportable.mjs",
+      "WeakMapWeakSetImportable.mjs",
 
-      "spec/_01_collection-generator/generated/WeakFunctionMultiMap.mjs",
+      "WeakFunctionMultiMap.mjs",
+    ])
+  );
 
-      "spec/_04_exports/generated/keys/Hasher.mjs",
-      "spec/_04_exports/generated/keys/Composite.mjs",
+  task(
+    "generated",
+    prefixFileList("spec/_02_one-to-one-maps/generated/", [
+      "BasicInline.mjs",
+      "BasicStrongInline.mjs",
+      "BasicWeakInline.mjs",
 
-      "spec/_04_exports/generated/StrongStrongMap.mjs",
-      "spec/_04_exports/generated/StrongStrongSet.mjs",
+      "WeakStrongMap.mjs",
+      "WeakWeakMap.mjs",
 
-      "spec/_04_exports/generated/WeakWeakMap.mjs",
-      "spec/_04_exports/generated/WeakStrongMap.mjs",
+      "BasicStrongImported.mjs",
+      "BasicWeakImported.mjs",
+    ])
+  );
 
-      "spec/_04_exports/generated/WeakWeakSet.mjs",
-      "spec/_04_exports/generated/WeakStrongSet.mjs",
+  task(
+    "generated",
+    prefixFileList("spec/_04_exports/generated/", [
+      "keys/Hasher.mjs",
+      "keys/Composite.mjs",
 
-      "spec/_04_exports/generated/StrongMapOfStrongSets.mjs",
+      "StrongStrongMap.mjs",
+      "StrongStrongSet.mjs",
 
-      "spec/_04_exports/generated/WeakMapOfStrongSets.mjs",
-      "spec/_04_exports/generated/WeakMapOfWeakSets.mjs",
+      "WeakWeakMap.mjs",
+      "WeakStrongMap.mjs",
 
-      "spec/_04_exports/generated/WeakFunctionMultiMap.mjs",
-    ]
+      "WeakWeakSet.mjs",
+      "WeakStrongSet.mjs",
+
+      "StrongMapOfStrongSets.mjs",
+
+      "WeakMapOfStrongSets.mjs",
+      "WeakMapOfWeakSets.mjs",
+
+      "WeakFunctionMultiMap.mjs",
+    ])
   );
 
   task(
@@ -217,6 +241,33 @@ generateCollectionTasks(
     "WeakMapOfWeakSets.mjs",
 
     "WeakFunctionMultiMap.mjs",
+  ]
+);
+
+copyFileTasks("source/exports", "spec/_02_one-to-one-maps/generated", [
+  "keys/Hasher.mjs",
+  "keys/Composite.mjs",
+]);
+
+generateCollectionTasks(
+  "spec/_02_one-to-one-maps/fixtures",
+  "spec/_02_one-to-one-maps/generated",
+  [
+    "BasicInline.mjs",
+    "BasicStrongInline.mjs",
+    "BasicWeakInline.mjs",
+
+    "BasicStrongImported.mjs",
+    "BasicWeakImported.mjs",
+  ]
+);
+
+generateCollectionTasks(
+  "source/exports",
+  "spec/_02_one-to-one-maps/generated",
+  [
+    "WeakWeakMap.mjs",
+    "WeakStrongMap.mjs",
   ]
 );
 

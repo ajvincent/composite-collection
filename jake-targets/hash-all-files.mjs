@@ -30,6 +30,7 @@ export async function getHashFileList(root) {
   const ignoredDirs = [
     "node_modules",
     "spec/_01_collection-generator/generated",
+    "spec/_02_one-to-one-maps/generated",
     "spec/_04_exports/generated",
     "."
   ];

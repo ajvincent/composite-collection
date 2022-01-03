@@ -91,7 +91,9 @@ export default class CodeGenerator extends CompletionPromise {
     this.#status = "in progress";
 
     if (this.#configurationData.collectionTemplate === "OneToOne/Map") {
-      await this.#buildOneToOneBase();
+      if (this.#configurationData.oneToOneBase.cloneData().className !== "WeakMap") {
+        await this.#buildOneToOneBase();
+      }
       this.#buildOneToOneDefines();
       this.#buildOneToOneDocGenerator();
     }
@@ -314,6 +316,16 @@ export default class CodeGenerator extends CompletionPromise {
   }
 
   async #buildOneToOneBase() {
+    const base = this.#configurationData.oneToOneBase;
+    const baseData = base.cloneData();
+    if (baseData.className === "WeakMap")
+      return;
+
+    if (this.#configurationData.oneToOneOptions?.pathToBaseModule) {
+      this.#generatedCode += `import ${baseData.className} from "${this.#configurationData.oneToOneOptions.pathToBaseModule}";\n`;
+      return;
+    }
+
     let resolve, subStartPromise = new Promise(res => resolve = res);
 
     const subCompileOptions = Object.create(this.#compileOptions);
@@ -323,7 +335,7 @@ export default class CodeGenerator extends CompletionPromise {
     ]);
 
     this.#oneToOneSubGenerator = new CodeGenerator(
-      this.#configurationData.oneToOneBase,
+      base,
       this.#targetPath,
       subStartPromise,
       subCompileOptions

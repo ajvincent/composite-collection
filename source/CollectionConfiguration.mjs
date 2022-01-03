@@ -533,6 +533,9 @@ export default class CollectionConfiguration {
         importLines: "",
         collectionTemplate: "",
         weakMapKeys: [privateKeyName],
+        parameterToTypeMap: new Map([
+          [privateKeyName, null]
+        ]),
         strongMapKeys: [],
         weakSetElements: [],
         strongSetElements: [],

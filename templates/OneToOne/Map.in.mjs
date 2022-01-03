@@ -11,7 +11,7 @@ function buildNumberedArgs(args, suffix, weakKeyName) {
  * @param {JSDocGenerator} docs
  * @returns {string}
  */
- export default function preprocess(defines, docs) {
+export default function preprocess(defines, docs) {
   void docs;
 
   /*
@@ -41,6 +41,7 @@ function buildNumberedArgs(args, suffix, weakKeyName) {
         baseMapArgs1 = buildArgNameList(baseMapArgList1),
         baseMapArgs2 = buildArgNameList(baseMapArgList2);
 
+  const bindMapArgsWithValue = buildArgNameList(["value",...defines.get("bindArgList")]);
   const bindMapArgs = buildArgNameList(defines.get("bindArgList"));
 
   return `
@@ -52,11 +53,13 @@ class ${defines.get("className")} {
   #weakValueToInternalKeyMap = new WeakMap;
 
   bindOneToOne(${
-    buildArgNameList(bindOneToOneArgList1)
-  }, value1, ${
-    buildArgNameList(bindOneToOneArgList2)
-  }, value2) {
-    ${
+    buildArgNameList([
+      ...bindOneToOneArgList1,
+      "value1",
+      ...bindOneToOneArgList2,
+      "value2"
+    ])}) {
+${defines.get("bindArgList").length ? `${
       bindOneToOneArgList1.map(argName =>`this.#requireValidKey("(${argName})", ${argName});`).join("\n    ")
     }
     this.#requireValidValue("value1", value1);
@@ -64,6 +67,9 @@ class ${defines.get("className")} {
       bindOneToOneArgList2.map(argName =>`this.#requireValidKey("(${argName})", ${argName});`).join("\n    ")
     }
     this.#requireValidValue("value2", value2);
+` : `this.#requireValidValue("value1", value1);
+    this.#requireValidValue("value2", value2);
+`}
 
     if (this.#weakValueToInternalKeyMap.has(value2))
       throw new Error("value2 already has a bound key set!");
@@ -74,10 +80,10 @@ class ${defines.get("className")} {
       this.#weakValueToInternalKeyMap.set(value1, ${weakKeyName});
     }
 
-    const __hasKeySet1__  = this.#baseMap.has(${baseMapArgs1}),
-          __hasKeySet2__  = this.#baseMap.has(${baseMapArgs2}),
-          __matchValue1__ = this.#baseMap.get(${baseMapArgs1}) === value1,
-          __matchValue2__ = this.#baseMap.get(${baseMapArgs2}) === value2;
+    const __hasKeySet1__  = this.#baseMap.has(${baseMapArgs1});
+    const __hasKeySet2__  = this.#baseMap.has(${baseMapArgs2});
+    const __matchValue1__ = this.#baseMap.get(${baseMapArgs1}) === value1;
+    const __matchValue2__ = this.#baseMap.get(${baseMapArgs2}) === value2;
 
     if (!__hasKeySet1__) {
       this.#baseMap.set(${baseMapArgs1}, value1);
@@ -96,7 +102,7 @@ class ${defines.get("className")} {
     this.#weakValueToInternalKeyMap.set(value2, ${weakKeyName});
   }
 
-  delete(value, ${bindMapArgs}) {
+  delete(${bindMapArgsWithValue}) {
     const ${weakKeyName} = this.#weakValueToInternalKeyMap.has(value);
     if (!${weakKeyName})
       return false;
@@ -112,12 +118,12 @@ class ${defines.get("className")} {
     return __returnValue__;
   }
 
-  get(value, ${bindMapArgs}) {
+  get(${bindMapArgsWithValue}) {
     const ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value);
     return ${weakKeyName} ? this.#baseMap.get(${baseMapArgs}) : undefined;
   }
 
-  has(value, ${bindMapArgs}) {
+  has(${bindMapArgsWithValue}) {
     const ${weakKeyName} = this.#weakValueToInternalKeyMap.has(value);
     return ${weakKeyName} ? this.#baseMap.has(${baseMapArgs}) : false;
   }
@@ -138,11 +144,13 @@ class ${defines.get("className")} {
     // baseConfiguration.valueType.argumentValidator: this.#baseMap.isValidValue(value);
   }
 
+${defines.get("bindArgList").length ? `
   #requireValidKey(__argNames__, strongKey) {
     if (!this.isValidKey(strongKey))
       throw new Error("Invalid key tuple: " + __argNames__);
   }
-
+` : ``
+}
   #requireValidValue(argName, value) {
     if (!this.isValidValue(value))
       throw new Error(argName + " is not a valid value!");

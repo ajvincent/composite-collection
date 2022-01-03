@@ -4,6 +4,7 @@ import path from "path";
 
 const fileRoots = [
   "spec/_01_collection-generator/generated",
+  "spec/_02_one-to-one-maps/generated",
   "spec/_04_exports/generated",
   "exports",
 ].map(root => path.join(process.cwd(), root));
