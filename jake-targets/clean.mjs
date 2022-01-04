@@ -10,7 +10,14 @@ const fileRoots = [
 ].map(root => path.join(process.cwd(), root));
 
 let allFiles = await Promise.all(fileRoots.map(
-  root => getAllFiles(root).toArray()
+  async root => {
+    try {
+      return await getAllFiles(root).toArray();
+    }
+    catch (ex) {
+      return [];
+    }
+  }
 ));
 
 allFiles = allFiles.flat().filter(file => file.endsWith(".mjs"));
