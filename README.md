@@ -137,7 +137,7 @@ The simple hashtable above can't do this.  To support this, there are the [`comp
 
 These modules work by wrapping an existing weak map collection and assuming ownership of a weak key argument.  Under the hood, the `redObj`, `blueObj` and `greenObj` would all point to a single weak key, which then goes into a `WeakStrongMap` along with the string argument as the strong key.  The values are then the original objects.  The binding would happen by calling `.bindOneToOne("red", redObj, "blue", blueObj)`.  Going from `blueObj` to `redObj` is as simple as calling `.get(blueObj, "red")`.
 
-If you want a more complex hashtable structure (multiple keys, argument validation, etc.), you'll want to craft your own collection configuration.
+If you want a more complex hashtable structure (multiple keys, argument validation, etc.), you'll want to craft your own collection configuration.  See [`source/exports/OneToOneWeakMap.mjs`](source/exports/OneToOneWeakMap.mjs) for an example.
 
 ## How It All Works
 
