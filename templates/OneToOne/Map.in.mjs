@@ -8,11 +8,12 @@ function buildNumberedArgs(args, suffix, weakKeyName) {
 
 /**
  * @param {Map} defines
- * @param {JSDocGenerator} docs
+ * @param {JSDocGenerator} soloDocs
+ * @param {JSDocGenerator} duoDocs
  * @returns {string}
  */
-export default function preprocess(defines, docs) {
-  void docs;
+export default function preprocess(defines, soloDocs, duoDocs) {
+  void soloDocs, duoDocs;
 
   /*
   @type {Map<*, object>}
@@ -31,11 +32,11 @@ export default function preprocess(defines, docs) {
   */
 
   const weakKeyName = defines.get("weakKeyName");
-  const bindOneToOneArgList1 = buildNumberedArgs(defines.get("bindArgList"), 1, weakKeyName),
-        bindOneToOneArgList2 = buildNumberedArgs(defines.get("bindArgList"), 2, weakKeyName);
+  const bindOneToOneArgList1 = buildNumberedArgs(defines.get("bindArgList"), "_1", weakKeyName),
+        bindOneToOneArgList2 = buildNumberedArgs(defines.get("bindArgList"), "_2", weakKeyName);
 
-  const baseMapArgList1 = buildNumberedArgs(defines.get("baseArgList"), 1, weakKeyName),
-        baseMapArgList2 = buildNumberedArgs(defines.get("baseArgList"), 1, weakKeyName);
+  const baseMapArgList1 = buildNumberedArgs(defines.get("baseArgList"), "_1", weakKeyName),
+        baseMapArgList2 = buildNumberedArgs(defines.get("baseArgList"), "_2", weakKeyName);
 
   const baseMapArgs = buildArgNameList(defines.get("baseArgList")),
         baseMapArgs1 = buildArgNameList(baseMapArgList1),
@@ -52,56 +53,58 @@ class ${defines.get("className")} {
   /** @type {WeakMap<object, object>} @constant */
   #weakValueToInternalKeyMap = new WeakMap;
 
+${duoDocs.buildBlock("bindOneToOne")}
   bindOneToOne(${
     buildArgNameList([
       ...bindOneToOneArgList1,
-      "value1",
+      "value_1",
       ...bindOneToOneArgList2,
-      "value2"
+      "value_2"
     ])}) {
 ${defines.get("bindArgList").length ? `${
       bindOneToOneArgList1.map(argName =>`this.#requireValidKey("(${argName})", ${argName});`).join("\n    ")
     }
-    this.#requireValidValue("value1", value1);
+    this.#requireValidValue("value_1", value_1);
     ${
       bindOneToOneArgList2.map(argName =>`this.#requireValidKey("(${argName})", ${argName});`).join("\n    ")
     }
-    this.#requireValidValue("value2", value2);
-` : `this.#requireValidValue("value1", value1);
-    this.#requireValidValue("value2", value2);
+    this.#requireValidValue("value_2", value_2);
+` : `this.#requireValidValue("value_1", value_1);
+    this.#requireValidValue("value_2", value_2);
 `}
 
-    if (this.#weakValueToInternalKeyMap.has(value2))
-      throw new Error("value2 already has a bound key set!");
+    if (this.#weakValueToInternalKeyMap.has(value_2))
+      throw new Error("value_2 already has a bound key set!");
 
-    let ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value1);
+    let ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value_1);
     if (!${weakKeyName}) {
       ${weakKeyName} = {};
-      this.#weakValueToInternalKeyMap.set(value1, ${weakKeyName});
+      this.#weakValueToInternalKeyMap.set(value_1, ${weakKeyName});
     }
 
     const __hasKeySet1__  = this.#baseMap.has(${baseMapArgs1});
     const __hasKeySet2__  = this.#baseMap.has(${baseMapArgs2});
-    const __matchValue1__ = this.#baseMap.get(${baseMapArgs1}) === value1;
-    const __matchValue2__ = this.#baseMap.get(${baseMapArgs2}) === value2;
+    const __matchvalue_1__ = this.#baseMap.get(${baseMapArgs1}) === value_1;
+    const __matchvalue_2__ = this.#baseMap.get(${baseMapArgs2}) === value_2;
 
     if (!__hasKeySet1__) {
-      this.#baseMap.set(${baseMapArgs1}, value1);
+      this.#baseMap.set(${baseMapArgs1}, value_1);
     }
-    else if (!__matchValue1__) {
-      throw new Error("value1 mismatch!");
+    else if (!__matchvalue_1__) {
+      throw new Error("value_1 mismatch!");
     }
 
     if (!__hasKeySet2__)
-      this.#baseMap.set(${baseMapArgs2}, value2);
-    else if (!__matchValue2__)
+      this.#baseMap.set(${baseMapArgs2}, value_2);
+    else if (!__matchvalue_2__)
     {
-      throw new Error("value2 mismatch!");
+      throw new Error("value_2 mismatch!");
     }
 
-    this.#weakValueToInternalKeyMap.set(value2, ${weakKeyName});
+    this.#weakValueToInternalKeyMap.set(value_2, ${weakKeyName});
   }
 
+${soloDocs.buildBlock("delete")}
   delete(${bindMapArgsWithValue}) {
     const ${weakKeyName} = this.#weakValueToInternalKeyMap.has(value);
     if (!${weakKeyName})
@@ -118,16 +121,19 @@ ${defines.get("bindArgList").length ? `${
     return __returnValue__;
   }
 
+${soloDocs.buildBlock("get")}
   get(${bindMapArgsWithValue}) {
     const ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value);
     return ${weakKeyName} ? this.#baseMap.get(${baseMapArgs}) : undefined;
   }
 
+${soloDocs.buildBlock("has")}
   has(${bindMapArgsWithValue}) {
     const ${weakKeyName} = this.#weakValueToInternalKeyMap.has(value);
     return ${weakKeyName} ? this.#baseMap.has(${baseMapArgs}) : false;
   }
 
+${soloDocs.buildBlock("isValidKey")}
   isValidKey(${bindMapArgs}) {
     return this.#isValidKey(${bindMapArgs});
   }
@@ -137,6 +143,7 @@ ${defines.get("bindArgList").length ? `${
     return this.#baseMap.isValidKey(${baseMapArgs});
   }
 
+${soloDocs.buildBlock("isValidValue")}
   isValidValue(value) {
     void value;
     return true;

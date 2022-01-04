@@ -79,8 +79,8 @@ export default class JSDocGenerator {
   /** @type {string?} */
   #valueDesc = undefined;
 
-  /** @type {Param[]} @constant */
-  #params = [];
+  /** @type {Set<Param>} @constant */
+  #params = new Set;
 
   /**
    * @typedef Param
@@ -107,6 +107,11 @@ export default class JSDocGenerator {
     this.#methodTemplates.keysReplaced = false;
   }
 
+  async setMethodParameters(moduleName) {
+    const paramFunction = (await import("#source/jsdoc-method-sets/" + moduleName + ".mjs")).default;
+    this.#methodTemplates = new Map(paramFunction());
+  }
+
   /**
    * Add a parameter definition.
    * @param {CollectionType} parameter The parameter type information.
@@ -115,7 +120,7 @@ export default class JSDocGenerator {
   addParameter(parameter) {
     if (!(parameter instanceof CollectionType))
       throw new Error("parameter must be a CollectionType!")
-    this.#params.push(parameter);
+    this.#params.add(parameter);
     if (parameter.argumentName === "value") {
       this.#valueType = parameter.argumentType;
       this.#valueDesc = parameter.description;
@@ -131,7 +136,7 @@ export default class JSDocGenerator {
 
     let keyMap;
     {
-      const argList = this.#params.map(param => param.argumentName);
+      const argList = Array.from(this.#params.values()).map(param => param.argumentName);
       {
         let index = argList.indexOf("value");
         if (index !== -1)

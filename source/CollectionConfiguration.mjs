@@ -528,23 +528,28 @@ export default class CollectionConfiguration {
 
   static async #getOneToOneBaseByString(baseConfiguration, privateKeyName) {
     if (baseConfiguration === "WeakMap") {
-      const baseData = {
-        className: "WeakMap",
-        importLines: "",
-        collectionTemplate: "",
-        weakMapKeys: [privateKeyName],
-        parameterToTypeMap: new Map([
-          [privateKeyName, null]
-        ]),
-        strongMapKeys: [],
-        weakSetElements: [],
-        strongSetElements: [],
-        valueType: null,
-        fileOverview: null,
-        requiresKeyHasher: false,
-        requiresWeakKey: false,
+      return {
+        lock: () => null,
+
+        cloneData: () => {
+          return {
+            className: "WeakMap",
+            importLines: "",
+            collectionTemplate: "",
+            weakMapKeys: [privateKeyName],
+            parameterToTypeMap: new Map([
+              [privateKeyName, new CollectionType("key", "", "object", "The key.", "")],
+            ]),
+            strongMapKeys: [],
+            weakSetElements: [],
+            strongSetElements: [],
+            valueType: null,
+            fileOverview: null,
+            requiresKeyHasher: false,
+            requiresWeakKey: false,
+          };
+        },
       };
-      return { cloneData: () => baseData, lock: () => null };
     }
 
     if (baseConfiguration === "composite-collection/WeakStrongMap") {

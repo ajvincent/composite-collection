@@ -12,6 +12,7 @@ import TemplateGenerators from "./TemplateGenerators.mjs";
 
 import fs from "fs/promises";
 import beautify from "js-beautify";
+import CollectionType from "./CollectionType.mjs";
 
 function buildArgNameList(keys) {
   return '[' + keys.map(key => `"${key}"`).join(", ") + ']'
@@ -34,8 +35,8 @@ export default class CodeGenerator extends CompletionPromise {
   /** @type {Map<string, *>} @constant */
   #defines = new Map();
 
-  /** @type {JSDocGenerator} */
-  #docGenerator;
+  /** @type {JSDocGenerator[]} */
+  #docGenerators = [];
 
   /** @type {string} */
   #generatedCode = "";
@@ -95,7 +96,7 @@ export default class CodeGenerator extends CompletionPromise {
         await this.#buildOneToOneBase();
       }
       this.#buildOneToOneDefines();
-      this.#buildOneToOneDocGenerator();
+      await this.#buildOneToOneDocGenerators();
     }
     else {
       this.#buildDefines();
@@ -259,22 +260,67 @@ export default class CodeGenerator extends CompletionPromise {
   }
 
   #buildDocGenerator() {
-    this.#docGenerator = new JSDocGenerator(
+    const generator = new JSDocGenerator(
       this.#configurationData.className,
       !this.#configurationData.collectionTemplate.endsWith("Map")
     );
 
     this.#configurationData.parameterToTypeMap.forEach(typeData => {
-      this.#docGenerator.addParameter(typeData);
+      generator.addParameter(typeData);
     });
 
     if (this.#configurationData.valueType && !this.#configurationData.parameterToTypeMap.has("value")) {
-      this.#docGenerator.addParameter(this.#configurationData.valueType);
+      generator.addParameter(this.#configurationData.valueType);
     }
+
+    this.#docGenerators.push(generator);
   }
 
-  #buildOneToOneDocGenerator() {
+  async #buildOneToOneDocGenerators() {
+    const base = this.#configurationData.oneToOneBase;
+    const baseData = base.cloneData();
 
+    // For the solo doc generator, the value argument comes first.
+    let generator = await this.#createOneToOneGenerator("oneToOneSoloArg");
+    generator.addParameter(baseData.valueType || new CollectionType("value", "map", "*", "The value.", ""));
+    this.#appendTypesToDocGenerator(generator, "", false);
+
+    // For the duo doc generator, there are two of each argument, and two values.
+    generator = await this.#createOneToOneGenerator("oneToOneDuoArg");
+    this.#appendTypesToDocGenerator(generator, "_1", true);
+    this.#appendTypesToDocGenerator(generator, "_2", true);
+  }
+
+  async #createOneToOneGenerator(moduleName) {
+    let generator = new JSDocGenerator(
+      this.#configurationData.className,
+      true
+    );
+
+    await generator.setMethodParameters(moduleName);
+    this.#docGenerators.push(generator);
+    return generator;
+  }
+
+  #appendTypesToDocGenerator(generator, typeSuffix, addValue) {
+    const baseData = this.#configurationData.oneToOneBase.cloneData();
+
+    baseData.parameterToTypeMap.delete(this.#configurationData.oneToOneKeyName);
+
+    baseData.parameterToTypeMap.forEach(typeData => {
+      generator.addParameter(new CollectionType(
+        typeData.argumentName + typeSuffix,
+        typeData.mapOrSetType,
+        typeData.argumentType,
+        typeData.description,
+        typeData.argumentValidator
+      ));
+    });
+
+    if (addValue)
+    {
+      generator.addParameter(baseData.valueType || new CollectionType("value" + typeSuffix, "map", "*", "The value.", ""));
+    }
   }
 
   #generateSource() {
@@ -282,7 +328,7 @@ export default class CodeGenerator extends CompletionPromise {
 
     let codeSegments = [
       this.#generatedCode,
-      generator(this.#defines, this.#docGenerator)
+      generator(this.#defines, ...this.#docGenerators),
     ];
 
     if (!this.#internalFlagSet?.has("prevent export")) {
