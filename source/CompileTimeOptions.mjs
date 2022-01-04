@@ -5,7 +5,7 @@ function validString(value) {
 /**
  * A catch-all for run-time options for CodeGenerator, and anyone who invokes it.
  */
-export default class RuntimeOptions {
+export default class CompileTimeOptions {
   constructor(properties) {
     this.sourceFile       = validString(properties.sourceFile);
     this.sourcesDirectory = validString(properties.sourcesDirectory);
@@ -15,5 +15,5 @@ export default class RuntimeOptions {
     this.copyright        = validString(properties.copyright);
   }
 }
-Object.freeze(RuntimeOptions);
-Object.freeze(RuntimeOptions.prototype);
+Object.freeze(CompileTimeOptions);
+Object.freeze(CompileTimeOptions.prototype);
