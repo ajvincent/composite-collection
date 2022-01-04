@@ -1,9 +1,9 @@
 import CollectionConfiguration from "composite-collection/Configuration";
 
-const OneToOneConfig = new CollectionConfiguration("OneToOneMap", "OneToOne");
-await OneToOneConfig.configureOneToOne("composite-collection/WeakStrongMap", "weakKey", {
+const OneToOneStrongMapConfig = new CollectionConfiguration("OneToOneStrongMap", "OneToOne");
+await OneToOneStrongMapConfig.configureOneToOne("composite-collection/WeakStrongMap", "weakKey", {
   // true means Object(value) === value
-  valuesMustBeObjects: true,
+  valuesMustBeObjects: false,
 
   // true means hold all values as keys in #strongValueToInternalKeyMap
   holdValuesStrongly: false,
@@ -11,6 +11,6 @@ await OneToOneConfig.configureOneToOne("composite-collection/WeakStrongMap", "we
   // include if you want to import the module instead of having it inline.
   pathToBaseModule: "./WeakStrongMap.mjs",
 });
-OneToOneConfig.lock();
+OneToOneStrongMapConfig.lock();
 
-export default OneToOneConfig;
+export default OneToOneStrongMapConfig;

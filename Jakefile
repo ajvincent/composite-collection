@@ -184,6 +184,10 @@ namespace("test", () => {
       "WeakMapOfWeakSets.mjs",
 
       "WeakFunctionMultiMap.mjs",
+
+      "OneToOneSimpleMap.mjs",
+      "OneToOneStrongMap.mjs",
+      "OneToOneWeakMap.mjs",
     ])
   );
 
@@ -295,6 +299,10 @@ generateCollectionTasks(
     "WeakMapOfWeakSets.mjs",
 
     "WeakFunctionMultiMap.mjs",
+
+    "OneToOneSimpleMap.mjs",
+    "OneToOneStrongMap.mjs",
+    "OneToOneWeakMap.mjs",
   ]
 );
 
@@ -337,6 +345,10 @@ task(
     "exports/WeakMapOfWeakSets.mjs",
 
     "exports/WeakFunctionMultiMap.mjs",
+
+    "exports/OneToOneSimpleMap.mjs",
+    "exports/OneToOneStrongMap.mjs",
+    "exports/OneToOneWeakMap.mjs",
   ]
 );
 
@@ -360,6 +372,10 @@ generateCollectionTasks("source/exports", "exports", [
   "WeakMapOfWeakSets.mjs",
 
   "WeakFunctionMultiMap.mjs",
+
+  "OneToOneSimpleMap.mjs",
+  "OneToOneStrongMap.mjs",
+  "OneToOneWeakMap.mjs",
 ]);
 
 desc("Bootstrap")

@@ -73,35 +73,98 @@ ${defines.get("bindArgList").length ? `${
     this.#requireValidValue("value_2", value_2);
 `}
 
-    if (this.#weakValueToInternalKeyMap.has(value_2))
-      throw new Error("value_2 already has a bound key set!");
-
     let ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value_1);
+    const __otherWeakKey__ = this.#weakValueToInternalKeyMap.get(value_2);
     if (!${weakKeyName}) {
-      ${weakKeyName} = {};
-      this.#weakValueToInternalKeyMap.set(value_1, ${weakKeyName});
+      ${weakKeyName} = __otherWeakKey__ || {};
+    }
+    else if (__otherWeakKey__ && (__otherWeakKey__ !== ${weakKeyName})) {
+      throw new Error(${
+/*
+If we get here, we have a potentially unresolvable conflict.
+
+In the simplest case,
+
+map.bindOneToOne(red, green);
+map.bindOneToOne(blue, yellow);
+map.bindOneToOne(red, blue);
+
+This last can't be allowed because red is already bound to green, and blue is
+already bound to yellow.
+
+In the value plus namespace key case,
+
+map.bindOneToOne(red, "red", green, "green");
+map.bindOneToOne(blue, "blue", yellow, "yellow");
+map.bindOneToOne(red, "red", blue, "blue");
+
+This doesn't actually have a conflict, but we disallow it anyway for now.  The
+reason is proving there isn't a conflict without side effects is Hard.
+
+We'd have to prove several facts when evaluating the third line:
+
+1. map.has(red, "blue") === false
+2. map.has(red, "yellow") === false
+3. map.has(blue, "red") === false
+4. map.has(blue, "green") === false
+
+The "yellow" and "green" keys don't appear on the third line.  In other words
+we'd have to search for entries matching either of the private weak keys for
+all the key combinations belonging to them.
+
+With weak maps, such enumerations are generally impossible by design.
+
+Now, the one-to-one map could theoretically track this via exports/keys/Hasher.mjs:
+  // @type {WeakMap<privateWeakKey, Set<hash>>} @constant
+  // @type {WeakMapOfStrongSets<privateWeakKey, hash>} @constant
+  #weakKeyToUserKeyHashes = new WeakMap;
+
+  // @constant
+  #userKeysHasher = new KeyHasher
+
+This means adding a key hasher to this class for the user's keys... and on top
+of that another composite collection - either the one this project provides, or
+a hand-written one.
+
+All of this just to make sure there isn't a conflict.  It's a lot of overhead,
+complicating this implementation immensely.
+
+Finally, the user could avoid this conflict simply by reordering the
+invocations, preferring existing entries over new ones:
+
+map.bindOneToOne(red, "red", green, "green");
+map.bindOneToOne(red, "red", blue, "blue");
+map.bindOneToOne(blue, "blue", yellow, "yellow");
+
+If there's a compelling use case that crashes into this problem, we can fix
+this by defining an option in the configuration's .configureOneToOne() options
+argument, to generate the additional code when the option is present.  That's
+the only way to convince me it's worth it, and that option must not be on by
+default.  Preserving this comment - or altering it slightly to emphasize the
+option - would also be required.
+
+-- Alex Vincent, Jan. 4, 2022
+*/
+        `"value_1 and value_2 are already in different one-to-one mappings!"`
+      });
     }
 
     const __hasKeySet1__  = this.#baseMap.has(${baseMapArgs1});
     const __hasKeySet2__  = this.#baseMap.has(${baseMapArgs2});
-    const __matchvalue_1__ = this.#baseMap.get(${baseMapArgs1}) === value_1;
-    const __matchvalue_2__ = this.#baseMap.get(${baseMapArgs2}) === value_2;
 
-    if (!__hasKeySet1__) {
-      this.#baseMap.set(${baseMapArgs1}, value_1);
-    }
-    else if (!__matchvalue_1__) {
+    if (__hasKeySet1__ && (this.#baseMap.get(${baseMapArgs1}) !== value_1))
       throw new Error("value_1 mismatch!");
-    }
+    if (__hasKeySet2__ && (this.#baseMap.get(${baseMapArgs2}) !== value_2))
+      throw new Error("value_2 mismatch!");
+
+    this.#weakValueToInternalKeyMap.set(value_1, ${weakKeyName});
+    this.#weakValueToInternalKeyMap.set(value_2, ${weakKeyName});
+
+    if (!__hasKeySet1__)
+      this.#baseMap.set(${baseMapArgs1}, value_1);
 
     if (!__hasKeySet2__)
       this.#baseMap.set(${baseMapArgs2}, value_2);
-    else if (!__matchvalue_2__)
-    {
-      throw new Error("value_2 mismatch!");
-    }
-
-    this.#weakValueToInternalKeyMap.set(value_2, ${weakKeyName});
   }
 
 ${soloDocs.buildBlock("delete")}
