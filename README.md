@@ -40,7 +40,7 @@ The composite-collection package provides several pre-defined two-key collection
 - [composite-collection/OneToOneStrongMap](exports/OneToOneStrongMap.mjs)
 - [composite-collection/OneToOneWeakMap](exports/OneToOneWeakMap.mjs)
 
-If you want to generate your own composite collections, this package is also for you.  Each of the above collections comes from a short configuration file, some hand-written templates, and a code-generating set of modules to transform the templates into working collection modules, complete with [JSDoc comments](https://jsdoc.app/).  Here's the [WeakFunctionMultiMap configuration file](source/exports/WeakFunctionMultiMap.mjs):
+If you want to generate your own composite collections, this package is also for you.  Each of the above collections comes from [a short configuration file](source/exports), some [hand-written templates](templates), and a [code-generating set of modules](source) to transform the templates into [working collection modules](exports), complete with [JSDoc comments](https://jsdoc.app/).  Here's the [WeakFunctionMultiMap configuration file](source/exports/WeakFunctionMultiMap.mjs):
 
 ```javascript
 import CollectionConfiguration from "composite-collection/Configuration";
