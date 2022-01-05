@@ -110,9 +110,6 @@ try {
     overwrite: true,
   });
   console.timeLog("stage", "master should now be updated");
-
-  cleanupAll.resolve();
-  await cleanupAll.promise;
 }
 catch (ex) {
   //eslint-disable-next-line no-debugger
@@ -120,6 +117,9 @@ catch (ex) {
   throw ex;
 }
 finally {
+  cleanupAll.resolve();
+  await cleanupAll.promise;
+
   console.timeEnd("stage");
 }
 

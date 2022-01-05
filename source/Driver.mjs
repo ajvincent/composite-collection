@@ -65,7 +65,6 @@ export default class Driver extends CompletionPromise {
       }
     ));
 
-    const requiresKeyHasher = configs.some(c => c.cloneData().requiresKeyHasher);
     const requiresWeakKey   = configs.some(c => c.cloneData().requiresWeakKey);
 
     let promises = configs.map(config => {
@@ -80,12 +79,10 @@ export default class Driver extends CompletionPromise {
 
     await fs.mkdir(path.join(this.#targetsPath, "keys"), { recursive: true });
 
-    if (requiresKeyHasher) {
-      promises.push(fs.copyFile(
-        path.join(projectRoot, "source/exports/keys/Hasher.mjs"),
-        path.join(this.#targetsPath, "keys/Hasher.mjs")
-      ));
-    }
+    promises.push(fs.copyFile(
+      path.join(projectRoot, "source/exports/keys/Hasher.mjs"),
+      path.join(this.#targetsPath, "keys/Hasher.mjs")
+    ));
 
     if (requiresWeakKey) {
       promises.push(fs.copyFile(

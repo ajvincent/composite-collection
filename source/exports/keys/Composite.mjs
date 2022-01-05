@@ -23,7 +23,7 @@ class WeakKeyPropertyBag {
     this.hash = hash;
 
     if (strongArguments.length > 1) {
-      this.strongRef = new Set(strongArguments);
+      this.strongRefSet = new Set(strongArguments);
     }
     else if (strongArguments.length === 1) {
       this.strongRef = strongArguments[0];

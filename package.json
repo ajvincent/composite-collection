@@ -40,12 +40,12 @@
     "js-beautify": "^1.14.0"
   },
   "exports": {
+    "./KeyHasher": "./exports/keys/Hasher.mjs",
+    "./WeakKeyComposer": "./exports/keys/Composite.mjs",
     "./Driver": "./source/Driver.mjs",
     "./CodeGenerator": "./source/CodeGenerator.mjs",
     "./Configuration": "./source/CollectionConfiguration.mjs",
     "./CompileTimeOptions": "./source/CompileTimeOptions.mjs",
-    "./KeyHasher": "./exports/keys/Hasher.mjs",
-    "./WeakKeyComposer": "./exports/keys/Composite.mjs",
     "./StrongStrongMap": "./exports/StrongStrongMap.mjs",
     "./StrongStrongSet": "./exports/StrongStrongSet.mjs",
     "./WeakWeakMap": "./exports/WeakWeakMap.mjs",
