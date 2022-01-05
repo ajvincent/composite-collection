@@ -69,13 +69,11 @@ export default class CodeGenerator extends CompletionPromise {
     }
 
     if (typeof targetPath !== "string")
-      throw new Error("Target path should be a path to a file that doesn't exist!");
-    // we shan't assert the file doesn't exist until we're in asynchronous code, via buildCollection
+      throw new Error("Target path should be a path to a file!");
 
     configuration.lock(); // this may throw, but if so, it's good that it does so.
     this.#configurationData = configuration.cloneData();
     this.#targetPath = targetPath;
-
 
     this.completionPromise.catch(
       () => this.#status = "aborted"
@@ -257,6 +255,9 @@ export default class CodeGenerator extends CompletionPromise {
 
     keys.splice(keys.indexOf(weakKeyName), 1);
     this.#defines.set("bindArgList", keys);
+
+    const extendBaseClass = baseData.weakMapKeys.length + baseData.strongMapKeys.length >= 2;
+    this.#defines.set("extendBaseClass", extendBaseClass);
   }
 
   #buildDocGenerator() {

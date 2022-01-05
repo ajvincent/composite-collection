@@ -19,4 +19,6 @@ StrongStrongSetImportable.addSetKey("key2", false, {
   },
 });
 
+StrongStrongSetImportable.lock();
+
 export default StrongStrongSetImportable;

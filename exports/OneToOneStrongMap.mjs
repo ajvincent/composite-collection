@@ -49,10 +49,10 @@ class OneToOneStrongMap {
     this.#weakValueToInternalKeyMap.set(value_2, weakKey);
 
     if (!__hasKeySet1__)
-      this.#baseMap.set(weakKey, strongKey_1, value_1);
+      this.#baseMap.set(weakKey, strongKey_1, value_2);
 
     if (!__hasKeySet2__)
-      this.#baseMap.set(weakKey, strongKey_2, value_2);
+      this.#baseMap.set(weakKey, strongKey_2, value_1);
   }
 
   /**

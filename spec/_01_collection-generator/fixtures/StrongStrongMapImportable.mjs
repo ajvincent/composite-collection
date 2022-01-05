@@ -24,4 +24,6 @@ StrongStrongMapImportable.setValueType("MockImportable", "The value", function(v
     return false;
 });
 
+StrongStrongMapImportable.lock();
+
 export default StrongStrongMapImportable;

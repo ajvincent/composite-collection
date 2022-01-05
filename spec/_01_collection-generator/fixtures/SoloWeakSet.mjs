@@ -11,4 +11,7 @@ SoloWeakSetConfig.addSetKey("key", true, {
       return false;
   },
 });
+
+SoloWeakSetConfig.lock();
+
 export default SoloWeakSetConfig;

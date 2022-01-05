@@ -496,6 +496,15 @@ export default class CollectionConfiguration {
   #oneToOneBase = null;
   #oneToOneOptions = null;
 
+  /**
+   * Configure this one-to-one map definition.
+   *
+   * @param {CollectionConfiguration | string} baseConfiguration
+   * @param {string} privateKeyName
+   * @param {object} options
+   *
+   * @async
+   */
   configureOneToOne(baseConfiguration, privateKeyName, options = {}) {
     return this.#catchErrorAsync(async () => {
       if (!this.#doStateTransition("configureOneToOne")) {
@@ -508,18 +517,24 @@ export default class CollectionConfiguration {
 
       let configData;
       if (baseConfiguration instanceof CollectionConfiguration) {
-        CollectionConfiguration.#oneToOneLockedPrivateKey(baseConfiguration, privateKeyName);
+        if (baseConfiguration.currentState !== "locked") {
+          /* We dare not modify the base configuration lest other code use it to generate a different file. */
+          throw new Error("The base configuration must be locked!");
+        }
 
         configData = baseConfiguration.cloneData();
-        if (configData.collectionTemplate === "Weak/Map")
+        if ((configData.collectionTemplate === "Weak/Map") ||
+            ((configData.collectionTemplate === "Solo/Map") && (configData.weakMapKeys.length > 0))) {
           this.#oneToOneBase = baseConfiguration;
+          CollectionConfiguration.#oneToOneLockedPrivateKey(baseConfiguration, privateKeyName);
+        }
       }
       else if (typeof baseConfiguration === "string") {
         this.#oneToOneBase = await CollectionConfiguration.#getOneToOneBaseByString(baseConfiguration, privateKeyName);
       }
 
       if (!this.#oneToOneBase) {
-        throw new Error("The nase configuration must be a WeakMap CollectionConfiguration, 'WeakMap', 'composite-collection/WeakStrongMap', or 'composite-collection/WeakWeakMap'!");
+        throw new Error("The base configuration must be a WeakMap CollectionConfiguration, 'WeakMap', 'composite-collection/WeakStrongMap', or 'composite-collection/WeakWeakMap'!");
       }
 
       this.#oneToOneOptions = Object.freeze(JSON.parse(JSON.stringify(options)));
@@ -528,28 +543,7 @@ export default class CollectionConfiguration {
 
   static async #getOneToOneBaseByString(baseConfiguration, privateKeyName) {
     if (baseConfiguration === "WeakMap") {
-      return {
-        lock: () => null,
-
-        cloneData: () => {
-          return {
-            className: "WeakMap",
-            importLines: "",
-            collectionTemplate: "",
-            weakMapKeys: [privateKeyName],
-            parameterToTypeMap: new Map([
-              [privateKeyName, new CollectionType("key", "", "object", "The key.", "")],
-            ]),
-            strongMapKeys: [],
-            weakSetElements: [],
-            strongSetElements: [],
-            valueType: null,
-            fileOverview: null,
-            requiresKeyHasher: false,
-            requiresWeakKey: false,
-          };
-        },
-      };
+      return CollectionConfiguration.#weakMapMockConfiguration;
     }
 
     if (baseConfiguration === "composite-collection/WeakStrongMap") {
@@ -567,12 +561,30 @@ export default class CollectionConfiguration {
     return null;
   }
 
-  static #oneToOneLockedPrivateKey(baseConfiguration, privateKeyName) {
-    if (baseConfiguration.currentState !== "locked") {
-      /* We dare not modify the base configuration lest other code use it to generate a different file. */
-      throw new Error("The base configuration must be locked!");
-    }
+  static #weakMapMockConfiguration = Object.freeze({
+    lock: () => null,
 
+    cloneData: () => {
+      return {
+        className: "WeakMap",
+        importLines: "",
+        collectionTemplate: "",
+        weakMapKeys: ["key"],
+        parameterToTypeMap: new Map([
+          ["key", new CollectionType("key", "", "object", "The key.", "")],
+        ]),
+        strongMapKeys: [],
+        weakSetElements: [],
+        strongSetElements: [],
+        valueType: null,
+        fileOverview: null,
+        requiresKeyHasher: false,
+        requiresWeakKey: false,
+      };
+    },
+  })
+
+  static #oneToOneLockedPrivateKey(baseConfiguration, privateKeyName) {
     const weakKeys = baseConfiguration.cloneData().weakMapKeys;
     if (weakKeys.includes(privateKeyName))
       return;

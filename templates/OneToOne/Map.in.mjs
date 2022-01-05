@@ -13,8 +13,6 @@ function buildNumberedArgs(args, suffix, weakKeyName) {
  * @returns {string}
  */
 export default function preprocess(defines, soloDocs, duoDocs) {
-  void soloDocs, duoDocs;
-
   /*
   @type {Map<*, object>}
   #strongValueToInternalKeyMap = new Map;
@@ -45,7 +43,9 @@ export default function preprocess(defines, soloDocs, duoDocs) {
   const bindMapArgsWithValue = buildArgNameList(["value",...defines.get("bindArgList")]);
   const bindMapArgs = buildArgNameList(defines.get("bindArgList"));
 
-  return `
+  let classDefinition = "";
+  if (defines.get("extendBaseClass")) {
+    classDefinition = `
 class ${defines.get("className")} {
   /** @constant */
   #baseMap = new ${defines.get("baseClassName")};
@@ -56,14 +56,14 @@ class ${defines.get("className")} {
 ${duoDocs.buildBlock("bindOneToOne")}
   bindOneToOne(${
     buildArgNameList([
-      ...bindOneToOneArgList1,
-      "value_1",
-      ...bindOneToOneArgList2,
-      "value_2"
+    ...bindOneToOneArgList1,
+    "value_1",
+    ...bindOneToOneArgList2,
+    "value_2"
     ])}) {
 ${defines.get("bindArgList").length ? `${
-      bindOneToOneArgList1.map(argName =>`this.#requireValidKey("(${argName})", ${argName});`).join("\n    ")
-    }
+    bindOneToOneArgList1.map(argName =>`this.#requireValidKey("(${argName})", ${argName});`).join("\n    ")
+  }
     this.#requireValidValue("value_1", value_1);
     ${
       bindOneToOneArgList2.map(argName =>`this.#requireValidKey("(${argName})", ${argName});`).join("\n    ")
@@ -73,13 +73,13 @@ ${defines.get("bindArgList").length ? `${
     this.#requireValidValue("value_2", value_2);
 `}
 
-    let ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value_1);
-    const __otherWeakKey__ = this.#weakValueToInternalKeyMap.get(value_2);
-    if (!${weakKeyName}) {
-      ${weakKeyName} = __otherWeakKey__ || {};
-    }
-    else if (__otherWeakKey__ && (__otherWeakKey__ !== ${weakKeyName})) {
-      throw new Error(${
+  let ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value_1);
+  const __otherWeakKey__ = this.#weakValueToInternalKeyMap.get(value_2);
+  if (!${weakKeyName}) {
+    ${weakKeyName} = __otherWeakKey__ || {};
+  }
+  else if (__otherWeakKey__ && (__otherWeakKey__ !== ${weakKeyName})) {
+    throw new Error(${
 /*
 If we get here, we have a potentially unresolvable conflict.
 
@@ -115,12 +115,12 @@ all the key combinations belonging to them.
 With weak maps, such enumerations are generally impossible by design.
 
 Now, the one-to-one map could theoretically track this via exports/keys/Hasher.mjs:
-  // @type {WeakMap<privateWeakKey, Set<hash>>} @constant
-  // @type {WeakMapOfStrongSets<privateWeakKey, hash>} @constant
-  #weakKeyToUserKeyHashes = new WeakMap;
+// @type {WeakMap<privateWeakKey, Set<hash>>} @constant
+// @type {WeakMapOfStrongSets<privateWeakKey, hash>} @constant
+#weakKeyToUserKeyHashes = new WeakMap;
 
-  // @constant
-  #userKeysHasher = new KeyHasher
+// @constant
+#userKeysHasher = new KeyHasher
 
 This means adding a key hasher to this class for the user's keys... and on top
 of that another composite collection - either the one this project provides, or
@@ -145,27 +145,27 @@ option - would also be required.
 
 -- Alex Vincent, Jan. 4, 2022
 */
-        `"value_1 and value_2 are already in different one-to-one mappings!"`
-      });
-    }
-
-    const __hasKeySet1__  = this.#baseMap.has(${baseMapArgs1});
-    const __hasKeySet2__  = this.#baseMap.has(${baseMapArgs2});
-
-    if (__hasKeySet1__ && (this.#baseMap.get(${baseMapArgs1}) !== value_1))
-      throw new Error("value_1 mismatch!");
-    if (__hasKeySet2__ && (this.#baseMap.get(${baseMapArgs2}) !== value_2))
-      throw new Error("value_2 mismatch!");
-
-    this.#weakValueToInternalKeyMap.set(value_1, ${weakKeyName});
-    this.#weakValueToInternalKeyMap.set(value_2, ${weakKeyName});
-
-    if (!__hasKeySet1__)
-      this.#baseMap.set(${baseMapArgs1}, value_1);
-
-    if (!__hasKeySet2__)
-      this.#baseMap.set(${baseMapArgs2}, value_2);
+      `"value_1 and value_2 are already in different one-to-one mappings!"`
+    });
   }
+
+  const __hasKeySet1__  = this.#baseMap.has(${baseMapArgs1});
+  const __hasKeySet2__  = this.#baseMap.has(${baseMapArgs2});
+
+  if (__hasKeySet1__ && (this.#baseMap.get(${baseMapArgs1}) !== value_1))
+    throw new Error("value_1 mismatch!");
+  if (__hasKeySet2__ && (this.#baseMap.get(${baseMapArgs2}) !== value_2))
+    throw new Error("value_2 mismatch!");
+
+  this.#weakValueToInternalKeyMap.set(value_1, ${weakKeyName});
+  this.#weakValueToInternalKeyMap.set(value_2, ${weakKeyName});
+
+  if (!__hasKeySet1__)
+    this.#baseMap.set(${baseMapArgs1}, value_2);
+
+  if (!__hasKeySet2__)
+    this.#baseMap.set(${baseMapArgs2}, value_1);
+}
 
 ${soloDocs.buildBlock("delete")}
   delete(${bindMapArgsWithValue}) {
@@ -226,6 +226,59 @@ ${defines.get("bindArgList").length ? `
       throw new Error(argName + " is not a valid value!");
   }
 }
+    `;
+  }
+  else {
+    classDefinition = `
+class ${defines.get("className")} extends ${defines.get("baseClassName")} {
+  /**
+   * Bind two sets of keys and values together.
+   *
+   * @param {*} value_1 The value.
+   * @param {*} value_2 The value.
+   *
+   * @public
+   */
+  bindOneToOne(value_1, value_2) {
+    const __hasValue1__  = this.has(value_1);
+    const __hasValue2__  = this.has(value_2);
+
+    if (__hasValue1__ && (this.get(value_2) !== value_1))
+      throw new Error("value_1 mismatch!");
+    if (__hasValue2__ && (this.get(value_1) !== value_2))
+      throw new Error("value_2 mismatch!");
+    if (!this.isValidValue(value_1))
+      throw new Error("value_1 is not a valid value!");
+    if (!this.isValidValue(value_2))
+      throw new Error("value_2 is not a valid value!");
+
+    super.set(value_2, value_1);
+    super.set(value_1, value_2);
+  }
+
+  /**
+   * Determine if a value is valid.
+   *
+   * @param {*} value The value.
+   *
+   * @returns {boolean} True if the value is valid.${
+defines.get("baseClassName") !== "WeakMap" ? `
+   * @see the base map class for further constraints.` : ""
+   }
+   * @public
+   */
+  isValidValue(value) {
+    return Object(value) === value${""};
+  }
+
+  set() {
+    throw new Error("Not implemented, use .bindOneToOne(value_1, value_2);");
+  }
+}
+    `;
+  }
+
+  return classDefinition + `
 
 Reflect.defineProperty(${defines.get("className")}, Symbol.toStringTag, {
   value: "${defines.get("className")}",

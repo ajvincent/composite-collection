@@ -17,4 +17,6 @@ SoloStrongMapConfig.setValueType("MockImportable", "The value", function(value) 
     return false;
 });
 
+SoloStrongMapConfig.lock();
+
 export default SoloStrongMapConfig;

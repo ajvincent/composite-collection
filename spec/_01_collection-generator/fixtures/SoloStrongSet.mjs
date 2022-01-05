@@ -11,4 +11,7 @@ SoloStrongSetConfig.addSetKey("key", false, {
       return false;
   },
 });
+
+SoloStrongSetConfig.lock();
+
 export default SoloStrongSetConfig;

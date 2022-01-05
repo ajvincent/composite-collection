@@ -17,5 +17,6 @@ SoloWeakMapConfig.setValueType("MockImportable", "The value", function(value) {
     return false;
 });
 
+SoloWeakMapConfig.lock();
 
 export default SoloWeakMapConfig;
