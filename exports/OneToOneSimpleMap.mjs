@@ -26,8 +26,10 @@ class OneToOneSimpleMap extends WeakMap {
     if (!this.isValidValue(value_2))
       throw new Error("value_2 is not a valid value!");
 
-    super.set(value_2, value_1);
-    super.set(value_1, value_2);
+    if (!__hasValue1__)
+      super.set(value_1, value_2);
+    if (!__hasValue2__)
+      super.set(value_2, value_1);
   }
 
   /**

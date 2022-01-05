@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/ajvincent/composite-collection#readme",
   "devDependencies": {
+    "acorn-stage3": "^4.0.0",
     "eslint": "^8.5.0",
     "eslint-plugin-jasmine": "^4.1.3",
     "jake": "^10.8.2",

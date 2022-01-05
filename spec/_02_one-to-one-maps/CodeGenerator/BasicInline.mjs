@@ -1,6 +1,5 @@
 
 import ToHoldRefsMatchers from "#support/toHoldReferences.mjs";
-
 import OneToOneMap from "../generated/BasicInline.mjs";
 
 describe("CodeGenerator(OneToOneBasicInlineMap.mjs)", () => {

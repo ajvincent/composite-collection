@@ -24,4 +24,6 @@ WeakStrongMapImportable.setValueType("MockImportable", "The value", function(val
     return false;
 });
 
+WeakStrongMapImportable.lock();
+
 export default WeakStrongMapImportable;

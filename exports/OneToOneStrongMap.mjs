@@ -49,10 +49,10 @@ class OneToOneStrongMap {
     this.#weakValueToInternalKeyMap.set(value_2, weakKey);
 
     if (!__hasKeySet1__)
-      this.#baseMap.set(weakKey, strongKey_1, value_2);
+      this.#baseMap.set(weakKey, strongKey_1, value_1);
 
     if (!__hasKeySet2__)
-      this.#baseMap.set(weakKey, strongKey_2, value_1);
+      this.#baseMap.set(weakKey, strongKey_2, value_2);
   }
 
   /**
@@ -138,14 +138,11 @@ class OneToOneStrongMap {
    * @public
    */
   isValidValue(value) {
-    void value;
-    return true;
-    // configuration.valuesMustBeObjects: Object(value) === value;
-    // baseConfiguration.valueType.argumentValidator: this.#baseMap.isValidValue(value);
+    return Object(value) === value;
   }
 
   #requireValidKey(__argNames__, strongKey) {
-    if (!this.isValidKey(strongKey))
+    if (!this.#isValidKey(strongKey))
       throw new Error("Invalid key tuple: " + __argNames__);
   }
 

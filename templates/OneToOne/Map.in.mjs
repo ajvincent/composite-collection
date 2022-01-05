@@ -13,22 +13,6 @@ function buildNumberedArgs(args, suffix, weakKeyName) {
  * @returns {string}
  */
 export default function preprocess(defines, soloDocs, duoDocs) {
-  /*
-  @type {Map<*, object>}
-  #strongValueToInternalKeyMap = new Map;
-
-  #getValueMap(baseValue) {
-    return Object(value) === value ?
-            this.#weakValueToInternalKeyMap :
-            this.#strongValueToInternalKeyMap;
-  }
-
-  defines.get("getKeyMap") returns:
-    "#strongValueToInternalKeyMap" if configuration.holdValuesStrongly
-    "#weakValueToInternalKeyMap" if configuration.valuesMustBeObjects
-    "#getValueMap(value)" otherwise
-  */
-
   const weakKeyName = defines.get("weakKeyName");
   const bindOneToOneArgList1 = buildNumberedArgs(defines.get("bindArgList"), "_1", weakKeyName),
         bindOneToOneArgList2 = buildNumberedArgs(defines.get("bindArgList"), "_2", weakKeyName);
@@ -161,10 +145,10 @@ option - would also be required.
   this.#weakValueToInternalKeyMap.set(value_2, ${weakKeyName});
 
   if (!__hasKeySet1__)
-    this.#baseMap.set(${baseMapArgs1}, value_2);
+    this.#baseMap.set(${baseMapArgs1}, value_1);
 
   if (!__hasKeySet2__)
-    this.#baseMap.set(${baseMapArgs2}, value_1);
+    this.#baseMap.set(${baseMapArgs2}, value_2);
 }
 
 ${soloDocs.buildBlock("delete")}
@@ -208,15 +192,16 @@ ${soloDocs.buildBlock("isValidKey")}
 
 ${soloDocs.buildBlock("isValidValue")}
   isValidValue(value) {
-    void value;
-    return true;
-    // configuration.valuesMustBeObjects: Object(value) === value;
-    // baseConfiguration.valueType.argumentValidator: this.#baseMap.isValidValue(value);
+    return ${
+      defines.get("baseClassValidatesValue") ?
+      "(Object(value) === value) && this.#baseMap.isValidValue(value)" :
+      "Object(value) === value"
+    };
   }
 
 ${defines.get("bindArgList").length ? `
-  #requireValidKey(__argNames__, strongKey) {
-    if (!this.isValidKey(strongKey))
+  #requireValidKey(__argNames__, ${bindMapArgs}) {
+    if (!this.#isValidKey(${bindMapArgs}))
       throw new Error("Invalid key tuple: " + __argNames__);
   }
 ` : ``
@@ -252,8 +237,10 @@ class ${defines.get("className")} extends ${defines.get("baseClassName")} {
     if (!this.isValidValue(value_2))
       throw new Error("value_2 is not a valid value!");
 
-    super.set(value_2, value_1);
-    super.set(value_1, value_2);
+    if (!__hasValue1__)
+      super.set(value_1, value_2);
+    if (!__hasValue2__)
+      super.set(value_2, value_1);
   }
 
   /**
@@ -268,7 +255,11 @@ defines.get("baseClassName") !== "WeakMap" ? `
    * @public
    */
   isValidValue(value) {
-    return Object(value) === value${""};
+    return ${
+      defines.get("baseClassValidatesValue") ?
+        "(Object(value) === value) && super.isValidValue(value)" :
+        "Object(value) === value"
+    };
   }
 
   set() {

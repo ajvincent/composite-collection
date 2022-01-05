@@ -160,6 +160,10 @@ namespace("test", () => {
 
       "BasicStrongImported.mjs",
       "BasicWeakImported.mjs",
+
+      "SoloMockImportable.mjs",
+      "StrongInlineMockImportable.mjs",
+      "WeakInlineMockImportable.mjs",
     ])
   );
 
@@ -263,6 +267,10 @@ generateCollectionTasks(
 
     "BasicStrongImported.mjs",
     "BasicWeakImported.mjs",
+
+    "SoloMockImportable.mjs",
+    "StrongInlineMockImportable.mjs",
+    "WeakInlineMockImportable.mjs",
   ]
 );
 

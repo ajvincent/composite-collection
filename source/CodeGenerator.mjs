@@ -258,6 +258,8 @@ export default class CodeGenerator extends CompletionPromise {
 
     const extendBaseClass = baseData.weakMapKeys.length + baseData.strongMapKeys.length >= 2;
     this.#defines.set("extendBaseClass", extendBaseClass);
+
+    this.#defines.set("baseClassValidatesValue", Boolean(baseData.valueType?.argumentValidator));
   }
 
   #buildDocGenerator() {
