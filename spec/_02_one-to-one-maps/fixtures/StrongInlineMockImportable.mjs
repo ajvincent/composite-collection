@@ -2,7 +2,7 @@
 import CollectionConfiguration from "composite-collection/Configuration";
 import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";
 
-const WeakStrongMapImportable = new CollectionConfiguration("WeakWeakMapImportable", "WeakMap");
+const WeakStrongMapImportable = new CollectionConfiguration("WeakStrongMapImportable", "WeakMap");
 WeakStrongMapImportable.importLines(
   `import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";`
 );

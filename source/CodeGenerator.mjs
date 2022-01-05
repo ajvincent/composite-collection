@@ -322,9 +322,18 @@ export default class CodeGenerator extends CompletionPromise {
       ));
     });
 
-    if (addValue)
-    {
-      generator.addParameter(baseData.valueType || new CollectionType("value" + typeSuffix, "map", "*", "The value.", ""));
+    if (addValue) {
+      let {
+        argumentName = "value",
+        mapOrSetType = "Map",
+        argumentType = "*",
+        description = "The value.",
+        argumentValidator = ""
+      } = baseData.valueType || {};
+      argumentName += typeSuffix;
+      generator.addParameter(new CollectionType(
+        argumentName, mapOrSetType, argumentType, description, argumentValidator
+      ));
     }
   }
 

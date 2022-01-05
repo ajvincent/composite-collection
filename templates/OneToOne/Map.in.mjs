@@ -212,14 +212,7 @@ ${defines.get("bindArgList").length ? `
   else {
     classDefinition = `
 class ${defines.get("className")} extends ${defines.get("baseClassName")} {
-  /**
-   * Bind two sets of keys and values together.
-   *
-   * @param {*} value_1 The value.
-   * @param {*} value_2 The value.
-   *
-   * @public
-   */
+${duoDocs.buildBlock("bindOneToOneSimple")}
   bindOneToOne(value_1, value_2) {${
     defines.get("baseClassValidatesKey") ? `
     if (!this.isValidKey(value_1))

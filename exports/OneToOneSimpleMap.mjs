@@ -6,7 +6,7 @@
 
 class OneToOneSimpleMap extends WeakMap {
   /**
-   * Bind two sets of keys and values together.
+   * Bind two values together.
    *
    * @param {*} value_1 The value.
    * @param {*} value_2 The value.
