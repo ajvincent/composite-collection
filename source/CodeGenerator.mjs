@@ -259,6 +259,8 @@ export default class CodeGenerator extends CompletionPromise {
     const extendBaseClass = baseData.weakMapKeys.length + baseData.strongMapKeys.length >= 2;
     this.#defines.set("extendBaseClass", extendBaseClass);
 
+    const parameters = Array.from(baseData.parameterToTypeMap.values());
+    this.#defines.set("baseClassValidatesKey", parameters.some(param => param.argumentValidator));
     this.#defines.set("baseClassValidatesValue", Boolean(baseData.valueType?.argumentValidator));
   }
 

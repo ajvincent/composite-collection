@@ -44,19 +44,15 @@ ${duoDocs.buildBlock("bindOneToOne")}
     "value_1",
     ...bindOneToOneArgList2,
     "value_2"
-    ])}) {
-${defines.get("bindArgList").length ? `${
-    bindOneToOneArgList1.map(argName =>`this.#requireValidKey("(${argName})", ${argName});`).join("\n    ")
-  }
+    ])}) {${defines.get("bindArgList").length ? `
+    this.#requireValidKey("(${bindOneToOneArgList1})", ${bindOneToOneArgList1});
     this.#requireValidValue("value_1", value_1);
-    ${
-      bindOneToOneArgList2.map(argName =>`this.#requireValidKey("(${argName})", ${argName});`).join("\n    ")
-    }
+    this.#requireValidKey("(${bindOneToOneArgList2})", ${bindOneToOneArgList2});
     this.#requireValidValue("value_2", value_2);
-` : `this.#requireValidValue("value_1", value_1);
+` : `
+    this.#requireValidValue("value_1", value_1);
     this.#requireValidValue("value_2", value_2);
 `}
-
   let ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value_1);
   const __otherWeakKey__ = this.#weakValueToInternalKeyMap.get(value_2);
   if (!${weakKeyName}) {
@@ -224,7 +220,15 @@ class ${defines.get("className")} extends ${defines.get("baseClassName")} {
    *
    * @public
    */
-  bindOneToOne(value_1, value_2) {
+  bindOneToOne(value_1, value_2) {${
+    defines.get("baseClassValidatesKey") ? `
+    if (!this.isValidKey(value_1))
+      throw new Error("value_1 mismatch!");
+    if (!this.isValidKey(value_2))
+      throw new Error("value_2 mismatch!");
+
+` : ""
+  }
     const __hasValue1__  = this.has(value_1);
     const __hasValue2__  = this.has(value_2);
 
