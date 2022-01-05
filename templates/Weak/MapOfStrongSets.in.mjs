@@ -54,9 +54,9 @@ ${docs.buildBlock("addSets", 2)}
     this.#requireValidMapKey(${defines.get("mapArgList")});
     const __array__ = Array.from(__sets__).map((__set__, __index__) => {
       __set__ = Array.from(__set__);
-      if (__set__.length !== ${defines.get("setArgCount")}) {
-        throw new Error(\`Set at index \${__index__} doesn't have exactly ${defines.get("setArgCount")} set argument${
-          defines.get("setArgCount") > 1 ? "s" : ""
+      if (__set__.length !== ${defines.get("setCount")}) {
+        throw new Error(\`Set at index \${__index__} doesn't have exactly ${defines.get("setCount")} set argument${
+          defines.get("setCount") > 1 ? "s" : ""
         }!\`);
       }
       this.#requireValidKey(${defines.get("mapArgList")}, ...__set__);

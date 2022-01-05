@@ -161,73 +161,28 @@ export default class CodeGenerator extends CompletionPromise {
     const paramsData = Array.from(data.parameterToTypeMap.values());
 
     if (/Solo|Weak\/?Map/.test(data.collectionTemplate)) {
-      this.#defines.set("weakMapCount", data.weakMapKeys.length);
-      this.#defines.set("weakMapArgList", data.weakMapKeys.join(", "));
-      this.#defines.set("weakMapArgNameList", buildArgNameList(data.weakMapKeys));
+      this.#defineArgCountAndLists("weakMap", data.weakMapKeys);
       this.#defines.set("weakMapArgument0", data.weakMapKeys[0]);
 
-      this.#defines.set("strongMapCount", data.strongMapKeys.length);
-      this.#defines.set("strongMapArgList", data.strongMapKeys.join(", "));
-      this.#defines.set("strongMapArgNameList", buildArgNameList(data.strongMapKeys));
+      this.#defineArgCountAndLists("strongMap", data.strongMapKeys);
     }
 
     if (/Solo|Weak\/?Set/.test(data.collectionTemplate)) {
-      this.#defines.set("weakSetCount", data.weakSetElements.length);
-      this.#defines.set("weakSetArgList", data.weakSetElements.join(", "));
-      this.#defines.set("weakSetArgNameList", buildArgNameList(data.weakSetElements));
-
-      this.#defines.set("strongSetCount", data.strongSetElements.length);
-      this.#defines.set("strongSetArgList", data.strongSetElements.join(", "));
-      this.#defines.set("strongSetArgNameList", buildArgNameList(data.strongSetElements));
+      this.#defineArgCountAndLists("weakSet", data.weakSetElements);
+      this.#defineArgCountAndLists("strongSet", data.strongSetElements);
     }
 
     const mapKeys = data.weakMapKeys.concat(data.strongMapKeys);
     const setKeys = data.weakSetElements.concat(data.strongSetElements);
     if (data.collectionTemplate.includes("MapOf")) {
-      this.#defines.set("mapArgCount", mapKeys.length);
-      this.#defines.set("mapArgList", mapKeys.join(", "));
-      this.#defines.set("mapArgNameList", buildArgNameList(mapKeys));
-
-      this.#defines.set("setArgCount", setKeys.length);
-      this.#defines.set("setArgList", setKeys.join(", "));
-      this.#defines.set("setArgNameList", buildArgNameList(setKeys));
+      this.#defineArgCountAndLists("map", mapKeys);
+      this.#defineArgCountAndLists("set", setKeys);
     }
 
-    // validateArguments
-    {
-      const validatorCode = paramsData.map(
-        pd => pd.argumentValidator || ""
-      ).filter(Boolean).join("\n\n").trim();
-
-      if (validatorCode) {
-        this.#defines.set("validateArguments", validatorCode);
-        this.#defines.set("invokeValidate", true);
-      }
-    }
-
-    // validateMapArguments
-    {
-      const validatorCode = paramsData.map(pd => {
-        if (!mapKeys.includes(pd.argumentName))
-          return "";
-        return pd.argumentValidator || "";
-      }).filter(Boolean).join("\n\n").trim();
-
-      if (validatorCode)
-        this.#defines.set("validateMapArguments", validatorCode);
-    }
-
-    // validateSetArguments
-    {
-      const validatorCode = paramsData.map(pd => {
-        if (!setKeys.includes(pd.argumentName))
-          return "";
-        return pd.argumentValidator || "";
-      }).filter(Boolean).join("\n\n").trim();
-
-      if (validatorCode)
-        this.#defines.set("validateSetArguments", validatorCode);
-    }
+    if (this.#defineValidatorCode(paramsData, "validateArguments", () => true))
+      this.#defines.set("invokeValidate", true);
+    this.#defineValidatorCode(paramsData, "validateMapArguments", pd => mapKeys.includes(pd.argumentName));
+    this.#defineValidatorCode(paramsData, "validateSetArguments", pd => setKeys.includes(pd.argumentName));
 
     // validateValue
     {
@@ -235,6 +190,23 @@ export default class CodeGenerator extends CompletionPromise {
       if (filter)
         this.#defines.set("validateValue", filter + "\n    ");
     }
+  }
+
+  #defineArgCountAndLists(prefix, keyArray) {
+    this.#defines.set(prefix + "Count", keyArray.length);
+    this.#defines.set(prefix + "ArgList", keyArray.join(", "));
+    this.#defines.set(prefix + "ArgNameList", buildArgNameList(keyArray));
+  }
+
+  #defineValidatorCode(paramsData, defineName, filter) {
+    const validatorCode = paramsData.filter(filter).map(pd => {
+      return pd.argumentValidator || "";
+    }).filter(Boolean).join("\n\n").trim();
+
+    if (validatorCode) {
+      this.#defines.set(defineName, validatorCode);
+    }
+    return Boolean(validatorCode);
   }
 
   #buildOneToOneDefines() {

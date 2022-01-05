@@ -104,5 +104,4 @@ export default class Driver extends CompletionPromise {
     const fullPaths = await getAllFiles(this.#sourcesPath).toArray();
     return fullPaths.map(path => path.replace(this.#sourcesPath + "/", ""));
   }
-
 }
