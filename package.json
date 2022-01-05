@@ -1,6 +1,6 @@
 {
   "name": "composite-collection",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Composing Maps, WeakMaps, Sets and WeakSets into generated classes",
   "scripts": {
     "clean": "jake clean",
