@@ -89,7 +89,7 @@ wfMM.add(key1, callback2);
 
 ## Features
 
-Currently supported (version 0.2.0):
+Currently supported (version 0.3.0):
 
 - ECMAScript class modules with all the pieces you need
 - A simple configuration API
