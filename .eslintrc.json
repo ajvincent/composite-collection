@@ -4,7 +4,10 @@
     "jasmine": true,
     "node": true
   },
-  "extends": "eslint:recommended",
+  "extends": [
+    "eslint:recommended",
+    "plugin:jsdoc/recommended"
+  ],
   "overrides": [
     {
       "files": [
@@ -17,7 +20,8 @@
     "sourceType": "module"
   },
   "plugins": [
-    "jasmine"
+    "jasmine",
+    "jsdoc"
   ],
   "rules": {
     "no-unused-private-class-members": "error"
