@@ -1,5 +1,8 @@
 const { task, desc } = require('jake');
 const { fork } = require('child_process');
+const fs = require("fs/promises");
+const path = require("path");
+
 /**
  * Run a specific submodule.
  *
@@ -81,13 +84,28 @@ task(
 
 desc("eslint support");
 task("eslint", async () => {
-  return runModule("./node_modules/eslint/bin/eslint.js", [
-    "exports",
+  const targets = [
     "jake-targets",
     "Jakefile",
     "source",
     "spec",
     "templates",
+  ];
+
+  const buildModulePath = path.join(process.cwd(), "exports/keys/Hasher.mjs");
+  let stats;
+  try {
+    stats = await fs.stat(buildModulePath);
+  }
+  catch (ex) {
+    // do nothing
+  }
+  if (stats?.isFile()) {
+    targets.push("exports");
+  }
+
+  return runModule("./node_modules/eslint/bin/eslint.js", [
+    ...targets,
     "--max-warnings=0"
   ]);
 });
