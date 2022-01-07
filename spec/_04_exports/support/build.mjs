@@ -3,6 +3,9 @@ import fs from "fs/promises";
 
 import { copyFileTasks, generateCollections } from "#support/generateCollectionTools.mjs";
 
+/**
+ * Generate additional support files for the collections in ../generated.
+ */
 export default async function buildAdditionalFiles() {
   await copyFileTasks(
     "source/exports",

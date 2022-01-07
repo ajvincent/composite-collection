@@ -26,6 +26,11 @@ const key1Importable = new MockImportable(5),
       key2Importable = new MockImportable(7),
       valueImportable = new MockImportable(9);
 
+/**
+ * Define key/value specifications for a one-key map collection.
+ *
+ * @param {Function} ctor The class.
+ */
 function oneKeyMapTests(ctor) {
 describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
   let testMap = null;
@@ -87,6 +92,11 @@ describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
 
 }
 
+/**
+ * Define key/value specifications for a two-key map collection.
+ *
+ * @param {Function} ctor The class.
+ */
 function twoKeyMapTests(ctor) {
 describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
   let testMap = null;
@@ -181,6 +191,11 @@ describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
 });
 }
 
+/**
+ * Define key/value specifications for a one-key set collection.
+ *
+ * @param {Function} ctor The class.
+ */
 function oneKeySetTests(ctor) {
 describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
   let testSet = null;
@@ -204,6 +219,11 @@ describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
 });
 }
 
+/**
+ * Define key/value specifications for a two-key map collection.
+ *
+ * @param {Function} ctor The class.
+ */
 function twoKeySetTests(ctor) {
 describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
   let testSet = null;
@@ -237,6 +257,11 @@ describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
 });
 }
 
+/**
+ * Define key/value specifications for a map-set collection totalling two keys.
+ *
+ * @param {Function} ctor The class.
+ */
 function mapSetKeyTests(ctor) {
 describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
   let testSet = null;
