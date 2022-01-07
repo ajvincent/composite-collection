@@ -1,3 +1,27 @@
+/**
+ * @typedef {object} AsyncMatcher
+ * @property {AsyncMatcherCompare} compare The test method.
+ */
+
+/**
+ * @typedef {Function} AsyncMatcherCompare
+ * @function
+ * @async
+ * @param {Function} useValue The test function.
+ * @returns {AsyncMatcherResult} The result
+ */
+
+/**
+ * @typedef {object} AsyncMatcherResult
+ * @property {Promise<boolean>} pass    True if the expectation passes.
+ * @property {string}           message The error message, if the expectation fails.
+ */
+
+/**
+ * Assert the expectation holds a passed-in value weakly.
+ *
+ * @returns {AsyncMatcher} The matcher.
+ */
 function toHoldReferencesWeakly() {
   return {
     async compare(useValue) {
@@ -36,6 +60,11 @@ function toHoldReferencesWeakly() {
   }
 }
 
+/**
+ * Assert the expectation holds a passed-in value strongly.
+ *
+ * @returns {AsyncMatcher} The matcher.
+ */
 function toHoldReferencesStrongly() {
   return {
     async compare(useValue) {
@@ -74,6 +103,11 @@ function toHoldReferencesStrongly() {
   };
 }
 
+/**
+ * Assert the expectation holds a returned value weakly.
+ *
+ * @returns {AsyncMatcher} The matcher.
+ */
 function toHoldValuesWeakly() {
   return {
     async compare(useValue) {
@@ -111,6 +145,11 @@ function toHoldValuesWeakly() {
   }
 }
 
+/**
+ * Assert the expectation holds a returned value strongly.
+ *
+ * @returns {AsyncMatcher} The matcher.
+ */
 function toHoldValuesStrongly() {
   return {
     async compare(useValue) {

@@ -2,6 +2,15 @@ import { fork } from 'child_process';
 import path from "path";
 import fs from 'fs/promises';
 
+/**
+ * Evaluate a callback asynchronously for every element of an array, sequentially.
+ *
+ * @param {*[]} elementArray The array of objects to pass into the callback.
+ * @param {Function} callback The callback function.
+ * @returns {Promise} Resolved if the sequence passes.
+ * @see {Promise.all}
+ * @see {Array.prototype.reduce}
+ */
 export async function PromiseAllSequence(elementArray, callback) {
   return elementArray.reduce(async (previousPromise, element) => {
     await previousPromise;
@@ -9,6 +18,15 @@ export async function PromiseAllSequence(elementArray, callback) {
   }, Promise.resolve());
 }
 
+/**
+ * Evaluate a callback asynchronously for every element of an array, in parallel.
+ *
+ * @param {*[]} elementArray The array of objects to pass into the callback.
+ * @param {Function} callback The callback function.
+ * @returns {Promise} Resolved if the sequence passes.
+ * @see {Promise.all}
+ * @see {Array.prototype.map}
+ */
 export async function PromiseAllParallel(elementArray, callback) {
   return Promise.all(elementArray.map(element => callback(element)));
 }
@@ -19,7 +37,6 @@ export async function PromiseAllParallel(elementArray, callback) {
  * @param {string}   pathToModule  The module to run.
  * @param {string[]} moduleArgs    Arguments we pass into the module.
  * @param {string[]} extraNodeArgs Arguments we pass to node.
- *
  * @returns {Promise<void>}
  */
 export function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
@@ -41,9 +58,9 @@ export function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
 /**
  * Define simple file-copying tasks.
  *
- * @param {string}   sourceDir
- * @param {string}   targetDir
- * @param {string[]} leafNames
+ * @param {string}   sourceDir The source directory.
+ * @param {string}   targetDir The target directory.
+ * @param {string[]} leafNames The paths to the files to copy.
  */
 export async function copyFileTasks(sourceDir, targetDir, leafNames) {
   await PromiseAllSequence(leafNames, async leaf => {
@@ -57,6 +74,13 @@ export async function copyFileTasks(sourceDir, targetDir, leafNames) {
   });
 }
 
+/**
+ * Generate composite collections.
+ *
+ * @param {string}   sourceDir The directory holding the configurations.
+ * @param {string}   targetDir The target directory.
+ * @param {string[]} leafNames The paths to the configuration modules.
+ */
 export async function generateCollections(sourceDir, targetDir, leafNames) {
   await PromiseAllSequence(leafNames, async leaf => {
     const configFile = sourceDir + "/" + leaf,

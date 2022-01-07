@@ -3,10 +3,10 @@ const buildArgNameList = keys => keys.join(", ");
 /**
  * Build an arguments list based on a suffix.
  *
- * @param {string[]} args      The list of argument names.
- * @param {string} suffix      The suffix to append.
- * @param {string} weakKeyName The argument to exclude appending a suffix to.
- * @returns {string[]}         The resulting argument list.
+ * @param {string[]}   args        The list of argument names.
+ * @param {string}     suffix      The suffix to append.
+ * @param {string}     weakKeyName The argument to exclude appending a suffix to.
+ * @returns {string[]}             The resulting argument list.
  */
 function buildNumberedArgs(args, suffix, weakKeyName) {
   return args.map(arg => arg + ((arg === weakKeyName) ? "" : suffix));
