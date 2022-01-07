@@ -1,4 +1,5 @@
 import CollectionConfiguration from "composite-collection/Configuration";
+import MockImportable from "../fixtures/MockImportable.mjs";
 
 const SoloStrongSetConfig = new CollectionConfiguration("SoloStrongSet", "Set");
 SoloStrongSetConfig.importLines(

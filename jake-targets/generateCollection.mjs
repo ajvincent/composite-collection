@@ -53,9 +53,3 @@ const targetFile = path.join(process.cwd(), Arguments.target);
 const generator = new CodeGenerator(configModule, targetFile, p);
 resolve();
 await generator.completionPromise;
-
-// Verify the module exports a function.  (This is a preamble to testing the module.)
-const targetFileURL = url.pathToFileURL(targetFile);
-const targetModule = (await import(targetFileURL)).default;
-if (typeof targetModule !== "function")
-  throw new Error("Compilation failed for " + Arguments.target);

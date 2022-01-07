@@ -4,7 +4,8 @@
     "**/*.mjs",
     "!*/fixtures/**/*.mjs",
     "!*/generated/**/*.mjs",
-    "!support/**/*.mjs"
+    "!**/support/**/*.mjs",
+    "!/support/**/*.mjs"
   ],
   "stopSpecOnExpectationFailure": false,
   "random": false

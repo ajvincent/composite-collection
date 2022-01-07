@@ -4,7 +4,7 @@ import CodeGenerator from "./CodeGenerator.mjs";
 import url from "url";
 import fs from "fs/promises";
 import path from "path";
-import { getAllFiles } from 'get-all-files';
+import readDirsDeep from "./utilities/readDirsDeep.mjs";
 
 const projectRoot = url.fileURLToPath(new URL("..", import.meta.url));
 
@@ -51,9 +51,6 @@ export default class Driver extends CompletionPromise {
   }
 
   async #buildAll() {
-    let startResolve;
-    const startPromise = new Promise(resolve => startResolve = resolve);
-
     let fileList = await this.#getFileList();
     const configToRelativePath = new WeakMap();
 
@@ -65,34 +62,39 @@ export default class Driver extends CompletionPromise {
       }
     ));
 
-    const requiresWeakKey   = configs.some(c => c.cloneData().requiresWeakKey);
-
-    let promises = configs.map(config => {
-      const generator = new CodeGenerator(
-        config,
-        path.normalize(path.join(this.#targetsPath, configToRelativePath.get(config))),
-        startPromise
-      );
-
-      return generator.completionPromise;
-    });
+    const requiresWeakKey = configs.some(c => c.cloneData().requiresWeakKey);
 
     await fs.mkdir(path.join(this.#targetsPath, "keys"), { recursive: true });
 
-    promises.push(fs.copyFile(
+    await fs.copyFile(
       path.join(projectRoot, "source/exports/keys/Hasher.mjs"),
       path.join(this.#targetsPath, "keys/Hasher.mjs")
-    ));
+    );
 
     if (requiresWeakKey) {
-      promises.push(fs.copyFile(
+      await fs.copyFile(
         path.join(projectRoot, "source/exports/keys/Composite.mjs"),
         path.join(this.#targetsPath, "keys/Composite.mjs")
-      ));
+      );
     }
 
-    startResolve();
-    return Promise.all(promises);
+    const startNow = Promise.resolve();
+
+    await Promise.all(configs.map(config => {
+      try {
+        const generator = new CodeGenerator(
+          config,
+          path.normalize(path.join(this.#targetsPath, configToRelativePath.get(config))),
+          startNow
+        );
+
+        return generator.completionPromise;
+      }
+      catch (ex) {
+        console.error("Failed on " + configToRelativePath.get(config));
+        throw ex;
+      }
+    }));
   }
 
   /**
@@ -101,7 +103,9 @@ export default class Driver extends CompletionPromise {
    * @note This is a placeholder for
    */
   async #getFileList() {
-    const fullPaths = await getAllFiles(this.#sourcesPath).toArray();
+    const fullPaths = (await readDirsDeep(this.#sourcesPath)).files.filter(
+      filePath => path.extname(filePath) === ".mjs"
+    );
     return fullPaths.map(path => path.replace(this.#sourcesPath + "/", ""));
   }
 }
