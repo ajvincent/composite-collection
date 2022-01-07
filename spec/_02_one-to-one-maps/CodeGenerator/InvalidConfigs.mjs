@@ -3,7 +3,7 @@ import CollectionConfiguration from "composite-collection/Configuration";
 describe("CodeGenerator(OneToOneMap) rejects base configurations for ", () => {
   function moduleSpec(className, useModule, getKey) {
     it(className, async () => {
-      const baseConfig = useModule ? (await import(`#spec/_01_collection-generator/fixtures/${className}.mjs`)).default : className;
+      const baseConfig = useModule ? (await import(`#spec/_01_collection-generator/configurations/${className}.mjs`)).default : className;
 
       const config = new CollectionConfiguration("IllegalOneToOneMap", "OneToOne");
       const key = getKey(baseConfig.cloneData ? baseConfig.cloneData() : "");

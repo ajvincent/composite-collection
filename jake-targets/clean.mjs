@@ -1,24 +1,17 @@
 import fs from "fs/promises";
-import { getAllFiles } from 'get-all-files';
 import path from "path";
+import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
 
-const fileRoots = [
-  "spec/_01_collection-generator/generated",
-  "spec/_02_one-to-one-maps/generated",
-  "spec/_04_exports/generated",
-  "exports",
-].map(root => path.join(process.cwd(), root));
+const rmTargets = (await Promise.all([
+  readDirsDeep(
+    path.join(process.cwd(), "exports")
+  ).then((propertyBag => propertyBag.files.filter(file => path.extname(file) === ".mjs"))),
 
-let allFiles = await Promise.all(fileRoots.map(
-  async root => {
-    try {
-      return await getAllFiles(root).toArray();
-    }
-    catch (ex) {
-      return [];
-    }
-  }
+  readDirsDeep(
+    path.join(process.cwd(), "spec")
+  ).then(propertyBag => propertyBag.files.filter(file => /\/spec\/.*\/generated\/.*\.mjs$/.test(file))),
+])).flat(Infinity);
+
+await Promise.all(rmTargets.map(
+  rmTarget => fs.rm(rmTarget, { recursive: true })
 ));
-
-allFiles = allFiles.flat().filter(file => file.endsWith(".mjs"));
-await Promise.all(allFiles.map(file => fs.rm(file)));

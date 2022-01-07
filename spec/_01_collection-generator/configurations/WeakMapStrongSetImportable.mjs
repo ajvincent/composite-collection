@@ -1,22 +1,22 @@
 import CollectionConfiguration from "composite-collection/Configuration";
-import MockImportable from "./MockImportable.mjs";
+import MockImportable from "../fixtures/MockImportable.mjs";
 
-const StrongMapSetImportable = new CollectionConfiguration("StrongMapSetImportable", "Map", "Set");
-StrongMapSetImportable.importLines(
+const WeakMapStrongSetImportable = new CollectionConfiguration("WeakMapStrongSetImportable", "WeakMap", "Set");
+WeakMapStrongSetImportable.importLines(
   `import MockImportable from "../fixtures/MockImportable.mjs";`
 );
-StrongMapSetImportable.addMapKey("mapKey", false, {
+WeakMapStrongSetImportable.addMapKey("mapKey", true, {
   argumentValidator: function(mapKey) {
     if (!(mapKey instanceof MockImportable))
       return false;
   },
 });
 
-StrongMapSetImportable.addSetKey("setKey", false, {
+WeakMapStrongSetImportable.addSetKey("setKey", false, {
   argumentValidator: function(setKey) {
     if (!(setKey instanceof MockImportable))
       return false;
   },
 });
 
-export default StrongMapSetImportable;
+export default WeakMapStrongSetImportable;

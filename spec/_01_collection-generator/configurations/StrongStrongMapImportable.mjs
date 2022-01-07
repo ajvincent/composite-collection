@@ -1,5 +1,5 @@
 import CollectionConfiguration from "composite-collection/Configuration";
-import MockImportable from "./MockImportable.mjs";
+import MockImportable from "../fixtures/MockImportable.mjs";
 
 const StrongStrongMapImportable = new CollectionConfiguration("StrongStrongMapImportable", "Map");
 StrongStrongMapImportable.importLines(
