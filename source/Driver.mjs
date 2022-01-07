@@ -50,8 +50,14 @@ export default class Driver extends CompletionPromise {
     void("Instances of this class will replace this method");
   }
 
+  /**
+   * Build and write the collections for the target directory, based on a source directory of configurations.
+   */
   async #buildAll() {
-    let fileList = await this.#getFileList();
+    const fullPaths = (await readDirsDeep(this.#sourcesPath)).files.filter(
+      filePath => path.extname(filePath) === ".mjs"
+    );
+    let fileList = fullPaths.map(path => path.replace(this.#sourcesPath + "/", ""));
     const configToRelativePath = new WeakMap();
 
     const configs = await Promise.all(fileList.map(
@@ -95,17 +101,5 @@ export default class Driver extends CompletionPromise {
         throw ex;
       }
     }));
-  }
-
-  /**
-   * @returns {string[]}
-   *
-   * @note This is a placeholder for
-   */
-  async #getFileList() {
-    const fullPaths = (await readDirsDeep(this.#sourcesPath)).files.filter(
-      filePath => path.extname(filePath) === ".mjs"
-    );
-    return fullPaths.map(path => path.replace(this.#sourcesPath + "/", ""));
   }
 }

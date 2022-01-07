@@ -1,7 +1,5 @@
 /**
  * @module source/CodeGenerator.mjs
- *
- * @fileoverview
  */
 
 import CollectionConfiguration from "composite-collection/Configuration";
@@ -14,19 +12,25 @@ import fs from "fs/promises";
 import beautify from "js-beautify";
 import CollectionType from "./CollectionType.mjs";
 
+/**
+ * Stringify a list of keys into an argument name list suitable for macros.
+ *
+ * @param {string[]} keys The key names.
+ * @returns {string} The serialized key names.
+ */
 function buildArgNameList(keys) {
   return '[' + keys.map(key => `"${key}"`).join(", ") + ']'
 }
 
 /** @package */
 export default class CodeGenerator extends CompletionPromise {
-  /** @type {Object}  @constant */
+  /** @type {object} @constant */
   #configurationData;
 
   /** @type {string} @constant */
   #targetPath;
 
-  /** @type {RuntimeOptions} @constant */
+  /** @type {CompileTimeOptions | {}} @constant */
   #compileOptions;
 
   /** @type {string} */
@@ -81,7 +85,7 @@ export default class CodeGenerator extends CompletionPromise {
     Object.seal(this);
   }
 
-  /** @returns {string} */
+  /** @type {string} */
   get status() {
     return this.#status;
   }
@@ -195,7 +199,7 @@ export default class CodeGenerator extends CompletionPromise {
   #defineArgCountAndLists(prefix, keyArray) {
     this.#defines.set(prefix + "Count", keyArray.length);
     this.#defines.set(prefix + "ArgList", keyArray.join(", "));
-    this.#defines.set(prefix + "ArgNameList", buildArgNameList(keyArray));
+    this.#defines.set(prefix + "ArgNameList", JSON.stringify(keyArray));
   }
 
   #defineValidatorCode(paramsData, defineName, filter) {
