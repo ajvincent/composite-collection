@@ -24,6 +24,7 @@
     "jsdoc"
   ],
   "rules": {
+    "jsdoc/require-property": "off",
     "no-unused-private-class-members": "error"
   }
 }
