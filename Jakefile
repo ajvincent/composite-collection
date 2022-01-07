@@ -88,6 +88,7 @@ task("eslint", async () => {
     "source",
     "spec",
     "templates",
+    "--max-warnings=0"
   ]);
 });
 
