@@ -1,8 +1,11 @@
 import CollectionType from "./CollectionType.mjs";
-
 import defaultMethods from "./jsdoc-method-sets/default.mjs";
 
-/** @private */
+/**
+ * This represents the parameters part of a JSDoc comment.
+ *
+ * @private
+ */
 class ParamBlock {
   /** @type {object} */
   #rows = [];
@@ -15,10 +18,10 @@ class ParamBlock {
 
   /**
    * Add a parameter.
-   * @param {string} type
-   * @param {string} name
-   * @param {string} description
    *
+   * @param {string} type        The parameter type.
+   * @param {string} name        The name of the parameter.
+   * @param {string} description The parameter's description string.
    * @public
    */
   add(type, name, description = "") {
@@ -35,15 +38,17 @@ class ParamBlock {
   /**
    * Get the formatted parameter lines.
    *
-   * @returns {string[]}
+   * @returns {string[]} The formatted JSDoc section for arguments..
    * @public
    */
   getLines() {
     return this.#rows.map(row => {
       const type = `{${row.type}}`.padEnd(this.#typeColumnWidth);
       const name = row.name.padEnd(this.#nameColumnWidth);
+
       let firstDescLine = `@param ${type} ${name} ${row.firstDescLine}`;
       return [firstDescLine, ...row.otherDescLines.map(
+        // Why 10?  " * @param ".length.  This is to indent the other description lines.
         desc => " ".repeat(this.#typeColumnWidth + this.#nameColumnWidth + 10) + desc
       )];
     }).flat();
@@ -52,19 +57,21 @@ class ParamBlock {
 
 /**
  * A generator of JSDoc block comments from Map/Set templates and user arguments.
+ *
  * @package
  */
 export default class JSDocGenerator {
   /**
    * @typedef MethodTemplate
-   * @property {string}     description
-   * @property {string[]}   headers
-   * @property {string[][]} paramHeaders
-   * @property {string}     includeArgs
-   * @property {string[][]} paramFooters
-   * @property {string}     returnType
-   * @property {string?}    returnDescription
-   * @property {string[]}   footers
+   * @property {string}      description        The descrption of the method's purpose.
+   * @property {string[]?}   headers            JSDoc header lines before the parameter block.
+   * @property {string[][]?} paramHeaders       Parameters from the template (not the user)
+   * @property {string}      includeArgs        A flag to determine how public keys (and values) should be in the API.
+   * @property {string[][]?} paramFooters       Parameters from the template (not the user)
+   * @property {string?}     returnType         The return type for the specified function.
+   * @property {string?}     returnDescription  A description of the return value to provide.
+   * @property {string[]?}   footers            JSDoc footer lines after the parameters (and the return value).
+   * @see jsdoc-method-sets/default.mjs for typical objects.
    */
 
   /** @type {Map<string, MethodTemplate>} @constant */
@@ -91,6 +98,7 @@ export default class JSDocGenerator {
 
   /**
    * True if we should replace the word "map" with "set" in our main descriptions.
+   *
    * @type {boolean}
    * @constant
    */
@@ -114,6 +122,7 @@ export default class JSDocGenerator {
 
   /**
    * Add a parameter definition.
+   *
    * @param {CollectionType} parameter The parameter type information.
    * @public
    */
@@ -210,8 +219,7 @@ export default class JSDocGenerator {
    *
    * @param {string} templateName  The name of the template to use.
    * @param {number} baseIndent    The number of spaces each line should be indented.
-   *
-   * @returns {string}
+   * @returns {string} The completed JSDoc comment to insert into the template.
    * @public
    */
   buildBlock(templateName, baseIndent) {
