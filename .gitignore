@@ -1,3 +1,2 @@
 node_modules
 spec/*/generated/**/*.mjs
-source/collections/keys
