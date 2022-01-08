@@ -51,7 +51,7 @@ export default class CollectionType {
      * @constant
      * @type {string?}
      */
-    this.argumentValidator = argumentValidator?.trim();
+    this.argumentValidator = argumentValidator ? argumentValidator.trim() : null;
 
     Object.freeze(this);
   }

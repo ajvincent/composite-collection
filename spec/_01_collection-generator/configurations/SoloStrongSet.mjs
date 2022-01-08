@@ -5,7 +5,8 @@ const SoloStrongSetConfig = new CollectionConfiguration("SoloStrongSet", "Set");
 SoloStrongSetConfig.importLines(
   `import MockImportable from "../fixtures/MockImportable.mjs";`
 );
-SoloStrongSetConfig.addSetKey("key", false, {
+SoloStrongSetConfig.addSetKey("key", "The key.", false, {
+  argumentType: "MockImportable",
   argumentValidator: function(key) {
     // eslint-disable-next-line no-undef
     if (!(key instanceof MockImportable))

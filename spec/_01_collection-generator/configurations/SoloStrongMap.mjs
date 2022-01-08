@@ -5,7 +5,8 @@ const SoloStrongMapConfig = new CollectionConfiguration("SoloStrongMap", "Map");
 SoloStrongMapConfig.importLines(
   `import MockImportable from "../fixtures/MockImportable.mjs";`
 );
-SoloStrongMapConfig.addMapKey("key", false, {
+SoloStrongMapConfig.addMapKey("key", "The key", false, {
+  argumentType: "MockImportable",
   argumentValidator: function(key) {
     if (!(key instanceof MockImportable))
       return false;

@@ -11,7 +11,6 @@ class StrongStrongSet {
    * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.
    *
    * @type {Map<hash, *[]>}
-   *
    * @constant
    */
   #root = new Map;
@@ -41,9 +40,8 @@ class StrongStrongSet {
   /**
    * Add a key set to this collection.
    *
-   * @param {*} key1 
-   * @param {*} key2 
-   *
+   * @param {*} key1 The first key.
+   * @param {*} key2 The second key.
    * @returns {StrongStrongSet} This collection.
    * @public
    */
@@ -65,9 +63,8 @@ class StrongStrongSet {
   /**
    * Delete an element from the collection by the given key sequence.
    *
-   * @param {*} key1 
-   * @param {*} key2 
-   *
+   * @param {*} key1 The first key.
+   * @param {*} key2 The second key.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -80,7 +77,6 @@ class StrongStrongSet {
    * Iterate over the keys.
    *
    * @param {StrongStrongSet~ForEachCallback} callback A function to invoke for each iteration.
-   *
    * @public
    */
   forEach(__callback__, __thisArg__) {
@@ -92,17 +88,16 @@ class StrongStrongSet {
   /**
    * @callback StrongStrongSet~ForEachCallback
    *
-   * @param {*}               key1           
-   * @param {*}               key2           
+   * @param {*}               key1           The first key.
+   * @param {*}               key2           The second key.
    * @param {StrongStrongSet} __collection__ This collection.
    */
 
   /**
    * Report if the collection has a value for a key set.
    *
-   * @param {*} key1 
-   * @param {*} key2 
-   *
+   * @param {*} key1 The first key.
+   * @param {*} key2 The second key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -114,7 +109,7 @@ class StrongStrongSet {
   /**
    * Return a new iterator for the values of the collection.
    *
-   * @returns {Iterator<*>}
+   * @returns {Iterator<*>} The iterator.
    * @public
    */
   values() {

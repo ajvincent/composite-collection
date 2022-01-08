@@ -17,7 +17,6 @@ class StrongStrongMap {
    * The root map holding keys and values.
    *
    * @type {Map<string, StrongStrongMap~valueAndKeySet>}
-   *
    * @constant
    */
   #root = new Map;
@@ -59,9 +58,8 @@ class StrongStrongMap {
   /**
    * Delete an element from the collection by the given key sequence.
    *
-   * @param {*} key1 
-   * @param {*} key2 
-   *
+   * @param {*} key1 The first key.
+   * @param {*} key2 The second key.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -73,7 +71,7 @@ class StrongStrongMap {
   /**
    * Return a new iterator for the key-value pairs of the collection.
    *
-   * @returns {Iterator<[key1, key2, value]>}
+   * @returns {Iterator<[key1, key2, value]>} The iterator.
    * @public
    */
   entries() {
@@ -86,7 +84,6 @@ class StrongStrongMap {
    * Iterate over the keys and values.
    *
    * @param {StrongStrongMap~ForEachCallback} callback A function to invoke for each iteration.
-   *
    * @public
    */
   forEach(callback, thisArg) {
@@ -101,17 +98,16 @@ class StrongStrongMap {
    * @callback StrongStrongMap~ForEachCallback
    *
    * @param {*}               value          The value.
-   * @param {*}               key1           
-   * @param {*}               key2           
+   * @param {*}               key1           The first key.
+   * @param {*}               key2           The second key.
    * @param {StrongStrongMap} __collection__ This collection.
    */
 
   /**
    * Get a value for a key set.
    *
-   * @param {*} key1 
-   * @param {*} key2 
-   *
+   * @param {*} key1 The first key.
+   * @param {*} key2 The second key.
    * @returns {*?} The value.  Undefined if it isn't in the collection.
    * @public
    */
@@ -127,9 +123,8 @@ class StrongStrongMap {
   /**
    * Report if the collection has a value for a key set.
    *
-   * @param {*} key1 
-   * @param {*} key2 
-   *
+   * @param {*} key1 The first key.
+   * @param {*} key2 The second key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -141,7 +136,7 @@ class StrongStrongMap {
   /**
    * Return a new iterator for the key sets of the collection.
    *
-   * @returns {Iterator<[key1, key2]>}
+   * @returns {Iterator<[key1, key2]>} The iterator.
    * @public
    */
   keys() {
@@ -153,10 +148,9 @@ class StrongStrongMap {
   /**
    * Set a value for a key set.
    *
-   * @param {*} key1  
-   * @param {*} key2  
+   * @param {*} key1  The first key.
+   * @param {*} key2  The second key.
    * @param {*} value The value.
-   *
    * @returns {StrongStrongMap} This collection.
    * @public
    */
@@ -176,7 +170,7 @@ class StrongStrongMap {
   /**
    * Return a new iterator for the values of the collection.
    *
-   * @returns {Iterator<*>}
+   * @returns {Iterator<*>} The iterator.
    * @public
    */
   values() {
@@ -189,8 +183,7 @@ class StrongStrongMap {
    * Bootstrap from the native Map's values() iterator to the kind of iterator we want.
    *
    * @param {function} unpacker The transforming function for values.
-   *
-   * @returns {Iterator<*>}
+   * @returns {Iterator<*>} The caller's iterator.
    */
   #wrapIterator(unpacker) {
     const rootIter = this.#root.values();

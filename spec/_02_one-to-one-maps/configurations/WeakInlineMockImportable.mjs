@@ -7,9 +7,10 @@ WeakWeakMapImportable.importLines(
   `import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";`
 );
 
-WeakWeakMapImportable.addMapKey("privateKey", true);
+WeakWeakMapImportable.addMapKey("privateKey", "The private key.", true);
 
-WeakWeakMapImportable.addMapKey("publicKey", true, {
+WeakWeakMapImportable.addMapKey("publicKey", "The public key.", true, {
+  argumentType: "MockImportable",
   argumentValidator: function(publicKey) {
     if (!(publicKey instanceof MockImportable))
       return false;

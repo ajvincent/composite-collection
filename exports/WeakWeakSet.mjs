@@ -25,9 +25,8 @@ class WeakWeakSet {
   /**
    * Add a key set to this collection.
    *
-   * @param {object} key1 
-   * @param {object} key2 
-   *
+   * @param {object} key1 The first key.
+   * @param {object} key2 The second key.
    * @returns {WeakWeakSet} This collection.
    * @public
    */
@@ -45,9 +44,8 @@ class WeakWeakSet {
   /**
    * Delete an element from the collection by the given key sequence.
    *
-   * @param {object} key1 
-   * @param {object} key2 
-   *
+   * @param {object} key1 The first key.
+   * @param {object} key2 The second key.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -66,9 +64,8 @@ class WeakWeakSet {
   /**
    * Report if the collection has a value for a key set.
    *
-   * @param {object} key1 
-   * @param {object} key2 
-   *
+   * @param {object} key1 The first key.
+   * @param {object} key2 The second key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -83,9 +80,8 @@ class WeakWeakSet {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {object} key1 
-   * @param {object} key2 
-   *
+   * @param {object} key1 The first key.
+   * @param {object} key2 The second key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @public
    */
@@ -96,9 +92,8 @@ class WeakWeakSet {
   /**
    * Throw if the key set is not valid.
    *
-   * @param {object} key1 
-   * @param {object} key2 
-   *
+   * @param {object} key1 The first key.
+   * @param {object} key2 The second key.
    * @throws for an invalid key set.
    */
   #requireValidKey(key1, key2) {
@@ -109,9 +104,8 @@ class WeakWeakSet {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {object} key1 
-   * @param {object} key2 
-   *
+   * @param {object} key1 The first key.
+   * @param {object} key2 The second key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidKey(key1, key2) {

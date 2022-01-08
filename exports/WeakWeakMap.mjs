@@ -14,7 +14,6 @@ class WeakWeakMap {
    * The root map holding weak composite keys and values.
    *
    * @type {WeakMap<WeakKey, *>}
-   *
    * @constant
    */
   #root = new WeakMap;
@@ -31,9 +30,8 @@ class WeakWeakMap {
   /**
    * Delete an element from the collection by the given key sequence.
    *
-   * @param {object} key1 
-   * @param {object} key2 
-   *
+   * @param {object} key1 The first key.
+   * @param {object} key2 The second key.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -50,9 +48,8 @@ class WeakWeakMap {
   /**
    * Get a value for a key set.
    *
-   * @param {object} key1 
-   * @param {object} key2 
-   *
+   * @param {object} key1 The first key.
+   * @param {object} key2 The second key.
    * @returns {*?} The value.  Undefined if it isn't in the collection.
    * @public
    */
@@ -65,9 +62,8 @@ class WeakWeakMap {
   /**
    * Report if the collection has a value for a key set.
    *
-   * @param {object} key1 
-   * @param {object} key2 
-   *
+   * @param {object} key1 The first key.
+   * @param {object} key2 The second key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -81,9 +77,8 @@ class WeakWeakMap {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {object} key1 
-   * @param {object} key2 
-   *
+   * @param {object} key1 The first key.
+   * @param {object} key2 The second key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @public
    */
@@ -94,10 +89,9 @@ class WeakWeakMap {
   /**
    * Set a value for a key set.
    *
-   * @param {object} key1  
-   * @param {object} key2  
+   * @param {object} key1  The first key.
+   * @param {object} key2  The second key.
    * @param {*}      value The value.
-   *
    * @returns {WeakWeakMap} This collection.
    * @public
    */
@@ -112,9 +106,8 @@ class WeakWeakMap {
   /**
    * Throw if the key set is not valid.
    *
-   * @param {object} key1 
-   * @param {object} key2 
-   *
+   * @param {object} key1 The first key.
+   * @param {object} key2 The second key.
    * @throws for an invalid key set.
    */
   #requireValidKey(key1, key2) {
@@ -125,9 +118,8 @@ class WeakWeakMap {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {object} key1 
-   * @param {object} key2 
-   *
+   * @param {object} key1 The first key.
+   * @param {object} key2 The second key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidKey(key1, key2) {

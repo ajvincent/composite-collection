@@ -263,7 +263,7 @@ export default class CodeGenerator extends CompletionPromise {
 
     // For the solo doc generator, the value argument comes first.
     let generator = await this.#createOneToOneGenerator("oneToOneSoloArg");
-    generator.addParameter(baseData.valueType || new CollectionType("value", "map", "*", "The value.", ""));
+    generator.addParameter(baseData.valueType || new CollectionType("value", "Map", "*", "The value.", ""));
     this.#appendTypesToDocGenerator(generator, "", false);
 
     // For the duo doc generator, there are two of each argument, and two values.

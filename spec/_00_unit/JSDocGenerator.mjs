@@ -191,7 +191,9 @@ describe("JSDocGenerator validation: ", () => {
     delete methodParameter.returnType;
     expect(
       () => setMethod()
-    ).toThrowError(`At row 0 ("deliver"), value.returnType must be a non-empty string!`);
+    ).toThrowError(
+      `At row 0 ("deliver"), value.returnType must be a non-empty string!  (Set value.returnVoid if there is no return value.)`
+    );
   });
 
   it("throws for a whitespace footer line prepended", async () => {

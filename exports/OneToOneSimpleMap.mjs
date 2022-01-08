@@ -10,7 +10,6 @@ class OneToOneSimpleMap extends WeakMap {
    *
    * @param {*} value_1 The value.
    * @param {*} value_2 The value.
-   *
    * @public
    */
   bindOneToOne(value_1, value_2) {

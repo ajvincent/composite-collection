@@ -120,11 +120,10 @@ export default class CollectionConfiguration {
    *
    * @param {string}  argumentName The name of the argument.
    * @param {string}  value        The argument value.
-   * @param {boolean} mayOmit      True if the caller may omit the argument.
    */
-  #stringArg(argumentName, value, mayOmit = false) {
+  #stringArg(argumentName, value) {
     if ((typeof value !== "string") || (value.length === 0))
-      throw new Error(`${argumentName} must be a non-empty string${mayOmit ? " or omitted" : ""}!`);
+      throw new Error(`${argumentName} must be a non-empty string!`);
   }
 
   /**
@@ -180,8 +179,8 @@ export default class CollectionConfiguration {
     return source.substring(body.start, body.end + 1);
   }
 
-  #jsdocField(argumentName, value, mayOmit = false) {
-    this.#stringArg(argumentName, value, mayOmit);
+  #jsdocField(argumentName, value) {
+    this.#stringArg(argumentName, value);
     if (value.includes("*/"))
       throw new Error(argumentName + " contains a comment that would end the JSDoc block!");
   }
@@ -337,7 +336,6 @@ export default class CollectionConfiguration {
   /**
    * @typedef CollectionTypeOptions
    * @property {string?}   argumentType      A JSDoc-printable type for the argument.
-   * @property {string?}   description       A JSDoc-printable description.
    * @property {Function?} argumentValidator A method to use for testing the argument.
    */
 
@@ -345,11 +343,12 @@ export default class CollectionConfiguration {
    * Define a map key.
    *
    * @param {identifier}             argumentName The key name.
+   * @param {string}                 description  The key description for JSDoc.
    * @param {boolean}                holdWeak     True if the collection should hold values for this key as weak references.
    * @param {CollectionTypeOptions?} options      Options for configuring generated code.
    * @returns {void}
    */
-  addMapKey(argumentName, holdWeak, options = {}) {
+  addMapKey(argumentName, description, holdWeak, options = {}) {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("mapKeys")) {
         this.#throwIfLocked();
@@ -358,7 +357,6 @@ export default class CollectionConfiguration {
 
       const {
         argumentType = holdWeak ? "object" : "*",
-        description = null,
         argumentValidator = null,
       } = options;
 
@@ -397,11 +395,12 @@ export default class CollectionConfiguration {
    * Define a set key.
    *
    * @param {identifier}             argumentName The key name.
+   * @param {string}                 description  The key description for JSDoc.
    * @param {boolean}                holdWeak     True if the collection should hold values for this key as weak references.
    * @param {CollectionTypeOptions?} options      Options for configuring generated code.
    * @returns {void}
    */
-  addSetKey(argumentName, holdWeak, options = {}) {
+  addSetKey(argumentName, description, holdWeak, options = {}) {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("setElements")) {
         this.#throwIfLocked();
@@ -410,7 +409,6 @@ export default class CollectionConfiguration {
 
       const {
         argumentType = holdWeak ? "object" : "*",
-        description = null,
         argumentValidator = null,
       } = options;
 
@@ -447,10 +445,8 @@ export default class CollectionConfiguration {
 
   #validateKey(argumentName, holdWeak, argumentType, description, argumentValidator) {
     this.#identifierArg("argumentName", argumentName);
-    if (argumentType !== null)
-      this.#jsdocField("argumentType", argumentType, true);
-    if (description !== null)
-      this.#jsdocField("description",  description, true);
+    this.#jsdocField("argumentType", argumentType);
+    this.#jsdocField("description", description);
 
     if (argumentValidator !== null) {
       this.#validatorArg(
@@ -474,9 +470,9 @@ export default class CollectionConfiguration {
   /**
    * Define the value type for .set(), .add() calls.
    *
-   * @type {string}    type        The value type.
-   * @type {string}    description The description of the value.
-   * @type {Function?} validator   A function to validate the value.
+   * @param {string}    type        The value type.
+   * @param {string}    description The description of the value.
+   * @param {Function?} validator   A function to validate the value.
    * @returns {void}
    */
   setValueType(type, description, validator = null) {
@@ -489,14 +485,14 @@ export default class CollectionConfiguration {
         throw new Error("You can only call .setValueType() directly after calling .addMapKey()!");
       }
 
-      this.#stringArg("type", type, false);
-      this.#stringArg("description", description, false);
+      this.#stringArg("type", type);
+      this.#stringArg("description", description);
       const validatorSource = (validator !== null) ?
         this.#validatorArg("validator", validator, "value", true) :
         null;
 
       this.#valueCollectionType = new CollectionType(
-        "value", "", type, description, validatorSource
+        "value", "Map", type, description, validatorSource
       );
 
       if (this.#collectionTemplate.includes("Set")) {
@@ -599,7 +595,7 @@ export default class CollectionConfiguration {
         collectionTemplate: "",
         weakMapKeys: ["key"],
         parameterToTypeMap: new Map([
-          ["key", new CollectionType("key", "", "object", "The key.", "")],
+          ["key", new CollectionType("key", "WeakMap", "object", "The key.", "")],
         ]),
         strongMapKeys: [],
         weakSetElements: [],

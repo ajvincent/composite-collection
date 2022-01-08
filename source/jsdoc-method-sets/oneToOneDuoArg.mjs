@@ -4,12 +4,14 @@
 export default function OneToOneMethodParameters() {
   return [
     ["bindOneToOne", {
+      returnVoid: true,
       description: "Bind two sets of keys and values together.",
       includeArgs: "excludeValue",
       footers: ["@public"],
     }],
 
     ["bindOneToOneSimple", {
+      returnVoid: true,
       description: "Bind two values together.",
       includeArgs: "excludeValue",
       footers: ["@public"],

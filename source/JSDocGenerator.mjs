@@ -177,7 +177,12 @@ export default class JSDocGenerator {
     JSDocGenerator.#propertyIsArrayOfStrings("value.footers", template.footers, 1, true);
 
     if (!template.isProperty && !template.returnVoid) {
-      JSDocGenerator.#propertyIsNonWhitespaceString("value.returnType", template.returnType, false);
+      try {
+        JSDocGenerator.#propertyIsNonWhitespaceString("value.returnType", template.returnType, false);
+      }
+      catch (ex) {
+        throw ex + "  (Set value.returnVoid if there is no return value.)";
+      }
       JSDocGenerator.#propertyIsNonWhitespaceString("value.returnDescription", template.returnDescription, false);
     }
   }

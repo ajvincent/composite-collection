@@ -36,9 +36,9 @@ describe("Combinations of auto-generated configurations:", () => {
     for (let i = 0; i < 8; i++) {
       let leafName = "combo_" + i.toString(2);
       const config = new CollectionConfiguration(leafName, i === 0 ? "Map" : "WeakMap");
-      config.addMapKey("key4", Boolean(i & 4));
-      config.addMapKey("key2", Boolean(i & 2));
-      config.addMapKey("key1", Boolean(i & 1));
+      config.addMapKey("key4", "A key.", Boolean(i & 4));
+      config.addMapKey("key2", "A key.", Boolean(i & 2));
+      config.addMapKey("key1", "A key.", Boolean(i & 1));
 
       leafName += ".mjs";
       const outFilePath = path.join(cleanup.tempDir, leafName);
@@ -70,9 +70,9 @@ describe("Combinations of auto-generated configurations:", () => {
     for (let i = 0; i < 8; i++) {
       let leafName = "combo_" + i.toString(2);
       const config = new CollectionConfiguration(leafName, i === 0 ? "Set" : "WeakSet");
-      config.addSetKey("key4", Boolean(i & 4));
-      config.addSetKey("key2", Boolean(i & 2));
-      config.addSetKey("key1", Boolean(i & 1));
+      config.addSetKey("key4", "A key.", Boolean(i & 4));
+      config.addSetKey("key2", "A key.", Boolean(i & 2));
+      config.addSetKey("key1", "A key.", Boolean(i & 1));
 
       leafName += ".mjs";
       const outFilePath = path.join(cleanup.tempDir, leafName);
@@ -142,7 +142,7 @@ describe("Combinations of auto-generated configurations:", () => {
       try {
         let shouldAddKey, passCount = 0;
         shouldAddKey = expect(() => {
-          config.addMapKey("key8", key8Weak);
+          config.addMapKey("key8", "A key.", key8Weak);
           passCount++;
         });
         // A strong map can't have a weak key.
@@ -151,7 +151,7 @@ describe("Combinations of auto-generated configurations:", () => {
         shouldAddKey.toThrow();
 
         shouldAddKey = expect(() => {
-          config.addMapKey("key4", key4Weak);
+          config.addMapKey("key4", "A key.", key4Weak);
           passCount++;
         });
         // A strong map can't have a weak key.
@@ -160,7 +160,7 @@ describe("Combinations of auto-generated configurations:", () => {
         shouldAddKey.toThrow();
 
         shouldAddKey = expect(() => {
-          config.addSetKey("key2", key2Weak);
+          config.addSetKey("key2", "A key.", key2Weak);
           passCount++;
         });
         // A strong set can't have a weak key.
@@ -169,7 +169,7 @@ describe("Combinations of auto-generated configurations:", () => {
         shouldAddKey.toThrow();
 
         shouldAddKey = expect(() => {
-          config.addSetKey("key1", key1Weak);
+          config.addSetKey("key1", "A key.", key1Weak);
           passCount++;
         });
         // A strong set can't have a weak key.

@@ -37,9 +37,8 @@ class WeakMapOfStrongSets {
   /**
    * Add a key set to this collection.
    *
-   * @param {object} mapKey 
-   * @param {*}      setKey 
-   *
+   * @param {object} mapKey The map key.
+   * @param {*}      setKey The set key.
    * @returns {WeakMapOfStrongSets} This collection.
    * @public
    */
@@ -59,9 +58,8 @@ class WeakMapOfStrongSets {
   /**
    * Add several sets to a map in this collection.
    *
-   * @param {object} mapKey   
+   * @param {object} mapKey   The map key.
    * @param {Set[]}  __sets__ The sets to add.
-   *
    * @returns {WeakMapOfStrongSets} This collection.
    * @public
    */
@@ -92,8 +90,7 @@ class WeakMapOfStrongSets {
   /**
    * Clear all sets from the collection for a given map keyset.
    *
-   * @param {object} mapKey 
-   *
+   * @param {object} mapKey The map key.
    * @public
    */
   clearSets(mapKey) {
@@ -108,9 +105,8 @@ class WeakMapOfStrongSets {
   /**
    * Delete an element from the collection by the given key sequence.
    *
-   * @param {object} mapKey 
-   * @param {*}      setKey 
-   *
+   * @param {object} mapKey The map key.
+   * @param {*}      setKey The set key.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -136,8 +132,7 @@ class WeakMapOfStrongSets {
   /**
    * Delete all sets from the collection by the given map sequence.
    *
-   * @param {object} mapKey 
-   *
+   * @param {object} mapKey The map key.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -155,7 +150,6 @@ class WeakMapOfStrongSets {
    * Iterate over the keys under a map in this collection.
    *
    * @param {WeakMapOfStrongSets~ForEachCallback} callback A function to invoke for each iteration.
-   *
    * @public
    */
   forEachSet(mapKey, __callback__, __thisArg__) {
@@ -172,16 +166,16 @@ class WeakMapOfStrongSets {
   /**
    * @callback WeakMapOfStrongSets~ForEachCallback
    *
-   * @param {object}              mapKey         
-   * @param {*}                   setKey         
+   * @param {object}              mapKey         The map key.
+   * @param {*}                   setKey         The set key.
    * @param {WeakMapOfStrongSets} __collection__ This collection.
    */
 
   /**
-   * The number of elements in a particular set.
+   * Get the size of a particular set.
    *
-   * @param {object} mapKey 
-   *
+   * @param {object} mapKey The map key.
+   * @returns {number} The set size.
    * @public
    */
   getSizeOfSet(mapKey) {
@@ -196,9 +190,8 @@ class WeakMapOfStrongSets {
   /**
    * Report if the collection has a value for a key set.
    *
-   * @param {object} mapKey 
-   * @param {*}      setKey 
-   *
+   * @param {object} mapKey The map key.
+   * @param {*}      setKey The set key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -216,9 +209,8 @@ class WeakMapOfStrongSets {
   /**
    * Report if the collection has any sets for a map.
    *
-   * @param {object} mapKey 
-   * @param {*}      setKey 
-   *
+   * @param {object} mapKey The map key.
+   * @param {*}      setKey The set key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -230,9 +222,8 @@ class WeakMapOfStrongSets {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {object} mapKey 
-   * @param {*}      setKey 
-   *
+   * @param {object} mapKey The map key.
+   * @param {*}      setKey The set key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @public
    */
@@ -243,7 +234,7 @@ class WeakMapOfStrongSets {
   /**
    * Return a new iterator for the sets of the collection in a map.
    *
-   * @returns {Iterator<*>}
+   * @returns {Iterator<*>} The set iterator.
    * @public
    */
   valuesSet(mapKey) {
@@ -284,7 +275,8 @@ class WeakMapOfStrongSets {
   /**
    * Require an inner collection exist for the given map keys.
    *
-   * @param {object} mapKey 
+   * @param {object} mapKey The map key.
+   * @returns {WeakMapOfStrongSets~InnerMap} The inner collection.
    */
   #requireInnerMap(mapKey) {
     const __mapKey__ = this.#mapKeyComposer.getKey(
@@ -299,9 +291,8 @@ class WeakMapOfStrongSets {
   /**
    * Get an existing inner collection for the given map keys.
    *
-   * @param {object} mapKey 
-   *
-   * @returns {WeakMapOfStrongSets~InnerMap}
+   * @param {object} mapKey The map key.
+   * @returns {WeakMapOfStrongSets~InnerMap?} The inner collection.
    */
   #getExistingInnerMap(mapKey) {
     const __mapKey__ = this.#mapKeyComposer.getKeyIfExists(
@@ -314,9 +305,8 @@ class WeakMapOfStrongSets {
   /**
    * Throw if the key set is not valid.
    *
-   * @param {object} mapKey 
-   * @param {*}      setKey 
-   *
+   * @param {object} mapKey The map key.
+   * @param {*}      setKey The set key.
    * @throws for an invalid key set.
    */
   #requireValidKey(mapKey, setKey) {
@@ -327,9 +317,8 @@ class WeakMapOfStrongSets {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {object} mapKey 
-   * @param {*}      setKey 
-   *
+   * @param {object} mapKey The map key.
+   * @param {*}      setKey The set key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidKey(mapKey, setKey) {
@@ -339,8 +328,7 @@ class WeakMapOfStrongSets {
   /**
    * Throw if the map key set is not valid.
    *
-   * @param {object} mapKey 
-   *
+   * @param {object} mapKey The map key.
    * @throws for an invalid key set.
    */
   #requireValidMapKey(mapKey) {
@@ -351,8 +339,7 @@ class WeakMapOfStrongSets {
   /**
    * Determine if a set of map keys is valid.
    *
-   * @param {object} mapKey 
-   *
+   * @param {object} mapKey The map key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidMapKey(mapKey) {
@@ -365,8 +352,7 @@ class WeakMapOfStrongSets {
   /**
    * Determine if a set of set keys is valid.
    *
-   * @param {*} setKey 
-   *
+   * @param {*} setKey The set key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidSetKey(setKey) {
