@@ -4,6 +4,7 @@
 export default function defaultMethods() {
   return [
     ["rootContainerMap", {
+      isProperty: true,
       description: "The root map holding keys and values.",
       includeArgs: "none",
       headers: [
@@ -13,6 +14,7 @@ export default function defaultMethods() {
     }],
 
     ["rootContainerWeakMap", {
+      isProperty: true,
       description: "The root map holding weak composite keys and values.",
       includeArgs: "none",
       headers: [
@@ -22,6 +24,7 @@ export default function defaultMethods() {
     }],
 
     ["rootContainerSet", {
+      isProperty: true,
       description: "Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.",
       includeArgs: "none",
       headers: [
@@ -31,6 +34,7 @@ export default function defaultMethods() {
     }],
 
     ["valueAndKeySet", {
+      isTypeDef: true,
       includeArgs: "none",
       headers: [
         "@typedef __className__~valueAndKeySet",
@@ -40,30 +44,36 @@ export default function defaultMethods() {
     }],
 
     ["getSize", {
+      isProperty: true,
       description: "The number of elements in this collection.",
       includeArgs: "none",
       footers: ["@public", "@constant"],
     }],
 
     ["getSizeOfSet", {
-      description: "The number of elements in a particular set.",
+      description: "Get the size of a particular set.",
       includeArgs: "mapArguments",
       footers: ["@public"],
+      returnType: "number",
+      returnDescription: "The set size."
     }],
 
     ["mapSize", {
+      isProperty: true,
       description: "The number of maps in this collection.",
       includeArgs: "none",
       footers: ["@public", "@constant"],
     }],
 
     ["clear", {
+      returnVoid: true,
       description: "Clear the collection.",
       includeArgs: "none",
       footers: ["@public"],
     }],
 
     ["clearSets", {
+      returnVoid: true,
       description: "Clear all sets from the collection for a given map keyset.",
       includeArgs: "mapArguments",
       footers: ["@public"],
@@ -89,10 +99,12 @@ export default function defaultMethods() {
       description: "Return a new iterator for the key-value pairs of the collection.",
       includeArgs: "none",
       returnType: "Iterator<[__argList__, value]>",
+      returnDescription: "The iterator.",
       footers: ["@public"],
     }],
 
     ["forEachMap", {
+      returnVoid: true,
       description: "Iterate over the keys and values.",
       paramHeaders: [
         ["__className__~ForEachCallback", "callback", "A function to invoke for each iteration."]
@@ -102,6 +114,7 @@ export default function defaultMethods() {
     }],
 
     ["forEachSet", {
+      returnVoid: true,
       description: "Iterate over the keys.",
       paramHeaders: [
         ["__className__~ForEachCallback", "callback", "A function to invoke for each iteration."]
@@ -111,6 +124,7 @@ export default function defaultMethods() {
     }],
 
     ["forEachMapSet", {
+      returnVoid: true,
       description: "Iterate over the keys under a map in this collection.",
       paramHeaders: [
         ["__className__~ForEachCallback", "callback", "A function to invoke for each iteration."]
@@ -120,6 +134,7 @@ export default function defaultMethods() {
     }],
 
     ["forEachCallbackMap", {
+      returnVoid: true,
       description: "@callback __className__~ForEachCallback",
       includeArgs: "excludeValue",
       paramHeaders: [
@@ -131,6 +146,7 @@ export default function defaultMethods() {
     }],
 
     ["forEachCallbackSet", {
+      returnVoid: true,
       description: "@callback __className__~ForEachCallback",
       includeArgs: "all",
       paramFooters: [
@@ -166,6 +182,7 @@ export default function defaultMethods() {
       description: "Return a new iterator for the key sets of the collection.",
       includeArgs: "none",
       returnType: "Iterator<[__argList__]>",
+      returnDescription: "The iterator.",
       footers: ["@public"],
     }],
 
@@ -200,6 +217,7 @@ export default function defaultMethods() {
       description: "Return a new iterator for the values of the collection.",
       includeArgs: "none",
       returnType: "Iterator<__valueType__>",
+      returnDescription: "The iterator.",
       footers: ["@public"],
     }],
 
@@ -207,6 +225,7 @@ export default function defaultMethods() {
       description: "Return a new iterator for the sets of the collection in a map.",
       includeArgs: "none",
       returnType: "Iterator<__valueType__>",
+      returnDescription: "The set iterator.",
       footers: ["@public"],
     }],
 
@@ -217,6 +236,7 @@ export default function defaultMethods() {
       ],
       includeArgs: "none",
       returnType: "Iterator<*>",
+      returnDescription: "The caller's iterator."
     }],
 
     ["isValidKeyPublic", {
@@ -235,6 +255,7 @@ export default function defaultMethods() {
     }],
 
     ["requireValidKey", {
+      returnVoid: true,
       description: "Throw if the key set is not valid.",
       includeArgs: "excludeValue",
       footers: ["@throws for an invalid key set."]
@@ -243,15 +264,19 @@ export default function defaultMethods() {
     ["requireInnerCollectionPrivate", {
       description: "Require an inner collection exist for the given map keys.",
       includeArgs: "mapArguments",
+      returnType: "__className__~InnerMap",
+      returnDescription: "The inner collection."
     }],
 
     ["getExistingInnerCollectionPrivate", {
       description: "Get an existing inner collection for the given map keys.",
       includeArgs: "mapArguments",
-      returnType: "__className__~InnerMap",
+      returnType: "__className__~InnerMap?",
+      returnDescription: "The inner collection."
     }],
 
     ["requireValidMapKey", {
+      returnVoid: true,
       description: "Throw if the map key set is not valid.",
       includeArgs: "mapArguments",
       footers: ["@throws for an invalid key set."]

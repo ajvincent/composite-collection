@@ -1,5 +1,351 @@
 import JSDocGenerator from "#source/JSDocGenerator.mjs";
 import CollectionType from "#source/CollectionType.mjs";
+import { ESLint } from "eslint";
+
+/**
+ * Run template code against ESLint.
+ *
+ * @param {JSDocGenerator} generator The code generator we're exercising.
+ * @returns {string[]} The ESLint rules we broke.
+ */
+async function runAgainstESLint(generator) {
+  const source = `
+class DeliveryToken {}
+
+class Vehicle {
+${generator.buildBlock("deliver", 2)}
+  deliverToCustomer(name, atTime, foods) {
+    void name;
+    void foods;
+    void atTime;
+
+    return new DeliveryToken();
+  }
+}
+
+void Vehicle;
+`.trim();
+
+  const eslint = new ESLint;
+  let result = (await eslint.lintText(source))[0];
+  result = result.messages.map(message => message.ruleId);
+  result.sort();
+  return result;
+}
+
+describe("JSDocGenerator validation: ", () => {
+  let methodParameter;
+
+  /** @private */
+  function setMethod() {
+    doc.setMethodParametersDirectly([
+      ["deliver", methodParameter]
+    ]);
+  }
+
+  // #region CollectionType[]
+  const nameType = new CollectionType(
+    "name",
+    "Map",
+    "string",
+    "The customer's name.",
+    ""
+  );
+
+  const atTimeTime = new CollectionType(
+    "atTime",
+    "WeakMap",
+    "number",
+    "The delivery time.",
+    ""
+  );
+
+  const foodsType = new CollectionType(
+    "foods",
+    "WeakMap",
+    "string[]",
+    "The foods the customer ordered.",
+    ""
+  );
+  // #endregion
+
+  let doc;
+  beforeEach(() => {
+    doc = new JSDocGenerator("Vehicle", false);
+    methodParameter = {
+      description: "Deliver some foods to a customer.",
+      includeArgs: "excludeValue",
+      returnType: "DeliveryToken",
+      returnDescription: "The delivery token.",
+      footers: ["@public"],
+    };
+  });
+  afterEach(() => {
+    doc = null;
+    methodParameter = null;
+  });
+
+  it("passes ESLint when everything is filled in", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(foodsType);
+    setMethod();
+
+    const result = await runAgainstESLint(doc);
+    expect(result).toEqual([]);
+  });
+
+  it("for a typedef requires includeArgs be 'none'", () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(foodsType);
+
+    methodParameter = {
+      isTypeDef: true,
+      includeArgs: "all",
+      headers: [
+        "@typedef __className__~valueAndKeySet",
+        "@property {*}   value  The actual value we store.",
+        "@property {*[]} keySet The set of keys we hashed.",
+      ],
+    };
+
+    expect(
+      () => setMethod()
+    ).toThrowError(`At row 0 ("deliver"), value.includeArgs must be "none" for a type definition!`);
+  });
+
+  it("for a typedef requires a non-empty list of headers", () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(foodsType);
+
+    methodParameter = {
+      isTypeDef: true,
+      includeArgs: "none",
+      headers: ["  "],
+    };
+
+    expect(
+      () => setMethod()
+    ).toThrowError(`At row 0 ("deliver"), value.headers[0] must be a non-empty string!`);
+
+    methodParameter.headers = [];
+    expect(
+      () => setMethod()
+    ).toThrowError(`At row 0 ("deliver"), value.headers is not an array of non-empty strings!`);
+
+    delete methodParameter.headers;
+    expect(
+      () => setMethod()
+    ).toThrowError(`At row 0 ("deliver"), value.headers is not an array of non-empty strings!`);
+  });
+
+  it("for a typedef has no other failing constraints", () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(foodsType);
+
+    methodParameter = {
+      isTypeDef: true,
+      includeArgs: "none",
+      headers: [
+        "@typedef __className__~valueAndKeySet",
+        "@property {*}   value  The actual value we store.",
+        "@property {*[]} keySet The set of keys we hashed.",
+      ],
+    };
+
+    expect(
+      () => setMethod()
+    ).not.toThrow();
+  });
+
+  it("normally throws for a missing method description", () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(foodsType);
+
+    delete methodParameter.description;
+    expect(
+      () => setMethod()
+    ).toThrowError(`At row 0 ("deliver"), value.description must be a non-empty string!`);
+  });
+
+  it("throws for a missing returnDescription", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(foodsType);
+
+    delete methodParameter.returnDescription;
+    expect(
+      () => setMethod()
+    ).toThrowError(`At row 0 ("deliver"), value.returnDescription must be a non-empty string!`);
+  });
+
+  it("throws for a missing returnType", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(foodsType);
+
+    delete methodParameter.returnType;
+    expect(
+      () => setMethod()
+    ).toThrowError(`At row 0 ("deliver"), value.returnType must be a non-empty string!`);
+  });
+
+  it("throws for a whitespace footer line prepended", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(foodsType);
+
+    methodParameter.footers.unshift("  ");
+    expect(
+      () => setMethod()
+    ).toThrowError(`At row 0 ("deliver"), value.footers[0] must be a non-empty string!`);
+  });
+
+  it("throws for whitespace footer line appended", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(foodsType);
+
+    methodParameter.footers.push("  ");
+    expect(
+      () => setMethod()
+    ).toThrowError(`At row 0 ("deliver"), value.footers[1] must be a non-empty string!`);
+  });
+
+  it("fails ESLint for an unknown JSDoc tag", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(foodsType);
+
+    methodParameter.footers.push("@allYourBase");
+    setMethod();
+
+    const result = await runAgainstESLint(doc);
+    expect(result).toEqual(["jsdoc/check-tag-names"]);
+  });
+
+  it("fails ESLint with a missing parameter", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    setMethod();
+
+    const result = await runAgainstESLint(doc);
+    expect(result).toEqual(['jsdoc/require-param']);
+  });
+
+  it("throws for missing a parameter description", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    expect(
+      () => doc.addParameter(new CollectionType(
+        "foods",
+        "WeakMap",
+        "string[]",
+        "",
+        ""
+      ))
+    ).toThrowError("description must be a non-empty string!");
+  });
+
+  it("throws for a whitespace-only parameter description", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    expect(
+      () => doc.addParameter(new CollectionType(
+        "foods",
+        "WeakMap",
+        "string[]",
+        "    ",
+        ""
+      ))
+    ).toThrowError("description must be a non-empty string!");
+  });
+
+  it("throws for missing a parameter type", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    expect(
+      () => doc.addParameter(new CollectionType(
+        "foods",
+        "WeakMap",
+        "",
+        "The foods the customer ordered.",
+        ""
+      ))
+    ).toThrowError("argumentType must be a non-empty string!");
+  });
+
+  it("throws for missing a parameter name", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    expect(
+      () => doc.addParameter(new CollectionType(
+        "",
+        "WeakMap",
+        "string[]",
+        "The foods the customer ordered.",
+        ""
+      ))
+    ).toThrowError("argumentName must be a non-empty string!");
+  });
+
+  it("fails ESLint with an extra parameter", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(foodsType);
+
+    doc.addParameter(new CollectionType(
+      "vendor",
+      "WeakMap",
+      "string",
+      "The company selling the foods.",
+      ""
+    ));
+    setMethod();
+
+    const result = await runAgainstESLint(doc);
+    expect(result).toEqual(["jsdoc/check-param-names"]);
+  });
+
+  it("fails ESLint with an unknown parameter", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(new CollectionType(
+      "vendor",
+      "WeakMap",
+      "string",
+      "The company selling the foods.",
+      ""
+    ));
+    setMethod();
+
+    const result = await runAgainstESLint(doc);
+    expect(result).toEqual([
+      "jsdoc/check-param-names",
+      "jsdoc/require-param",
+    ]);
+  });
+
+  it("fails ESLint with an unknown parameter type", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(new CollectionType(
+      "foods",
+      "WeakMap",
+      "Color",
+      "The foods the customer ordered.",
+      ""
+    ));
+    setMethod();
+
+    const result = await runAgainstESLint(doc);
+    expect(result).toEqual(["jsdoc/no-undefined-types"]);
+  });
+});
 
 describe("JSDocGenerator for maps", () => {
   let generator;
@@ -25,7 +371,6 @@ describe("JSDocGenerator for maps", () => {
    * The root map holding keys and values.
    *
    * @type {Map<string, SoloStrongMap~valueAndKeySet>}
-   *
    * @constant
    */`);
     });
@@ -36,7 +381,6 @@ describe("JSDocGenerator for maps", () => {
    * The root map holding weak composite keys and values.
    *
    * @type {WeakMap<WeakKey, *>}
-   *
    * @constant
    */`);
     });
@@ -76,7 +420,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */`);
@@ -87,7 +430,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the key-value pairs of the collection.
    *
-   * @returns {Iterator<[car, driver, value]>}
+   * @returns {Iterator<[car, driver, value]>} The iterator.
    * @public
    */`);
     });
@@ -98,7 +441,6 @@ describe("JSDocGenerator for maps", () => {
    * Iterate over the keys and values.
    *
    * @param {SoloStrongMap~ForEachCallback} callback A function to invoke for each iteration.
-   *
    * @public
    */`);
     });
@@ -122,7 +464,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {*?} The value.  Undefined if it isn't in the collection.
    * @public
    */`);
@@ -135,7 +476,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */`);
@@ -146,7 +486,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the key sets of the collection.
    *
-   * @returns {Iterator<[car, driver]>}
+   * @returns {Iterator<[car, driver]>} The iterator.
    * @public
    */`);
     });
@@ -159,7 +499,6 @@ describe("JSDocGenerator for maps", () => {
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
    * @param {*}      value  The value.
-   *
    * @returns {SoloStrongMap} This collection.
    * @public
    */`);
@@ -170,7 +509,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the values of the collection.
    *
-   * @returns {Iterator<*>}
+   * @returns {Iterator<*>} The iterator.
    * @public
    */`);
     });
@@ -182,7 +521,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @public
    */`);
@@ -195,7 +533,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */`);
     });
@@ -207,7 +544,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @throws for an invalid key set.
    */`);
     });
@@ -238,8 +574,7 @@ describe("JSDocGenerator for maps", () => {
    * Bootstrap from the native Map's values() iterator to the kind of iterator we want.
    *
    * @param {function} unpacker The transforming function for values.
-   *
-   * @returns {Iterator<*>}
+   * @returns {Iterator<*>} The caller's iterator.
    */`);
     });
   });
@@ -258,7 +593,6 @@ describe("JSDocGenerator for maps", () => {
    * The root map holding keys and values.
    *
    * @type {Map<string, SoloStrongMap~valueAndKeySet>}
-   *
    * @constant
    */`);
     });
@@ -298,7 +632,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */`);
@@ -309,7 +642,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the key-value pairs of the collection.
    *
-   * @returns {Iterator<[car, driver, value]>}
+   * @returns {Iterator<[car, driver, value]>} The iterator.
    * @public
    */`);
     });
@@ -320,7 +653,6 @@ describe("JSDocGenerator for maps", () => {
    * Iterate over the keys and values.
    *
    * @param {SoloStrongMap~ForEachCallback} callback A function to invoke for each iteration.
-   *
    * @public
    */`);
     });
@@ -344,7 +676,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {State?} The state of registration.  Undefined if it isn't in the collection.
    * @public
    */`);
@@ -357,7 +688,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */`);
@@ -368,7 +698,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the key sets of the collection.
    *
-   * @returns {Iterator<[car, driver]>}
+   * @returns {Iterator<[car, driver]>} The iterator.
    * @public
    */`);
     });
@@ -381,7 +711,6 @@ describe("JSDocGenerator for maps", () => {
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
    * @param {State}  value  The state of registration.
-   *
    * @returns {SoloStrongMap} This collection.
    * @public
    */`);
@@ -394,7 +723,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {SoloStrongMap} This collection.
    * @public
    */`);
@@ -405,7 +733,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the values of the collection.
    *
-   * @returns {Iterator<State>}
+   * @returns {Iterator<State>} The iterator.
    * @public
    */`);
     });
@@ -416,8 +744,7 @@ describe("JSDocGenerator for maps", () => {
    * Bootstrap from the native Map's values() iterator to the kind of iterator we want.
    *
    * @param {function} unpacker The transforming function for values.
-   *
-   * @returns {Iterator<*>}
+   * @returns {Iterator<*>} The caller's iterator.
    */`);
     });
 
@@ -428,7 +755,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @public
    */`);
@@ -441,7 +767,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */`);
     });
@@ -453,7 +778,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @throws for an invalid key set.
    */`);
     });
@@ -481,7 +805,6 @@ describe("JSDocGenerator for maps", () => {
      * The root map holding keys and values.
      *
      * @type {Map<string, SoloStrongMap~valueAndKeySet>}
-     *
      * @constant
      */`);
   });
@@ -516,7 +839,6 @@ describe("JSDocGenerator for sets", () => {
    * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.
    *
    * @type {Map<hash, *[]>}
-   *
    * @constant
    */`);
     });
@@ -556,7 +878,6 @@ describe("JSDocGenerator for sets", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */`);
@@ -568,7 +889,6 @@ describe("JSDocGenerator for sets", () => {
    * Iterate over the keys.
    *
    * @param {SoloStrongSet~ForEachCallback} callback A function to invoke for each iteration.
-   *
    * @public
    */`);
     });
@@ -591,7 +911,6 @@ describe("JSDocGenerator for sets", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */`);
@@ -604,7 +923,6 @@ describe("JSDocGenerator for sets", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {SoloStrongSet} This collection.
    * @public
    */`);
@@ -615,7 +933,7 @@ describe("JSDocGenerator for sets", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the values of the collection.
    *
-   * @returns {Iterator<*>}
+   * @returns {Iterator<*>} The iterator.
    * @public
    */`);
     });
@@ -626,8 +944,7 @@ describe("JSDocGenerator for sets", () => {
    * Bootstrap from the native Map's values() iterator to the kind of iterator we want.
    *
    * @param {function} unpacker The transforming function for values.
-   *
-   * @returns {Iterator<*>}
+   * @returns {Iterator<*>} The caller's iterator.
    */`);
     });
 
@@ -638,7 +955,6 @@ describe("JSDocGenerator for sets", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @public
    */`);
@@ -651,7 +967,6 @@ describe("JSDocGenerator for sets", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */`);
     });
@@ -663,7 +978,6 @@ describe("JSDocGenerator for sets", () => {
    *
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
-   *
    * @throws for an invalid key set.
    */`);
     });
@@ -682,7 +996,6 @@ describe("JSDocGenerator for sets", () => {
    * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.
    *
    * @type {Map<hash, *[]>}
-   *
    * @constant
    */`);
     });
@@ -723,7 +1036,6 @@ describe("JSDocGenerator for sets", () => {
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
    * @param {State}  value  The state of registration.
-   *
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */`);
@@ -734,7 +1046,7 @@ describe("JSDocGenerator for sets", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the key-value pairs of the collection.
    *
-   * @returns {Iterator<[car, driver, value]>}
+   * @returns {Iterator<[car, driver, value]>} The iterator.
    * @public
    */`);
     });
@@ -745,7 +1057,6 @@ describe("JSDocGenerator for sets", () => {
    * Iterate over the keys.
    *
    * @param {SoloStrongSet~ForEachCallback} callback A function to invoke for each iteration.
-   *
    * @public
    */`);
     });
@@ -770,7 +1081,6 @@ describe("JSDocGenerator for sets", () => {
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
    * @param {State}  value  The state of registration.
-   *
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */`);
@@ -784,7 +1094,6 @@ describe("JSDocGenerator for sets", () => {
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
    * @param {State}  value  The state of registration.
-   *
    * @returns {SoloStrongSet} This collection.
    * @public
    */`);
@@ -795,7 +1104,7 @@ describe("JSDocGenerator for sets", () => {
       expect(generated).toEqual(`  /**
    * Return a new iterator for the values of the collection.
    *
-   * @returns {Iterator<State>}
+   * @returns {Iterator<State>} The iterator.
    * @public
    */`);
     });
@@ -806,8 +1115,7 @@ describe("JSDocGenerator for sets", () => {
    * Bootstrap from the native Map's values() iterator to the kind of iterator we want.
    *
    * @param {function} unpacker The transforming function for values.
-   *
-   * @returns {Iterator<*>}
+   * @returns {Iterator<*>} The caller's iterator.
    */`);
     });
 
@@ -819,7 +1127,6 @@ describe("JSDocGenerator for sets", () => {
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
    * @param {State}  value  The state of registration.
-   *
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @public
    */`);
@@ -833,7 +1140,6 @@ describe("JSDocGenerator for sets", () => {
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
    * @param {State}  value  The state of registration.
-   *
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */`);
     });
@@ -846,7 +1152,6 @@ describe("JSDocGenerator for sets", () => {
    * @param {Car}    car    The car.
    * @param {Person} driver The driver of the car.
    * @param {State}  value  The state of registration.
-   *
    * @throws for an invalid key set.
    */`);
     });
@@ -873,7 +1178,6 @@ describe("JSDocGenerator for sets", () => {
      * The root map holding keys and values.
      *
      * @type {Map<string, SoloStrongSet~valueAndKeySet>}
-     *
      * @constant
      */`);
   });
@@ -899,7 +1203,6 @@ describe("JSDocGenerator for maps of sets", () => {
    * Clear all sets from the collection for a given map keyset.
    *
    * @param {Car} car The car.
-   *
    * @public
    */`);
   });
@@ -910,6 +1213,7 @@ describe("JSDocGenerator for maps of sets", () => {
    * Require an inner collection exist for the given map keys.
    *
    * @param {Car} car The car.
+   * @returns {WeakMapOfStrongSets~InnerMap} The inner collection.
    */`);
   });
 
@@ -919,8 +1223,7 @@ describe("JSDocGenerator for maps of sets", () => {
    * Get an existing inner collection for the given map keys.
    *
    * @param {Car} car The car.
-   *
-   * @returns {WeakMapOfStrongSets~InnerMap}
+   * @returns {WeakMapOfStrongSets~InnerMap?} The inner collection.
    */`);
   });
 
@@ -930,7 +1233,6 @@ describe("JSDocGenerator for maps of sets", () => {
    * Throw if the map key set is not valid.
    *
    * @param {Car} car The car.
-   *
    * @throws for an invalid key set.
    */`);
   });
@@ -941,7 +1243,6 @@ describe("JSDocGenerator for maps of sets", () => {
    * Determine if a set of map keys is valid.
    *
    * @param {Car} car The car.
-   *
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */`);
   });
@@ -952,7 +1253,6 @@ describe("JSDocGenerator for maps of sets", () => {
    * Determine if a set of set keys is valid.
    *
    * @param {Person} driver The driver of the car.
-   *
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */`);
   });

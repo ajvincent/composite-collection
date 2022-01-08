@@ -278,7 +278,7 @@ export default class CodeGenerator extends CompletionPromise {
       true
     );
 
-    await generator.setMethodParameters(moduleName);
+    await generator.setMethodParametersByModule(moduleName);
     this.#docGenerators.push(generator);
     return generator;
   }
