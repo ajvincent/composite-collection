@@ -1,7 +1,7 @@
 /**
- * @param {Map} defines
- * @param {JSDocGenerator} docs
- * @returns {string}
+ * @param {Map}            defines The preprocessor macros.
+ * @param {JSDocGenerator} docs    The primary documentation generator.
+ * @returns {string}               The generated source code.
  */
 export default function preprocess(defines, docs) {
   let invokeValidate = "";
@@ -13,6 +13,8 @@ export default function preprocess(defines, docs) {
 ${defines.get("importLines")}
 
 class ${defines.get("className")} {
+  /** @typedef {string} hash */
+
   ${docs.buildBlock("rootContainerSet", 4)}
   #root = new Map;
 
@@ -74,8 +76,9 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
 ` : ``}
 
 ${docs.buildBlock("values", 2)}
-  values() {
-    return this.#root.values();
+  * values() {
+    for (let __value__ of this.#root.values())
+      yield __value__;
   }
 ${defines.has("invokeValidate") ?
   `

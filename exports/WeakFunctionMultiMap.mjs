@@ -10,10 +10,16 @@ import WeakKeyComposer from "./keys/Composite.mjs";
 /** @typedef {Map<hash, *[]>} WeakFunctionMultiMap~InnerMap */
 
 class WeakFunctionMultiMap {
+  /** @typedef {string} hash */
+
+  // eslint-disable-next-line jsdoc/require-property
+  /** @typedef {object} WeakKey */
+
   /**
    * @type {WeakMap<WeakKey, WeakFunctionMultiMap~InnerMap>}
    * @constant
-   * @note This is two levels. The first level is the WeakKey.  The second level is the strong set.
+   * This is two levels. The first level is the WeakKey.
+   * The second level is the strong set.
    */
   #root = new WeakMap();
 
@@ -37,9 +43,8 @@ class WeakFunctionMultiMap {
   /**
    * Add a key set to this collection.
    *
-   * @param {object}   key         
-   * @param {Function} mapFunction 
-   *
+   * @param {object}   key         The map key.
+   * @param {Function} mapFunction The function.
    * @returns {WeakFunctionMultiMap} This collection.
    * @public
    */
@@ -59,9 +64,8 @@ class WeakFunctionMultiMap {
   /**
    * Add several sets to a map in this collection.
    *
-   * @param {object} key      
+   * @param {object} key      The map key.
    * @param {Set[]}  __sets__ The sets to add.
-   *
    * @returns {WeakFunctionMultiMap} This collection.
    * @public
    */
@@ -92,8 +96,7 @@ class WeakFunctionMultiMap {
   /**
    * Clear all sets from the collection for a given map keyset.
    *
-   * @param {object} key 
-   *
+   * @param {object} key The map key.
    * @public
    */
   clearSets(key) {
@@ -108,9 +111,8 @@ class WeakFunctionMultiMap {
   /**
    * Delete an element from the collection by the given key sequence.
    *
-   * @param {object}   key         
-   * @param {Function} mapFunction 
-   *
+   * @param {object}   key         The map key.
+   * @param {Function} mapFunction The function.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -136,8 +138,7 @@ class WeakFunctionMultiMap {
   /**
    * Delete all sets from the collection by the given map sequence.
    *
-   * @param {object} key 
-   *
+   * @param {object} key The map key.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -154,8 +155,9 @@ class WeakFunctionMultiMap {
   /**
    * Iterate over the keys under a map in this collection.
    *
-   * @param {WeakFunctionMultiMap~ForEachCallback} callback A function to invoke for each iteration.
-   *
+   * @param {object}                               key          The map key.
+   * @param {WeakFunctionMultiMap~ForEachCallback} __callback__ A function to invoke for each iteration.
+   * @param {object}                               __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEachSet(key, __callback__, __thisArg__) {
@@ -170,18 +172,19 @@ class WeakFunctionMultiMap {
   }
 
   /**
-   * @callback WeakFunctionMultiMap~ForEachCallback
+   * An user-provided callback to .forEach().
    *
-   * @param {object}               key            
-   * @param {Function}             mapFunction    
+   * @callback WeakFunctionMultiMap~ForEachCallback
+   * @param {object}               key            The map key.
+   * @param {Function}             mapFunction    The function.
    * @param {WeakFunctionMultiMap} __collection__ This collection.
    */
 
   /**
-   * The number of elements in a particular set.
+   * Get the size of a particular set.
    *
-   * @param {object} key 
-   *
+   * @param {object} key The map key.
+   * @returns {number} The set size.
    * @public
    */
   getSizeOfSet(key) {
@@ -196,9 +199,8 @@ class WeakFunctionMultiMap {
   /**
    * Report if the collection has a value for a key set.
    *
-   * @param {object}   key         
-   * @param {Function} mapFunction 
-   *
+   * @param {object}   key         The map key.
+   * @param {Function} mapFunction The function.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -216,9 +218,7 @@ class WeakFunctionMultiMap {
   /**
    * Report if the collection has any sets for a map.
    *
-   * @param {object}   key         
-   * @param {Function} mapFunction 
-   *
+   * @param {object} key The map key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -230,9 +230,8 @@ class WeakFunctionMultiMap {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {object}   key         
-   * @param {Function} mapFunction 
-   *
+   * @param {object}   key         The map key.
+   * @param {Function} mapFunction The function.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @public
    */
@@ -241,50 +240,29 @@ class WeakFunctionMultiMap {
   }
 
   /**
-   * Return a new iterator for the sets of the collection in a map.
+   * Yield the sets of the collection in a map.
    *
-   * @returns {Iterator<*>}
+   * @param {object} key The map key.
+   * @yields {*} The sets.
    * @public
    */
-  valuesSet(key) {
+  * valuesSet(key) {
     this.#requireValidMapKey(key);
+
     const __innerMap__ = this.#getExistingInnerMap(key);
     if (!__innerMap__)
-      return {
-        next() {
-          return {
-            value: undefined,
-            done: true
-          }
-        }
-      };
+      return;
 
     const __outerIter__ = __innerMap__.values();
-    return {
-      next() {
-        let {
-          value,
-          done
-        } = __outerIter__.next();
-        if (done)
-          return {
-            value: undefined,
-            done
-          };
-
-        value = [key, ...value];
-        return {
-          value,
-          done
-        };
-      }
-    }
+    for (let __value__ of __outerIter__)
+      yield [key, ...__value__];
   }
 
   /**
    * Require an inner collection exist for the given map keys.
    *
-   * @param {object} key 
+   * @param {object} key The map key.
+   * @returns {WeakFunctionMultiMap~InnerMap} The inner collection.
    */
   #requireInnerMap(key) {
     const __mapKey__ = this.#mapKeyComposer.getKey(
@@ -299,9 +277,8 @@ class WeakFunctionMultiMap {
   /**
    * Get an existing inner collection for the given map keys.
    *
-   * @param {object} key 
-   *
-   * @returns {WeakFunctionMultiMap~InnerMap}
+   * @param {object} key The map key.
+   * @returns {WeakFunctionMultiMap~InnerMap?} The inner collection.
    */
   #getExistingInnerMap(key) {
     const __mapKey__ = this.#mapKeyComposer.getKeyIfExists(
@@ -314,9 +291,8 @@ class WeakFunctionMultiMap {
   /**
    * Throw if the key set is not valid.
    *
-   * @param {object}   key         
-   * @param {Function} mapFunction 
-   *
+   * @param {object}   key         The map key.
+   * @param {Function} mapFunction The function.
    * @throws for an invalid key set.
    */
   #requireValidKey(key, mapFunction) {
@@ -327,9 +303,8 @@ class WeakFunctionMultiMap {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {object}   key         
-   * @param {Function} mapFunction 
-   *
+   * @param {object}   key         The map key.
+   * @param {Function} mapFunction The function.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidKey(key, mapFunction) {
@@ -339,8 +314,7 @@ class WeakFunctionMultiMap {
   /**
    * Throw if the map key set is not valid.
    *
-   * @param {object} key 
-   *
+   * @param {object} key The map key.
    * @throws for an invalid key set.
    */
   #requireValidMapKey(key) {
@@ -351,8 +325,7 @@ class WeakFunctionMultiMap {
   /**
    * Determine if a set of map keys is valid.
    *
-   * @param {object} key 
-   *
+   * @param {object} key The map key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidMapKey(key) {
@@ -365,8 +338,7 @@ class WeakFunctionMultiMap {
   /**
    * Determine if a set of set keys is valid.
    *
-   * @param {Function} mapFunction 
-   *
+   * @param {Function} mapFunction The function.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidSetKey(mapFunction) {

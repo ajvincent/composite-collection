@@ -5,14 +5,16 @@ const StrongStrongMapImportable = new CollectionConfiguration("StrongStrongMapIm
 StrongStrongMapImportable.importLines(
   `import MockImportable from "../fixtures/MockImportable.mjs";`
 );
-StrongStrongMapImportable.addMapKey("key1", false, {
+StrongStrongMapImportable.addMapKey("key1", "The first key.", false, {
+  argumentType: "MockImportable",
   argumentValidator: function(key1) {
     if (!(key1 instanceof MockImportable))
       return false;
   },
 });
 
-StrongStrongMapImportable.addMapKey("key2", false, {
+StrongStrongMapImportable.addMapKey("key2", "The second key.", false, {
+  argumentType: "MockImportable",
   argumentValidator: function(key2) {
     if (!(key2 instanceof MockImportable))
       return false;

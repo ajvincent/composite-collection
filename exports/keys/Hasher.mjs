@@ -1,11 +1,11 @@
 export default class KeyHasher {
-  /** @type {Number} */
+  /** @type {number} */
   #hashCount = 0;
 
-  /** @type {WeakMap<Object, string>} @constant */
+  /** @type {WeakMap<object, string>} @constant */
   #weakValueToHash = new WeakMap();
 
-  /** @type {Map<value, string>} @constant */
+  /** @type {Map<*, string>} @constant */
   #strongValueToHash = new Map();
 
   #getMap(key) {

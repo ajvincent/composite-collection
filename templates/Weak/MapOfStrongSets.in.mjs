@@ -1,8 +1,7 @@
 /**
- *
- * @param {Map} defines
- * @param {JSDocGenerator} docs
- * @returns {string}
+ * @param {Map}            defines The preprocessor macros.
+ * @param {JSDocGenerator} docs    The primary documentation generator.
+ * @returns {string}               The generated source code.
  */
 export default function preprocess(defines, docs) {
   return `
@@ -11,10 +10,16 @@ ${defines.get("importLines")}
 /** @typedef {Map<hash, *[]>} ${defines.get("className")}~InnerMap */
 
 class ${defines.get("className")} {
+  /** @typedef {string} hash */
+
+  // eslint-disable-next-line jsdoc/require-property
+  /** @typedef {object} WeakKey */
+
   /**
    * @type {WeakMap<WeakKey, ${defines.get("className")}~InnerMap>}
    * @constant
-   * @note This is two levels. The first level is the WeakKey.  The second level is the strong set.
+   * This is two levels. The first level is the WeakKey.
+   * The second level is the strong set.
    */
   #root = new WeakMap();
 
@@ -165,25 +170,16 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
   }
 
 ${docs.buildBlock("valuesSet", 2)}
-  valuesSet(${defines.get("mapArgList")}) {
+  * valuesSet(${defines.get("mapArgList")}) {
     this.#requireValidMapKey(${defines.get("mapArgList")});
+
     const __innerMap__ = this.#getExistingInnerMap(${defines.get("mapArgList")});
     if (!__innerMap__)
-      return {
-        next() { return { value: undefined, done: true }}
-      };
+      return;
 
     const __outerIter__ = __innerMap__.values();
-    return {
-      next() {
-        let { value, done } = __outerIter__.next();
-        if (done)
-          return {value: undefined, done};
-
-        value = [${defines.get("mapArgList")}, ...value];
-        return { value, done };
-      }
-    }
+    for (let __value__ of __outerIter__)
+      yield [${defines.get("mapArgList")}, ...__value__];
   }
 
 ${docs.buildBlock("requireInnerCollectionPrivate", 2)}

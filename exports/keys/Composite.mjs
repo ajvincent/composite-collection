@@ -1,7 +1,3 @@
-/**
- * @fileoverview
- */
-
 import KeyHasher from "./Hasher.mjs";
 
 /* Two levels of keys:
@@ -32,7 +28,9 @@ class WeakKeyPropertyBag {
 }
 
 export default class WeakKeyComposer {
+  // eslint-disable-next-line jsdoc/require-property
   /** @typedef {object} WeakKey */
+  // eslint-disable-next-line jsdoc/require-property
   /** @typedef {object} FinalizerKey */
   /** @typedef {string} hash */
 
@@ -60,9 +58,9 @@ export default class WeakKeyComposer {
   #hashToPropertyMap = new Map;
 
   /**
-  * @param {string[]} weakArgList   The list of weak argument names.
-  * @param {string[]} strongArgList The list of strong argument names.
-  */
+   * @param {string[]} weakArgList   The list of weak argument names.
+   * @param {string[]} strongArgList The list of strong argument names.
+   */
   constructor(weakArgList, strongArgList = []) {
     if (new.target !== WeakKeyComposer)
       throw new Error("You cannot subclass WeakKeyComposer!");
@@ -91,15 +89,13 @@ export default class WeakKeyComposer {
   }
 
   /**
-  * Get an unique key for an ordered set of weak and strong arguments.
-  *
-  * @param {*[]} weakArguments   The list of weak arguments.
-  * @param {*[]} strongArguments The list of strong arguments.
-  *
-  * @returns {WeakKey}
-  *
-  * @public
-  */
+   * Get an unique key for an ordered set of weak and strong arguments.  Create it if there isn't one.
+   *
+   * @param {*[]} weakArguments   The list of weak arguments.
+   * @param {*[]} strongArguments The list of strong arguments.
+   * @returns {WeakKey} The key.
+   * @public
+   */
   getKey(weakArguments, strongArguments) {
     if (!this.isValidForKey(weakArguments, strongArguments))
       throw new Error("Argument lists do not form a valid key!");
@@ -125,15 +121,13 @@ export default class WeakKeyComposer {
   }
 
   /**
-  * Determine if an unique key for an ordered set of weak and strong arguments exists.
-  *
-  * @param {*[]} weakArguments   The list of weak arguments.
-  * @param {*[]} strongArguments The list of strong arguments.
-  *
-  * @returns {boolean} True if the key exists.
-  *
-  * @public
-  */
+   * Determine if an unique key for an ordered set of weak and strong arguments exists.
+   *
+   * @param {*[]} weakArguments   The list of weak arguments.
+   * @param {*[]} strongArguments The list of strong arguments.
+   * @returns {boolean} True if the key exists.
+   * @public
+   */
   hasKey(weakArguments, strongArguments) {
     const fullArgList = weakArguments.concat(strongArguments);
 
@@ -147,11 +141,10 @@ export default class WeakKeyComposer {
 
   /**
    * Get the unique key for an ordered set of weak and strong arguments if it exists.
+   *
    * @param {*[]} weakArguments   The list of weak arguments.
    * @param {*[]} strongArguments The list of strong arguments.
-   *
-   * @returns {WeakKey?}
-   *
+   * @returns {WeakKey?} The WeakKey, or null if there isn't one already.
    * @public
    */
   getKeyIfExists(weakArguments, strongArguments) {
@@ -163,15 +156,13 @@ export default class WeakKeyComposer {
   }
 
   /**
-  * Delete an unique key for an ordered set of weak and strong arguments.
-  *
-  * @param {*[]} weakArguments   The list of weak arguments.
-  * @param {*[]} strongArguments The list of strong arguments.
-  *
-  * @returns {boolean} True if the key was deleted, false if the key wasn't found.
-  *
-  * @public
-  */
+   * Delete an unique key for an ordered set of weak and strong arguments.
+   *
+   * @param {*[]} weakArguments   The list of weak arguments.
+   * @param {*[]} strongArguments The list of strong arguments.
+   * @returns {boolean} True if the key was deleted, false if the key wasn't found.
+   * @public
+   */
   deleteKey(weakArguments, strongArguments) {
     void weakArguments;
     void strongArguments;
@@ -208,12 +199,12 @@ export default class WeakKeyComposer {
   }
 
   /**
-  * Determine if the set of arguments is valid to form a key.
-  * @param {*[]} weakArguments   The list of weak arguments.
-  * @param {*[]} strongArguments The list of strong arguments.
-  *
-  * @returns {boolean}
-  */
+   * Determine if the set of arguments is valid to form a key.
+   *
+   * @param {*[]} weakArguments   The list of weak arguments.
+   * @param {*[]} strongArguments The list of strong arguments.
+   * @returns {boolean} True if the arguments may lead to a WeakKey.
+   */
   isValidForKey(weakArguments, strongArguments) {
     if (weakArguments.length !== this.#weakArgList.length)
       return false;

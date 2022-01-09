@@ -1,6 +1,13 @@
 import CollectionConfiguration from "composite-collection/Configuration";
 
 describe("CodeGenerator(OneToOneMap) rejects base configurations for ", () => {
+  /**
+   * Test that a particular CollectionConfiguration is an invalid base for one-to-one map collections.
+   *
+   * @param {string} className  The class to load.
+   * @param {boolean} useModule True if we should load the module.
+   * @param {Function} getKey   A callback to get the private key name for the one-to-one map.
+   */
   function moduleSpec(className, useModule, getKey) {
     it(className, async () => {
       const baseConfig = useModule ? (await import(`#spec/_01_collection-generator/configurations/${className}.mjs`)).default : className;

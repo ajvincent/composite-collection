@@ -10,7 +10,6 @@ class OneToOneSimpleMap extends WeakMap {
    *
    * @param {*} value_1 The value.
    * @param {*} value_2 The value.
-   *
    * @public
    */
   bindOneToOne(value_1, value_2) {
@@ -36,7 +35,6 @@ class OneToOneSimpleMap extends WeakMap {
    * Determine if a value is valid.
    *
    * @param {*} value The value.
-   *
    * @returns {boolean} True if the value is valid.
    * @public
    */

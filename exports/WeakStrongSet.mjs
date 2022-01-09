@@ -7,6 +7,9 @@
 import WeakKeyComposer from "./keys/Composite.mjs";
 
 class WeakStrongSet {
+  // eslint-disable-next-line jsdoc/require-property
+  /** @typedef {object} WeakKey */
+
   /** @type {WeakKeyComposer} @constant */
   #keyComposer = new WeakKeyComposer(["weakKey"], ["strongKey"]);
 
@@ -25,9 +28,8 @@ class WeakStrongSet {
   /**
    * Add a key set to this collection.
    *
-   * @param {object} weakKey   
-   * @param {*}      strongKey 
-   *
+   * @param {object} weakKey   The weakly held key.
+   * @param {*}      strongKey The strongly held key.
    * @returns {WeakStrongSet} This collection.
    * @public
    */
@@ -45,9 +47,8 @@ class WeakStrongSet {
   /**
    * Delete an element from the collection by the given key sequence.
    *
-   * @param {object} weakKey   
-   * @param {*}      strongKey 
-   *
+   * @param {object} weakKey   The weakly held key.
+   * @param {*}      strongKey The strongly held key.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -66,9 +67,8 @@ class WeakStrongSet {
   /**
    * Report if the collection has a value for a key set.
    *
-   * @param {object} weakKey   
-   * @param {*}      strongKey 
-   *
+   * @param {object} weakKey   The weakly held key.
+   * @param {*}      strongKey The strongly held key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -83,9 +83,8 @@ class WeakStrongSet {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {object} weakKey   
-   * @param {*}      strongKey 
-   *
+   * @param {object} weakKey   The weakly held key.
+   * @param {*}      strongKey The strongly held key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @public
    */
@@ -96,9 +95,8 @@ class WeakStrongSet {
   /**
    * Throw if the key set is not valid.
    *
-   * @param {object} weakKey   
-   * @param {*}      strongKey 
-   *
+   * @param {object} weakKey   The weakly held key.
+   * @param {*}      strongKey The strongly held key.
    * @throws for an invalid key set.
    */
   #requireValidKey(weakKey, strongKey) {
@@ -109,9 +107,8 @@ class WeakStrongSet {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {object} weakKey   
-   * @param {*}      strongKey 
-   *
+   * @param {object} weakKey   The weakly held key.
+   * @param {*}      strongKey The strongly held key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidKey(weakKey, strongKey) {

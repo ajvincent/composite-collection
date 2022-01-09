@@ -5,14 +5,16 @@ const WeakMapStrongSetImportable = new CollectionConfiguration("WeakMapStrongSet
 WeakMapStrongSetImportable.importLines(
   `import MockImportable from "../fixtures/MockImportable.mjs";`
 );
-WeakMapStrongSetImportable.addMapKey("mapKey", true, {
+WeakMapStrongSetImportable.addMapKey("mapKey", "The map key.", true, {
+  argumentType: "MockImportable",
   argumentValidator: function(mapKey) {
     if (!(mapKey instanceof MockImportable))
       return false;
   },
 });
 
-WeakMapStrongSetImportable.addSetKey("setKey", false, {
+WeakMapStrongSetImportable.addSetKey("setKey", "The set key.", false, {
+  argumentType: "MockImportable",
   argumentValidator: function(setKey) {
     if (!(setKey instanceof MockImportable))
       return false;

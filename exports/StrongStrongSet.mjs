@@ -7,11 +7,12 @@
 import KeyHasher from "./keys/Hasher.mjs";
 
 class StrongStrongSet {
+  /** @typedef {string} hash */
+
   /**
    * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.
    *
    * @type {Map<hash, *[]>}
-   *
    * @constant
    */
   #root = new Map;
@@ -31,6 +32,7 @@ class StrongStrongSet {
   /**
    * The number of elements in this collection.
    *
+   * @returns {number} The element count.
    * @public
    * @constant
    */
@@ -41,9 +43,8 @@ class StrongStrongSet {
   /**
    * Add a key set to this collection.
    *
-   * @param {*} key1 
-   * @param {*} key2 
-   *
+   * @param {*} key1 The first key.
+   * @param {*} key2 The second key.
    * @returns {StrongStrongSet} This collection.
    * @public
    */
@@ -65,9 +66,8 @@ class StrongStrongSet {
   /**
    * Delete an element from the collection by the given key sequence.
    *
-   * @param {*} key1 
-   * @param {*} key2 
-   *
+   * @param {*} key1 The first key.
+   * @param {*} key2 The second key.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -79,8 +79,8 @@ class StrongStrongSet {
   /**
    * Iterate over the keys.
    *
-   * @param {StrongStrongSet~ForEachCallback} callback A function to invoke for each iteration.
-   *
+   * @param {StrongStrongSet~ForEachCallback} __callback__ A function to invoke for each iteration.
+   * @param {object}                          __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEach(__callback__, __thisArg__) {
@@ -90,19 +90,19 @@ class StrongStrongSet {
   }
 
   /**
-   * @callback StrongStrongSet~ForEachCallback
+   * An user-provided callback to .forEach().
    *
-   * @param {*}               key1           
-   * @param {*}               key2           
+   * @callback StrongStrongSet~ForEachCallback
+   * @param {*}               key1           The first key.
+   * @param {*}               key2           The second key.
    * @param {StrongStrongSet} __collection__ This collection.
    */
 
   /**
    * Report if the collection has a value for a key set.
    *
-   * @param {*} key1 
-   * @param {*} key2 
-   *
+   * @param {*} key1 The first key.
+   * @param {*} key2 The second key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -112,13 +112,14 @@ class StrongStrongSet {
   }
 
   /**
-   * Return a new iterator for the values of the collection.
+   * Yield the values of the collection.
    *
-   * @returns {Iterator<*>}
+   * @yields {*} The value.
    * @public
    */
-  values() {
-    return this.#root.values();
+  * values() {
+    for (let __value__ of this.#root.values())
+      yield __value__;
   }
 
 }

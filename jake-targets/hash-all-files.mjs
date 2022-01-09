@@ -26,6 +26,12 @@ import { getAllFiles } from 'get-all-files';
    it really shouldn't be too expensive to build out.
 */
 
+/**
+ * Get the list of files to hash for bootstrapping comparisons.
+ *
+ * @param {string}     root The directory to hash.
+ * @returns {string[]} The file list
+ */
 export async function getHashFileList(root) {
   const ignoredDirs = [
     "node_modules",
@@ -52,7 +58,6 @@ export async function getHashFileList(root) {
  * Generate a checksum for all files in a build directory.
  *
  * @param {string} root Absolute path to the directory.
- *
  * @returns {string} The hash of all non-ignored contents.
  */
 export async function hashAllFiles(root) {

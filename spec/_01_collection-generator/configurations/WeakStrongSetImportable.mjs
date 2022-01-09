@@ -5,14 +5,16 @@ const WeakStrongSetImportable = new CollectionConfiguration("WeakStrongSetImport
 WeakStrongSetImportable.importLines(
   `import MockImportable from "../fixtures/MockImportable.mjs";`
 );
-WeakStrongSetImportable.addSetKey("key1", true, {
+WeakStrongSetImportable.addSetKey("key1", "The first key.", true, {
+  argumentType: "MockImportable",
   argumentValidator: function(key1) {
     if (!(key1 instanceof MockImportable))
       return false;
   },
 });
 
-WeakStrongSetImportable.addSetKey("key2", false, {
+WeakStrongSetImportable.addSetKey("key2", "The second key.", false, {
+  argumentType: "MockImportable",
   argumentValidator: function(key2) {
     if (!(key2 instanceof MockImportable))
       return false;

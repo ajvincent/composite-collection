@@ -1,16 +1,22 @@
-function buildArgNameList(keys) {
-  return keys.join(", ")
-}
+const buildArgNameList = keys => keys.join(", ");
 
+/**
+ * Build an arguments list based on a suffix.
+ *
+ * @param {string[]}   args        The list of argument names.
+ * @param {string}     suffix      The suffix to append.
+ * @param {string}     weakKeyName The argument to exclude appending a suffix to.
+ * @returns {string[]}             The resulting argument list.
+ */
 function buildNumberedArgs(args, suffix, weakKeyName) {
   return args.map(arg => arg + ((arg === weakKeyName) ? "" : suffix));
 }
 
 /**
- * @param {Map} defines
- * @param {JSDocGenerator} soloDocs
- * @param {JSDocGenerator} duoDocs
- * @returns {string}
+ * @param {Map}            defines  The preprocessor macros.
+ * @param {JSDocGenerator} soloDocs Provides documentation for single key-value methods.
+ * @param {JSDocGenerator} duoDocs  Provides documentation for .bindOneToOne().
+ * @returns {string}                The generated source code.
  */
 export default function preprocess(defines, soloDocs, duoDocs) {
   const weakKeyName = defines.get("weakKeyName");
@@ -28,7 +34,7 @@ export default function preprocess(defines, soloDocs, duoDocs) {
   const bindMapArgs = buildArgNameList(defines.get("bindArgList"));
 
   let classDefinition = "";
-  if (defines.get("extendBaseClass")) {
+  if (defines.get("wrapBaseClass")) {
     classDefinition = `
 class ${defines.get("className")} {
   /** @constant */
@@ -244,7 +250,6 @@ ${duoDocs.buildBlock("bindOneToOneSimple")}
    * Determine if a value is valid.
    *
    * @param {*} value The value.
-   *
    * @returns {boolean} True if the value is valid.${
 defines.get("baseClassName") !== "WeakMap" ? `
    * @see the base map class for further constraints.` : ""

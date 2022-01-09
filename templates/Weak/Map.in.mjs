@@ -1,13 +1,16 @@
 /**
- * @param {Map} defines
- * @param {JSDocGenerator} docs
- * @returns {string}
+ * @param {Map}            defines The preprocessor macros.
+ * @param {JSDocGenerator} docs    The primary documentation generator.
+ * @returns {string}               The generated source code.
  */
 export default function preprocess(defines, docs) {
   return `
 ${defines.get("importLines")}
 
 class ${defines.get("className")} {
+  // eslint-disable-next-line jsdoc/require-property
+  /** @typedef {object} WeakKey */
+
   /** @type {WeakKeyComposer} @constant */
   #keyComposer = new WeakKeyComposer(${
     defines.get("weakMapArgNameList")

@@ -19,16 +19,15 @@ export default class CompletionPromise {
     );
   }
 
-  /**
-   * @returns {Promise<string, Error>}
-   */
+  /** @type {Promise<string, Error>} */
   get completionPromise() {
     return this.#completionPromise;
   }
 
   /**
    * Abort processing and forward the exception.
-   * @param {Error} exception
+   *
+   * @param {Error} exception The rejection value.
    * @throws
    */
   async abort(exception) {
@@ -36,9 +35,7 @@ export default class CompletionPromise {
     throw exception;
   }
 
-  /**
-   * @returns {Error?}
-   */
+  /** @type {Error?} */
   get abortException() {
     return this.#abortException;
   }

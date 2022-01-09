@@ -11,19 +11,30 @@ import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
 
 const specRoot = path.join(process.cwd(), "spec");
 
+/**
+ * Determine if a spec directory has a configurations subdirectory.
+ *
+ * @param {fs.DirEnt} dirEntry The directory entry.
+ * @returns {string}  The full path to the directory, or "" if there is no configurations subdirectory.
+ */
 async function hasConfigurationSubdirectory(dirEntry) {
   if (!dirEntry.isDirectory())
-    return false;
+    return "";
   const fullPath = path.join(specRoot, dirEntry.name, "configurations");
   try {
     const stats = await fs.stat(fullPath);
-    return stats.isDirectory() ? path.dirname(fullPath) : false;
+    return stats.isDirectory() ? path.dirname(fullPath) : "";
   }
   catch (ex) {
-    return false;
+    return "";
   }
 }
 
+/**
+ * Invoke the support/build.mjs module for a spec/ directory.
+ *
+ * @param {string} targetFile The path to the module.
+ */
 async function invokeSpecBuildModule(targetFile) {
   const targetFileURL = url.pathToFileURL(targetFile);
   const targetModule = (await import(targetFileURL)).default;

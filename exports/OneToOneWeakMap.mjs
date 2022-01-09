@@ -16,11 +16,10 @@ class OneToOneWeakMap {
   /**
    * Bind two sets of keys and values together.
    *
-   * @param {object} key2_1  
+   * @param {object} key2_1  The second key.
    * @param {*}      value_1 The value.
-   * @param {object} key2_2  
+   * @param {object} key2_2  The second key.
    * @param {*}      value_2 The value.
-   *
    * @public
    */
   bindOneToOne(key2_1, value_1, key2_2, value_2) {
@@ -59,8 +58,7 @@ class OneToOneWeakMap {
    * Delete a target value.
    *
    * @param {*}      value The value.
-   * @param {object} key2  
-   *
+   * @param {object} key2  The second key.
    * @returns {boolean} True if the target value was deleted.
    * @public
    */
@@ -84,8 +82,7 @@ class OneToOneWeakMap {
    * Get a target value.
    *
    * @param {*}      value The value.
-   * @param {object} key2  
-   *
+   * @param {object} key2  The second key.
    * @returns {*} The target value.
    * @public
    */
@@ -98,8 +95,7 @@ class OneToOneWeakMap {
    * Determine if a target value exists.
    *
    * @param {*}      value The value.
-   * @param {object} key2  
-   *
+   * @param {object} key2  The second key.
    * @returns {boolean} True if the target value exists.
    * @public
    */
@@ -111,9 +107,7 @@ class OneToOneWeakMap {
   /**
    * Determine if a key is valid.
    *
-   * @param {*}      value The value.
-   * @param {object} key2  
-   *
+   * @param {object} key2 The second key.
    * @returns {boolean} True if the key is valid.
    * @see the base map class for further constraints.
    * @public
@@ -130,9 +124,7 @@ class OneToOneWeakMap {
   /**
    * Determine if a value is valid.
    *
-   * @param {*}      value The value.
-   * @param {object} key2  
-   *
+   * @param {*} value The value.
    * @returns {boolean} True if the value is valid.
    * @see the base map class for further constraints.
    * @public

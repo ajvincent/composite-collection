@@ -1,7 +1,6 @@
 /**
  * @module source/CollectionConfiguration.mjs
- *
- * @fileoverview
+ * @file
  *
  * This defines a data structure for configuring a composite of Maps and Sets.
  */
@@ -11,6 +10,12 @@ import { parse } from "acorn";
 import ConfigurationStateGraphs from "./ConfigurationStateGraphs.mjs";
 import CollectionType from "./CollectionType.mjs";
 
+/**
+ * Extract an abstract syntax tree from Acorn parsing a lambda function's source.
+ *
+ * @param {Function} fn The function to parse.
+ * @returns {*[]} The source, parameters and body for the function.
+ */
 function getNormalFunctionAST(fn) {
   let source = fn.toString().replace(/^function\s*\(/, "function foo(");
 
@@ -55,6 +60,8 @@ const PREDEFINED_TYPES = new Map([
   ["WeakSet", "Weak/Set"],
   ["OneToOne", "OneToOne/Map"],
 ]);
+
+/** @typedef {string} identifier */
 
 /**
  * A configuration manager for a single composite collection.
@@ -110,15 +117,22 @@ export default class CollectionConfiguration {
 
   /**
    * Validate a string argument.
+   *
    * @param {string}  argumentName The name of the argument.
    * @param {string}  value        The argument value.
-   * @param {boolean} mayOmit      True if the caller may omit the argument.
    */
-  #stringArg(argumentName, value, mayOmit = false) {
+  #stringArg(argumentName, value) {
     if ((typeof value !== "string") || (value.length === 0))
-      throw new Error(`${argumentName} must be a non-empty string${mayOmit ? " or omitted" : ""}!`);
+      throw new Error(`${argumentName} must be a non-empty string!`);
   }
 
+  /**
+   * Validate an identifier as one we can safely inject into templates.
+   *
+   * @param {string}     argName     The name of the argument in this function's caller.  Used to describe exceptions.
+   * @param {identifier} identifier  The identifier to insert into the generated code.
+   * @throws
+   */
   #identifierArg(argName, identifier) {
     this.#stringArg(argName, identifier);
     if (identifier !== identifier.trim())
@@ -146,10 +160,13 @@ export default class CollectionConfiguration {
   }
 
   /**
-   * Validate a function argument and return its body.
+   * Verify a lambda function of one argument may be inserted directly in to generated code.
    *
-   * @param argumentName The name of the function.
-   * @param callback        The function.
+   * @param {string}   argumentName    The name of the function.
+   * @param {Function} callback        The function.
+   * @param {string}   singleParamName The argument name to check.
+   * @param {boolean}  mayOmit         True if the function may be omitted.
+   * @returns {string} The body of the function.
    */
   #validatorArg(argumentName, callback, singleParamName, mayOmit = false) {
     if (typeof callback !== "function")
@@ -162,8 +179,8 @@ export default class CollectionConfiguration {
     return source.substring(body.start, body.end + 1);
   }
 
-  #jsdocField(argumentName, value, mayOmit = false) {
-    this.#stringArg(argumentName, value, mayOmit);
+  #jsdocField(argumentName, value) {
+    this.#stringArg(argumentName, value);
     if (value.includes("*/"))
       throw new Error(argumentName + " contains a comment that would end the JSDoc block!");
   }
@@ -198,7 +215,6 @@ export default class CollectionConfiguration {
    * @param {string}  className The name of the class to define.
    * @param {string}  outerType One of "Map", "WeakMap", "Set", "WeakSet".
    * @param {string?} innerType One of "Set", "WeakSet", or null.
-   * @constructor
    */
   constructor(className, outerType, innerType = null) {
     /* This is a defensive measure for one-to-one configurations, where the base configuration must be for a WeakMap. */
@@ -270,6 +286,7 @@ export default class CollectionConfiguration {
 
   /**
    * A file overview to feed into the generated module.
+   *
    * @type {string?}
    * @public
    */
@@ -319,18 +336,19 @@ export default class CollectionConfiguration {
   /**
    * @typedef CollectionTypeOptions
    * @property {string?}   argumentType      A JSDoc-printable type for the argument.
-   * @property {string?}   description       A JSDoc-printable description.
    * @property {Function?} argumentValidator A method to use for testing the argument.
    */
 
   /**
    * Define a map key.
    *
-   * @param {string} argumentName
-   * @param {boolean} holdWeak
-   * @param {CollectionTypeOptions} options
+   * @param {identifier}             argumentName The key name.
+   * @param {string}                 description  The key description for JSDoc.
+   * @param {boolean}                holdWeak     True if the collection should hold values for this key as weak references.
+   * @param {CollectionTypeOptions?} options      Options for configuring generated code.
+   * @returns {void}
    */
-  addMapKey(argumentName, holdWeak, options = {}) {
+  addMapKey(argumentName, description, holdWeak, options = {}) {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("mapKeys")) {
         this.#throwIfLocked();
@@ -339,7 +357,6 @@ export default class CollectionConfiguration {
 
       const {
         argumentType = holdWeak ? "object" : "*",
-        description = null,
         argumentValidator = null,
       } = options;
 
@@ -377,12 +394,13 @@ export default class CollectionConfiguration {
   /**
    * Define a set key.
    *
-   * @param {string} argumentName
-   * @param {boolean} holdWeak
-   * @param {CollectionTypeOptions} options
-   * @returns 
+   * @param {identifier}             argumentName The key name.
+   * @param {string}                 description  The key description for JSDoc.
+   * @param {boolean}                holdWeak     True if the collection should hold values for this key as weak references.
+   * @param {CollectionTypeOptions?} options      Options for configuring generated code.
+   * @returns {void}
    */
-  addSetKey(argumentName, holdWeak, options = {}) {
+  addSetKey(argumentName, description, holdWeak, options = {}) {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("setElements")) {
         this.#throwIfLocked();
@@ -391,7 +409,6 @@ export default class CollectionConfiguration {
 
       const {
         argumentType = holdWeak ? "object" : "*",
-        description = null,
         argumentValidator = null,
       } = options;
 
@@ -428,10 +445,8 @@ export default class CollectionConfiguration {
 
   #validateKey(argumentName, holdWeak, argumentType, description, argumentValidator) {
     this.#identifierArg("argumentName", argumentName);
-    if (argumentType !== null)
-      this.#jsdocField("argumentType", argumentType, true);
-    if (description !== null)
-      this.#jsdocField("description",  description, true);
+    this.#jsdocField("argumentType", argumentType);
+    this.#jsdocField("description", description);
 
     if (argumentValidator !== null) {
       this.#validatorArg(
@@ -455,9 +470,10 @@ export default class CollectionConfiguration {
   /**
    * Define the value type for .set(), .add() calls.
    *
-   * @type {string}    type        The value type.
-   * @type {string}    description The description of the value.
-   * @type {function?} validator   A function to validate the value.
+   * @param {string}    type        The value type.
+   * @param {string}    description The description of the value.
+   * @param {Function?} validator   A function to validate the value.
+   * @returns {void}
    */
   setValueType(type, description, validator = null) {
     return this.#catchErrorState(() => {
@@ -469,14 +485,14 @@ export default class CollectionConfiguration {
         throw new Error("You can only call .setValueType() directly after calling .addMapKey()!");
       }
 
-      this.#stringArg("type", type, false);
-      this.#stringArg("description", description, false);
+      this.#stringArg("type", type);
+      this.#stringArg("description", description);
       const validatorSource = (validator !== null) ?
         this.#validatorArg("validator", validator, "value", true) :
         null;
 
       this.#valueCollectionType = new CollectionType(
-        "value", "", type, description, validatorSource
+        "value", "Map", type, description, validatorSource
       );
 
       if (this.#collectionTemplate.includes("Set")) {
@@ -497,40 +513,48 @@ export default class CollectionConfiguration {
   #oneToOneOptions = null;
 
   /**
+   * @typedef {object} oneToOneOptions
+   * @property {string?} pathToBaseModule Indicates the import line for the base module's location.
+   *                                      If this property isn't present, the CodeGenerator will
+   *                                      create a complete inline copy of the base collection in the
+   *                                      one-to-one map module.
+   */
+
+  /**
    * Configure this one-to-one map definition.
    *
-   * @param {CollectionConfiguration | string} baseConfiguration
-   * @param {string} privateKeyName
-   * @param {object} options
-   *
+   * @param {CollectionConfiguration | string} base    The underlying collection's configuration.
+   * @param {identifier}                       key     The weak key name to reserve in the base collection for the one-to-one map's use.
+   * @param {oneToOneOptions?}                 options For configuring the layout of the one-to-one module and dependencies.
    * @async
+   * @returns {Promise<void>}
    */
-  configureOneToOne(baseConfiguration, privateKeyName, options = {}) {
+  configureOneToOne(base, key, options = {}) {
     return this.#catchErrorAsync(async () => {
       if (!this.#doStateTransition("configureOneToOne")) {
         throw new Error("configureOneToOne can only be used for OneToOne collections, and exactly once!");
       }
 
-      this.#identifierArg("privateKeyName", privateKeyName);
+      this.#identifierArg("privateKeyName", key);
 
-      this.#oneToOneKeyName = privateKeyName;
+      this.#oneToOneKeyName = key;
 
       let configData;
-      if (baseConfiguration instanceof CollectionConfiguration) {
-        if (baseConfiguration.currentState !== "locked") {
+      if (base instanceof CollectionConfiguration) {
+        if (base.currentState !== "locked") {
           /* We dare not modify the base configuration lest other code use it to generate a different file. */
           throw new Error("The base configuration must be locked!");
         }
 
-        configData = baseConfiguration.cloneData();
+        configData = base.cloneData();
         if ((configData.collectionTemplate === "Weak/Map") ||
             ((configData.collectionTemplate === "Solo/Map") && (configData.weakMapKeys.length > 0))) {
-          this.#oneToOneBase = baseConfiguration;
-          CollectionConfiguration.#oneToOneLockedPrivateKey(baseConfiguration, privateKeyName);
+          this.#oneToOneBase = base;
+          CollectionConfiguration.#oneToOneLockedPrivateKey(base, key);
         }
       }
-      else if (typeof baseConfiguration === "string") {
-        this.#oneToOneBase = await CollectionConfiguration.#getOneToOneBaseByString(baseConfiguration, privateKeyName);
+      else if (typeof base === "string") {
+        this.#oneToOneBase = await CollectionConfiguration.#getOneToOneBaseByString(base, key);
       }
 
       if (!this.#oneToOneBase) {
@@ -571,7 +595,7 @@ export default class CollectionConfiguration {
         collectionTemplate: "",
         weakMapKeys: ["key"],
         parameterToTypeMap: new Map([
-          ["key", new CollectionType("key", "", "object", "The key.", "")],
+          ["key", new CollectionType("key", "WeakMap", "object", "The key.", "")],
         ]),
         strongMapKeys: [],
         weakSetElements: [],

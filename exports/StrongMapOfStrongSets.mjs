@@ -7,6 +7,8 @@
 import KeyHasher from "./keys/Hasher.mjs";
 
 class StrongMapOfStrongSets {
+  /** @typedef {string} hash */
+
   /** @type {Map<hash, Map<hash, *[]>>} @constant */
   #outerMap = new Map();
 
@@ -16,7 +18,7 @@ class StrongMapOfStrongSets {
   /** @type {KeyHasher} @constant */
   #setHasher = new KeyHasher(["setKey"]);
 
-  /** @type {Number} */
+  /** @type {number} */
   #sizeOfAll = 0;
 
   constructor() {
@@ -31,6 +33,7 @@ class StrongMapOfStrongSets {
   /**
    * The number of elements in this collection.
    *
+   * @returns {number} The element count.
    * @public
    * @constant
    */
@@ -39,10 +42,10 @@ class StrongMapOfStrongSets {
   }
 
   /**
-   * The number of elements in a particular set.
+   * Get the size of a particular set.
    *
-   * @param {*} mapKey 
-   *
+   * @param {*} mapKey The map key.
+   * @returns {number} The set size.
    * @public
    */
   getSizeOfSet(mapKey) {
@@ -53,6 +56,7 @@ class StrongMapOfStrongSets {
   /**
    * The number of maps in this collection.
    *
+   * @returns {number} The map count.
    * @public
    * @constant
    */
@@ -63,9 +67,8 @@ class StrongMapOfStrongSets {
   /**
    * Add a key set to this collection.
    *
-   * @param {*} mapKey 
-   * @param {*} setKey 
-   *
+   * @param {*} mapKey The map key.
+   * @param {*} setKey The set key.
    * @returns {StrongMapOfStrongSets} This collection.
    * @public
    */
@@ -88,9 +91,8 @@ class StrongMapOfStrongSets {
   /**
    * Add several sets to a map in this collection.
    *
-   * @param {*}     mapKey   
+   * @param {*}     mapKey   The map key.
    * @param {Set[]} __sets__ The sets to add.
-   *
    * @returns {StrongMapOfStrongSets} This collection.
    * @public
    */
@@ -135,8 +137,7 @@ class StrongMapOfStrongSets {
   /**
    * Clear all sets from the collection for a given map keyset.
    *
-   * @param {*} mapKey 
-   *
+   * @param {*} mapKey The map key.
    * @public
    */
   clearSets(mapKey) {
@@ -151,9 +152,8 @@ class StrongMapOfStrongSets {
   /**
    * Delete an element from the collection by the given key sequence.
    *
-   * @param {*} mapKey 
-   * @param {*} setKey 
-   *
+   * @param {*} mapKey The map key.
+   * @param {*} setKey The set key.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -179,8 +179,7 @@ class StrongMapOfStrongSets {
   /**
    * Delete all sets from the collection by the given map sequence.
    *
-   * @param {*} mapKey 
-   *
+   * @param {*} mapKey The map key.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -197,8 +196,8 @@ class StrongMapOfStrongSets {
   /**
    * Iterate over the keys.
    *
-   * @param {StrongMapOfStrongSets~ForEachCallback} callback A function to invoke for each iteration.
-   *
+   * @param {StrongMapOfStrongSets~ForEachCallback} __callback__ A function to invoke for each iteration.
+   * @param {object}                                __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEach(__callback__, __thisArg__) {
@@ -212,8 +211,9 @@ class StrongMapOfStrongSets {
   /**
    * Iterate over the keys under a map in this collection.
    *
-   * @param {StrongMapOfStrongSets~ForEachCallback} callback A function to invoke for each iteration.
-   *
+   * @param {*}                                     mapKey       The map key.
+   * @param {StrongMapOfStrongSets~ForEachCallback} __callback__ A function to invoke for each iteration.
+   * @param {object}                                __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEachSet(mapKey, __callback__, __thisArg__) {
@@ -227,19 +227,19 @@ class StrongMapOfStrongSets {
   }
 
   /**
-   * @callback StrongMapOfStrongSets~ForEachCallback
+   * An user-provided callback to .forEach().
    *
-   * @param {*}                     mapKey         
-   * @param {*}                     setKey         
+   * @callback StrongMapOfStrongSets~ForEachCallback
+   * @param {*}                     mapKey         The map key.
+   * @param {*}                     setKey         The set key.
    * @param {StrongMapOfStrongSets} __collection__ This collection.
    */
 
   /**
    * Report if the collection has a value for a key set.
    *
-   * @param {*} mapKey 
-   * @param {*} setKey 
-   *
+   * @param {*} mapKey The map key.
+   * @param {*} setKey The set key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -255,9 +255,7 @@ class StrongMapOfStrongSets {
   /**
    * Report if the collection has any sets for a map.
    *
-   * @param {*} mapKey 
-   * @param {*} setKey 
-   *
+   * @param {*} mapKey The map key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -267,62 +265,34 @@ class StrongMapOfStrongSets {
   }
 
   /**
-   * Return a new iterator for the values of the collection.
+   * Yield the values of the collection.
    *
-   * @returns {Iterator<*>}
+   * @yields {*} The value.
    * @public
    */
-  values() {
+  * values() {
     const __outerIter__ = this.#outerMap.values();
-    let __innerIter__ = null;
 
-    return {
-      next() {
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-          if (!__innerIter__) {
-            const {
-              value: __innerMap__,
-              done
-            } = __outerIter__.next();
-            if (done)
-              return {
-                value: undefined,
-                done
-              };
-
-            __innerIter__ = __innerMap__.values();
-          }
-
-          const rv = __innerIter__.next();
-          if (rv.done)
-            __innerIter__ = null;
-          else
-            return rv;
-        }
-      }
-    };
+    for (let __innerMap__ of __outerIter__) {
+      for (let __value__ of __innerMap__.values())
+        yield __value__;
+    }
   }
 
   /**
-   * Return a new iterator for the sets of the collection in a map.
+   * Yield the sets of the collection in a map.
    *
-   * @returns {Iterator<*>}
+   * @param {*} mapKey The map key.
+   * @yields {*} The sets.
    * @public
    */
-  valuesSet(mapKey) {
+  * valuesSet(mapKey) {
     const [__innerMap__] = this.#getInnerMap(mapKey);
     if (!__innerMap__)
-      return {
-        next() {
-          return {
-            value: undefined,
-            done: true
-          }
-        }
-      };
+      return;
 
-    return __innerMap__.values();
+    for (let __value__ of __innerMap__.values())
+      yield __value__;
   }
 
   #getInnerMap(...__mapArguments__) {

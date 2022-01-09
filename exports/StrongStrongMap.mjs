@@ -17,7 +17,6 @@ class StrongStrongMap {
    * The root map holding keys and values.
    *
    * @type {Map<string, StrongStrongMap~valueAndKeySet>}
-   *
    * @constant
    */
   #root = new Map;
@@ -40,6 +39,7 @@ class StrongStrongMap {
   /**
    * The number of elements in this collection.
    *
+   * @returns {number} The element count.
    * @public
    * @constant
    */
@@ -59,9 +59,8 @@ class StrongStrongMap {
   /**
    * Delete an element from the collection by the given key sequence.
    *
-   * @param {*} key1 
-   * @param {*} key2 
-   *
+   * @param {*} key1 The first key.
+   * @param {*} key2 The second key.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -71,22 +70,21 @@ class StrongStrongMap {
   }
 
   /**
-   * Return a new iterator for the key-value pairs of the collection.
+   * Yield the key-value tuples of the collection.
    *
-   * @returns {Iterator<[key1, key2, value]>}
+   * @yields {*[]} The keys and values.
    * @public
    */
-  entries() {
-    return this.#wrapIterator(
-      valueAndKeySet => valueAndKeySet.keySet.concat(valueAndKeySet.value)
-    );
+  * entries() {
+    for (let valueAndKeySet of this.#root.values())
+      yield valueAndKeySet.keySet.concat(valueAndKeySet.value);
   }
 
   /**
    * Iterate over the keys and values.
    *
    * @param {StrongStrongMap~ForEachCallback} callback A function to invoke for each iteration.
-   *
+   * @param {object}                          thisArg  Value to use as this when executing callback.
    * @public
    */
   forEach(callback, thisArg) {
@@ -98,20 +96,20 @@ class StrongStrongMap {
   }
 
   /**
-   * @callback StrongStrongMap~ForEachCallback
+   * An user-provided callback to .forEach().
    *
+   * @callback StrongStrongMap~ForEachCallback
    * @param {*}               value          The value.
-   * @param {*}               key1           
-   * @param {*}               key2           
+   * @param {*}               key1           The first key.
+   * @param {*}               key2           The second key.
    * @param {StrongStrongMap} __collection__ This collection.
    */
 
   /**
    * Get a value for a key set.
    *
-   * @param {*} key1 
-   * @param {*} key2 
-   *
+   * @param {*} key1 The first key.
+   * @param {*} key2 The second key.
    * @returns {*?} The value.  Undefined if it isn't in the collection.
    * @public
    */
@@ -127,9 +125,8 @@ class StrongStrongMap {
   /**
    * Report if the collection has a value for a key set.
    *
-   * @param {*} key1 
-   * @param {*} key2 
-   *
+   * @param {*} key1 The first key.
+   * @param {*} key2 The second key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -139,24 +136,22 @@ class StrongStrongMap {
   }
 
   /**
-   * Return a new iterator for the key sets of the collection.
+   * Yield the key sets of the collection.
    *
-   * @returns {Iterator<[key1, key2]>}
+   * @yields {*[]} The key sets.
    * @public
    */
-  keys() {
-    return this.#wrapIterator(
-      valueAndKeySet => valueAndKeySet.keySet.slice()
-    );
+  * keys() {
+    for (let valueAndKeySet of this.#root.values())
+      yield valueAndKeySet.keySet.slice();
   }
 
   /**
    * Set a value for a key set.
    *
-   * @param {*} key1  
-   * @param {*} key2  
+   * @param {*} key1  The first key.
+   * @param {*} key2  The second key.
    * @param {*} value The value.
-   *
    * @returns {StrongStrongMap} This collection.
    * @public
    */
@@ -174,39 +169,16 @@ class StrongStrongMap {
   }
 
   /**
-   * Return a new iterator for the values of the collection.
+   * Yield the values of the collection.
    *
-   * @returns {Iterator<*>}
+   * @yields {*} The value.
    * @public
    */
-  values() {
-    return this.#wrapIterator(
-      valueAndKeySet => valueAndKeySet.value
-    );
+  * values() {
+    for (let valueAndKeySet of this.#root.values())
+      yield valueAndKeySet.value;
   }
 
-  /**
-   * Bootstrap from the native Map's values() iterator to the kind of iterator we want.
-   *
-   * @param {function} unpacker The transforming function for values.
-   *
-   * @returns {Iterator<*>}
-   */
-  #wrapIterator(unpacker) {
-    const rootIter = this.#root.values();
-    return {
-      next() {
-        const {
-          value,
-          done
-        } = rootIter.next();
-        return {
-          value: done ? undefined : unpacker(value),
-          done
-        };
-      }
-    }
-  }
 }
 
 StrongStrongMap[Symbol.iterator] = function() {

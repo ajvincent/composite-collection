@@ -5,14 +5,16 @@ const StrongStrongSetImportable = new CollectionConfiguration("StrongStrongSetIm
 StrongStrongSetImportable.importLines(
   `import MockImportable from "../fixtures/MockImportable.mjs";`
 );
-StrongStrongSetImportable.addSetKey("key1", false, {
+StrongStrongSetImportable.addSetKey("key1", "The first key.", false, {
+  argumentType: "MockImportable",
   argumentValidator: function(key1) {
     if (!(key1 instanceof MockImportable))
       return false;
   },
 });
 
-StrongStrongSetImportable.addSetKey("key2", false, {
+StrongStrongSetImportable.addSetKey("key2", "The second key.", false, {
+  argumentType: "MockImportable",
   argumentValidator: function(key2) {
     if (!(key2 instanceof MockImportable))
       return false;

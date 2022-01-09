@@ -6,6 +6,13 @@ import url from "url";
 import path from "path";
 import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
 
+/**
+ * Run a CompositeDriver to generate collection modules from a configurations directory,
+ * and verify the modules are well-formed.
+ * 
+ * @param {string} sourceDir The configurations directory.
+ * @param {string} targetDir The collections directory.
+ */
 export default async function runDriver(sourceDir, targetDir) {
   const driver = new CompositeDriver(sourceDir, targetDir);
 

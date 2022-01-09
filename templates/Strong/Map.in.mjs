@@ -1,7 +1,7 @@
 /**
- * @param {Map} defines
- * @param {JSDocGenerator} docs
- * @returns {string}
+ * @param {Map}            defines The preprocessor macros.
+ * @param {JSDocGenerator} docs    The primary documentation generator.
+ * @returns {string}               The generated source code.
  */
 export default function preprocess(defines, docs) {
   let invokeValidate = "";
@@ -50,10 +50,9 @@ ${docs.buildBlock("delete", 2)}
   }
 
 ${docs.buildBlock("entries", 2)}
-  entries() {
-    return this.#wrapIterator(
-      valueAndKeySet => valueAndKeySet.keySet.concat(valueAndKeySet.value)
-    );
+  * entries() {
+    for (let valueAndKeySet of this.#root.values())
+      yield valueAndKeySet.keySet.concat(valueAndKeySet.value);
   }
 
 ${docs.buildBlock("forEachMap", 2)}
@@ -101,10 +100,9 @@ ${docs.buildBlock("isValidValuePublic", 2)}
 ` : ``}
 
 ${docs.buildBlock("keys", 2)}
-  keys() {
-    return this.#wrapIterator(
-      valueAndKeySet => valueAndKeySet.keySet.slice()
-    );
+  * keys() {
+    for (let valueAndKeySet of this.#root.values())
+      yield valueAndKeySet.keySet.slice();
   }
 
 ${docs.buildBlock("set", 2)}
@@ -126,10 +124,9 @@ ${
   }
 
 ${docs.buildBlock("values", 2)}
-  values() {
-    return this.#wrapIterator(
-      valueAndKeySet => valueAndKeySet.value
-    );
+  * values() {
+    for (let valueAndKeySet of this.#root.values())
+      yield valueAndKeySet.value;
   }
 ${defines.has("validateArguments") ? `
 ${docs.buildBlock("requireValidKey", 2)}
@@ -151,19 +148,6 @@ ${docs.buildBlock("isValidValuePrivate", 2)}
     return true;
   }
   ` : ``}
-${docs.buildBlock("wrapIteratorMap", 2)}
-  #wrapIterator(unpacker) {
-    const rootIter = this.#root.values();
-    return {
-      next() {
-        const {value, done} = rootIter.next();
-        return {
-          value: done ? undefined : unpacker(value),
-          done
-        };
-      }
-    }
-  }
 }
 
 ${defines.get("className")}[Symbol.iterator] = function() {

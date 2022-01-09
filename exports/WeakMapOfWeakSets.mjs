@@ -7,9 +7,12 @@
 import WeakKeyComposer from "./keys/Composite.mjs";
 
 class WeakMapOfWeakSets {
+  // eslint-disable-next-line jsdoc/require-property
+  /** @typedef {object} WeakKey */
+
   /**
    * @type {WeakMap<WeakKey, WeakSet<WeakKey>>}
-   * @note This is two levels.  The first level is the map's weak key.
+   * This is two levels.  The first level is the map's weak key.
    * The second level is the weak set of weak keys.
    */
   #root = new WeakMap();
@@ -36,9 +39,8 @@ class WeakMapOfWeakSets {
   /**
    * Add a key set to this collection.
    *
-   * @param {object} mapKey 
-   * @param {object} setKey 
-   *
+   * @param {object} mapKey The map key.
+   * @param {object} setKey The set key.
    * @returns {WeakMapOfWeakSets} This collection.
    * @public
    */
@@ -58,9 +60,8 @@ class WeakMapOfWeakSets {
   /**
    * Add several sets to a map in this collection.
    *
-   * @param {object} mapKey   
+   * @param {object} mapKey   The map key.
    * @param {Set[]}  __sets__ The sets to add.
-   *
    * @returns {WeakMapOfWeakSets} This collection.
    * @public
    */
@@ -85,14 +86,15 @@ class WeakMapOfWeakSets {
 
       __innerSet__.add(__weakSetKey__);
     });
+
+    return this;
   }
 
   /**
    * Delete an element from the collection by the given key sequence.
    *
-   * @param {object} mapKey 
-   * @param {object} setKey 
-   *
+   * @param {object} mapKey The map key.
+   * @param {object} setKey The set key.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -109,8 +111,7 @@ class WeakMapOfWeakSets {
   /**
    * Delete all sets from the collection by the given map sequence.
    *
-   * @param {object} mapKey 
-   *
+   * @param {object} mapKey The map key.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -125,9 +126,8 @@ class WeakMapOfWeakSets {
   /**
    * Report if the collection has a value for a key set.
    *
-   * @param {object} mapKey 
-   * @param {object} setKey 
-   *
+   * @param {object} mapKey The map key.
+   * @param {object} setKey The set key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -147,9 +147,7 @@ class WeakMapOfWeakSets {
   /**
    * Report if the collection has any sets for a map.
    *
-   * @param {object} mapKey 
-   * @param {object} setKey 
-   *
+   * @param {object} mapKey The map key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -161,9 +159,8 @@ class WeakMapOfWeakSets {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {object} mapKey 
-   * @param {object} setKey 
-   *
+   * @param {object} mapKey The map key.
+   * @param {object} setKey The set key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @public
    */
@@ -174,7 +171,8 @@ class WeakMapOfWeakSets {
   /**
    * Require an inner collection exist for the given map keys.
    *
-   * @param {object} mapKey 
+   * @param {object} mapKey The map key.
+   * @returns {WeakMapOfWeakSets~InnerMap} The inner collection.
    */
   #requireInnerSet(mapKey) {
     const __mapKey__ = this.#mapKeyComposer.getKey(
@@ -189,9 +187,8 @@ class WeakMapOfWeakSets {
   /**
    * Get an existing inner collection for the given map keys.
    *
-   * @param {object} mapKey 
-   *
-   * @returns {WeakMapOfWeakSets~InnerMap}
+   * @param {object} mapKey The map key.
+   * @returns {WeakMapOfWeakSets~InnerMap?} The inner collection.
    */
   #getExistingInnerSet(mapKey) {
     const __mapKey__ = this.#mapKeyComposer.getKeyIfExists(
@@ -204,9 +201,8 @@ class WeakMapOfWeakSets {
   /**
    * Throw if the key set is not valid.
    *
-   * @param {object} mapKey 
-   * @param {object} setKey 
-   *
+   * @param {object} mapKey The map key.
+   * @param {object} setKey The set key.
    * @throws for an invalid key set.
    */
   #requireValidKey(mapKey, setKey) {
@@ -217,9 +213,8 @@ class WeakMapOfWeakSets {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {object} mapKey 
-   * @param {object} setKey 
-   *
+   * @param {object} mapKey The map key.
+   * @param {object} setKey The set key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidKey(mapKey, setKey) {
@@ -230,8 +225,7 @@ class WeakMapOfWeakSets {
   /**
    * Throw if the map key set is not valid.
    *
-   * @param {object} mapKey 
-   *
+   * @param {object} mapKey The map key.
    * @throws for an invalid key set.
    */
   #requireValidMapKey(mapKey) {
@@ -242,8 +236,7 @@ class WeakMapOfWeakSets {
   /**
    * Determine if a set of map keys is valid.
    *
-   * @param {object} mapKey 
-   *
+   * @param {object} mapKey The map key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidMapKey(mapKey) {
@@ -256,8 +249,7 @@ class WeakMapOfWeakSets {
   /**
    * Determine if a set of set keys is valid.
    *
-   * @param {object} setKey 
-   *
+   * @param {object} setKey The set key.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidSetKey(setKey) {

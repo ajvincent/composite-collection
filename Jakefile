@@ -9,9 +9,7 @@ const path = require("path");
  * @param {string}   pathToModule  The module to run.
  * @param {string[]} moduleArgs    Arguments we pass into the module.
  * @param {string[]} extraNodeArgs Arguments we pass to node.
- *
  * @returns {Promise<void>}
- *
  * @see spec/support/generateCollectionTools.mjs
  */
 function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {

@@ -1,3 +1,9 @@
+/**
+ * Canonicalize a string to be either empty, or trimmed at both ends of whitespace.
+ *
+ * @param {string}   value The original input string.
+ * @returns {string} The canonical string.
+ */
 function validString(value) {
   return (typeof value === "string") && value.trim().length > 0 ? value : "";
 }

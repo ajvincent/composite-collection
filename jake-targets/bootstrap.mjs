@@ -125,8 +125,9 @@ finally {
 
 /**
  * Copy files from one stage to the next.
- * @param {string} sourceDir
- * @param {string} targetDir
+ *
+ * @param {string} sourceDir The current stage.
+ * @param {string} targetDir The next stage.
  */
 async function copyToStage(sourceDir, targetDir) {
   console.timeLog("stage", "starting copyToStage");
@@ -138,8 +139,9 @@ async function copyToStage(sourceDir, targetDir) {
 
 /**
  * Compose required collection files from one stage to another.
- * @param {string} sourceDir
- * @param {string} targetDir
+ *
+ * @param {string} sourceDir The current stage.
+ * @param {string} targetDir The next stage.
  */
 async function buildCollections(sourceDir, targetDir) {
   console.timeLog("stage", "starting buildCollections");
@@ -151,7 +153,12 @@ async function buildCollections(sourceDir, targetDir) {
 
   const urlToClass = pathToFileURL(path.join(sourceDir, "source/CollectionConfiguration.mjs"));
   const configFileList = await getAllFiles(configDir).toArray();
-  /** @type {Map<pathToFile, contents>} */
+
+  /**
+   * @typedef {string} pathToFile
+   * @typedef {string} contents
+   * @type {Map<pathToFile, contents>}
+   */
   const configMap = new Map(/* */)
 
   const sourceString = `import CollectionConfiguration from "composite-collection/Configuration";`
@@ -188,7 +195,7 @@ async function buildCollections(sourceDir, targetDir) {
 /**
  * Build a bootstrap stage.
  *
- * @param {string} stageDir
+ * @param {string} stageDir The working directory to build in.
  */
 async function runAllStage(stageDir) {
   console.timeLog("stage", "starting runAllStage");
@@ -196,6 +203,13 @@ async function runAllStage(stageDir) {
   console.timeLog("stage", "runAllStage completed");
 }
 
+/**
+ * Run npm scripts in a subprocess.
+ *
+ * @param {string} stageDir   The working directory to build in.
+ * @param {string[]} targets  The npm run targets.
+ * @returns {Promise} for the subprocess's success.
+ */
 async function npm(stageDir, ...targets) {
   const npm = await which("npm");
   // npm run all
@@ -216,6 +230,11 @@ async function npm(stageDir, ...targets) {
   return promise;
 }
 
+/**
+ * Trash a directory and recreate it as an empty stub.
+ *
+ * @param {string} dir The full path to the directory.
+ */
 async function cleanAndRecreate(dir) {
   await fs.rm(dir, {recursive: true});
   await fs.mkdir(dir);

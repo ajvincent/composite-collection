@@ -1,8 +1,11 @@
 import CollectionType from "./CollectionType.mjs";
-
 import defaultMethods from "./jsdoc-method-sets/default.mjs";
 
-/** @private */
+/**
+ * This represents the parameters part of a JSDoc comment.
+ *
+ * @private
+ */
 class ParamBlock {
   /** @type {object} */
   #rows = [];
@@ -15,10 +18,10 @@ class ParamBlock {
 
   /**
    * Add a parameter.
-   * @param {string} type
-   * @param {string} name
-   * @param {string} description
    *
+   * @param {string} type        The parameter type.
+   * @param {string} name        The name of the parameter.
+   * @param {string} description The parameter's description string.
    * @public
    */
   add(type, name, description = "") {
@@ -35,15 +38,17 @@ class ParamBlock {
   /**
    * Get the formatted parameter lines.
    *
-   * @returns {string[]}
+   * @returns {string[]} The formatted JSDoc section for arguments..
    * @public
    */
   getLines() {
     return this.#rows.map(row => {
       const type = `{${row.type}}`.padEnd(this.#typeColumnWidth);
       const name = row.name.padEnd(this.#nameColumnWidth);
+
       let firstDescLine = `@param ${type} ${name} ${row.firstDescLine}`;
       return [firstDescLine, ...row.otherDescLines.map(
+        // Why 10?  " * @param ".length.  This is to indent the other description lines.
         desc => " ".repeat(this.#typeColumnWidth + this.#nameColumnWidth + 10) + desc
       )];
     }).flat();
@@ -52,23 +57,29 @@ class ParamBlock {
 
 /**
  * A generator of JSDoc block comments from Map/Set templates and user arguments.
+ *
  * @package
  */
 export default class JSDocGenerator {
   /**
    * @typedef MethodTemplate
-   * @property {string}     description
-   * @property {string[]}   headers
-   * @property {string[][]} paramHeaders
-   * @property {string}     includeArgs
-   * @property {string[][]} paramFooters
-   * @property {string}     returnType
-   * @property {string?}    returnDescription
-   * @property {string[]}   footers
+   * @property {boolean?}    isTypeDef          True if this is a type definition (no description, no returns)
+   * @property {boolean?}    isProperty         True if this is a property definition (no returns).
+   * @property {boolean?}    returnVoid         True if this is a method returning nothing.
+   * @property {string}      description        The descrption of the method's purpose.
+   * @property {string}      includeArgs        A flag to determine how public keys (and values) should be in the API.
+   * @property {string[]?}   headers            JSDoc header lines before the parameter block.
+   * @property {string[][]?} paramHeaders       Parameters from the template (not the user)
+   * @property {string[][]?} paramFooters       Parameters from the template (not the user)
+   * @property {string[]?}   footers            JSDoc footer lines after the parameters (and the return value).
+   * @property {string?}     returnType         The return type for the specified function.
+   * @property {string?}     returnDescription  A description of the return value to provide.
+   * @property {boolean?}    isGenerator        If true, provides a 'yield' instead of a 'return'.
+   * @see jsdoc-method-sets/default.mjs for typical objects.
    */
 
-  /** @type {Map<string, MethodTemplate>} @constant */
-  #methodTemplates = new Map(defaultMethods());
+  /** @type {Map<string, MethodTemplate>} */
+  #methodTemplates;
 
   /** @type {string} */
   #className = "";
@@ -91,6 +102,7 @@ export default class JSDocGenerator {
 
   /**
    * True if we should replace the word "map" with "set" in our main descriptions.
+   *
    * @type {boolean}
    * @constant
    */
@@ -104,16 +116,116 @@ export default class JSDocGenerator {
     this.#className = className;
     this.#isSet = isSet;
 
+    this.setMethodParametersDirectly(defaultMethods());
+  }
+
+  async setMethodParametersByModule(moduleName) {
+    const paramFunction = (await import("#source/jsdoc-method-sets/" + moduleName + ".mjs")).default;
+    this.setMethodParametersDirectly(paramFunction());
+  }
+
+  setMethodParametersDirectly(iterable) {
+    if (!Array.isArray(iterable) || (iterable.length === 0))
+      throw new Error("Method parameters must be a two-dimensional array!");
+
+    const knownNames = new Set;
+    iterable.forEach((row, index) => {
+      try {
+        if (row.length !== 2)
+          throw "row length is not 2!";
+        if ((typeof row[0] !== "string") || !row[0].trim())
+          throw "key is not a non-empty string!";
+        if (knownNames.has(row[0]))
+          throw `key "${row[0]}" has already appeared!`;
+        knownNames.add(row[0]);
+      }
+      catch (msg) {
+        throw new Error(`At row ${index}, ${msg}`);
+      }
+
+      try {
+        JSDocGenerator.#validateMethodTemplate(row[1]);
+      }
+      catch (msg) {
+        throw new Error(`At row ${index} ("${row[0]}"), ${msg}`);
+      }
+    });
+
+    this.#methodTemplates = new Map(iterable);
     this.#methodTemplates.keysReplaced = false;
   }
 
-  async setMethodParameters(moduleName) {
-    const paramFunction = (await import("#source/jsdoc-method-sets/" + moduleName + ".mjs")).default;
-    this.#methodTemplates = new Map(paramFunction());
+  static #validateMethodTemplate(template) {
+    if ((typeof template !== "object") || (template === null))
+      throw "value must be an object";
+
+    if (template.isTypeDef) {
+      if (template.includeArgs !== "none")
+        throw `value.includeArgs must be "none" for a type definition!`;
+
+      JSDocGenerator.#propertyIsArrayOfStrings("value.headers", template.headers, 1, false);
+      return;
+    }
+
+    JSDocGenerator.#propertyIsNonWhitespaceString("value.description", template.description);
+
+    if (!JSDocGenerator.#includeArgsValidSet.has(template.includeArgs))
+      throw "value.includeArgs must be one of: " + Array.from(JSDocGenerator.#includeArgsValidSet.values()).map(t => `"${t}"`).join(", ");
+
+    JSDocGenerator.#propertyIsArrayOfStrings("value.headers", template.headers, 1, true);
+    JSDocGenerator.#propertyIsArrayOfStrings("value.paramHeaders", template.paramHeaders, 2, true);
+    JSDocGenerator.#propertyIsArrayOfStrings("value.paramFooters", template.paramFooters, 2, true);
+    JSDocGenerator.#propertyIsArrayOfStrings("value.footers", template.footers, 1, true);
+
+    if (!template.isProperty && !template.returnVoid) {
+      try {
+        JSDocGenerator.#propertyIsNonWhitespaceString("value.returnType", template.returnType, false);
+      }
+      catch (ex) {
+        throw ex + "  (Set value.returnVoid if there is no return value.)";
+      }
+      JSDocGenerator.#propertyIsNonWhitespaceString("value.returnDescription", template.returnDescription, false);
+    }
   }
+
+  static #propertyIsArrayOfStrings(name, value, depth, mayBeMissing) {
+    if (!value && mayBeMissing)
+      return;
+    if (!Array.isArray(value) || (value.length === 0))
+      throw name + " is not a" + (depth > 1 ? depth + "-dimensional" : "n") + " array of non-empty strings!";
+
+    if (depth > 1) {
+      value.forEach((subvalue, index) => {
+        JSDocGenerator.#propertyIsArrayOfStrings(
+          `${name}[${index}]`, subvalue, depth - 1, false
+        )
+      });
+    }
+    else
+      value.forEach((subvalue, index) => {
+        JSDocGenerator.#propertyIsNonWhitespaceString(
+          `${name}[${index}]`, subvalue
+        )
+      });
+  }
+
+  static #propertyIsNonWhitespaceString(name, value, orNull = false) {
+    if ((typeof value !== "string") || !value.trim())
+      throw `${name} must be a non-empty string${orNull ? " or null" : ""}!`;
+  }
+
+  static #includeArgsValidSet = new Set([
+    "none",
+    "value",
+    "all",
+    "mapArguments",
+    "setArguments",
+    "excludeValue",
+  ]);
 
   /**
    * Add a parameter definition.
+   *
    * @param {CollectionType} parameter The parameter type information.
    * @public
    */
@@ -210,8 +322,7 @@ export default class JSDocGenerator {
    *
    * @param {string} templateName  The name of the template to use.
    * @param {number} baseIndent    The number of spaces each line should be indented.
-   *
-   * @returns {string}
+   * @returns {string} The completed JSDoc comment to insert into the template.
    * @public
    */
   buildBlock(templateName, baseIndent) {
@@ -228,7 +339,7 @@ export default class JSDocGenerator {
     }
 
     if (Array.isArray(template.headers)) {
-      lines.push(...template.headers.map(line => " * " + line), " *");
+      lines.push(...template.headers.map(line => " * " + line));
     }
 
     // parameters
@@ -240,7 +351,18 @@ export default class JSDocGenerator {
         template.paramHeaders.forEach(row => paramBlock.add(...row));
       }
 
-      if (template.includeArgs !== "none") {
+      if (template.includeArgs === "value") {
+        void null;
+        const valueParam = Array.from(this.#params.values()).find(param => param.argumentName === "value");
+        if (!valueParam)
+          throw new Error("value parameter is required!");
+        paramBlock.add(
+          valueParam.argumentType || "*",
+          valueParam.argumentName,
+          valueParam.description || ""
+        );
+      }
+      else if (template.includeArgs !== "none") {
         let valueFound = false;
         this.#params.forEach(param => {
           if ((template.includeArgs === "mapArguments") && !param.mapOrSetType.endsWith("Map"))
@@ -269,12 +391,12 @@ export default class JSDocGenerator {
 
       const paramLines = paramBlock.getLines();
       if (paramLines.length) {
-        lines.push(...paramLines.map(pLine => " * " + pLine), " *");
+        lines.push(...paramLines.map(pLine => " * " + pLine));
       }
     }
 
     if (template.returnType) {
-      let returnLine = ` * @returns {${template.returnType}}`;
+      let returnLine = ` * @${template.isGenerator ? "yields" : "returns"} {${template.returnType}}`;
       if (template.returnDescription)
         returnLine += " " + template.returnDescription;
       lines.push(returnLine);

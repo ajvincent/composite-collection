@@ -1,7 +1,5 @@
 /**
  * @module source/CodeGenerator.mjs
- *
- * @fileoverview
  */
 
 import CollectionConfiguration from "composite-collection/Configuration";
@@ -14,19 +12,25 @@ import fs from "fs/promises";
 import beautify from "js-beautify";
 import CollectionType from "./CollectionType.mjs";
 
+/**
+ * Stringify a list of keys into an argument name list suitable for macros.
+ *
+ * @param {string[]} keys The key names.
+ * @returns {string} The serialized key names.
+ */
 function buildArgNameList(keys) {
   return '[' + keys.map(key => `"${key}"`).join(", ") + ']'
 }
 
 /** @package */
 export default class CodeGenerator extends CompletionPromise {
-  /** @type {Object}  @constant */
+  /** @type {object} @constant */
   #configurationData;
 
   /** @type {string} @constant */
   #targetPath;
 
-  /** @type {RuntimeOptions} @constant */
+  /** @type {CompileTimeOptions | {}} @constant */
   #compileOptions;
 
   /** @type {string} */
@@ -81,7 +85,7 @@ export default class CodeGenerator extends CompletionPromise {
     Object.seal(this);
   }
 
-  /** @returns {string} */
+  /** @type {string} */
   get status() {
     return this.#status;
   }
@@ -195,7 +199,7 @@ export default class CodeGenerator extends CompletionPromise {
   #defineArgCountAndLists(prefix, keyArray) {
     this.#defines.set(prefix + "Count", keyArray.length);
     this.#defines.set(prefix + "ArgList", keyArray.join(", "));
-    this.#defines.set(prefix + "ArgNameList", buildArgNameList(keyArray));
+    this.#defines.set(prefix + "ArgNameList", JSON.stringify(keyArray));
   }
 
   #defineValidatorCode(paramsData, defineName, filter) {
@@ -228,8 +232,8 @@ export default class CodeGenerator extends CompletionPromise {
     keys.splice(keys.indexOf(weakKeyName), 1);
     this.#defines.set("bindArgList", keys);
 
-    const extendBaseClass = baseData.weakMapKeys.length + baseData.strongMapKeys.length >= 2;
-    this.#defines.set("extendBaseClass", extendBaseClass);
+    const wrapBaseClass = baseData.weakMapKeys.length + baseData.strongMapKeys.length >= 2;
+    this.#defines.set("wrapBaseClass", wrapBaseClass);
 
     const parameters = Array.from(baseData.parameterToTypeMap.values());
     this.#defines.set("baseClassValidatesKey", parameters.some(param => param.argumentValidator));
@@ -259,7 +263,7 @@ export default class CodeGenerator extends CompletionPromise {
 
     // For the solo doc generator, the value argument comes first.
     let generator = await this.#createOneToOneGenerator("oneToOneSoloArg");
-    generator.addParameter(baseData.valueType || new CollectionType("value", "map", "*", "The value.", ""));
+    generator.addParameter(baseData.valueType || new CollectionType("value", "Map", "*", "The value.", ""));
     this.#appendTypesToDocGenerator(generator, "", false);
 
     // For the duo doc generator, there are two of each argument, and two values.
@@ -269,12 +273,12 @@ export default class CodeGenerator extends CompletionPromise {
   }
 
   async #createOneToOneGenerator(moduleName) {
-    let generator = new JSDocGenerator(
+    const generator = new JSDocGenerator(
       this.#configurationData.className,
-      true
+      false
     );
 
-    await generator.setMethodParameters(moduleName);
+    await generator.setMethodParametersByModule(moduleName);
     this.#docGenerators.push(generator);
     return generator;
   }
@@ -354,7 +358,9 @@ export default class CodeGenerator extends CompletionPromise {
       return;
 
     if (this.#configurationData.oneToOneOptions?.pathToBaseModule) {
-      this.#generatedCode += `import ${baseData.className} from "${this.#configurationData.oneToOneOptions.pathToBaseModule}";\n`;
+      this.#generatedCode += `import ${baseData.className} from "${this.#configurationData.oneToOneOptions.pathToBaseModule}";`;
+      this.#generatedCode += baseData.importLines;
+      this.#generatedCode += "\n";
       return;
     }
 

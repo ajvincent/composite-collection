@@ -50,17 +50,47 @@ export default class Driver extends CompletionPromise {
     void("Instances of this class will replace this method");
   }
 
+  /**
+   * Build and write the collections for the target directory, based on a source directory of configurations.
+   */
   async #buildAll() {
-    let fileList = await this.#getFileList();
+    const fullPaths = (await readDirsDeep(this.#sourcesPath)).files.filter(
+      filePath => path.extname(filePath) === ".mjs"
+    );
+    let fileList = fullPaths.map(path => path.replace(this.#sourcesPath + "/", ""));
     const configToRelativePath = new WeakMap();
 
+    const configs = await fileList.reduce(
+      async (previous, relativePath) => {
+        const list = await previous;
+        try {
+          const m = await import(url.pathToFileURL(path.join(this.#sourcesPath, relativePath)));
+          configToRelativePath.set(m.default, relativePath);
+          list.push(m.default);
+          return list;
+        }
+        catch (ex) {
+          console.error("\n\nException happened for " + relativePath + "\n\n");
+          throw ex;
+        }
+      },
+      Promise.resolve([])
+    );
+    /*
     const configs = await Promise.all(fileList.map(
       async relativePath => {
-        const m = await import(url.pathToFileURL(path.join(this.#sourcesPath, relativePath)));
-        configToRelativePath.set(m.default, relativePath);
-        return m.default;
+        try {
+          const m = await import(url.pathToFileURL(path.join(this.#sourcesPath, relativePath)));
+          configToRelativePath.set(m.default, relativePath);
+          return m.default;
+        }
+        catch (ex) {
+          console.error("\n\nException happened for " + relativePath + "\n\n");
+          throw ex;
+        }
       }
     ));
+    */
 
     const requiresWeakKey = configs.some(c => c.cloneData().requiresWeakKey);
 
@@ -95,17 +125,5 @@ export default class Driver extends CompletionPromise {
         throw ex;
       }
     }));
-  }
-
-  /**
-   * @returns {string[]}
-   *
-   * @note This is a placeholder for
-   */
-  async #getFileList() {
-    const fullPaths = (await readDirsDeep(this.#sourcesPath)).files.filter(
-      filePath => path.extname(filePath) === ".mjs"
-    );
-    return fullPaths.map(path => path.replace(this.#sourcesPath + "/", ""));
   }
 }

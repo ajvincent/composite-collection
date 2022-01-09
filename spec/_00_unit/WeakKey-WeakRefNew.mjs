@@ -108,6 +108,14 @@ describe("WeakKey-WeakRefNew composer", () => {
     );
   });
 
+  /**
+   * Define specifications for WeakKeyComposer under different weak/strong argument combinations.
+   *
+   * @param {object[][]} keySet1 The first pair of weak and strong arguments.
+   * @param {object[][]} keySet2 The second pair of weak and strong arguments.
+   * @param {object[][]} keySet3 The third pair of weak and strong arguments.
+   * @param {Function} builder   Returns a new WeakKeyComposer aligned with the weak and strong arguments.
+   */
   function testWeakKeys(keySet1, keySet2, keySet3, builder) {
     let composer;
     beforeEach(() => composer = builder());

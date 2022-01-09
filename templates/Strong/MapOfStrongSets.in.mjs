@@ -1,7 +1,7 @@
 /**
- * @param {Map} defines
- * @param {JSDocGenerator} docs
- * @returns {string}
+ * @param {Map}            defines The preprocessor macros.
+ * @param {JSDocGenerator} docs    The primary documentation generator.
+ * @returns {string}               The generated source code.
  */
 export default function preprocess(defines, docs) {
   let invokeValidate = "", invokeMapValidate = "";
@@ -16,6 +16,8 @@ export default function preprocess(defines, docs) {
 ${defines.get("importLines")}
 
 class ${defines.get("className")} {
+  /** @typedef {string} hash */
+
   /** @type {Map<hash, Map<hash, *[]>>} @constant */
   #outerMap = new Map();
 
@@ -25,7 +27,7 @@ class ${defines.get("className")} {
   /** @type {KeyHasher} @constant */
   #setHasher = new KeyHasher(${defines.get("setArgNameList")});
 
-  /** @type {Number} */
+  /** @type {number} */
   #sizeOfAll = 0;
 
   constructor() {
@@ -195,41 +197,23 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
 
   ` : ``}
 ${docs.buildBlock("values", 2)}
-  values() {
+  * values() {
     const __outerIter__ = this.#outerMap.values();
-    let __innerIter__ = null;
 
-    return {
-      next() {
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-          if (!__innerIter__) {
-            const {value: __innerMap__, done} = __outerIter__.next();
-            if (done)
-              return {value: undefined, done};
-
-            __innerIter__ = __innerMap__.values();
-          }
-
-          const rv = __innerIter__.next();
-          if (rv.done)
-            __innerIter__ = null;
-          else
-            return rv;
-        }
-      }
-    };
+    for (let __innerMap__ of __outerIter__) {
+      for (let __value__ of __innerMap__.values())
+        yield __value__;
+    }
   }
 
 ${docs.buildBlock("valuesSet", 2)}
-  valuesSet(${defines.get("mapArgList")}) {${invokeMapValidate}
+  * valuesSet(${defines.get("mapArgList")}) {${invokeMapValidate}
     const [__innerMap__] = this.#getInnerMap(${defines.get("mapArgList")});
     if (!__innerMap__)
-      return {
-        next() { return { value: undefined, done: true }}
-      };
+      return;
 
-    return __innerMap__.values();
+    for (let __value__ of __innerMap__.values())
+      yield __value__;
   }
 
   #getInnerMap(...__mapArguments__) {
