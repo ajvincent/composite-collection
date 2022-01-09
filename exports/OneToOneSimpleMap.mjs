@@ -35,7 +35,6 @@ class OneToOneSimpleMap extends WeakMap {
    * Determine if a value is valid.
    *
    * @param {*} value The value.
-   *
    * @returns {boolean} True if the value is valid.
    * @public
    */

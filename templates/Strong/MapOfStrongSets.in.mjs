@@ -16,6 +16,8 @@ export default function preprocess(defines, docs) {
 ${defines.get("importLines")}
 
 class ${defines.get("className")} {
+  /** @typedef {string} hash */
+
   /** @type {Map<hash, Map<hash, *[]>>} @constant */
   #outerMap = new Map();
 
@@ -25,7 +27,7 @@ class ${defines.get("className")} {
   /** @type {KeyHasher} @constant */
   #setHasher = new KeyHasher(${defines.get("setArgNameList")});
 
-  /** @type {Number} */
+  /** @type {number} */
   #sizeOfAll = 0;
 
   constructor() {

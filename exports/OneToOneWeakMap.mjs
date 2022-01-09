@@ -107,8 +107,7 @@ class OneToOneWeakMap {
   /**
    * Determine if a key is valid.
    *
-   * @param {*}      value The value.
-   * @param {object} key2  The second key.
+   * @param {object} key2 The second key.
    * @returns {boolean} True if the key is valid.
    * @see the base map class for further constraints.
    * @public
@@ -125,8 +124,7 @@ class OneToOneWeakMap {
   /**
    * Determine if a value is valid.
    *
-   * @param {*}      value The value.
-   * @param {object} key2  The second key.
+   * @param {*} value The value.
    * @returns {boolean} True if the value is valid.
    * @see the base map class for further constraints.
    * @public

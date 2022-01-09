@@ -169,7 +169,7 @@ export default class JSDocGenerator {
     JSDocGenerator.#propertyIsNonWhitespaceString("value.description", template.description);
 
     if (!JSDocGenerator.#includeArgsValidSet.has(template.includeArgs))
-      throw "value.includeArgs must be one of: " + Array.from(JSDocGenerator.#includeArgsValidSet.values());
+      throw "value.includeArgs must be one of: " + Array.from(JSDocGenerator.#includeArgsValidSet.values()).map(t => `"${t}"`).join(", ");
 
     JSDocGenerator.#propertyIsArrayOfStrings("value.headers", template.headers, 1, true);
     JSDocGenerator.#propertyIsArrayOfStrings("value.paramHeaders", template.paramHeaders, 2, true);
@@ -215,6 +215,7 @@ export default class JSDocGenerator {
 
   static #includeArgsValidSet = new Set([
     "none",
+    "value",
     "all",
     "mapArguments",
     "setArguments",
@@ -349,7 +350,18 @@ export default class JSDocGenerator {
         template.paramHeaders.forEach(row => paramBlock.add(...row));
       }
 
-      if (template.includeArgs !== "none") {
+      if (template.includeArgs === "value") {
+        void null;
+        const valueParam = Array.from(this.#params.values()).find(param => param.argumentName === "value");
+        if (!valueParam)
+          throw new Error("value parameter is required!");
+        paramBlock.add(
+          valueParam.argumentType || "*",
+          valueParam.argumentName,
+          valueParam.description || ""
+        );
+      }
+      else if (template.includeArgs !== "none") {
         let valueFound = false;
         this.#params.forEach(param => {
           if ((template.includeArgs === "mapArguments") && !param.mapOrSetType.endsWith("Map"))

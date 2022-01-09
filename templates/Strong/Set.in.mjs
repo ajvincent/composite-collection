@@ -13,6 +13,8 @@ export default function preprocess(defines, docs) {
 ${defines.get("importLines")}
 
 class ${defines.get("className")} {
+  /** @typedef {string} hash */
+
   ${docs.buildBlock("rootContainerSet", 4)}
   #root = new Map;
 

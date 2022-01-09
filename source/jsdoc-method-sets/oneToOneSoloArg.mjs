@@ -5,7 +5,7 @@ export default function OneToOneMethodParameters() {
   return [
     ["delete", {
       description: "Delete a target value.",
-      includeArgs: "excludeValue",
+      includeArgs: "all",
       returnType: "boolean",
       returnDescription: "True if the target value was deleted.",
       footers: ["@public"],
@@ -29,7 +29,7 @@ export default function OneToOneMethodParameters() {
 
     ["isValidKey", {
       description: "Determine if a key is valid.",
-      includeArgs: "all",
+      includeArgs: "excludeValue",
       returnType: "boolean",
       returnDescription: "True if the key is valid.",
       footers: [
@@ -40,7 +40,7 @@ export default function OneToOneMethodParameters() {
 
     ["isValidValue", {
       description: "Determine if a value is valid.",
-      includeArgs: "all",
+      includeArgs: "value",
       returnType: "boolean",
       returnDescription: "True if the value is valid.",
       footers: [

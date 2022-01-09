@@ -232,8 +232,8 @@ export default class CodeGenerator extends CompletionPromise {
     keys.splice(keys.indexOf(weakKeyName), 1);
     this.#defines.set("bindArgList", keys);
 
-    const extendBaseClass = baseData.weakMapKeys.length + baseData.strongMapKeys.length >= 2;
-    this.#defines.set("extendBaseClass", extendBaseClass);
+    const wrapBaseClass = baseData.weakMapKeys.length + baseData.strongMapKeys.length >= 2;
+    this.#defines.set("wrapBaseClass", wrapBaseClass);
 
     const parameters = Array.from(baseData.parameterToTypeMap.values());
     this.#defines.set("baseClassValidatesKey", parameters.some(param => param.argumentValidator));
@@ -273,9 +273,9 @@ export default class CodeGenerator extends CompletionPromise {
   }
 
   async #createOneToOneGenerator(moduleName) {
-    let generator = new JSDocGenerator(
+    const generator = new JSDocGenerator(
       this.#configurationData.className,
-      true
+      false
     );
 
     await generator.setMethodParametersByModule(moduleName);

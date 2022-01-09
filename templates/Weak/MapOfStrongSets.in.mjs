@@ -10,6 +10,9 @@ ${defines.get("importLines")}
 /** @typedef {Map<hash, *[]>} ${defines.get("className")}~InnerMap */
 
 class ${defines.get("className")} {
+  /** @typedef {string} hash */
+  /** @typedef {object} WeakKey */
+
   /**
    * @type {WeakMap<WeakKey, ${defines.get("className")}~InnerMap>}
    * @constant

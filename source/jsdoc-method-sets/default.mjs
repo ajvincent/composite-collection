@@ -47,6 +47,7 @@ export default function defaultMethods() {
       isProperty: true,
       description: "The number of elements in this collection.",
       includeArgs: "none",
+      returnType: "number",
       footers: ["@public", "@constant"],
     }],
 
@@ -62,6 +63,7 @@ export default function defaultMethods() {
       isProperty: true,
       description: "The number of maps in this collection.",
       includeArgs: "none",
+      returnType: "number",
       footers: ["@public", "@constant"],
     }],
 
@@ -298,7 +300,7 @@ export default function defaultMethods() {
 
     ["isValidValuePublic", {
       description: "Determine if a value is valid.",
-      includeArgs: "none",
+      includeArgs: "value",
       returnType: "boolean",
       returnDescription: "True if the validation passes, false if it doesn't.",
       footers: ["@public"],
@@ -306,7 +308,7 @@ export default function defaultMethods() {
 
     ["isValidValuePrivate", {
       description: "Determine if a value is valid.",
-      includeArgs: "none",
+      includeArgs: "value",
       returnType: "boolean",
       returnDescription: "True if the validation passes, false if it doesn't.",
     }],

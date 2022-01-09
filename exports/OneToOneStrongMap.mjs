@@ -107,7 +107,6 @@ class OneToOneStrongMap {
   /**
    * Determine if a key is valid.
    *
-   * @param {*} value     The value.
    * @param {*} strongKey The strongly held key.
    * @returns {boolean} True if the key is valid.
    * @see the base map class for further constraints.
@@ -125,8 +124,7 @@ class OneToOneStrongMap {
   /**
    * Determine if a value is valid.
    *
-   * @param {*} value     The value.
-   * @param {*} strongKey The strongly held key.
+   * @param {*} value The value.
    * @returns {boolean} True if the value is valid.
    * @see the base map class for further constraints.
    * @public

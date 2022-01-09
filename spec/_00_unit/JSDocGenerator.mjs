@@ -196,6 +196,18 @@ describe("JSDocGenerator validation: ", () => {
     );
   });
 
+  it("throws for an invalid includeArgs", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(foodsType);
+
+    methodParameter.includeArgs = "Foo"
+
+    expect(
+      () => setMethod()
+    ).toThrowError(`At row 0 ("deliver"), value.includeArgs must be one of: "none", "value", "all", "mapArguments", "setArguments", "excludeValue"`);
+  });
+
   it("throws for a whitespace footer line prepended", async () => {
     doc.addParameter(nameType);
     doc.addParameter(atTimeTime);
@@ -401,6 +413,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * The number of elements in this collection.
    *
+   * @returns {number}
    * @public
    * @constant
    */`);
@@ -613,6 +626,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * The number of elements in this collection.
    *
+   * @returns {number}
    * @public
    * @constant
    */`);
@@ -859,6 +873,7 @@ describe("JSDocGenerator for sets", () => {
       expect(generated).toEqual(`  /**
    * The number of elements in this collection.
    *
+   * @returns {number}
    * @public
    * @constant
    */`);
@@ -1016,6 +1031,7 @@ describe("JSDocGenerator for sets", () => {
       expect(generated).toEqual(`  /**
    * The number of elements in this collection.
    *
+   * @returns {number}
    * @public
    * @constant
    */`);

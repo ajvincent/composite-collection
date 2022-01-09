@@ -34,7 +34,7 @@ export default function preprocess(defines, soloDocs, duoDocs) {
   const bindMapArgs = buildArgNameList(defines.get("bindArgList"));
 
   let classDefinition = "";
-  if (defines.get("extendBaseClass")) {
+  if (defines.get("wrapBaseClass")) {
     classDefinition = `
 class ${defines.get("className")} {
   /** @constant */
@@ -250,7 +250,6 @@ ${duoDocs.buildBlock("bindOneToOneSimple")}
    * Determine if a value is valid.
    *
    * @param {*} value The value.
-   *
    * @returns {boolean} True if the value is valid.${
 defines.get("baseClassName") !== "WeakMap" ? `
    * @see the base map class for further constraints.` : ""
