@@ -7,6 +7,8 @@
 import KeyHasher from "./keys/Hasher.mjs";
 
 class StrongMapOfStrongSets {
+  /** @typedef {string} hash */
+
   /** @type {Map<hash, Map<hash, *[]>>} @constant */
   #outerMap = new Map();
 
@@ -16,7 +18,7 @@ class StrongMapOfStrongSets {
   /** @type {KeyHasher} @constant */
   #setHasher = new KeyHasher(["setKey"]);
 
-  /** @type {Number} */
+  /** @type {number} */
   #sizeOfAll = 0;
 
   constructor() {
@@ -31,6 +33,7 @@ class StrongMapOfStrongSets {
   /**
    * The number of elements in this collection.
    *
+   * @returns {number}
    * @public
    * @constant
    */
@@ -53,6 +56,7 @@ class StrongMapOfStrongSets {
   /**
    * The number of maps in this collection.
    *
+   * @returns {number}
    * @public
    * @constant
    */
@@ -258,62 +262,33 @@ class StrongMapOfStrongSets {
   }
 
   /**
-   * Return a new iterator for the values of the collection.
+   * Yield the values of the collection.
    *
-   * @returns {Iterator<*>} The iterator.
+   * @yields {*} The value.
    * @public
    */
-  values() {
+  * values() {
     const __outerIter__ = this.#outerMap.values();
-    let __innerIter__ = null;
 
-    return {
-      next() {
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-          if (!__innerIter__) {
-            const {
-              value: __innerMap__,
-              done
-            } = __outerIter__.next();
-            if (done)
-              return {
-                value: undefined,
-                done
-              };
-
-            __innerIter__ = __innerMap__.values();
-          }
-
-          const rv = __innerIter__.next();
-          if (rv.done)
-            __innerIter__ = null;
-          else
-            return rv;
-        }
-      }
-    };
+    for (let __innerMap__ of __outerIter__) {
+      for (let __value__ of __innerMap__.values())
+        yield __value__;
+    }
   }
 
   /**
-   * Return a new iterator for the sets of the collection in a map.
+   * Yield the sets of the collection in a map.
    *
-   * @returns {Iterator<*>} The set iterator.
+   * @yields {*} The sets.
    * @public
    */
-  valuesSet(mapKey) {
+  * valuesSet(mapKey) {
     const [__innerMap__] = this.#getInnerMap(mapKey);
     if (!__innerMap__)
-      return {
-        next() {
-          return {
-            value: undefined,
-            done: true
-          }
-        }
-      };
+      return;
 
-    return __innerMap__.values();
+    for (let __value__ of __innerMap__.values())
+      yield __value__;
   }
 
   #getInnerMap(...__mapArguments__) {

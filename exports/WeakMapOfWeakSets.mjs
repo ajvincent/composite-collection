@@ -7,6 +7,8 @@
 import WeakKeyComposer from "./keys/Composite.mjs";
 
 class WeakMapOfWeakSets {
+  /** @typedef {object} WeakKey */
+
   /**
    * @type {WeakMap<WeakKey, WeakSet<WeakKey>>}
    * @note This is two levels.  The first level is the map's weak key.

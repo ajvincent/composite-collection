@@ -7,6 +7,8 @@
 import KeyHasher from "./keys/Hasher.mjs";
 
 class StrongStrongSet {
+  /** @typedef {string} hash */
+
   /**
    * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.
    *
@@ -30,6 +32,7 @@ class StrongStrongSet {
   /**
    * The number of elements in this collection.
    *
+   * @returns {number}
    * @public
    * @constant
    */
@@ -107,13 +110,14 @@ class StrongStrongSet {
   }
 
   /**
-   * Return a new iterator for the values of the collection.
+   * Yield the values of the collection.
    *
-   * @returns {Iterator<*>} The iterator.
+   * @yields {*} The value.
    * @public
    */
-  values() {
-    return this.#root.values();
+  * values() {
+    for (let __value__ of this.#root.values())
+      yield __value__;
   }
 
 }

@@ -167,25 +167,16 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
   }
 
 ${docs.buildBlock("valuesSet", 2)}
-  valuesSet(${defines.get("mapArgList")}) {
+  * valuesSet(${defines.get("mapArgList")}) {
     this.#requireValidMapKey(${defines.get("mapArgList")});
+
     const __innerMap__ = this.#getExistingInnerMap(${defines.get("mapArgList")});
     if (!__innerMap__)
-      return {
-        next() { return { value: undefined, done: true }}
-      };
+      return;
 
     const __outerIter__ = __innerMap__.values();
-    return {
-      next() {
-        let { value, done } = __outerIter__.next();
-        if (done)
-          return {value: undefined, done};
-
-        value = [${defines.get("mapArgList")}, ...value];
-        return { value, done };
-      }
-    }
+    for (let __value__ of __outerIter__)
+      yield [${defines.get("mapArgList")}, ...__value__];
   }
 
 ${docs.buildBlock("requireInnerCollectionPrivate", 2)}

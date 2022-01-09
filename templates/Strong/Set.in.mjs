@@ -76,8 +76,9 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
 ` : ``}
 
 ${docs.buildBlock("values", 2)}
-  values() {
-    return this.#root.values();
+  * values() {
+    for (let __value__ of this.#root.values())
+      yield __value__;
   }
 ${defines.has("invokeValidate") ?
   `

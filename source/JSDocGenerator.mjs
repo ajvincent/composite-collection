@@ -74,6 +74,7 @@ export default class JSDocGenerator {
    * @property {string[]?}   footers            JSDoc footer lines after the parameters (and the return value).
    * @property {string?}     returnType         The return type for the specified function.
    * @property {string?}     returnDescription  A description of the return value to provide.
+   * @property {boolean?}    isGenerator        If true, provides a 'yield' instead of a 'return'.
    * @see jsdoc-method-sets/default.mjs for typical objects.
    */
 
@@ -395,7 +396,7 @@ export default class JSDocGenerator {
     }
 
     if (template.returnType) {
-      let returnLine = ` * @returns {${template.returnType}}`;
+      let returnLine = ` * @${template.isGenerator ? "yields" : "returns"} {${template.returnType}}`;
       if (template.returnDescription)
         returnLine += " " + template.returnDescription;
       lines.push(returnLine);

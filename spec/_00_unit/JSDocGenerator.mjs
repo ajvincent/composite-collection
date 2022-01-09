@@ -5,21 +5,22 @@ import { ESLint } from "eslint";
 /**
  * Run template code against ESLint.
  *
- * @param {JSDocGenerator} generator The code generator we're exercising.
+ * @param {JSDocGenerator} doc The code generator we're exercising.
+ * @param {boolean} useYield Provide a generator memmber function instead.
  * @returns {string[]} The ESLint rules we broke.
  */
-async function runAgainstESLint(generator) {
+async function runAgainstESLint(doc, useYield = false) {
   const source = `
 class DeliveryToken {}
 
 class Vehicle {
-${generator.buildBlock("deliver", 2)}
-  deliverToCustomer(name, atTime, foods) {
+${doc.buildBlock("deliver", 2)}
+  ${useYield? "*" : ""}deliverToCustomer(name, atTime, foods) {
     void name;
     void foods;
     void atTime;
 
-    return new DeliveryToken();
+    ${useYield ? "yield" : "return"} new DeliveryToken();
   }
 }
 
@@ -92,6 +93,18 @@ describe("JSDocGenerator validation: ", () => {
     setMethod();
 
     const result = await runAgainstESLint(doc);
+    expect(result).toEqual([]);
+  });
+
+  it("passes ESLint when we provide a generator", async () => {
+    doc.addParameter(nameType);
+    doc.addParameter(atTimeTime);
+    doc.addParameter(foodsType);
+
+    methodParameter.isGenerator = true;
+    setMethod();
+
+    const result = await runAgainstESLint(doc, true);
     expect(result).toEqual([]);
   });
 
@@ -443,9 +456,9 @@ describe("JSDocGenerator for maps", () => {
     it("entries", () => {
       const generated = generator.buildBlock("entries", 2);
       expect(generated).toEqual(`  /**
-   * Return a new iterator for the key-value pairs of the collection.
+   * Yield the key-value tuples of the collection.
    *
-   * @returns {Iterator<[car, driver, value]>} The iterator.
+   * @yields {*[]} The keys and values.
    * @public
    */`);
     });
@@ -499,9 +512,9 @@ describe("JSDocGenerator for maps", () => {
     it("keys", () => {
       const generated = generator.buildBlock("keys", 2);
       expect(generated).toEqual(`  /**
-   * Return a new iterator for the key sets of the collection.
+   * Yield the key sets of the collection.
    *
-   * @returns {Iterator<[car, driver]>} The iterator.
+   * @yields {*[]} The key sets.
    * @public
    */`);
     });
@@ -522,9 +535,9 @@ describe("JSDocGenerator for maps", () => {
     it("values", () => {
       const generated = generator.buildBlock("values", 2);
       expect(generated).toEqual(`  /**
-   * Return a new iterator for the values of the collection.
+   * Yield the values of the collection.
    *
-   * @returns {Iterator<*>} The iterator.
+   * @yields {*} The value.
    * @public
    */`);
     });
@@ -563,34 +576,35 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
-    it("isValidValuePublic", () => {
-      const generated = generator.buildBlock("isValidValuePublic", 2);
-      expect(generated).toEqual(`  /**
-   * Determine if a value is valid.
-   *
-   * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @public
-   */`);
-    });
-
-    it("isValidValuePrivate", () => {
-      const generated = generator.buildBlock("isValidValuePrivate", 2);
-      expect(generated).toEqual(`  /**
-   * Determine if a value is valid.
-   *
-   * @returns {boolean} True if the validation passes, false if it doesn't.
-   */`);
-    });
-
-
     it("wrapIteratorMap", () => {
       const generated = generator.buildBlock("wrapIteratorMap", 2);
       expect(generated).toEqual(`  /**
-   * Bootstrap from the native Map's values() iterator to the kind of iterator we want.
+   * Bootstrap from the native Map's values() generator to the kind of generator we want.
    *
    * @param {function} unpacker The transforming function for values.
-   * @returns {Iterator<*>} The caller's iterator.
+   * @yields {*} The caller's generator.
    */`);
+    });
+  });
+
+  describe(".buildBlock() with two arguments and no value type throws for the template name", () => {
+    beforeEach(() => {
+      generator = new JSDocGenerator("SoloStrongMap", false);
+      generator.addParameter(new CollectionType("car", "Map", "Car", "The car."));
+      generator.addParameter(new CollectionType("driver", "Map", "Person", "The driver of the car."));
+    });
+
+
+    it("isValidValuePublic", () => {
+      expect(
+        () => generator.buildBlock("isValidValuePublic", 2)
+      ).toThrowError("value parameter is required!");
+    });
+
+    it("isValidValuePrivate", () => {
+      expect(
+        () => generator.buildBlock("isValidValuePrivate", 2)
+      ).toThrowError("value parameter is required!");
     });
   });
 
@@ -656,9 +670,9 @@ describe("JSDocGenerator for maps", () => {
     it("entries", () => {
       const generated = generator.buildBlock("entries", 2);
       expect(generated).toEqual(`  /**
-   * Return a new iterator for the key-value pairs of the collection.
+   * Yield the key-value tuples of the collection.
    *
-   * @returns {Iterator<[car, driver, value]>} The iterator.
+   * @yields {*[]} The keys and values.
    * @public
    */`);
     });
@@ -712,9 +726,9 @@ describe("JSDocGenerator for maps", () => {
     it("keys", () => {
       const generated = generator.buildBlock("keys", 2);
       expect(generated).toEqual(`  /**
-   * Return a new iterator for the key sets of the collection.
+   * Yield the key sets of the collection.
    *
-   * @returns {Iterator<[car, driver]>} The iterator.
+   * @yields {*[]} The key sets.
    * @public
    */`);
     });
@@ -747,9 +761,9 @@ describe("JSDocGenerator for maps", () => {
     it("values", () => {
       const generated = generator.buildBlock("values", 2);
       expect(generated).toEqual(`  /**
-   * Return a new iterator for the values of the collection.
+   * Yield the values of the collection.
    *
-   * @returns {Iterator<State>} The iterator.
+   * @yields {State} The value.
    * @public
    */`);
     });
@@ -757,10 +771,10 @@ describe("JSDocGenerator for maps", () => {
     it("wrapIteratorMap", () => {
       const generated = generator.buildBlock("wrapIteratorMap", 2);
       expect(generated).toEqual(`  /**
-   * Bootstrap from the native Map's values() iterator to the kind of iterator we want.
+   * Bootstrap from the native Map's values() generator to the kind of generator we want.
    *
    * @param {function} unpacker The transforming function for values.
-   * @returns {Iterator<*>} The caller's iterator.
+   * @yields {*} The caller's generator.
    */`);
     });
 
@@ -948,9 +962,9 @@ describe("JSDocGenerator for sets", () => {
     it("values", () => {
       const generated = generator.buildBlock("values", 2);
       expect(generated).toEqual(`  /**
-   * Return a new iterator for the values of the collection.
+   * Yield the values of the collection.
    *
-   * @returns {Iterator<*>} The iterator.
+   * @yields {*} The value.
    * @public
    */`);
     });
@@ -958,10 +972,10 @@ describe("JSDocGenerator for sets", () => {
     it("wrapIteratorMap", () => {
       const generated = generator.buildBlock("wrapIteratorMap", 2);
       expect(generated).toEqual(`  /**
-   * Bootstrap from the native Map's values() iterator to the kind of iterator we want.
+   * Bootstrap from the native Map's values() generator to the kind of generator we want.
    *
    * @param {function} unpacker The transforming function for values.
-   * @returns {Iterator<*>} The caller's iterator.
+   * @yields {*} The caller's generator.
    */`);
     });
 
@@ -1062,9 +1076,9 @@ describe("JSDocGenerator for sets", () => {
     it("entries", () => {
       const generated = generator.buildBlock("entries", 2);
       expect(generated).toEqual(`  /**
-   * Return a new iterator for the key-value pairs of the collection.
+   * Yield the key-value tuples of the collection.
    *
-   * @returns {Iterator<[car, driver, value]>} The iterator.
+   * @yields {*[]} The keys and values.
    * @public
    */`);
     });
@@ -1120,9 +1134,9 @@ describe("JSDocGenerator for sets", () => {
     it("values", () => {
       const generated = generator.buildBlock("values", 2);
       expect(generated).toEqual(`  /**
-   * Return a new iterator for the values of the collection.
+   * Yield the values of the collection.
    *
-   * @returns {Iterator<State>} The iterator.
+   * @yields {State} The value.
    * @public
    */`);
     });
@@ -1130,10 +1144,10 @@ describe("JSDocGenerator for sets", () => {
     it("wrapIteratorMap", () => {
       const generated = generator.buildBlock("wrapIteratorMap", 2);
       expect(generated).toEqual(`  /**
-   * Bootstrap from the native Map's values() iterator to the kind of iterator we want.
+   * Bootstrap from the native Map's values() generator to the kind of generator we want.
    *
    * @param {function} unpacker The transforming function for values.
-   * @returns {Iterator<*>} The caller's iterator.
+   * @yields {*} The caller's generator.
    */`);
     });
 

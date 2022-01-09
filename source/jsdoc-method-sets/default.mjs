@@ -98,10 +98,11 @@ export default function defaultMethods() {
     }],
 
     ["entries", {
-      description: "Return a new iterator for the key-value pairs of the collection.",
+      description: "Yield the key-value tuples of the collection.",
       includeArgs: "none",
-      returnType: "Iterator<[__argList__, value]>",
-      returnDescription: "The iterator.",
+      returnType: "*[]",
+      returnDescription: "The keys and values.",
+      isGenerator: true,
       footers: ["@public"],
     }],
 
@@ -181,10 +182,11 @@ export default function defaultMethods() {
     }],
 
     ["keys", {
-      description: "Return a new iterator for the key sets of the collection.",
+      description: "Yield the key sets of the collection.",
       includeArgs: "none",
-      returnType: "Iterator<[__argList__]>",
-      returnDescription: "The iterator.",
+      returnType: "*[]",
+      returnDescription: "The key sets.",
+      isGenerator: true,
       footers: ["@public"],
     }],
 
@@ -216,29 +218,32 @@ export default function defaultMethods() {
     }],
 
     ["values", {
-      description: "Return a new iterator for the values of the collection.",
+      description: "Yield the values of the collection.",
       includeArgs: "none",
-      returnType: "Iterator<__valueType__>",
-      returnDescription: "The iterator.",
+      returnType: "__valueType__",
+      returnDescription: "The value.",
+      isGenerator: true,
       footers: ["@public"],
     }],
 
     ["valuesSet", {
-      description: "Return a new iterator for the sets of the collection in a map.",
+      description: "Yield the sets of the collection in a map.",
       includeArgs: "none",
-      returnType: "Iterator<__valueType__>",
-      returnDescription: "The set iterator.",
+      returnType: "__valueType__",
+      returnDescription: "The sets.",
+      isGenerator: true,
       footers: ["@public"],
     }],
 
     ["wrapIteratorMap", {
-      description: "Bootstrap from the native Map's values() iterator to the kind of iterator we want.",
+      description: "Bootstrap from the native Map's values() generator to the kind of generator we want.",
       paramHeaders: [
         ["function", "unpacker", "The transforming function for values."]
       ],
       includeArgs: "none",
-      returnType: "Iterator<*>",
-      returnDescription: "The caller's iterator."
+      returnType: "*",
+      returnDescription: "The caller's generator.",
+      isGenerator: true,
     }],
 
     ["isValidKeyPublic", {

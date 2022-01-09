@@ -10,6 +10,9 @@ import WeakKeyComposer from "./keys/Composite.mjs";
 /** @typedef {Map<hash, *[]>} WeakMapOfStrongSets~InnerMap */
 
 class WeakMapOfStrongSets {
+  /** @typedef {string} hash */
+  /** @typedef {object} WeakKey */
+
   /**
    * @type {WeakMap<WeakKey, WeakMapOfStrongSets~InnerMap>}
    * @constant
@@ -232,44 +235,21 @@ class WeakMapOfStrongSets {
   }
 
   /**
-   * Return a new iterator for the sets of the collection in a map.
+   * Yield the sets of the collection in a map.
    *
-   * @returns {Iterator<*>} The set iterator.
+   * @yields {*} The sets.
    * @public
    */
-  valuesSet(mapKey) {
+  * valuesSet(mapKey) {
     this.#requireValidMapKey(mapKey);
+
     const __innerMap__ = this.#getExistingInnerMap(mapKey);
     if (!__innerMap__)
-      return {
-        next() {
-          return {
-            value: undefined,
-            done: true
-          }
-        }
-      };
+      return;
 
     const __outerIter__ = __innerMap__.values();
-    return {
-      next() {
-        let {
-          value,
-          done
-        } = __outerIter__.next();
-        if (done)
-          return {
-            value: undefined,
-            done
-          };
-
-        value = [mapKey, ...value];
-        return {
-          value,
-          done
-        };
-      }
-    }
+    for (let __value__ of __outerIter__)
+      yield [mapKey, ...__value__];
   }
 
   /**

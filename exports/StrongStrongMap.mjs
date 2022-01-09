@@ -39,6 +39,7 @@ class StrongStrongMap {
   /**
    * The number of elements in this collection.
    *
+   * @returns {number}
    * @public
    * @constant
    */
@@ -69,15 +70,14 @@ class StrongStrongMap {
   }
 
   /**
-   * Return a new iterator for the key-value pairs of the collection.
+   * Yield the key-value tuples of the collection.
    *
-   * @returns {Iterator<[key1, key2, value]>} The iterator.
+   * @yields {*[]} The keys and values.
    * @public
    */
-  entries() {
-    return this.#wrapIterator(
-      valueAndKeySet => valueAndKeySet.keySet.concat(valueAndKeySet.value)
-    );
+  * entries() {
+    for (let valueAndKeySet of this.#root.values())
+      yield valueAndKeySet.keySet.concat(valueAndKeySet.value);
   }
 
   /**
@@ -134,15 +134,14 @@ class StrongStrongMap {
   }
 
   /**
-   * Return a new iterator for the key sets of the collection.
+   * Yield the key sets of the collection.
    *
-   * @returns {Iterator<[key1, key2]>} The iterator.
+   * @yields {*[]} The key sets.
    * @public
    */
-  keys() {
-    return this.#wrapIterator(
-      valueAndKeySet => valueAndKeySet.keySet.slice()
-    );
+  * keys() {
+    for (let valueAndKeySet of this.#root.values())
+      yield valueAndKeySet.keySet.slice();
   }
 
   /**
@@ -168,38 +167,16 @@ class StrongStrongMap {
   }
 
   /**
-   * Return a new iterator for the values of the collection.
+   * Yield the values of the collection.
    *
-   * @returns {Iterator<*>} The iterator.
+   * @yields {*} The value.
    * @public
    */
-  values() {
-    return this.#wrapIterator(
-      valueAndKeySet => valueAndKeySet.value
-    );
+  * values() {
+    for (let valueAndKeySet of this.#root.values())
+      yield valueAndKeySet.value;
   }
 
-  /**
-   * Bootstrap from the native Map's values() iterator to the kind of iterator we want.
-   *
-   * @param {function} unpacker The transforming function for values.
-   * @returns {Iterator<*>} The caller's iterator.
-   */
-  #wrapIterator(unpacker) {
-    const rootIter = this.#root.values();
-    return {
-      next() {
-        const {
-          value,
-          done
-        } = rootIter.next();
-        return {
-          value: done ? undefined : unpacker(value),
-          done
-        };
-      }
-    }
-  }
 }
 
 StrongStrongMap[Symbol.iterator] = function() {

@@ -7,6 +7,8 @@
 import WeakKeyComposer from "./keys/Composite.mjs";
 
 class WeakStrongSet {
+  /** @typedef {object} WeakKey */
+
   /** @type {WeakKeyComposer} @constant */
   #keyComposer = new WeakKeyComposer(["weakKey"], ["strongKey"]);
 
