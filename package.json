@@ -17,7 +17,11 @@
   },
   "keywords": [
     "collection",
-    "codegenerator"
+    "codegenerator",
+    "weakmap",
+    "weakset",
+    "map",
+    "set"
   ],
   "author": "Alexander J. Vincent",
   "license": "MPL-2.0",
