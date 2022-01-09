@@ -246,17 +246,6 @@ export default function defaultMethods() {
       footers: ["@public"],
     }],
 
-    ["wrapIteratorMap", {
-      description: "Bootstrap from the native Map's values() generator to the kind of generator we want.",
-      paramHeaders: [
-        ["function", "unpacker", "The transforming function for values."]
-      ],
-      includeArgs: "none",
-      returnType: "*",
-      returnDescription: "The caller's generator.",
-      isGenerator: true,
-    }],
-
     ["isValidKeyPublic", {
       description: "Determine if a set of keys is valid.",
       includeArgs: "excludeValue",

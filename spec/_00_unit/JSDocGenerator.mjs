@@ -577,16 +577,6 @@ describe("JSDocGenerator for maps", () => {
    * @throws for an invalid key set.
    */`);
     });
-
-    it("wrapIteratorMap", () => {
-      const generated = generator.buildBlock("wrapIteratorMap", 2);
-      expect(generated).toEqual(`  /**
-   * Bootstrap from the native Map's values() generator to the kind of generator we want.
-   *
-   * @param {function} unpacker The transforming function for values.
-   * @yields {*} The caller's generator.
-   */`);
-    });
   });
 
   describe(".buildBlock() with two arguments and no value type throws for the template name", () => {
@@ -769,16 +759,6 @@ describe("JSDocGenerator for maps", () => {
    *
    * @yields {State} The value.
    * @public
-   */`);
-    });
-
-    it("wrapIteratorMap", () => {
-      const generated = generator.buildBlock("wrapIteratorMap", 2);
-      expect(generated).toEqual(`  /**
-   * Bootstrap from the native Map's values() generator to the kind of generator we want.
-   *
-   * @param {function} unpacker The transforming function for values.
-   * @yields {*} The caller's generator.
    */`);
     });
 
@@ -976,16 +956,6 @@ describe("JSDocGenerator for sets", () => {
    */`);
     });
 
-    it("wrapIteratorMap", () => {
-      const generated = generator.buildBlock("wrapIteratorMap", 2);
-      expect(generated).toEqual(`  /**
-   * Bootstrap from the native Map's values() generator to the kind of generator we want.
-   *
-   * @param {function} unpacker The transforming function for values.
-   * @yields {*} The caller's generator.
-   */`);
-    });
-
     it("isValidKeyPublic", () => {
       const generated = generator.buildBlock("isValidKeyPublic", 2);
       expect(generated).toEqual(`  /**
@@ -1147,16 +1117,6 @@ describe("JSDocGenerator for sets", () => {
    *
    * @yields {State} The value.
    * @public
-   */`);
-    });
-
-    it("wrapIteratorMap", () => {
-      const generated = generator.buildBlock("wrapIteratorMap", 2);
-      expect(generated).toEqual(`  /**
-   * Bootstrap from the native Map's values() generator to the kind of generator we want.
-   *
-   * @param {function} unpacker The transforming function for values.
-   * @yields {*} The caller's generator.
    */`);
     });
 

@@ -191,9 +191,9 @@ ${docs.buildBlock("hasSet", 2)}
 
 ${defines.has("validateArguments") ? `
 ${docs.buildBlock("isValidKeyPublic", 2)}
-    isValidKey(${defines.get("argList")}) {
-      return this.#isValidKey(${defines.get("argList")});
-    }
+  isValidKey(${defines.get("argList")}) {
+    return this.#isValidKey(${defines.get("argList")});
+  }
 
   ` : ``}
 ${docs.buildBlock("values", 2)}
