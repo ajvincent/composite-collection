@@ -358,7 +358,9 @@ export default class CodeGenerator extends CompletionPromise {
       return;
 
     if (this.#configurationData.oneToOneOptions?.pathToBaseModule) {
-      this.#generatedCode += `import ${baseData.className} from "${this.#configurationData.oneToOneOptions.pathToBaseModule}";\n`;
+      this.#generatedCode += `import ${baseData.className} from "${this.#configurationData.oneToOneOptions.pathToBaseModule}";`;
+      this.#generatedCode += baseData.importLines;
+      this.#generatedCode += "\n";
       return;
     }
 
