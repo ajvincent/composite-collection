@@ -7,11 +7,12 @@
 import KeyHasher from "./keys/Hasher.mjs";
 
 class StringStateMachine {
+  /** @typedef {string} hash */
+
   /**
    * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.
    *
    * @type {Map<hash, *[]>}
-   *
    * @constant
    */
   #root = new Map;
@@ -31,6 +32,7 @@ class StringStateMachine {
   /**
    * The number of elements in this collection.
    *
+   * @returns {number} The element count.
    * @public
    * @constant
    */
@@ -41,9 +43,8 @@ class StringStateMachine {
   /**
    * Add a key set to this collection.
    *
-   * @param {Function} currentState 
-   * @param {Function} nextState    
-   *
+   * @param {Function} currentState The current state.
+   * @param {Function} nextState    An allowable next state.
    * @returns {StringStateMachine} This collection.
    * @public
    */
@@ -67,9 +68,8 @@ class StringStateMachine {
   /**
    * Delete an element from the collection by the given key sequence.
    *
-   * @param {Function} currentState 
-   * @param {Function} nextState    
-   *
+   * @param {Function} currentState The current state.
+   * @param {Function} nextState    An allowable next state.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -81,8 +81,8 @@ class StringStateMachine {
   /**
    * Iterate over the keys.
    *
-   * @param {StringStateMachine~ForEachCallback} callback A function to invoke for each iteration.
-   *
+   * @param {StringStateMachine~ForEachCallback} __callback__ A function to invoke for each iteration.
+   * @param {object}                             __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEach(__callback__, __thisArg__) {
@@ -92,19 +92,19 @@ class StringStateMachine {
   }
 
   /**
-   * @callback StringStateMachine~ForEachCallback
+   * An user-provided callback to .forEach().
    *
-   * @param {Function}           currentState   
-   * @param {Function}           nextState      
+   * @callback StringStateMachine~ForEachCallback
+   * @param {Function}           currentState   The current state.
+   * @param {Function}           nextState      An allowable next state.
    * @param {StringStateMachine} __collection__ This collection.
    */
 
   /**
    * Report if the collection has a value for a key set.
    *
-   * @param {Function} currentState 
-   * @param {Function} nextState    
-   *
+   * @param {Function} currentState The current state.
+   * @param {Function} nextState    An allowable next state.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -116,9 +116,8 @@ class StringStateMachine {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {Function} currentState 
-   * @param {Function} nextState    
-   *
+   * @param {Function} currentState The current state.
+   * @param {Function} nextState    An allowable next state.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @public
    */
@@ -127,21 +126,21 @@ class StringStateMachine {
   }
 
   /**
-   * Return a new iterator for the values of the collection.
+   * Yield the values of the collection.
    *
-   * @returns {Iterator<*>}
+   * @yields {*} The value.
    * @public
    */
-  values() {
-    return this.#root.values();
+  * values() {
+    for (let __value__ of this.#root.values())
+      yield __value__;
   }
 
   /**
    * Throw if the key set is not valid.
    *
-   * @param {Function} currentState 
-   * @param {Function} nextState    
-   *
+   * @param {Function} currentState The current state.
+   * @param {Function} nextState    An allowable next state.
    * @throws for an invalid key set.
    */
   #requireValidKey(currentState, nextState) {
@@ -152,9 +151,8 @@ class StringStateMachine {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {Function} currentState 
-   * @param {Function} nextState    
-   *
+   * @param {Function} currentState The current state.
+   * @param {Function} nextState    An allowable next state.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidKey(currentState, nextState) {
