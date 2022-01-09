@@ -7,6 +7,7 @@
 import WeakKeyComposer from "./keys/Composite.mjs";
 
 class WeakWeakSet {
+  // eslint-disable-next-line jsdoc/require-property
   /** @typedef {object} WeakKey */
 
   /** @type {WeakKeyComposer} @constant */

@@ -8,6 +8,7 @@ export default function preprocess(defines, docs) {
 ${defines.get("importLines")}
 
 class ${defines.get("className")} {
+  // eslint-disable-next-line jsdoc/require-property
   /** @typedef {object} WeakKey */
 
   /** @type {WeakKeyComposer} @constant */

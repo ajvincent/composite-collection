@@ -11,6 +11,8 @@ ${defines.get("importLines")}
 
 class ${defines.get("className")} {
   /** @typedef {string} hash */
+
+  // eslint-disable-next-line jsdoc/require-property
   /** @typedef {object} WeakKey */
 
   /**

@@ -11,6 +11,8 @@ import WeakKeyComposer from "./keys/Composite.mjs";
 
 class WeakMapOfStrongSets {
   /** @typedef {string} hash */
+
+  // eslint-disable-next-line jsdoc/require-property
   /** @typedef {object} WeakKey */
 
   /**

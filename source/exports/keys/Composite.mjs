@@ -28,7 +28,9 @@ class WeakKeyPropertyBag {
 }
 
 export default class WeakKeyComposer {
+  // eslint-disable-next-line jsdoc/require-property
   /** @typedef {object} WeakKey */
+  // eslint-disable-next-line jsdoc/require-property
   /** @typedef {object} FinalizerKey */
   /** @typedef {string} hash */
 
