@@ -32,7 +32,7 @@ class StrongStrongSet {
   /**
    * The number of elements in this collection.
    *
-   * @returns {number}
+   * @returns {number} The element count.
    * @public
    * @constant
    */
@@ -79,7 +79,8 @@ class StrongStrongSet {
   /**
    * Iterate over the keys.
    *
-   * @param {StrongStrongSet~ForEachCallback} callback A function to invoke for each iteration.
+   * @param {StrongStrongSet~ForEachCallback} __callback__ A function to invoke for each iteration.
+   * @param {object}                          __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEach(__callback__, __thisArg__) {
@@ -89,8 +90,9 @@ class StrongStrongSet {
   }
 
   /**
-   * @callback StrongStrongSet~ForEachCallback
+   * An user-provided callback to .forEach().
    *
+   * @callback StrongStrongSet~ForEachCallback
    * @param {*}               key1           The first key.
    * @param {*}               key2           The second key.
    * @param {StrongStrongSet} __collection__ This collection.

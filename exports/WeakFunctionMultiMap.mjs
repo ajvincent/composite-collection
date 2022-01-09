@@ -16,7 +16,8 @@ class WeakFunctionMultiMap {
   /**
    * @type {WeakMap<WeakKey, WeakFunctionMultiMap~InnerMap>}
    * @constant
-   * @note This is two levels. The first level is the WeakKey.  The second level is the strong set.
+   * This is two levels. The first level is the WeakKey.
+   * The second level is the strong set.
    */
   #root = new WeakMap();
 
@@ -152,7 +153,9 @@ class WeakFunctionMultiMap {
   /**
    * Iterate over the keys under a map in this collection.
    *
-   * @param {WeakFunctionMultiMap~ForEachCallback} callback A function to invoke for each iteration.
+   * @param {object}                               key          The map key.
+   * @param {WeakFunctionMultiMap~ForEachCallback} __callback__ A function to invoke for each iteration.
+   * @param {object}                               __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEachSet(key, __callback__, __thisArg__) {
@@ -167,8 +170,9 @@ class WeakFunctionMultiMap {
   }
 
   /**
-   * @callback WeakFunctionMultiMap~ForEachCallback
+   * An user-provided callback to .forEach().
    *
+   * @callback WeakFunctionMultiMap~ForEachCallback
    * @param {object}               key            The map key.
    * @param {Function}             mapFunction    The function.
    * @param {WeakFunctionMultiMap} __collection__ This collection.
@@ -212,8 +216,7 @@ class WeakFunctionMultiMap {
   /**
    * Report if the collection has any sets for a map.
    *
-   * @param {object}   key         The map key.
-   * @param {Function} mapFunction The function.
+   * @param {object} key The map key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -237,6 +240,7 @@ class WeakFunctionMultiMap {
   /**
    * Yield the sets of the collection in a map.
    *
+   * @param {object} key The map key.
    * @yields {*} The sets.
    * @public
    */

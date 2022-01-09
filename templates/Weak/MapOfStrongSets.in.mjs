@@ -16,7 +16,8 @@ class ${defines.get("className")} {
   /**
    * @type {WeakMap<WeakKey, ${defines.get("className")}~InnerMap>}
    * @constant
-   * @note This is two levels. The first level is the WeakKey.  The second level is the strong set.
+   * This is two levels. The first level is the WeakKey.
+   * The second level is the strong set.
    */
   #root = new WeakMap();
 

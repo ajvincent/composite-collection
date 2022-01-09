@@ -11,7 +11,7 @@ class WeakMapOfWeakSets {
 
   /**
    * @type {WeakMap<WeakKey, WeakSet<WeakKey>>}
-   * @note This is two levels.  The first level is the map's weak key.
+   * This is two levels.  The first level is the map's weak key.
    * The second level is the weak set of weak keys.
    */
   #root = new WeakMap();
@@ -85,6 +85,8 @@ class WeakMapOfWeakSets {
 
       __innerSet__.add(__weakSetKey__);
     });
+
+    return this;
   }
 
   /**
@@ -145,7 +147,6 @@ class WeakMapOfWeakSets {
    * Report if the collection has any sets for a map.
    *
    * @param {object} mapKey The map key.
-   * @param {object} setKey The set key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */

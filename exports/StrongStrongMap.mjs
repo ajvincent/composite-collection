@@ -39,7 +39,7 @@ class StrongStrongMap {
   /**
    * The number of elements in this collection.
    *
-   * @returns {number}
+   * @returns {number} The element count.
    * @public
    * @constant
    */
@@ -84,6 +84,7 @@ class StrongStrongMap {
    * Iterate over the keys and values.
    *
    * @param {StrongStrongMap~ForEachCallback} callback A function to invoke for each iteration.
+   * @param {object}                          thisArg  Value to use as this when executing callback.
    * @public
    */
   forEach(callback, thisArg) {
@@ -95,8 +96,9 @@ class StrongStrongMap {
   }
 
   /**
-   * @callback StrongStrongMap~ForEachCallback
+   * An user-provided callback to .forEach().
    *
+   * @callback StrongStrongMap~ForEachCallback
    * @param {*}               value          The value.
    * @param {*}               key1           The first key.
    * @param {*}               key2           The second key.

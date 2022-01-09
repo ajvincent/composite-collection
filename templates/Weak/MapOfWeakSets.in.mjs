@@ -12,7 +12,7 @@ class ${defines.get("className")} {
 
   /**
    * @type {WeakMap<WeakKey, WeakSet<WeakKey>>}
-   * @note This is two levels.  The first level is the map's weak key.
+   * This is two levels.  The first level is the map's weak key.
    * The second level is the weak set of weak keys.
    */
   #root = new WeakMap();
@@ -74,6 +74,8 @@ ${docs.buildBlock("addSets", 2)}
 
       __innerSet__.add(__weakSetKey__);
     });
+
+    return this;
   }
 
 ${docs.buildBlock("delete", 2)}

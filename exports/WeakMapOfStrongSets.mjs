@@ -16,7 +16,8 @@ class WeakMapOfStrongSets {
   /**
    * @type {WeakMap<WeakKey, WeakMapOfStrongSets~InnerMap>}
    * @constant
-   * @note This is two levels. The first level is the WeakKey.  The second level is the strong set.
+   * This is two levels. The first level is the WeakKey.
+   * The second level is the strong set.
    */
   #root = new WeakMap();
 
@@ -152,7 +153,9 @@ class WeakMapOfStrongSets {
   /**
    * Iterate over the keys under a map in this collection.
    *
-   * @param {WeakMapOfStrongSets~ForEachCallback} callback A function to invoke for each iteration.
+   * @param {object}                              mapKey       The map key.
+   * @param {WeakMapOfStrongSets~ForEachCallback} __callback__ A function to invoke for each iteration.
+   * @param {object}                              __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEachSet(mapKey, __callback__, __thisArg__) {
@@ -167,8 +170,9 @@ class WeakMapOfStrongSets {
   }
 
   /**
-   * @callback WeakMapOfStrongSets~ForEachCallback
+   * An user-provided callback to .forEach().
    *
+   * @callback WeakMapOfStrongSets~ForEachCallback
    * @param {object}              mapKey         The map key.
    * @param {*}                   setKey         The set key.
    * @param {WeakMapOfStrongSets} __collection__ This collection.
@@ -213,7 +217,6 @@ class WeakMapOfStrongSets {
    * Report if the collection has any sets for a map.
    *
    * @param {object} mapKey The map key.
-   * @param {*}      setKey The set key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -237,6 +240,7 @@ class WeakMapOfStrongSets {
   /**
    * Yield the sets of the collection in a map.
    *
+   * @param {object} mapKey The map key.
    * @yields {*} The sets.
    * @public
    */

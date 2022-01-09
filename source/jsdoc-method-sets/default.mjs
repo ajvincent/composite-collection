@@ -48,6 +48,7 @@ export default function defaultMethods() {
       description: "The number of elements in this collection.",
       includeArgs: "none",
       returnType: "number",
+      returnDescription: "The element count.",
       footers: ["@public", "@constant"],
     }],
 
@@ -64,6 +65,7 @@ export default function defaultMethods() {
       description: "The number of maps in this collection.",
       includeArgs: "none",
       returnType: "number",
+      returnDescription: "The map count.",
       footers: ["@public", "@constant"],
     }],
 
@@ -109,8 +111,9 @@ export default function defaultMethods() {
     ["forEachMap", {
       returnVoid: true,
       description: "Iterate over the keys and values.",
-      paramHeaders: [
-        ["__className__~ForEachCallback", "callback", "A function to invoke for each iteration."]
+      paramFooters: [
+        ["__className__~ForEachCallback", "callback", "A function to invoke for each iteration."],
+        ["object", "thisArg", "Value to use as this when executing callback."],
       ],
       includeArgs: "none",
       footers: ["@public"],
@@ -119,8 +122,9 @@ export default function defaultMethods() {
     ["forEachSet", {
       returnVoid: true,
       description: "Iterate over the keys.",
-      paramHeaders: [
-        ["__className__~ForEachCallback", "callback", "A function to invoke for each iteration."]
+      paramFooters: [
+        ["__className__~ForEachCallback", "__callback__", "A function to invoke for each iteration."],
+        ["object", "__thisArg__", "Value to use as this when executing callback."],
       ],
       includeArgs: "none",
       footers: ["@public"],
@@ -129,16 +133,17 @@ export default function defaultMethods() {
     ["forEachMapSet", {
       returnVoid: true,
       description: "Iterate over the keys under a map in this collection.",
-      paramHeaders: [
-        ["__className__~ForEachCallback", "callback", "A function to invoke for each iteration."]
+      paramFooters: [
+        ["__className__~ForEachCallback", "__callback__", "A function to invoke for each iteration."],
+        ["object", "__thisArg__", "Value to use as this when executing callback."],
       ],
-      includeArgs: "none",
+      includeArgs: "mapArguments",
       footers: ["@public"],
     }],
 
     ["forEachCallbackMap", {
       returnVoid: true,
-      description: "@callback __className__~ForEachCallback",
+      description: "An user-provided callback to .forEach().",
       includeArgs: "excludeValue",
       paramHeaders: [
         ["__valueType__", "value", "__valueDesc__"],
@@ -146,14 +151,20 @@ export default function defaultMethods() {
       paramFooters: [
         ["__className__", "__collection__", "This collection."]
       ],
+      headers: [
+        "@callback __className__~ForEachCallback"
+      ]
     }],
 
     ["forEachCallbackSet", {
       returnVoid: true,
-      description: "@callback __className__~ForEachCallback",
+      description: "An user-provided callback to .forEach().",
       includeArgs: "all",
       paramFooters: [
         ["__className__", "__collection__", "This collection."]
+      ],
+      headers: [
+        "@callback __className__~ForEachCallback",
       ],
     }],
 
@@ -175,7 +186,7 @@ export default function defaultMethods() {
 
     ["hasSet", {
       description: "Report if the collection has any sets for a map.",
-      includeArgs: "excludeValue",
+      includeArgs: "mapArguments",
       returnType: "boolean",
       returnDescription: "True if the key set refers to a value in the collection.",
       footers: ["@public"],
@@ -228,7 +239,7 @@ export default function defaultMethods() {
 
     ["valuesSet", {
       description: "Yield the sets of the collection in a map.",
-      includeArgs: "none",
+      includeArgs: "mapArguments",
       returnType: "__valueType__",
       returnDescription: "The sets.",
       isGenerator: true,

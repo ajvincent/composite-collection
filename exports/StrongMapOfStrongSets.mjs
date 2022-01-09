@@ -33,7 +33,7 @@ class StrongMapOfStrongSets {
   /**
    * The number of elements in this collection.
    *
-   * @returns {number}
+   * @returns {number} The element count.
    * @public
    * @constant
    */
@@ -56,7 +56,7 @@ class StrongMapOfStrongSets {
   /**
    * The number of maps in this collection.
    *
-   * @returns {number}
+   * @returns {number} The map count.
    * @public
    * @constant
    */
@@ -196,7 +196,8 @@ class StrongMapOfStrongSets {
   /**
    * Iterate over the keys.
    *
-   * @param {StrongMapOfStrongSets~ForEachCallback} callback A function to invoke for each iteration.
+   * @param {StrongMapOfStrongSets~ForEachCallback} __callback__ A function to invoke for each iteration.
+   * @param {object}                                __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEach(__callback__, __thisArg__) {
@@ -210,7 +211,9 @@ class StrongMapOfStrongSets {
   /**
    * Iterate over the keys under a map in this collection.
    *
-   * @param {StrongMapOfStrongSets~ForEachCallback} callback A function to invoke for each iteration.
+   * @param {*}                                     mapKey       The map key.
+   * @param {StrongMapOfStrongSets~ForEachCallback} __callback__ A function to invoke for each iteration.
+   * @param {object}                                __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEachSet(mapKey, __callback__, __thisArg__) {
@@ -224,8 +227,9 @@ class StrongMapOfStrongSets {
   }
 
   /**
-   * @callback StrongMapOfStrongSets~ForEachCallback
+   * An user-provided callback to .forEach().
    *
+   * @callback StrongMapOfStrongSets~ForEachCallback
    * @param {*}                     mapKey         The map key.
    * @param {*}                     setKey         The set key.
    * @param {StrongMapOfStrongSets} __collection__ This collection.
@@ -252,7 +256,6 @@ class StrongMapOfStrongSets {
    * Report if the collection has any sets for a map.
    *
    * @param {*} mapKey The map key.
-   * @param {*} setKey The set key.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -279,6 +282,7 @@ class StrongMapOfStrongSets {
   /**
    * Yield the sets of the collection in a map.
    *
+   * @param {*} mapKey The map key.
    * @yields {*} The sets.
    * @public
    */
