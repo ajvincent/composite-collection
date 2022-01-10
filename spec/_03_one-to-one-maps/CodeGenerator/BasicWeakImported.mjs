@@ -136,7 +136,7 @@ describe("CodeGenerator(OneToOneBasicWeakImported.mjs)", () => {
 
   it("imports the WeakWeakMap class", async () => {
     await expectAsync(
-      hasClassInSource("./spec/_02_one-to-one-maps/generated/BasicWeakImported.mjs", "WeakWeakMap")
+      hasClassInSource("./spec/_03_one-to-one-maps/generated/BasicWeakImported.mjs", "WeakWeakMap")
     ).toBeResolvedTo(false);
   });
 });
