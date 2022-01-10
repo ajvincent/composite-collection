@@ -87,9 +87,19 @@ wfMM.add(key1, callback1);
 wfMM.add(key1, callback2);
 ```
 
+## Definitions
+
+By a "strong" key, I mean the collection holds a strong reference to the argument.  This means that unless the user explicitly deletes the key in the collection,
+or the collection itself is inaccessible, the argument will remain held in memory.
+
+By a "weak" key, I mean the collection does not hold a strong reference to the argument.  Any such arguments are unreachable by JavaScript code, if there are no
+other variables or objects holding a reference to them.  The JavaScript engine may delete unreachable and any objects they alone reference at any time.
+
+The developer.mozilla.org website has [a great explainer about weak and strong references](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap#why_weakmap).
+
 ## Features
 
-Currently supported (version 0.3.0):
+Currently supported (version 0.4.0):
 
 - ECMAScript class modules with all the pieces you need
 - A simple configuration API
@@ -104,12 +114,12 @@ Currently supported (version 0.3.0):
 - [Private class fields and methods](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_class_fields)
 - Using [WeakRef](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakRef) and [FinalizationRegistry](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/FinalizationRegistry) to reduce the number of WeakMaps
 - One-to-one hash tables with two-part keys:  `("red", redObj) <-> ("blue", blueObj)`
+- Eliminating redundant use of KeyHasher, WeakKeyComposer when there's only one map key and/or one set key
 
 In the future:
 
 - Declaring key groups
   - Key groups can be equal: `(arg1, arg2) === (arg3, arg4)` for the purpose of this collection
-- Eliminating redundant use of KeyHasher, WeakKeyComposer when there's only one map key and/or one set key
 
 ## A note about one-to-one hashtables
 
@@ -139,18 +149,62 @@ These modules work by wrapping an existing weak map collection and assuming owne
 
 If you want a more complex hashtable structure (multiple keys, argument validation, etc.), you'll want to craft your own collection configuration.  See [`source/exports/OneToOneWeakMap.mjs`](source/exports/OneToOneWeakMap.mjs) for an example.
 
+## Collection Configuration API: How To Create A Collection
+
+- `new CollectionConfiguration(className, outerType, innerType);`
+  - `className` is the exported class's name, a valid identifier.
+  - `outerType` is:
+    - "Map" for strong maps
+    - "WeakMap" for weak maps
+    - "Set" for strong sets
+    - "WeakSet" for weak sets
+  - `innerType` is:
+    - "Set" for maps of strong sets
+    - "WeakSet" for weak maps of weak sets
+    - Strong maps of weak sets are illegal because it's unclear when we would hold references to the strong map keys.
+- `setFileOverview(overview);` to set a top-level file overview
+- `importLines(blockOfTest);` to specify top-level module imports
+- `addMapKey(argumentName, description, holdWeak, options);` to specify keys in order (one at a time)
+  - `argumentName` is the name of the argument, a valid identifier.
+  - `description` is the description of the argument for JSDoc.
+  - `holdWeak` is true if the key represents a weakly held key, false for a strongly held key.
+  - `options` is an object taking optional properties:
+    - `argumentType` is a JSDoc-printable type for the argument.
+    - `argumentValidator` is a lambda function with one argument, the same as argumentName, to validate the argument value in the class's methods.
+- `addSetKey(argumentName, description, holdWeak, options);` to specify ordered keys for sets
+  - The arguments for `addSetKey` are the same as for `addMapKey`.
+- `setValueType(type, description, validator);` for maps, to specify the type of the value to store.
+  - `type` is the type to provide to JSDoc.
+  - `description` is the description to provide to JSDoc.
+  - `validator` is an optional lambda function with one argument, `value`, to validate the value in the class's methods.
+- `lock();` to lock the configuration.
+- `export default` the configuration.
+
+One-to-one hashtables go through an additional set of steps.
+
+- `const baseConfig = new CollectionConfiguration(className, "WeakMap");`.
+  - Fill this out as you normally would, with one weak key argument specifically reserved for the hashtable.
+  - Call `baseConfig.lock();`.
+  - You may import this configuration module instead of defining it inline if you wish.
+  - Do not export this configuration.
+- `const hashTableConfig = new CollectionConfiguration(className, "OneToOne");` for the hashtable.
+- `hashTableConfig.configureOneToOne(baseConfig, privateKeyName, options);`
+  - `baseConfig` in exactly three cases may be a string, but all three cases have existing exports:
+    - "WeakMap" to indicate a value-only hashtable.  See [composite-collection/OneToOneSimpleMap](exports/OneToOneSimpleMap.mjs).
+    - "composite-collection/WeakStrongMap" to indicate a strong-key hashtable.  See [composite-collection/OneToOneStrongMap](exports/OneToOneStrongMap.mjs).
+    - "composite-collection/WeakWeakMap" to indicate a weak-key hashtable.  See [composite-collection/OneToOneWeakMap](exports/OneToOneWeakMap.mjs).
+    - Anything more complex (argument validation, value validation, more than one key, etc.) requires a custom base configuration.
+  - `privateKeyName` is the reserved weak key argument.
+  - `options` is an object taking optional properties:
+    - `pathToBaseModule` is a module path to the base configuration module, for the generated code to import.  This allows you to keep the base configuration in another file for the `Driver` to generate sepearately in the same directory.
+- `lock();` to lock the hashtable configuration.
+- `export default` the hashtable configuration.
+
 ## How It All Works
 
-1. The user writes a [CollectionConfiguration](source/CollectionConfiguration.mjs) instance, using several methods:
-  - `setFileOverview()` to set a top-level file overview
-  - `importLines()` to specify top-level module imports
-  - `addMapKey()` to specify ordered keys for maps
-  - `addSetKey()` to specify ordered keys for sets
-  - `setValueType()` for maps, to specify the type of the value to store
-  - `configureOneToOne()` for one-to-one hashtable configurations
-  - `lock()` (optional) to lock the configuration.
-2. The [`templates/Strong`](templates/Strong) and [`templates/Weak`](templates/Weak) directories hold template JavaScript files in [JavaScript template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), enclosed in functions taking a `defines` Map argument and a `docs` "JSDocGenerator" argument.
-3. For strongly held keys, the [`CodeGenerator`](source/CodeGenerator.mjs) module writes an import for a [`KeyHasher`](source/exports/keys/Hasher.mjs) module, which the [`Driver`](source/Driver.mjs) module copies into the destination directory.
-4. For weakly held keys (and strongly held keys associated with them), the `CodeGenerator` module writes an import for a [`WeakKeyComposer`](exports/keys/Composite.mjs) module.  The Driver module copies this module into the destination directory.
+1. The user writes a [CollectionConfiguration](source/CollectionConfiguration.mjs) instance as I document above.
+2. The [`templates`](templates) directory holds template JavaScript files in [JavaScript template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), enclosed in functions taking a `defines` Map argument and at least one `docs` "JSDocGenerator" argument.
+3. For strongly held keys, the [`CodeGenerator`](source/CodeGenerator.mjs) module writes an import for a [`KeyHasher`](source/exports/keys/Hasher.mjs) module, which the [`Driver`](source/Driver.mjs) module copies into the destination directory.  The `KeyHasher` holds weak references to objects, and returns a string hash for the module's use.
+4. For weakly held keys (and strongly held keys associated with them), the `CodeGenerator` module writes an import for a [`WeakKeyComposer`](exports/keys/Composite.mjs) module.  The Driver module copies this module into the destination directory.  The `WeakKeyComposer` holds the weak and strong references as the collection specified.  It returns vanilla objects (`WeakKey` objects) for the module's use.
 5. The `CodeGenerator` uses the configuration and fills a [`JSDocGenerator`](source/JSDocGenerator.mjs) instance with the necessary fields to format JSDoc comments for the code it will generate.
-6. The `CodeGenerator` combines the template, the configuration and the `JSDocGenerator` into a [JavaScript module file](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) ready for either web browsers or [NodeJS](https://www.nodejs.org) applications to use.
+6. The `CodeGenerator` combines the template, the configuration and the `JSDocGenerator` into a [JavaScript module file](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) ready for either web browsers or [NodeJS](https://www.nodejs.org) applications to use.  The module will store `WeakKey` objects in a private WeakMap, and hashes in a private Map.  The module will `export default` the final collection class.

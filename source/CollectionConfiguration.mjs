@@ -212,9 +212,9 @@ export default class CollectionConfiguration {
   }
 
   /**
-   * @param {string}  className The name of the class to define.
-   * @param {string}  outerType One of "Map", "WeakMap", "Set", "WeakSet".
-   * @param {string?} innerType One of "Set", "WeakSet", or null.
+   * @param {identifier} className The name of the class to define.
+   * @param {string}     outerType One of "Map", "WeakMap", "Set", "WeakSet".
+   * @param {string?}    innerType One of "Set", "WeakSet", or null.
    */
   constructor(className, outerType, innerType = null) {
     /* This is a defensive measure for one-to-one configurations, where the base configuration must be for a WeakMap. */
@@ -299,6 +299,12 @@ export default class CollectionConfiguration {
     });
   }
 
+  /**
+   * Clone the configuration data for use in code generation.
+   *
+   * @returns {object} The configuration.
+   * @package
+   */
   cloneData() {
     return this.#catchErrorState(() => {
       return {
@@ -323,6 +329,12 @@ export default class CollectionConfiguration {
     });
   }
 
+  /**
+   * Set the module import lines.
+   *
+   * @param {string} lines The JavaScript code to inject.
+   * @returns {void}
+   */
   importLines(lines) {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("importLines")) {
