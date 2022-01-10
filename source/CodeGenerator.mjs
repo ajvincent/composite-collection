@@ -118,22 +118,32 @@ export default class CodeGenerator extends CompletionPromise {
   }
 
   #filePrologue() {
-    let generatedCodeNotice =
-      `
-/**
+    let fileOverview = "";
+    if (!this.#internalFlagSet?.has("no @file") && this.#configurationData.fileOverview) {
+      fileOverview = this.#configurationData.fileOverview;
+      fileOverview = fileOverview.split("\n").map(line => " *" + (line.trim() ? " " + line : "")).join("\n");
+    }
+
+    let lines = [
+      this.#compileOptions.licenseText ? this.#compileOptions.licenseText + "\n\n" : "",
+      `/**
+ * @file
  * This is generated code.  Do not edit.
  *
  * Generator: https://github.com/ajvincent/composite-collection/
- ${
-  this.#compileOptions.sourceFile ? ` * Source: ${this.#compileOptions.sourceFile}\n` : ""
-}${
-  this.#compileOptions.author ? ` * @author ${this.#compileOptions.author}\n` : ""
-}${
-  this.#compileOptions.copyright ? ` * @copyright ${this.#compileOptions.copyright}\n` : ""
-} */
-`;
+`.trim(),
+      this.#compileOptions.sourceFile ? ` * Source: ${this.#compileOptions.sourceFile}\n` : "",
+      this.#compileOptions.author ? ` * @author ${this.#compileOptions.author}\n` : "",
+      this.#compileOptions.copyright ? ` * @copyright ${this.#compileOptions.copyright}\n` : "",
+      fileOverview,
+      " */"
+    ];
+
+    lines = lines.filter(Boolean);
+    lines = lines.map(line => line === " * " ? " *" : line);
+
+    let generatedCodeNotice = lines.join("\n");
     const prologue = [
-      this.#compileOptions.licenseText,
       generatedCodeNotice.trim(),
     ];
 
@@ -370,6 +380,7 @@ export default class CodeGenerator extends CompletionPromise {
     subCompileOptions[CodeGenerator.#internalFlagsSymbol] = new Set([
       "prevent export",
       "configuration ok",
+      "no @file",
     ]);
 
     this.#oneToOneSubGenerator = new CodeGenerator(

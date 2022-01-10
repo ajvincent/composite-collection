@@ -10,6 +10,8 @@ function validString(value) {
 
 /**
  * A catch-all for run-time options for CodeGenerator, and anyone who invokes it.
+ *
+ * @public
  */
 export default class CompileTimeOptions {
   constructor(properties) {

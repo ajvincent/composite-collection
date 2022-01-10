@@ -1,4 +1,5 @@
 /**
+ * @file
  * This is generated code.  Do not edit.
  *
  * Generator: https://github.com/ajvincent/composite-collection/

@@ -287,15 +287,16 @@ export default class CollectionConfiguration {
   /**
    * A file overview to feed into the generated module.
    *
-   * @type {string?}
+   * @type {string} fileOverview The overview.
    * @public
    */
-  setFileOverview(fileoverview) {
+  setFileOverview(fileOverview) {
     return this.#catchErrorState(() => {
-      this.#stringArg("fileoverview", fileoverview);
+      this.#doStateTransition("fileOverview");
+      this.#stringArg("fileOverview", fileOverview);
       if (this.#fileoverview)
-        throw new Error("fileoverview has already been set!");
-      this.#fileoverview = fileoverview;
+        throw new Error("fileOverview has already been set!");
+      this.#fileoverview = fileOverview;
     });
   }
 

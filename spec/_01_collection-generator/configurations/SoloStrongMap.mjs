@@ -18,6 +18,12 @@ SoloStrongMapConfig.setValueType("MockImportable", "The value", function(value) 
     return false;
 });
 
+SoloStrongMapConfig.setFileOverview(`
+I generated this file for testing purposes.
+
+This is only a test.
+`.trim());
+
 SoloStrongMapConfig.lock();
 
 export default SoloStrongMapConfig;

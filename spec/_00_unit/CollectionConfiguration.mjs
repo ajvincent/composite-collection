@@ -84,13 +84,13 @@ describe("CollectionConfiguration", () => {
       config.setFileOverview(overview);
       expect(() => {
         config.setFileOverview("foo");
-      }).toThrowError("fileoverview has already been set!");
+      }).toThrowError("fileOverview has already been set!");
     });
 
     it("throws for setting to a non-string value", () => {
       expect(() => {
         config.setFileOverview(Symbol("foo"));
-      }).toThrowError(`fileoverview must be a non-empty string!`);
+      }).toThrowError(`fileOverview must be a non-empty string!`);
     });
   });
 

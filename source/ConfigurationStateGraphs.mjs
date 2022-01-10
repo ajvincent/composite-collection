@@ -27,8 +27,12 @@ ConfigurationStateGraphs.set(
   new ConfigurationStateMachine([
     ["start", "startMap"],
 
+    ["startMap", "fileOverview"],
     ["startMap", "mapKeys"],
     ["startMap", "importLines"],
+
+    ["fileOverview", "mapKeys"],
+    ["fileOverview", "importLines"],
 
     ["importLines", "mapKeys"],
     ["importLines", "hasValueFilter"],
@@ -53,8 +57,12 @@ ConfigurationStateGraphs.set(
   new ConfigurationStateMachine([
     ["start", "startSet"],
 
+    ["startSet", "fileOverview"],
     ["startSet", "setElements"],
     ["startSet", "importLines"],
+
+    ["fileOverview", "setElements"],
+    ["fileOverview", "importLines"],
 
     ["importLines", "setElements"],
 
@@ -74,8 +82,12 @@ ConfigurationStateGraphs.set(
   new ConfigurationStateMachine([
     ["start", "startMap"],
 
+    ["startMap", "fileOverview"],
     ["startMap", "mapKeys"],
     ["startMap", "importLines"],
+
+    ["fileOverview", "mapKeys"],
+    ["fileOverview", "importLines"],
 
     ["importLines", "mapKeys"],
 
@@ -98,7 +110,10 @@ ConfigurationStateGraphs.set(
   new ConfigurationStateMachine([
     ["start", "startOneToOne"],
 
+    ["startOneToOne", "fileOverview"],
     ["startOneToOne", "configureOneToOne"],
+
+    ["fileOverview", "configureOneToOne"],
 
     ["configureOneToOne", "locked"],
 

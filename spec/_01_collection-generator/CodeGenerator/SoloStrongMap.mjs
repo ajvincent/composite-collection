@@ -3,6 +3,10 @@ import ToHoldRefsMatchers from "#support/toHoldReferences.mjs";
 import SoloStrongMap from "../generated/SoloStrongMap.mjs";
 import MockImportable from "../fixtures/MockImportable.mjs";
 
+import fs from "fs/promises";
+import { fileURLToPath } from 'url';
+import path from "path";
+
 describe("CodeGenerator(SoloStrongMap.mjs)", () => {
   let testMap, refMap = new Map;
   beforeEach(() => {
@@ -232,5 +236,23 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
         value => testMap.set(new MockImportable({}), new MockImportable(value))
       ).toHoldReferencesStrongly();
     });
+  });
+
+  it("includes the file overview at the start of the file", async () => {
+    const pathToModule = path.join(fileURLToPath(import.meta.url), "../../generated/SoloStrongMap.mjs");
+    const moduleContents = await fs.readFile(pathToModule, { encoding: "utf-8"});
+    const firstBlock = moduleContents.substr(0, moduleContents.indexOf("*/") + 2).trim();
+
+    const expected = `/**
+ * @file
+ * This is generated code.  Do not edit.
+ *
+ * Generator: https://github.com/ajvincent/composite-collection/
+ * I generated this file for testing purposes.
+ *
+ * This is only a test.
+ */`;
+
+    expect(firstBlock).toBe(expected);
   });
 });
