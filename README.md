@@ -170,7 +170,9 @@ If you want a more complex hashtable structure (multiple keys, argument validati
   - `holdWeak` is true if the key represents a weakly held key, false for a strongly held key.
   - `options` is an object taking optional properties:
     - `argumentType` is a JSDoc-printable type for the argument.
-    - `argumentValidator` is a lambda function with one argument, the same as argumentName, to validate the argument value in the class's methods.
+    - `argumentValidator` is a lambda function with one argument, the same as argumentName, to validate the argument value in the class's methods.  
+    - The validator *must not throw*, and only return false when the validation for that argument fails.  It must not do - or *return* - anything else.
+    - The CodeGenerator will combine all the argument validators into a single "isValidKey" function.
 - `addSetKey(argumentName, description, holdWeak, options);` to specify ordered keys for sets
   - The arguments for `addSetKey` are the same as for `addMapKey`.
 - `setValueType(type, description, validator);` for maps, to specify the type of the value to store.

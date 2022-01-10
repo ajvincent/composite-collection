@@ -2,6 +2,8 @@
  * @module source/CodeGenerator.mjs
  */
 
+/** @typedef {string} identifier */
+
 import CollectionConfiguration from "composite-collection/Configuration";
 import CompletionPromise from "./CompletionPromise.mjs";
 import JSDocGenerator from "./JSDocGenerator.mjs";
@@ -90,6 +92,12 @@ export default class CodeGenerator extends CompletionPromise {
     return this.#status;
   }
 
+  /**
+   * Generate the code!
+   *
+   * @returns {identifier} The class name.
+   * @see https://www.youtube.com/watch?v=nUCoYcxNMBE s/love/code/
+   */
   async buildCollection() {
     this.#status = "in progress";
 
