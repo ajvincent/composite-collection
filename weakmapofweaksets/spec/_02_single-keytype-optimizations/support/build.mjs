@@ -101,6 +101,7 @@ async function createCollectionFiles(dirName, extraKeyCount, disableKeyOptimizat
   const weakTypeMapSet = [
     [ false, false ],
     [ true,  false ],
+    [ true,  true  ],
   ];
 
   const argCountMapSet = [
