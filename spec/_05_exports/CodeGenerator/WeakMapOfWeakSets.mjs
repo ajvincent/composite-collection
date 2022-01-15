@@ -26,7 +26,6 @@ describe("CodeGenerator(WeakMapOfWeakSets.mjs)", () => {
       "delete",
       "deleteSets",
       "has",
-      "hasSets",
       "isValidKey",
     ]);
   });
@@ -165,10 +164,6 @@ describe("CodeGenerator(WeakMapOfWeakSets.mjs)", () => {
     testSet.addSets(key3, setOfSets);
     expect(testSet.has(key3, key1)).toBe(refSet.has(key1));
     expect(testSet.has(key3, key2)).toBe(refSet.has(key2));
-
-    expect(testSet.hasSets(key1)).toBe(false);
-    expect(testSet.hasSets(key2)).toBe(false);
-    expect(testSet.hasSets(key3)).toBe(true);
 
     refSet.delete(key1);
     refSet.delete(key2);

@@ -146,18 +146,6 @@ class WeakMapOfWeakSets {
   }
 
   /**
-   * Report if the collection has any sets for a map.
-   *
-   * @param {object} mapKey The map key.
-   * @returns {boolean} True if the key set refers to a value in the collection.
-   * @public
-   */
-  hasSets(mapKey) {
-    this.#requireValidMapKey(mapKey);
-    return Boolean(this.#getExistingInnerSet(mapKey));
-  }
-
-  /**
    * Determine if a set of keys is valid.
    *
    * @param {object} mapKey The map key.

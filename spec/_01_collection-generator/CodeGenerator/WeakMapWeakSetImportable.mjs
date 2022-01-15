@@ -24,7 +24,6 @@ describe("CodeGenerator(WeakMapWeakSetImportable.mjs)", () => {
       "delete",
       "deleteSets",
       "has",
-      "hasSets",
       "isValidKey",
     ]);
   });
