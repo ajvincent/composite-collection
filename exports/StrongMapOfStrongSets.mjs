@@ -6,9 +6,7 @@
  */
 
 class StrongMapOfStrongSets {
-  /** @typedef {string} hash */
-
-  /** @type {Map<*, Map<*, *[]>>} @constant */
+  /** @type {Map<*, Set<*>>} @constant */
   #outerMap = new Map();
 
   /** @type {number} */
@@ -42,8 +40,8 @@ class StrongMapOfStrongSets {
    * @public
    */
   getSizeOfSet(mapKey) {
-    const __innerMap__ = this.#outerMap.get(mapKey)
-    return __innerMap__?.size || 0;
+    const __innerSet__ = this.#outerMap.get(mapKey)
+    return __innerSet__?.size || 0;
   }
 
   /**
@@ -67,12 +65,12 @@ class StrongMapOfStrongSets {
    */
   add(mapKey, setKey) {
     if (!this.#outerMap.has(mapKey))
-      this.#outerMap.set(mapKey, new Map);
+      this.#outerMap.set(mapKey, new Set);
 
-    const __innerMap__ = this.#outerMap.get(mapKey);
+    const __innerSet__ = this.#outerMap.get(mapKey);
 
-    if (!__innerMap__.has(setKey)) {
-      __innerMap__.set(setKey, Object.freeze([mapKey, setKey]));
+    if (!__innerSet__.has(setKey)) {
+      __innerSet__.add(setKey);
       this.#sizeOfAll++;
     }
 
@@ -98,14 +96,13 @@ class StrongMapOfStrongSets {
     });
 
     if (!this.#outerMap.has(mapKey))
-      this.#outerMap.set(mapKey, new Map);
+      this.#outerMap.set(mapKey, new Set);
 
-    const __innerMap__ = this.#outerMap.get(mapKey);
-    const __mapArgs__ = [mapKey];
+    const __innerSet__ = this.#outerMap.get(mapKey);
 
     __array__.forEach(__set__ => {
-      if (!__innerMap__.has(__set__[0])) {
-        __innerMap__.set(__set__[0], Object.freeze(__mapArgs__.concat(__set__)));
+      if (!__innerSet__.has(__set__[0])) {
+        __innerSet__.add(__set__[0]);
         this.#sizeOfAll++;
       }
     });
@@ -130,12 +127,12 @@ class StrongMapOfStrongSets {
    * @public
    */
   clearSets(mapKey) {
-    const __innerMap__ = this.#outerMap.get(mapKey)
-    if (!__innerMap__)
+    const __innerSet__ = this.#outerMap.get(mapKey)
+    if (!__innerSet__)
       return;
 
-    this.#sizeOfAll -= __innerMap__.size;
-    __innerMap__.clear();
+    this.#sizeOfAll -= __innerSet__.size;
+    __innerSet__.clear();
   }
 
   /**
@@ -147,17 +144,17 @@ class StrongMapOfStrongSets {
    * @public
    */
   delete(mapKey, setKey) {
-    const __innerMap__ = this.#outerMap.get(mapKey)
-    if (!__innerMap__)
+    const __innerSet__ = this.#outerMap.get(mapKey)
+    if (!__innerSet__)
       return false;
 
-    if (!__innerMap__.has(setKey))
+    if (!__innerSet__.has(setKey))
       return false;
 
-    __innerMap__.delete(setKey);
+    __innerSet__.delete(setKey);
     this.#sizeOfAll--;
 
-    if (__innerMap__.size === 0) {
+    if (__innerSet__.size === 0) {
       this.#outerMap.delete(mapKey);
     }
 
@@ -172,12 +169,12 @@ class StrongMapOfStrongSets {
    * @public
    */
   deleteSets(mapKey) {
-    const __innerMap__ = this.#outerMap.get(mapKey)
-    if (!__innerMap__)
+    const __innerSet__ = this.#outerMap.get(mapKey)
+    if (!__innerSet__)
       return false;
 
     this.#outerMap.delete(mapKey);
-    this.#sizeOfAll -= __innerMap__.size;
+    this.#sizeOfAll -= __innerSet__.size;
     return true;
   }
 
@@ -190,8 +187,8 @@ class StrongMapOfStrongSets {
    */
   forEach(__callback__, __thisArg__) {
     this.#outerMap.forEach(
-      __innerMap__ => __innerMap__.forEach(
-        __keySet__ => __callback__.apply(__thisArg__, __keySet__.concat(this))
+      (__innerSet__, mapKey) => __innerSet__.forEach(
+        setKey => __callback__.apply(__thisArg__, [mapKey, setKey, this])
       )
     );
   }
@@ -205,12 +202,12 @@ class StrongMapOfStrongSets {
    * @public
    */
   forEachSet(mapKey, __callback__, __thisArg__) {
-    const __innerMap__ = this.#outerMap.get(mapKey)
-    if (!__innerMap__)
+    const __innerSet__ = this.#outerMap.get(mapKey)
+    if (!__innerSet__)
       return;
 
-    __innerMap__.forEach(
-      __keySet__ => __callback__.apply(__thisArg__, __keySet__.concat(this))
+    __innerSet__.forEach(
+      setKey => __callback__.apply(__thisArg__, [mapKey, setKey, this])
     );
   }
 
@@ -232,11 +229,11 @@ class StrongMapOfStrongSets {
    * @public
    */
   has(mapKey, setKey) {
-    const __innerMap__ = this.#outerMap.get(mapKey)
-    if (!__innerMap__)
+    const __innerSet__ = this.#outerMap.get(mapKey)
+    if (!__innerSet__)
       return false;
 
-    return __innerMap__.has(setKey);
+    return __innerSet__.has(setKey);
   }
 
   /**
@@ -247,8 +244,8 @@ class StrongMapOfStrongSets {
    * @public
    */
   hasSets(mapKey) {
-    const __innerMap__ = this.#outerMap.get(mapKey)
-    return Boolean(__innerMap__);
+    const __innerSet__ = this.#outerMap.get(mapKey)
+    return Boolean(__innerSet__);
   }
 
   /**
@@ -258,11 +255,11 @@ class StrongMapOfStrongSets {
    * @public
    */
   * values() {
-    const __outerIter__ = this.#outerMap.values();
+    const __outerIter__ = this.#outerMap.entries();
 
-    for (let __innerMap__ of __outerIter__) {
-      for (let __value__ of __innerMap__.values())
-        yield __value__;
+    for (let [mapKey, __innerSet__] of __outerIter__) {
+      for (let setKey of __innerSet__.values())
+        yield [mapKey, setKey];
     }
   }
 
@@ -274,12 +271,12 @@ class StrongMapOfStrongSets {
    * @public
    */
   * valuesSet(mapKey) {
-    const __innerMap__ = this.#outerMap.get(mapKey)
-    if (!__innerMap__)
+    const __innerSet__ = this.#outerMap.get(mapKey)
+    if (!__innerSet__)
       return;
 
-    for (let __value__ of __innerMap__.values())
-      yield __value__;
+    for (let setKey of __innerSet__.values())
+      yield [mapKey, setKey];
   }
 
 }
