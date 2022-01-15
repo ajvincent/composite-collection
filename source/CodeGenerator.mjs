@@ -66,12 +66,12 @@ export default class CodeGenerator extends CompletionPromise {
     So:
       "1W/nS" = one weak map key, multiple strong set keys
     */
-    ["nS/nS", "Strong/MapOfStrongSets"],
     ["1S/nS", "Strong/OneMapOfStrongSets"],
     ["nS/1S", "Strong/MapOfOneStrongSet"],
     ["1S/1S", "Strong/OneMapOfOneStrongSet"],
 
     ["nW/nS", "Weak/MapOfStrongSets"],
+    ["1W/nS", "Weak/OneMapOfStrongSets"],
   ]);
 
   /**
