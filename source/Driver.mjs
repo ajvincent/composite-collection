@@ -1,5 +1,6 @@
 import CompletionPromise from "./CompletionPromise.mjs";
 import CodeGenerator from "./CodeGenerator.mjs";
+import CompileTimeOptions from "./CompileTimeOptions.mjs";
 
 import url from "url";
 import fs from "fs/promises";
@@ -15,11 +16,15 @@ export default class Driver extends CompletionPromise {
   /** @type {string} @constant */
   #targetsPath;
 
+  /** @type {CompileTimeOptions} @constant */
+  #compileTimeOptions = null;
+
   /**
    * @param {string} configDir The configurations directory.
    * @param {string} targetDir The destination directory.
+   * @param {CompileTimeOptions}      compileOptions Flags from an owner which may override configurations.
    */
-  constructor(configDir, targetDir) {
+  constructor(configDir, targetDir, compileOptions = {}) {
     let resolve, reject;
     super(
       new Promise((res, rej) => [resolve, reject] = [res, rej]),
@@ -34,6 +39,7 @@ export default class Driver extends CompletionPromise {
       else {
         this.#sourcesPath = configDir;
         this.#targetsPath = targetDir;
+        this.#compileTimeOptions = compileOptions;
         this.start = resolve;
       }
     }
@@ -115,7 +121,8 @@ export default class Driver extends CompletionPromise {
         const generator = new CodeGenerator(
           config,
           path.normalize(path.join(this.#targetsPath, configToRelativePath.get(config))),
-          startNow
+          startNow,
+          this.#compileTimeOptions
         );
 
         return generator.completionPromise;

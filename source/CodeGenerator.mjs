@@ -54,6 +54,22 @@ export default class CodeGenerator extends CompletionPromise {
 
   #oneToOneSubGenerator = null;
 
+  static #mapOfStrongSetsTemplates = new Map([
+    /*
+    key:
+      S: strong
+      W: weak
+      /: before a slash is Map, after is Set
+      n: more than one
+      1: one
+
+    So:
+      "1W/nS" = one weak map key, multiple strong set keys
+    */
+    ["nS/nS", "Strong/MapOfStrongSets"],
+    ["nW/nS", "Weak/MapOfStrongSets"],
+  ]);
+
   /**
    * @param {CollectionConfiguration} configuration  The configuration to use.
    * @param {string}                  targetPath     The directory to write the collection to.
@@ -332,7 +348,7 @@ export default class CodeGenerator extends CompletionPromise {
   }
 
   #generateSource() {
-    const generator = TemplateGenerators.get(this.#configurationData.collectionTemplate);
+    const generator = TemplateGenerators.get(this.#chooseCollectionTemplate());
 
     let codeSegments = [
       this.#generatedCode,
@@ -359,6 +375,29 @@ export default class CodeGenerator extends CompletionPromise {
     );
 
     this.#generatedCode = this.#generatedCode.replace(/\n{3,}/g, "\n\n");
+  }
+
+  #chooseCollectionTemplate() {
+    let startTemplate = this.#configurationData.collectionTemplate;
+    const weakMapCount = this.#configurationData.weakMapKeys?.length || 0,
+          strongMapCount = this.#configurationData.strongMapKeys?.length || 0,
+          weakSetCount = this.#configurationData.weakSetKeys?.length || 0,
+          strongSetCount = this.#configurationData.strongSetCount?.length || 0;
+    const mapCount = weakMapCount + strongMapCount,
+          setCount = weakSetCount + strongSetCount;
+    if (mapCount && setCount && !this.#compileOptions.disableKeyOptimization) {
+      // Map of Sets, maybe optimized
+      const shortKey = [
+        mapCount > 1 ? "n" : "1",
+        weakMapCount ? "W" : "S",
+        "/",
+        setCount > 1 ? "n" : "1",
+        weakSetCount ? "W" : "S"
+      ];
+      return CodeGenerator.#mapOfStrongSetsTemplates.get(shortKey) || startTemplate;
+    }
+
+    return startTemplate;
   }
 
   async #writeSource() {
