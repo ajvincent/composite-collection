@@ -67,6 +67,8 @@ export default class CodeGenerator extends CompletionPromise {
       "1W/nS" = one weak map key, multiple strong set keys
     */
     ["nS/nS", "Strong/MapOfStrongSets"],
+    ["1S/nS", "Strong/OneMapOfStrongSets"],
+
     ["nW/nS", "Weak/MapOfStrongSets"],
   ]);
 
@@ -200,8 +202,6 @@ export default class CodeGenerator extends CompletionPromise {
 
     if (/Solo|Weak\/?Map/.test(data.collectionTemplate)) {
       this.#defineArgCountAndLists("weakMap", data.weakMapKeys);
-      this.#defines.set("weakMapArgument0", data.weakMapKeys[0]);
-
       this.#defineArgCountAndLists("strongMap", data.strongMapKeys);
     }
 
@@ -234,6 +234,8 @@ export default class CodeGenerator extends CompletionPromise {
     this.#defines.set(prefix + "Count", keyArray.length);
     this.#defines.set(prefix + "ArgList", keyArray.join(", "));
     this.#defines.set(prefix + "ArgNameList", JSON.stringify(keyArray));
+    if (keyArray.length)
+      this.#defines.set(prefix + "Argument0", keyArray[0]);
   }
 
   #defineValidatorCode(paramsData, defineName, filter) {
@@ -379,12 +381,15 @@ export default class CodeGenerator extends CompletionPromise {
 
   #chooseCollectionTemplate() {
     let startTemplate = this.#configurationData.collectionTemplate;
+
     const weakMapCount = this.#configurationData.weakMapKeys?.length || 0,
           strongMapCount = this.#configurationData.strongMapKeys?.length || 0,
-          weakSetCount = this.#configurationData.weakSetKeys?.length || 0,
-          strongSetCount = this.#configurationData.strongSetCount?.length || 0;
+          weakSetCount = this.#configurationData.weakSetElements?.length || 0,
+          strongSetCount = this.#configurationData.strongSetElements?.length || 0;
+
     const mapCount = weakMapCount + strongMapCount,
           setCount = weakSetCount + strongSetCount;
+
     if (mapCount && setCount && !this.#compileOptions.disableKeyOptimization) {
       // Map of Sets, maybe optimized
       const shortKey = [
@@ -393,7 +398,8 @@ export default class CodeGenerator extends CompletionPromise {
         "/",
         setCount > 1 ? "n" : "1",
         weakSetCount ? "W" : "S"
-      ];
+      ].join("");
+      // console.log(`\n\n${shortKey} ${Array.from(this.#defines.keys()).join(", ")}\n\n`);
       return CodeGenerator.#mapOfStrongSetsTemplates.get(shortKey) || startTemplate;
     }
 
