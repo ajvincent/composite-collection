@@ -48,7 +48,13 @@ describe("CollectionConfiguration", () => {
     it("throws for StrongMapOfWeakSets", () => {
       expect(() => {
         void(new CollectionConfiguration("FooMap", "Map", "WeakSet"))
-      }).toThrowError("outerType must be a WeakMap when the innerType is a WeakSet!");
+      }).toThrowError("innerType must be a Set, or null!");
+    });
+
+    it("throws for WeakMapOfWeakSets", () => {
+      expect(() => {
+        void(new CollectionConfiguration("FooMap", "WeakMap", "WeakSet"))
+      }).toThrowError("innerType must be a Set, or null!");
     });
 
     it("throws for a constructor starting and ending with double underscores", () => {
@@ -830,7 +836,7 @@ describe("CollectionConfiguration", () => {
       });
 
       it("map of sets", () => {
-        config = new CollectionConfiguration("FooMap", "WeakMap", "WeakSet");
+        config = new CollectionConfiguration("FooMap", "WeakMap", "Set");
         options = {
           argumentType: "Cat",
           description: "The other cat",
@@ -844,7 +850,7 @@ describe("CollectionConfiguration", () => {
         ];
   
         config.addMapKey(...type1Args);
-        config.addSetKey("dog", "The dog.", true);
+        config.addSetKey("dog", "The dog.", false);
         expect(() => config.lock()).not.toThrow();
         expect(() => config.lock()).not.toThrow();
         expect(

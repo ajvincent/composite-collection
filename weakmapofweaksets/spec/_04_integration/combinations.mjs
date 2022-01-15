@@ -121,11 +121,8 @@ describe("Combinations of auto-generated configurations:", () => {
         );
       });
 
-      /* You can't have a map of weak sets.
-         See https://github.com/ajvincent/composite-collection/issues/41
-         See https://github.com/ajvincent/composite-collection/issues/71
-      */
-      if (useStrongSet)
+      // You can't have a strong map of weak sets.  See https://github.com/ajvincent/composite-collection/issues/41
+      if (!useStrongMap || useStrongSet)
         shouldBuild = shouldBuild.not;
       shouldBuild.toThrow();
 
@@ -223,8 +220,8 @@ describe("Combinations of auto-generated configurations:", () => {
     /* Strong map of strong sets: 1
        Strong map of weak sets:   0
        Weak map of strong sets:   3
-       Weak map of weak sets:     0
+       Weak map of weak sets:     9
      */
-    expect(generatedCount).toBe(4);
+    expect(generatedCount).toBe(13);
   });
 });

@@ -18,6 +18,7 @@ import WeakWeakSetImportable from "../generated/WeakWeakSetImportable.mjs";
 
 import StrongMapSetImportable from "../generated/StrongMapSetImportable.mjs";
 import WeakMapStrongSetImportable from "../generated/WeakMapStrongSetImportable.mjs";
+import WeakMapWeakSetImportable from "../generated/WeakMapWeakSetImportable.mjs";
 
 import MockImportable from "../fixtures/MockImportable.mjs";
 
@@ -395,3 +396,4 @@ twoKeySetTests(WeakWeakSetImportable);
 
 mapSetKeyTests(StrongMapSetImportable, true);
 mapSetKeyTests(WeakMapStrongSetImportable, true);
+mapSetKeyTests(WeakMapWeakSetImportable, false);
