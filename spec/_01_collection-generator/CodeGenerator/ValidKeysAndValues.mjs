@@ -261,8 +261,9 @@ describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
  * Define key/value specifications for a map-set collection totalling two keys.
  *
  * @param {Function} ctor The class.
+ * @param {boolean} enableHasSets True if the ".hasSets()" method should exist.
  */
-function mapSetKeyTests(ctor) {
+function mapSetKeyTests(ctor, enableHasSets) {
 describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
   let testSet = null;
   beforeEach(() => testSet = new ctor);
@@ -365,15 +366,17 @@ describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
     ).toThrowError("The ordered key set is not valid!");
   });
 
-  it("via .hasSets()", () => {
-    expect(
-      () => testSet.hasSets(key1Importable)
-    ).not.toThrow();
+  if (enableHasSets) {
+    it("via .hasSets()", () => {
+      expect(
+        () => testSet.hasSets(key1Importable)
+      ).not.toThrow();
 
-    expect(
-      () => testSet.hasSets({})
-    ).toThrowError("The ordered map key set is not valid!");
-  });
+      expect(
+        () => testSet.hasSets({})
+      ).toThrowError("The ordered map key set is not valid!");
+    });
+  }
 });
 }
 
@@ -391,6 +394,6 @@ twoKeySetTests(StrongStrongSetImportable);
 twoKeySetTests(WeakStrongSetImportable);
 twoKeySetTests(WeakWeakSetImportable);
 
-mapSetKeyTests(StrongMapSetImportable);
-mapSetKeyTests(WeakMapStrongSetImportable);
-mapSetKeyTests(WeakMapWeakSetImportable);
+mapSetKeyTests(StrongMapSetImportable, true);
+mapSetKeyTests(WeakMapStrongSetImportable, true);
+mapSetKeyTests(WeakMapWeakSetImportable, false);

@@ -1,4 +1,3 @@
-
 import ToHoldRefsMatchers from "#support/toHoldReferences.mjs";
 import hasClassInSource from "#support/hasClassInSource.mjs";
 
@@ -135,7 +134,7 @@ describe("CodeGenerator(OneToOneBasicStrongImported.mjs)", () => {
 
   it("imports the WeakStrongMap class", async () => {
     await expectAsync(
-      hasClassInSource("./spec/_02_one-to-one-maps/generated/BasicStrongImported.mjs", "WeakStrongMap")
+      hasClassInSource("./spec/_03_one-to-one-maps/generated/BasicStrongImported.mjs", "WeakStrongMap")
     ).toBeResolvedTo(false);
   });
 });

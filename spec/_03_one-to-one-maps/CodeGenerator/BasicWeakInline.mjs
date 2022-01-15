@@ -135,7 +135,7 @@ describe("CodeGenerator(OneToOneBasicWeakInline.mjs)", () => {
 
   it("creates the WeakStrongMap class in the module", async () => {
     await expectAsync(
-      hasClassInSource("./spec/_02_one-to-one-maps/generated/BasicWeakInline.mjs", "WeakWeakMap")
+      hasClassInSource("./spec/_03_one-to-one-maps/generated/BasicWeakInline.mjs", "WeakWeakMap")
     ).toBeResolvedTo(true);
   });
 });

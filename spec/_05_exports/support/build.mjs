@@ -9,7 +9,7 @@ import { copyFileTasks, generateCollections } from "#support/generateCollectionT
 export default async function buildAdditionalFiles() {
   await copyFileTasks(
     "source/exports",
-    "spec/_04_exports/generated",
+    "spec/_05_exports/generated",
     [
       "keys/Hasher.mjs",
       "keys/Composite.mjs",
@@ -26,7 +26,7 @@ export default async function buildAdditionalFiles() {
 
   await generateCollections(
     "source/exports",
-    "spec/_04_exports/generated",
+    "spec/_05_exports/generated",
     files
   );
 }

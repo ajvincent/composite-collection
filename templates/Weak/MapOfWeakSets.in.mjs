@@ -112,13 +112,12 @@ ${docs.buildBlock("has", 2)}
 
     return __weakSetKey__ ? __innerSet__.has(__weakSetKey__) : false;
   }
-
-${docs.buildBlock("hasSet", 2)}
-  hasSets(${defines.get("mapArgList")}) {
-    this.#requireValidMapKey(${defines.get("mapArgList")});
-    return Boolean(this.#getExistingInnerSet(${defines.get("mapArgList")}));
-  }
-
+${
+/* hasSets() can't exist here.  If you add, and then delete a key sequence, how
+are we to know the inner WeakSet is empty?
+*/
+  ""
+}
 ${docs.buildBlock("isValidKeyPublic", 2)}
   isValidKey(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {
     return this.#isValidKey(${defines.get("mapArgList")}, ${defines.get("setArgList")});

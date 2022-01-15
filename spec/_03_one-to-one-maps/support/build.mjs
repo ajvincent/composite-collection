@@ -6,7 +6,7 @@ import { copyFileTasks, generateCollections } from "#support/generateCollectionT
 export default async function buildAdditionalFiles() {
   await copyFileTasks(
     "source/exports",
-    "spec/_02_one-to-one-maps/generated",
+    "spec/_03_one-to-one-maps/generated",
     [
       "keys/Hasher.mjs",
       "keys/Composite.mjs",
@@ -15,7 +15,7 @@ export default async function buildAdditionalFiles() {
 
   await generateCollections(
     "source/exports",
-    "spec/_02_one-to-one-maps/generated",
+    "spec/_03_one-to-one-maps/generated",
     [
       "WeakWeakMap.mjs",
       "WeakStrongMap.mjs",

@@ -21,6 +21,14 @@ export default class CompileTimeOptions {
     this.licenseText      = validString(properties.licenseText);
     this.author           = validString(properties.author);
     this.copyright        = validString(properties.copyright);
+
+    /**
+     * If true, treat one map key as n map keys, one set key as n set keys.
+     * This means including KeyHasher's, WeakKeyComposer's when you might not need to.
+     *
+     * @type {boolean}
+     */
+    this.disableKeyOptimization = Boolean(properties.disableKeyOptimization);
   }
 }
 Object.freeze(CompileTimeOptions);
