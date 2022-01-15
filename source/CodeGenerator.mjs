@@ -68,6 +68,7 @@ export default class CodeGenerator extends CompletionPromise {
     */
     ["nS/nS", "Strong/MapOfStrongSets"],
     ["1S/nS", "Strong/OneMapOfStrongSets"],
+    ["nS/1S", "Strong/MapOfOneStrongSet"],
 
     ["nW/nS", "Weak/MapOfStrongSets"],
   ]);
