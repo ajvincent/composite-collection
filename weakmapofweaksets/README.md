@@ -47,4 +47,6 @@ Also, the existing implementation would leak WeakSets in the private `#root`.  T
 
 Because it's not entirely clear users will _never_ need them, I'm moving the files for WeakMapOfWeakSets into this directory.  Maybe I should delete them altogether, but recovering them or rebuilding them would be expensive.
 
+If you really believe you need a map of weak sets, consider subclassing a multiple-weak-set-keys collection.  You could implement your own reference counting via `WeakRef` and `FinalizationRegistry` on the "map keys".  That said, really think hard about your use case first!
+
 As a final note, `Weak/MapOfStrongSets` will _not_ be mothballed in a similar manner.  The `WeakFunctionMultiMap` is actually quite useful, I think, because I can iterate over a set of functions bound weakly to one object.

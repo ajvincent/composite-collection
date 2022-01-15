@@ -97,7 +97,7 @@ describe("Combinations of auto-generated configurations:", () => {
     }
   });
 
-  xit("2 part map keys followed by 2 part set keys", async () => {
+  it("2 part map keys followed by 2 part set keys", async () => {
     await filesCopied;
 
     let generatedCount = 0;
