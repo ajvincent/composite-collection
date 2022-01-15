@@ -6,6 +6,7 @@
 export default function preprocess(defines, docs) {
   return `
 ${defines.get("importLines")}
+import WeakKeyComposer from "./keys/Composite.mjs";
 
 class ${defines.get("className")} {
   // eslint-disable-next-line jsdoc/require-property

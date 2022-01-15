@@ -145,6 +145,14 @@ export default class CodeGenerator extends CompletionPromise {
     return this.#generatedCode;
   }
 
+  get requiresKeyHasher() {
+    return this.#generatedCode?.includes(" new KeyHasher(");
+  }
+
+  get requiresWeakKeyComposer() {
+    return this.#generatedCode?.includes(" new WeakKeyComposer(");
+  }
+
   #filePrologue() {
     let fileOverview = "";
     if (!this.#internalFlagSet?.has("no @file") && this.#configurationData.fileOverview) {
@@ -187,25 +195,7 @@ export default class CodeGenerator extends CompletionPromise {
     const mapKeys = data.weakMapKeys.concat(data.strongMapKeys);
     const setKeys = data.weakSetElements.concat(data.strongSetElements);
 
-    // importLines
-    {
-      let lines = data.importLines;
-      if (data.requiresWeakKey)
-        lines = `import WeakKeyComposer from "./keys/Composite.mjs";\n` + lines;
-      if (data.requiresKeyHasher) {
-        // Maybe not.
-        let mustDefine = true;
-        if ((data.weakMapKeys.length === 0) &&
-            (data.strongMapKeys.length === 1) &&
-            (data.weakSetElements.length === 0) &&
-            (data.strongSetElements.length === 1) &&
-            !this.#compileOptions.disableKeyOptimization)
-          mustDefine = false;
-        if (mustDefine)
-          lines = `import KeyHasher from "./keys/Hasher.mjs";\n` + lines;
-      }
-      this.#defines.set("importLines", lines);
-    }
+    this.#defines.set("importLines", data.importLines);
 
     {
       const keys = Array.from(data.parameterToTypeMap.keys());

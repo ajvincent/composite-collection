@@ -14,6 +14,7 @@ export default function preprocess(defines, docs) {
 
   return `
 ${defines.get("importLines")}
+import KeyHasher from "./keys/Hasher.mjs";
 
 class ${defines.get("className")} {
   /** @typedef {string} hash */

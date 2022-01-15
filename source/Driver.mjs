@@ -82,41 +82,12 @@ export default class Driver extends CompletionPromise {
       },
       Promise.resolve([])
     );
-    /*
-    const configs = await Promise.all(fileList.map(
-      async relativePath => {
-        try {
-          const m = await import(url.pathToFileURL(path.join(this.#sourcesPath, relativePath)));
-          configToRelativePath.set(m.default, relativePath);
-          return m.default;
-        }
-        catch (ex) {
-          console.error("\n\nException happened for " + relativePath + "\n\n");
-          throw ex;
-        }
-      }
-    ));
-    */
 
-    const requiresWeakKey = configs.some(c => c.cloneData().requiresWeakKey);
-
-    await fs.mkdir(path.join(this.#targetsPath, "keys"), { recursive: true });
-
-    await fs.copyFile(
-      path.join(projectRoot, "source/exports/keys/Hasher.mjs"),
-      path.join(this.#targetsPath, "keys/Hasher.mjs")
-    );
-
-    if (requiresWeakKey) {
-      await fs.copyFile(
-        path.join(projectRoot, "source/exports/keys/Composite.mjs"),
-        path.join(this.#targetsPath, "keys/Composite.mjs")
-      );
-    }
+    await fs.mkdir(this.#targetsPath, { recursive: true });
 
     const startNow = Promise.resolve();
 
-    await Promise.all(configs.map(config => {
+    const generators = await Promise.all(configs.map(async config => {
       try {
         const generator = new CodeGenerator(
           config,
@@ -125,12 +96,32 @@ export default class Driver extends CompletionPromise {
           this.#compileTimeOptions
         );
 
-        return generator.completionPromise;
+        await generator.completionPromise;
+        return generator;
       }
       catch (ex) {
         console.error("Failed on " + configToRelativePath.get(config));
         throw ex;
       }
     }));
+
+    const requiresWeakKeyComposer = generators.some(g => g.requiresWeakKeyComposer);
+    const requiresKeyHasher = requiresWeakKeyComposer || generators.some(g => g.requiresKeyHasher);
+
+    if (requiresKeyHasher) {
+      await fs.mkdir(path.join(this.#targetsPath, "keys"), { recursive: true });
+
+      await fs.copyFile(
+        path.join(projectRoot, "source/exports/keys/Hasher.mjs"),
+        path.join(this.#targetsPath, "keys/Hasher.mjs")
+      );
+    }
+
+    if (requiresWeakKeyComposer) {
+      await fs.copyFile(
+        path.join(projectRoot, "source/exports/keys/Composite.mjs"),
+        path.join(this.#targetsPath, "keys/Composite.mjs")
+      );
+    }
   }
 }
