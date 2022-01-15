@@ -19,7 +19,7 @@ import KeyHasher from "./keys/Hasher.mjs";
 class ${defines.get("className")} {
   /** @typedef {string} hash */
 
-  /** @type {Map<hash, Map<*, *[]>>} @constant */
+  /** @type {Map<hash, Map<${defines.get("setArgument0Type")}, *[]>>} @constant */
   #outerMap = new Map();
 
   /** @type {KeyHasher} @constant */

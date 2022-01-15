@@ -14,7 +14,7 @@ class ${defines.get("className")} {
   /** @typedef {string} hash */
 
   /**
-   * @type {WeakMap<object, ${defines.get("className")}~InnerMap>}
+   * @type {WeakMap<${defines.get("mapArgument0Type")}, ${defines.get("className")}~InnerMap>}
    * @constant
    * This is two levels. The first level is the map key.
    * The second level is the strong set.

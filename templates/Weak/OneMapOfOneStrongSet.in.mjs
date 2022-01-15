@@ -8,7 +8,7 @@ export default function preprocess(defines, docs) {
 ${defines.get("importLines")}
 class ${defines.get("className")} {
   /**
-   * @type {WeakMap<object, Set<*>>}
+   * @type {WeakMap<${defines.get("mapArgument0Type")}, Set<${defines.get("setArgument0Type")}>>}
    * @constant
    * This is two levels. The first level is the map key.
    * The second level is the strong set.

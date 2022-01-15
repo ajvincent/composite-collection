@@ -16,7 +16,7 @@ export default function preprocess(defines, docs) {
 ${defines.get("importLines")}
 
 class ${defines.get("className")} {
-  /** @type {Map<*, Set<*>>} @constant */
+  /** @type {Map<${defines.get("mapArgument0Type")}, Set<${defines.get("setArgument0Type")}>>} @constant */
   #outerMap = new Map();
 
   /** @type {number} */

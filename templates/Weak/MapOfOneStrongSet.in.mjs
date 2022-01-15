@@ -13,7 +13,7 @@ class ${defines.get("className")} {
   /** @typedef {object} WeakKey */
 
   /**
-   * @type {WeakMap<WeakKey, Set<*>>}
+   * @type {WeakMap<WeakKey, Set<${defines.get("setArgument0Type")}>>}
    * @constant
    * This is two levels. The first level is the WeakKey.
    * The second level is the strong set.

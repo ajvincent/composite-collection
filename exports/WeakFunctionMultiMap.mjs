@@ -7,7 +7,7 @@
 
 class WeakFunctionMultiMap {
   /**
-   * @type {WeakMap<object, Set<*>>}
+   * @type {WeakMap<object, Set<Function>>}
    * @constant
    * This is two levels. The first level is the map key.
    * The second level is the strong set.

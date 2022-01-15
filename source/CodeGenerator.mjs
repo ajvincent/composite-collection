@@ -216,7 +216,6 @@ export default class CodeGenerator extends CompletionPromise {
       this.#defineArgCountAndLists("strongSet", data.strongSetElements);
     }
 
-
     if (data.collectionTemplate.includes("MapOf")) {
       this.#defineArgCountAndLists("map", mapKeys);
       this.#defineArgCountAndLists("set", setKeys);
@@ -227,11 +226,29 @@ export default class CodeGenerator extends CompletionPromise {
     this.#defineValidatorCode(paramsData, "validateMapArguments", pd => mapKeys.includes(pd.argumentName));
     this.#defineValidatorCode(paramsData, "validateSetArguments", pd => setKeys.includes(pd.argumentName));
 
-    // validateValue
-    {
-      let filter = (data?.valueType?.argumentValidator || "").trim();
+    if (mapKeys.length) {
+      this.#defines.set(
+        "mapArgument0Type",
+        data.parameterToTypeMap.get(mapKeys[0]).argumentType
+      );
+    }
+
+    if (setKeys.length) {
+      this.#defines.set(
+        "setArgument0Type",
+        data.parameterToTypeMap.get(setKeys[0]).argumentType
+      );
+    }
+
+    if (data.valueType) {
+      let filter = (data.valueType.argumentValidator || "").trim();
       if (filter)
         this.#defines.set("validateValue", filter + "\n    ");
+
+      this.#defines.set(
+        "valueType",
+        data.valueType.argumentType
+      );
     }
   }
 
