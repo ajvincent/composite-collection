@@ -69,6 +69,7 @@ export default class CodeGenerator extends CompletionPromise {
     ["nS/nS", "Strong/MapOfStrongSets"],
     ["1S/nS", "Strong/OneMapOfStrongSets"],
     ["nS/1S", "Strong/MapOfOneStrongSet"],
+    ["1S/1S", "Strong/OneMapOfOneStrongSet"],
 
     ["nW/nS", "Weak/MapOfStrongSets"],
   ]);
@@ -183,13 +184,26 @@ export default class CodeGenerator extends CompletionPromise {
     const data = this.#configurationData;
     this.#defines.set("className", data.className);
 
+    const mapKeys = data.weakMapKeys.concat(data.strongMapKeys);
+    const setKeys = data.weakSetElements.concat(data.strongSetElements);
+
     // importLines
     {
       let lines = data.importLines;
       if (data.requiresWeakKey)
         lines = `import WeakKeyComposer from "./keys/Composite.mjs";\n` + lines;
-      if (data.requiresKeyHasher)
-        lines = `import KeyHasher from "./keys/Hasher.mjs";\n` + lines;
+      if (data.requiresKeyHasher) {
+        // Maybe not.
+        let mustDefine = true;
+        if ((data.weakMapKeys.length === 0) &&
+            (data.strongMapKeys.length === 1) &&
+            (data.weakSetElements.length === 0) &&
+            (data.strongSetElements.length === 1) &&
+            !this.#compileOptions.disableKeyOptimization)
+          mustDefine = false;
+        if (mustDefine)
+          lines = `import KeyHasher from "./keys/Hasher.mjs";\n` + lines;
+      }
       this.#defines.set("importLines", lines);
     }
 
@@ -211,8 +225,7 @@ export default class CodeGenerator extends CompletionPromise {
       this.#defineArgCountAndLists("strongSet", data.strongSetElements);
     }
 
-    const mapKeys = data.weakMapKeys.concat(data.strongMapKeys);
-    const setKeys = data.weakSetElements.concat(data.strongSetElements);
+
     if (data.collectionTemplate.includes("MapOf")) {
       this.#defineArgCountAndLists("map", mapKeys);
       this.#defineArgCountAndLists("set", setKeys);

@@ -5,19 +5,11 @@
  * Generator: https://github.com/ajvincent/composite-collection/
  */
 
-import KeyHasher from "./keys/Hasher.mjs";
-
 class StrongMapOfStrongSets {
   /** @typedef {string} hash */
 
-  /** @type {Map<hash, Map<hash, *[]>>} @constant */
+  /** @type {Map<*, Map<*, *[]>>} @constant */
   #outerMap = new Map();
-
-  /** @type {KeyHasher} @constant */
-  #mapHasher = new KeyHasher(["mapKey"]);
-
-  /** @type {KeyHasher} @constant */
-  #setHasher = new KeyHasher(["setKey"]);
 
   /** @type {number} */
   #sizeOfAll = 0;
@@ -50,8 +42,8 @@ class StrongMapOfStrongSets {
    * @public
    */
   getSizeOfSet(mapKey) {
-    const [__innerMap__] = this.#getInnerMap(mapKey);
-    return __innerMap__ ? __innerMap__.size : 0;
+    const __innerMap__ = this.#outerMap.get(mapKey)
+    return __innerMap__?.size || 0;
   }
 
   /**
@@ -74,15 +66,13 @@ class StrongMapOfStrongSets {
    * @public
    */
   add(mapKey, setKey) {
-    const __mapHash__ = this.#mapHasher.getHash(mapKey);
-    if (!this.#outerMap.has(__mapHash__))
-      this.#outerMap.set(__mapHash__, new Map);
+    if (!this.#outerMap.has(mapKey))
+      this.#outerMap.set(mapKey, new Map);
 
-    const __innerMap__ = this.#outerMap.get(__mapHash__);
+    const __innerMap__ = this.#outerMap.get(mapKey);
 
-    const __setHash__ = this.#setHasher.getHash(setKey);
-    if (!__innerMap__.has(__setHash__)) {
-      __innerMap__.set(__setHash__, Object.freeze([mapKey, setKey]));
+    if (!__innerMap__.has(setKey)) {
+      __innerMap__.set(setKey, Object.freeze([mapKey, setKey]));
       this.#sizeOfAll++;
     }
 
@@ -107,17 +97,15 @@ class StrongMapOfStrongSets {
       return __set__;
     });
 
-    const __mapHash__ = this.#mapHasher.getHash(mapKey);
-    if (!this.#outerMap.has(__mapHash__))
-      this.#outerMap.set(__mapHash__, new Map);
+    if (!this.#outerMap.has(mapKey))
+      this.#outerMap.set(mapKey, new Map);
 
-    const __innerMap__ = this.#outerMap.get(__mapHash__);
+    const __innerMap__ = this.#outerMap.get(mapKey);
     const __mapArgs__ = [mapKey];
 
     __array__.forEach(__set__ => {
-      const __setHash__ = this.#setHasher.getHash(...__set__);
-      if (!__innerMap__.has(__setHash__)) {
-        __innerMap__.set(__setHash__, Object.freeze(__mapArgs__.concat(__set__)));
+      if (!__innerMap__.has(__set__[0])) {
+        __innerMap__.set(__set__[0], Object.freeze(__mapArgs__.concat(__set__)));
         this.#sizeOfAll++;
       }
     });
@@ -142,7 +130,7 @@ class StrongMapOfStrongSets {
    * @public
    */
   clearSets(mapKey) {
-    const [__innerMap__] = this.#getInnerMap(mapKey);
+    const __innerMap__ = this.#outerMap.get(mapKey)
     if (!__innerMap__)
       return;
 
@@ -159,19 +147,18 @@ class StrongMapOfStrongSets {
    * @public
    */
   delete(mapKey, setKey) {
-    const [__innerMap__, __mapHash__] = this.#getInnerMap(mapKey);
+    const __innerMap__ = this.#outerMap.get(mapKey)
     if (!__innerMap__)
       return false;
 
-    const __setHash__ = this.#setHasher.getHashIfExists(setKey);
-    if (!__setHash__ || !__innerMap__.has(__setHash__))
+    if (!__innerMap__.has(setKey))
       return false;
 
-    __innerMap__.delete(__setHash__);
+    __innerMap__.delete(setKey);
     this.#sizeOfAll--;
 
     if (__innerMap__.size === 0) {
-      this.#outerMap.delete(__mapHash__);
+      this.#outerMap.delete(mapKey);
     }
 
     return true;
@@ -185,11 +172,11 @@ class StrongMapOfStrongSets {
    * @public
    */
   deleteSets(mapKey) {
-    const [__innerMap__, __mapHash__] = this.#getInnerMap(mapKey);
+    const __innerMap__ = this.#outerMap.get(mapKey)
     if (!__innerMap__)
       return false;
 
-    this.#outerMap.delete(__mapHash__);
+    this.#outerMap.delete(mapKey);
     this.#sizeOfAll -= __innerMap__.size;
     return true;
   }
@@ -218,7 +205,7 @@ class StrongMapOfStrongSets {
    * @public
    */
   forEachSet(mapKey, __callback__, __thisArg__) {
-    const [__innerMap__] = this.#getInnerMap(mapKey);
+    const __innerMap__ = this.#outerMap.get(mapKey)
     if (!__innerMap__)
       return;
 
@@ -245,12 +232,11 @@ class StrongMapOfStrongSets {
    * @public
    */
   has(mapKey, setKey) {
-    const [__innerMap__] = this.#getInnerMap(mapKey);
+    const __innerMap__ = this.#outerMap.get(mapKey)
     if (!__innerMap__)
       return false;
 
-    const __setHash__ = this.#setHasher.getHashIfExists(setKey);
-    return __setHash__ ? __innerMap__.has(__setHash__) : false;
+    return __innerMap__.has(setKey);
   }
 
   /**
@@ -261,7 +247,7 @@ class StrongMapOfStrongSets {
    * @public
    */
   hasSets(mapKey) {
-    const [__innerMap__] = this.#getInnerMap(mapKey);
+    const __innerMap__ = this.#outerMap.get(mapKey)
     return Boolean(__innerMap__);
   }
 
@@ -288,17 +274,12 @@ class StrongMapOfStrongSets {
    * @public
    */
   * valuesSet(mapKey) {
-    const [__innerMap__] = this.#getInnerMap(mapKey);
+    const __innerMap__ = this.#outerMap.get(mapKey)
     if (!__innerMap__)
       return;
 
     for (let __value__ of __innerMap__.values())
       yield __value__;
-  }
-
-  #getInnerMap(...__mapArguments__) {
-    const __hash__ = this.#mapHasher.getHashIfExists(...__mapArguments__);
-    return __hash__ ? [this.#outerMap.get(__hash__), __hash__] : [null];
   }
 
 }
