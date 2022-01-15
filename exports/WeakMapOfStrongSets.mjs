@@ -5,32 +5,14 @@
  * Generator: https://github.com/ajvincent/composite-collection/
  */
 
-import KeyHasher from "./keys/Hasher.mjs";
-import WeakKeyComposer from "./keys/Composite.mjs";
-
-/** @typedef {Map<hash, *[]>} WeakMapOfStrongSets~InnerMap */
-
 class WeakMapOfStrongSets {
-  /** @typedef {string} hash */
-
-  // eslint-disable-next-line jsdoc/require-property
-  /** @typedef {object} WeakKey */
-
   /**
-   * @type {WeakMap<WeakKey, WeakMapOfStrongSets~InnerMap>}
+   * @type {WeakMap<object, Set<*>>}
    * @constant
-   * This is two levels. The first level is the WeakKey.
+   * This is two levels. The first level is the map key.
    * The second level is the strong set.
    */
   #root = new WeakMap();
-
-  /** @type {WeakKeyComposer} @constant */
-  #mapKeyComposer = new WeakKeyComposer(
-    ["mapKey"], []
-  );
-
-  /** @type {KeyHasher} @constant */
-  #setHasher = new KeyHasher(["setKey"]);
 
   constructor() {
     if (arguments.length > 0) {
@@ -51,14 +33,9 @@ class WeakMapOfStrongSets {
    */
   add(mapKey, setKey) {
     this.#requireValidKey(mapKey, setKey);
-    const __innerMap__ = this.#requireInnerMap(mapKey);
+    const __innerSet__ = this.#requireInnerSet(mapKey);
 
-    // level 2: inner map to set
-    const __setKeyHash__ = this.#setHasher.getHash(setKey);
-    if (!__innerMap__.has(__setKeyHash__)) {
-      __innerMap__.set(__setKeyHash__, [setKey]);
-    }
-
+    __innerSet__.add(setKey);
     return this;
   }
 
@@ -81,15 +58,10 @@ class WeakMapOfStrongSets {
       return __set__;
     });
 
-    const __innerMap__ = this.#requireInnerMap(mapKey);
+    const __innerSet__ = this.#requireInnerSet(mapKey);
 
     // level 2: inner map to set
-    __array__.forEach(__set__ => {
-      const __setKeyHash__ = this.#setHasher.getHash(...__set__);
-      if (!__innerMap__.has(__setKeyHash__)) {
-        __innerMap__.set(__setKeyHash__, __set__);
-      }
-    });
+    __array__.forEach(__set__ => __innerSet__.add(__set__[0]));
 
     return this;
   }
@@ -102,11 +74,11 @@ class WeakMapOfStrongSets {
    */
   clearSets(mapKey) {
     this.#requireValidMapKey(mapKey);
-    const __innerMap__ = this.#getExistingInnerMap(mapKey);
-    if (!__innerMap__)
+    const __innerSet__ = this.#root.get(mapKey);
+    if (!__innerSet__)
       return;
 
-    __innerMap__.clear();
+    __innerSet__.clear();
   }
 
   /**
@@ -119,17 +91,14 @@ class WeakMapOfStrongSets {
    */
   delete(mapKey, setKey) {
     this.#requireValidKey(mapKey, setKey);
-    const __innerMap__ = this.#getExistingInnerMap(mapKey);
-    if (!__innerMap__)
+    const __innerSet__ = this.#root.get(mapKey);
+    if (!__innerSet__)
       return false;
 
     // level 2: inner map to set
-    const __setKeyHash__ = this.#setHasher.getHashIfExists(setKey);
-    if (!__setKeyHash__)
-      return false;
-    const __returnValue__ = __innerMap__.delete(__setKeyHash__);
+    const __returnValue__ = __innerSet__.delete(setKey);
 
-    if (__innerMap__.size === 0) {
+    if (__innerSet__.size === 0) {
       this.deleteSets(mapKey);
     }
 
@@ -145,12 +114,7 @@ class WeakMapOfStrongSets {
    */
   deleteSets(mapKey) {
     this.#requireValidMapKey(mapKey);
-
-    const __mapKey__ = this.#mapKeyComposer.getKeyIfExists(
-      [mapKey], []
-    );
-
-    return __mapKey__ ? this.#root.delete(__mapKey__) : false;
+    return this.#root.delete(mapKey);
   }
 
   /**
@@ -163,12 +127,12 @@ class WeakMapOfStrongSets {
    */
   forEachSet(mapKey, __callback__, __thisArg__) {
     this.#requireValidMapKey(mapKey);
-    const __innerMap__ = this.#getExistingInnerMap(mapKey);
-    if (!__innerMap__)
+    const __innerSet__ = this.#root.get(mapKey);
+    if (!__innerSet__)
       return;
 
-    __innerMap__.forEach(
-      __keySet__ => __callback__.apply(__thisArg__, [mapKey, ...__keySet__, this])
+    __innerSet__.forEach(
+      __element__ => __callback__.apply(__thisArg__, [mapKey, __element__, this])
     );
   }
 
@@ -190,11 +154,8 @@ class WeakMapOfStrongSets {
    */
   getSizeOfSet(mapKey) {
     this.#requireValidMapKey(mapKey);
-    const __innerMap__ = this.#getExistingInnerMap(mapKey);
-    if (!__innerMap__)
-      return 0;
-
-    return __innerMap__.size;
+    const __innerSet__ = this.#root.get(mapKey);
+    return __innerSet__?.size || 0;
   }
 
   /**
@@ -207,13 +168,11 @@ class WeakMapOfStrongSets {
    */
   has(mapKey, setKey) {
     this.#requireValidKey(mapKey, setKey);
-    const __innerMap__ = this.#getExistingInnerMap(mapKey);
-    if (!__innerMap__)
+    const __innerSet__ = this.#root.get(mapKey);
+    if (!__innerSet__)
       return false;
 
-    // level 2: inner map to set
-    const __setKeyHash__ = this.#setHasher.getHashIfExists(setKey);
-    return __setKeyHash__ ? __innerMap__.has(__setKeyHash__) : false;
+    return __innerSet__.has(setKey);
   }
 
   /**
@@ -225,7 +184,7 @@ class WeakMapOfStrongSets {
    */
   hasSets(mapKey) {
     this.#requireValidMapKey(mapKey);
-    return Boolean(this.#getExistingInnerMap(mapKey));
+    return this.#root.has(mapKey);
   }
 
   /**
@@ -250,13 +209,13 @@ class WeakMapOfStrongSets {
   * valuesSet(mapKey) {
     this.#requireValidMapKey(mapKey);
 
-    const __innerMap__ = this.#getExistingInnerMap(mapKey);
-    if (!__innerMap__)
+    const __innerSet__ = this.#root.get(mapKey);
+    if (!__innerSet__)
       return;
 
-    const __outerIter__ = __innerMap__.values();
+    const __outerIter__ = __innerSet__.values();
     for (let __value__ of __outerIter__)
-      yield [mapKey, ...__value__];
+      yield [mapKey, __value__];
   }
 
   /**
@@ -265,28 +224,11 @@ class WeakMapOfStrongSets {
    * @param {object} mapKey The map key.
    * @returns {WeakMapOfStrongSets~InnerMap} The inner collection.
    */
-  #requireInnerMap(mapKey) {
-    const __mapKey__ = this.#mapKeyComposer.getKey(
-      [mapKey], []
-    );
-    if (!this.#root.has(__mapKey__)) {
-      this.#root.set(__mapKey__, new Map);
+  #requireInnerSet(mapKey) {
+    if (!this.#root.has(mapKey)) {
+      this.#root.set(mapKey, new Set);
     }
-    return this.#root.get(__mapKey__);
-  }
-
-  /**
-   * Get an existing inner collection for the given map keys.
-   *
-   * @param {object} mapKey The map key.
-   * @returns {WeakMapOfStrongSets~InnerMap?} The inner collection.
-   */
-  #getExistingInnerMap(mapKey) {
-    const __mapKey__ = this.#mapKeyComposer.getKeyIfExists(
-      [mapKey], []
-    );
-
-    return __mapKey__ ? this.#root.get(__mapKey__) : undefined;
+    return this.#root.get(mapKey);
   }
 
   /**
@@ -330,7 +272,7 @@ class WeakMapOfStrongSets {
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidMapKey(mapKey) {
-    if (!this.#mapKeyComposer.isValidForKey([mapKey], []))
+    if (Object(mapKey) !== mapKey)
       return false;
 
     return true;
