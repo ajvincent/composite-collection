@@ -1,4 +1,5 @@
 import { PromiseAllSequence } from "#support/generateCollectionTools.mjs";
+import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";
 
 import fs from "fs/promises";
 import path from "path";
@@ -28,16 +29,55 @@ await PromiseAllSequence(directories, async dir => {
   moduleDirMap.set(dir, moduleMap);
 });
 
+const extraMapKey = new MockImportable,
+      extraSetKey = new MockImportable;
+
+/**
+ * Add a shared map argument.
+ *
+ * @param {object[]} args The argument list.
+ * @returns {object[]} The modified argument list.
+ */
+function addMapArg(args) {
+  args.push(extraMapKey);
+  return args;
+}
+
+/**
+ * Add a shared set argument.
+ *
+ * @param {object[]} args The argument list.
+ * @returns {object[]} The modified argument list.
+ */
+function addSetArg(args) {
+  args.push(extraSetKey);
+  return args;
+}
+
+/**
+ * Identity function.
+ *
+ * @param {object[]} args The argument list.
+ * @returns {object[]} The original argument list.
+ */
+function identity(args) {
+  return args
+}
+
 /**
  * Describe specifications to share among all three map/set directories.
  *
  * @param {string} describePrefix  The describe prefix to use.
  * @param {Function} suiteCallback The specification suite definer.
  */
-export default function describeForAllThree(describePrefix, suiteCallback) {
+export function describeForAllThree(describePrefix, suiteCallback) {
   describe(describePrefix, () => {
     moduleDirMap.forEach((moduleMap, dir) => {
-      describe("for " + dir + ":", () => suiteCallback(moduleMap));
+      const mapKeyFunc = dir === "multiple-reference" ? addMapArg : identity;
+      const setKeyFunc = dir === "multiple-reference" ? addSetArg : identity;
+      describe("for " + dir + ":",
+        () => suiteCallback(moduleMap, mapKeyFunc, setKeyFunc)
+      );
     });
   });
 }

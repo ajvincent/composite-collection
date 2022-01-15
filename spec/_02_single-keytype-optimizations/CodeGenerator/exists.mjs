@@ -1,4 +1,4 @@
-import describeForAllThree from "../support/CodeGenerator.mjs";
+import { describeForAllThree } from "../support/CodeGenerator.mjs";
 
 describeForAllThree("Modules exist", modules => {
   const {
@@ -6,7 +6,6 @@ describeForAllThree("Modules exist", modules => {
     OptimizedWeakMapOfOptimizedWeakSets,
     OptimizedWeakMapOfWeakSets,
     WeakMapOfOptimizedStrongSets,
-    OptimizedStrongMapOfOptimizedStrongSets,
     OptimizedWeakMapOfOptimizedStrongSets,
     OptimizedWeakMapOfStrongSets,
     StrongMapOfOptimizedStrongSets,
@@ -24,9 +23,6 @@ describeForAllThree("Modules exist", modules => {
   });
   it("WeakMapOfOptimizedStrongSets", () => {
     expect(typeof WeakMapOfOptimizedStrongSets).toBe("function");
-  });
-  it("OptimizedStrongMapOfOptimizedStrongSets", () => {
-    expect(typeof OptimizedStrongMapOfOptimizedStrongSets).toBe("function");
   });
   it("OptimizedWeakMapOfOptimizedStrongSets", () => {
     expect(typeof OptimizedWeakMapOfOptimizedStrongSets).toBe("function");

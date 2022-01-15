@@ -96,7 +96,7 @@ export default class CodeGenerator extends CompletionPromise {
    * Generate the code!
    *
    * @returns {identifier} The class name.
-   * @see https://www.youtube.com/watch?v=nUCoYcxNMBE s/love/code/
+   * @see https://www.youtube.com/watch?v=nUCoYcxNMBE s/love/code/g
    */
   async buildCollection() {
     this.#status = "in progress";
