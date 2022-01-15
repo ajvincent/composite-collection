@@ -33,7 +33,6 @@ The composite-collection package provides several pre-defined two-key collection
 - [composite-collection/WeakStrongSet](exports/WeakStrongSet.mjs)
 - [composite-collection/StrongMapOfStrongSets](exports/StrongMapOfStrongSets.mjs)
 - [composite-collection/WeakMapOfStrongSets](exports/WeakMapOfStrongSets.mjs)
-- [composite-collection/WeakMapOfWeakSets](exports/WeakMapOfWeakSets.mjs)
 - [composite-collection/WeakFunctionMultiMap](exports/WeakFunctionMultiMap.mjs)
   - This is a WeakMap of Sets, each of which must contain only functions
 - [composite-collection/OneToOneSimpleMap](exports/OneToOneSimpleMap.mjs)
