@@ -93,11 +93,34 @@ const wfMM = new WeakFunctionMultiMap();
 const key1 = {}, callback1 = function() {}, callback2 = function() {};
 wfMM.add(key1, callback1);
 wfMM.add(key1, callback2);
+
+const key3 = {}, callback3 = function() {};
+wfMM.add(key3, callback3);
+
+wfMM.forEachSet(key1, callback => callback());
+/*
+This executes callback1() and callback2(), in that order, but not callback3().
+*/
 ```
 
 The [CompileTimeOptions](source/CompileTimeOptions.mjs) modify the generated output to include metadata such as the license, author and copyright.
 
 ## Definitions
+
+A composite collection is a class to implement two- or three-key maps and sets.  (Or any number of keys you need.)  If you only need one key, this technically is not a composite collection, but this library still supports this use-case for key and value validation.  The ordering of keys is significant:
+
+```javascript
+compositeWeakWeakSet.add(key1, key2, value);
+
+compositeWeakWeakSet.has(key2, key1); // returns false
+compositeWeakWeakSet.has(key1, key2); // returns true
+
+// The user must provide both keys the collection requires, in the right order.
+compositeWeakWeakSet.has(key1); // return false
+compositeWeakWeakSet.has(key2); // return false
+```
+
+### Strong and weak references
 
 By a "strong" key, I mean the collection holds a strong reference to the argument.  This means that unless the user explicitly deletes the key in the collection,
 or the collection itself is inaccessible, the argument will remain held in memory.
@@ -106,6 +129,16 @@ By a "weak" key, I mean the collection does not hold a strong reference to the a
 other variables or objects holding a reference to them.  The JavaScript engine may delete unreachable and any objects they alone reference at any time.
 
 The developer.mozilla.org website has [a great explainer about weak and strong references](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap#why_weakmap).
+
+### "Maps of sets", or, sets you can search
+
+A "map of sets" is a special set data structure.  Think of the map keys as the terms you search for, and the set keys as the values you store.  When you use a method like `.forEachSet()` or `.valuesSet()`, the collection will iterate only over the elements matching the map keys you've provided.  There are other methods for manipulating these subsets:
+
+- `.addSets(_mapKeys_, [ _setKeys1_, _setKeys2_, ...]);`
+- `.deleteSets(_mapKeys_)`
+- `.getSizeOfSet(_mapKeys_)`
+
+Currently, this module supports strong maps of strong sets, and weak maps of strong sets.  
 
 ## Features
 
