@@ -23,7 +23,7 @@ If the answer is "a lot", this package is for you.  It'd be much nicer to just w
 compositeWeakWeakMap.set(key1, key2, value);
 ```
 
-The composite-collection package provides several pre-defined two-key collection classes for your use:
+The *composite-collection* package provides several pre-defined two-key collection classes for your use:
 
 - [composite-collection/StrongStrongMap](exports/StrongStrongMap.mjs)
 - [composite-collection/StrongStrongSet](exports/StrongStrongSet.mjs)
@@ -140,6 +140,22 @@ A "map of sets" is a special set data structure.  Think of the map keys as the t
 
 Currently, this module supports strong maps of strong sets, and weak maps of strong sets.  
 
+Maps of weak sets don't make sense right now:  they turn into glorified composite sets, providing only a little functionality you can replicate via subclassing in exchange for greater internal complexity (and probable memory leaks).
+
+## Guidelines for using this package
+
+As of January 15, 2022, the *composite-collection* package is still under development.  That said, I suggest the following practices for developers using this package to follow.
+
+- If you want one or two or even three of this package's exported collection modules, copy and paste the modules into your project as-is.  They already have license boilerplate and JSDoc specifying the copyright and author information.
+  - Don't forget to copy the `exports/keys` directory to your destination as well!  Almost all the collection modules depend on the files in there.
+- If you are developing more complex collections, `npm install --save-dev composite-collection` as a development dependency.
+  - Maintain a "configurations" subdirectory that has only `CollectionConfiguration` export modules in it.
+  - Maintain a "collections" subdirectory to receive the modules which *composite-collection* generates.  Feel free to import modules from this subdirectory and use them, but do not edit them.
+  - Invoke the Driver only when you need to rebuild the modules in your collections subdirectory.  Sure, it's really fast at generating modules, but why add extra build steps?  The collections themselves should be fairly stable.
+- Consider using [rollup.js](https://rollupjs.org/guide/en/) to bundle files from the collections subdirectory into another subdirectory you import from, particularly if you only use one composite collection.
+  - Use `--format=es` to preserve the ECMAScript Modules output.
+- Feel free to file GitHub issues for support!
+
 ## Features
 
 Currently supported (version 0.4.0):
@@ -165,6 +181,7 @@ In the future:
 
 - Declaring key groups
   - Key groups can be equal: `(arg1, arg2) === (arg3, arg4)` for the purpose of this collection
+- Configuring to support unsorted key collections: `(arg1, arg2) === (arg2, arg1)` for the purposes of a specific composite collection
 
 ## A note about one-to-one hashtables
 
