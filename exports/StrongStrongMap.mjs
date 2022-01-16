@@ -1,8 +1,17 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 /**
  * @file
  * This is generated code.  Do not edit.
  *
  * Generator: https://github.com/ajvincent/composite-collection/
+ * @license MPL-2.0
+ * @author Alexander J. Vincent <ajvincent@gmail.com>
+ * @copyright © 2021-2022 Alexander J. Vincent
  */
 
 import KeyHasher from "./keys/Hasher.mjs";

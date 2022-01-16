@@ -19,6 +19,7 @@ export default class CompileTimeOptions {
     this.sourcesDirectory = validString(properties.sourcesDirectory);
 
     this.licenseText      = validString(properties.licenseText);
+    this.license          = validString(properties.license);
     this.author           = validString(properties.author);
     this.copyright        = validString(properties.copyright);
 

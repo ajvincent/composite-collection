@@ -4,8 +4,6 @@ import url from "url";
 
 import {
   PromiseAllSequence,
-} from "#support/generateCollectionTools.mjs";
-import {
   copyFileTasks,
   generateCollections
 } from "#support/generateCollectionTools.mjs";
