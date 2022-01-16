@@ -54,6 +54,27 @@ export default class CodeGenerator extends CompletionPromise {
 
   #oneToOneSubGenerator = null;
 
+  static #mapOfStrongSetsTemplates = new Map([
+    /*
+    key:
+      S: strong
+      W: weak
+      /: before a slash is Map, after is Set
+      n: more than one
+      1: one
+
+    So:
+      "1W/nS" = one weak map key, multiple strong set keys
+    */
+    ["1S/nS", "Strong/OneMapOfStrongSets"],
+    ["nS/1S", "Strong/MapOfOneStrongSet"],
+    ["1S/1S", "Strong/OneMapOfOneStrongSet"],
+
+    ["1W/nS", "Weak/OneMapOfStrongSets"],
+    ["nW/1S", "Weak/MapOfOneStrongSet"],
+    ["1W/1S", "Weak/OneMapOfOneStrongSet"],
+  ]);
+
   /**
    * @param {CollectionConfiguration} configuration  The configuration to use.
    * @param {string}                  targetPath     The directory to write the collection to.
@@ -125,6 +146,14 @@ export default class CodeGenerator extends CompletionPromise {
     return this.#generatedCode;
   }
 
+  get requiresKeyHasher() {
+    return this.#generatedCode?.includes(" new KeyHasher(");
+  }
+
+  get requiresWeakKeyComposer() {
+    return this.#generatedCode?.includes(" new WeakKeyComposer(");
+  }
+
   #filePrologue() {
     let fileOverview = "";
     if (!this.#internalFlagSet?.has("no @file") && this.#configurationData.fileOverview) {
@@ -164,15 +193,10 @@ export default class CodeGenerator extends CompletionPromise {
     const data = this.#configurationData;
     this.#defines.set("className", data.className);
 
-    // importLines
-    {
-      let lines = data.importLines;
-      if (data.requiresWeakKey)
-        lines = `import WeakKeyComposer from "./keys/Composite.mjs";\n` + lines;
-      if (data.requiresKeyHasher)
-        lines = `import KeyHasher from "./keys/Hasher.mjs";\n` + lines;
-      this.#defines.set("importLines", lines);
-    }
+    const mapKeys = data.weakMapKeys.concat(data.strongMapKeys);
+    const setKeys = data.weakSetElements.concat(data.strongSetElements);
+
+    this.#defines.set("importLines", data.importLines);
 
     {
       const keys = Array.from(data.parameterToTypeMap.keys());
@@ -184,8 +208,6 @@ export default class CodeGenerator extends CompletionPromise {
 
     if (/Solo|Weak\/?Map/.test(data.collectionTemplate)) {
       this.#defineArgCountAndLists("weakMap", data.weakMapKeys);
-      this.#defines.set("weakMapArgument0", data.weakMapKeys[0]);
-
       this.#defineArgCountAndLists("strongMap", data.strongMapKeys);
     }
 
@@ -194,8 +216,6 @@ export default class CodeGenerator extends CompletionPromise {
       this.#defineArgCountAndLists("strongSet", data.strongSetElements);
     }
 
-    const mapKeys = data.weakMapKeys.concat(data.strongMapKeys);
-    const setKeys = data.weakSetElements.concat(data.strongSetElements);
     if (data.collectionTemplate.includes("MapOf")) {
       this.#defineArgCountAndLists("map", mapKeys);
       this.#defineArgCountAndLists("set", setKeys);
@@ -206,11 +226,29 @@ export default class CodeGenerator extends CompletionPromise {
     this.#defineValidatorCode(paramsData, "validateMapArguments", pd => mapKeys.includes(pd.argumentName));
     this.#defineValidatorCode(paramsData, "validateSetArguments", pd => setKeys.includes(pd.argumentName));
 
-    // validateValue
-    {
-      let filter = (data?.valueType?.argumentValidator || "").trim();
+    if (mapKeys.length) {
+      this.#defines.set(
+        "mapArgument0Type",
+        data.parameterToTypeMap.get(mapKeys[0]).argumentType
+      );
+    }
+
+    if (setKeys.length) {
+      this.#defines.set(
+        "setArgument0Type",
+        data.parameterToTypeMap.get(setKeys[0]).argumentType
+      );
+    }
+
+    if (data.valueType) {
+      let filter = (data.valueType.argumentValidator || "").trim();
       if (filter)
         this.#defines.set("validateValue", filter + "\n    ");
+
+      this.#defines.set(
+        "valueType",
+        data.valueType.argumentType
+      );
     }
   }
 
@@ -218,6 +256,8 @@ export default class CodeGenerator extends CompletionPromise {
     this.#defines.set(prefix + "Count", keyArray.length);
     this.#defines.set(prefix + "ArgList", keyArray.join(", "));
     this.#defines.set(prefix + "ArgNameList", JSON.stringify(keyArray));
+    if (keyArray.length)
+      this.#defines.set(prefix + "Argument0", keyArray[0]);
   }
 
   #defineValidatorCode(paramsData, defineName, filter) {
@@ -332,7 +372,7 @@ export default class CodeGenerator extends CompletionPromise {
   }
 
   #generateSource() {
-    const generator = TemplateGenerators.get(this.#configurationData.collectionTemplate);
+    const generator = TemplateGenerators.get(this.#chooseCollectionTemplate());
 
     let codeSegments = [
       this.#generatedCode,
@@ -359,6 +399,33 @@ export default class CodeGenerator extends CompletionPromise {
     );
 
     this.#generatedCode = this.#generatedCode.replace(/\n{3,}/g, "\n\n");
+  }
+
+  #chooseCollectionTemplate() {
+    let startTemplate = this.#configurationData.collectionTemplate;
+
+    const weakMapCount = this.#configurationData.weakMapKeys?.length || 0,
+          strongMapCount = this.#configurationData.strongMapKeys?.length || 0,
+          weakSetCount = this.#configurationData.weakSetElements?.length || 0,
+          strongSetCount = this.#configurationData.strongSetElements?.length || 0;
+
+    const mapCount = weakMapCount + strongMapCount,
+          setCount = weakSetCount + strongSetCount;
+
+    if (mapCount && setCount && !this.#compileOptions.disableKeyOptimization) {
+      // Map of Sets, maybe optimized
+      const shortKey = [
+        mapCount > 1 ? "n" : "1",
+        weakMapCount ? "W" : "S",
+        "/",
+        setCount > 1 ? "n" : "1",
+        weakSetCount ? "W" : "S"
+      ].join("");
+      // console.log(`\n\n${shortKey} ${Array.from(this.#defines.keys()).join(", ")}\n\n`);
+      return CodeGenerator.#mapOfStrongSetsTemplates.get(shortKey) || startTemplate;
+    }
+
+    return startTemplate;
   }
 
   async #writeSource() {

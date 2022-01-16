@@ -19,14 +19,11 @@ import KeyHasher from "./keys/Hasher.mjs";
 class ${defines.get("className")} {
   /** @typedef {string} hash */
 
-  /** @type {Map<hash, Map<hash, *[]>>} @constant */
+  /** @type {Map<hash, Map<${defines.get("setArgument0Type")}, *[]>>} @constant */
   #outerMap = new Map();
 
   /** @type {KeyHasher} @constant */
   #mapHasher = new KeyHasher(${defines.get("mapArgNameList")});
-
-  /** @type {KeyHasher} @constant */
-  #setHasher = new KeyHasher(${defines.get("setArgNameList")});
 
   /** @type {number} */
   #sizeOfAll = 0;
@@ -57,16 +54,15 @@ ${docs.buildBlock("mapSize", 2)}
   }
 
 ${docs.buildBlock("add", 2)}
-  add(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {${invokeValidate}
+  add(${defines.get("mapArgList")}, ${defines.get("setArgument0")}) {${invokeValidate}
     const __mapHash__ = this.#mapHasher.getHash(${defines.get("mapArgList")});
     if (!this.#outerMap.has(__mapHash__))
       this.#outerMap.set(__mapHash__, new Map);
 
     const __innerMap__ = this.#outerMap.get(__mapHash__);
 
-    const __setHash__ = this.#setHasher.getHash(${defines.get("setArgList")});
-    if (!__innerMap__.has(__setHash__)) {
-      __innerMap__.set(__setHash__, Object.freeze([${defines.get("argList")}]));
+    if (!__innerMap__.has(${defines.get("setArgument0")})) {
+      __innerMap__.set(${defines.get("setArgument0")}, Object.freeze([${defines.get("argList")}]));
       this.#sizeOfAll++;
     }
 
@@ -95,9 +91,8 @@ ${docs.buildBlock("addSets", 2)}
     const __mapArgs__ = [${defines.get("mapArgList")}];
 
     __array__.forEach(__set__ => {
-      const __setHash__ = this.#setHasher.getHash(...__set__);
-      if (!__innerMap__.has(__setHash__)) {
-        __innerMap__.set(__setHash__, Object.freeze(__mapArgs__.concat(__set__)));
+      if (!__innerMap__.has(__set__[0])) {
+        __innerMap__.set(__set__[0], Object.freeze(__mapArgs__.concat(__set__)));
         this.#sizeOfAll++;
       }
     });
@@ -127,11 +122,10 @@ ${docs.buildBlock("delete", 2)}
     if (!__innerMap__)
       return false;
 
-    const __setHash__ = this.#setHasher.getHashIfExists(${defines.get("setArgList")});
-    if (!__setHash__ || !__innerMap__.has(__setHash__))
+    if (!__innerMap__.has(${defines.get("setArgument0")}))
       return false;
 
-    __innerMap__.delete(__setHash__);
+    __innerMap__.delete(${defines.get("setArgument0")});
     this.#sizeOfAll--;
 
     if (__innerMap__.size === 0) {
@@ -180,8 +174,7 @@ ${docs.buildBlock("has", 2)}
     if (!__innerMap__)
       return false;
 
-    const __setHash__ = this.#setHasher.getHashIfExists(${defines.get("setArgList")});
-    return __setHash__ ? __innerMap__.has(__setHash__) : false;
+    return __innerMap__.has(${defines.get("setArgument0")});
   }
 
 ${docs.buildBlock("hasSet", 2)}

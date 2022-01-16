@@ -14,19 +14,10 @@ export default function preprocess(defines, docs) {
 
   return `
 ${defines.get("importLines")}
-import KeyHasher from "./keys/Hasher.mjs";
 
 class ${defines.get("className")} {
-  /** @typedef {string} hash */
-
-  /** @type {Map<hash, Map<hash, *[]>>} @constant */
+  /** @type {Map<${defines.get("mapArgument0Type")}, Set<${defines.get("setArgument0Type")}>>} @constant */
   #outerMap = new Map();
-
-  /** @type {KeyHasher} @constant */
-  #mapHasher = new KeyHasher(${defines.get("mapArgNameList")});
-
-  /** @type {KeyHasher} @constant */
-  #setHasher = new KeyHasher(${defines.get("setArgNameList")});
 
   /** @type {number} */
   #sizeOfAll = 0;
@@ -47,8 +38,8 @@ ${docs.buildBlock("getSize", 2)}
 
 ${docs.buildBlock("getSizeOfSet", 2)}
   getSizeOfSet(${defines.get("mapArgList")}) {${invokeMapValidate}
-    const [__innerMap__] = this.#getInnerMap(${defines.get("mapArgList")});
-    return __innerMap__ ? __innerMap__.size : 0;
+    const __innerSet__ = this.#outerMap.get(${defines.get("mapArgument0")})
+    return __innerSet__?.size || 0;
   }
 
 ${docs.buildBlock("mapSize", 2)}
@@ -57,16 +48,14 @@ ${docs.buildBlock("mapSize", 2)}
   }
 
 ${docs.buildBlock("add", 2)}
-  add(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {${invokeValidate}
-    const __mapHash__ = this.#mapHasher.getHash(${defines.get("mapArgList")});
-    if (!this.#outerMap.has(__mapHash__))
-      this.#outerMap.set(__mapHash__, new Map);
+  add(${defines.get("mapArgList")}, ${defines.get("setArgument0")}) {${invokeValidate}
+    if (!this.#outerMap.has(${defines.get("mapArgument0")}))
+      this.#outerMap.set(${defines.get("mapArgument0")}, new Set);
 
-    const __innerMap__ = this.#outerMap.get(__mapHash__);
+    const __innerSet__ = this.#outerMap.get(${defines.get("mapArgument0")});
 
-    const __setHash__ = this.#setHasher.getHash(${defines.get("setArgList")});
-    if (!__innerMap__.has(__setHash__)) {
-      __innerMap__.set(__setHash__, Object.freeze([${defines.get("argList")}]));
+    if (!__innerSet__.has(${defines.get("setArgument0")})) {
+      __innerSet__.add(${defines.get("setArgument0")});
       this.#sizeOfAll++;
     }
 
@@ -87,17 +76,14 @@ ${docs.buildBlock("addSets", 2)}
       return __set__;
     });
 
-    const __mapHash__ = this.#mapHasher.getHash(${defines.get("mapArgList")});
-    if (!this.#outerMap.has(__mapHash__))
-      this.#outerMap.set(__mapHash__, new Map);
+    if (!this.#outerMap.has(${defines.get("mapArgument0")}))
+      this.#outerMap.set(${defines.get("mapArgument0")}, new Set);
 
-    const __innerMap__ = this.#outerMap.get(__mapHash__);
-    const __mapArgs__ = [${defines.get("mapArgList")}];
+    const __innerSet__ = this.#outerMap.get(${defines.get("mapArgument0")});
 
     __array__.forEach(__set__ => {
-      const __setHash__ = this.#setHasher.getHash(...__set__);
-      if (!__innerMap__.has(__setHash__)) {
-        __innerMap__.set(__setHash__, Object.freeze(__mapArgs__.concat(__set__)));
+      if (!__innerSet__.has(__set__[0])) {
+        __innerSet__.add(__set__[0]);
         this.#sizeOfAll++;
       }
     });
@@ -113,29 +99,28 @@ ${docs.buildBlock("clear", 2)}
 
 ${docs.buildBlock("clearSets", 2)}
   clearSets(${defines.get("mapArgList")}) {${invokeMapValidate}
-    const [__innerMap__] = this.#getInnerMap(${defines.get("mapArgList")});
-    if (!__innerMap__)
+    const __innerSet__ = this.#outerMap.get(${defines.get("mapArgument0")})
+    if (!__innerSet__)
       return;
 
-    this.#sizeOfAll -= __innerMap__.size;
-    __innerMap__.clear();
+    this.#sizeOfAll -= __innerSet__.size;
+    __innerSet__.clear();
   }
 
 ${docs.buildBlock("delete", 2)}
   delete(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {${invokeValidate}
-    const [__innerMap__, __mapHash__] = this.#getInnerMap(${defines.get("mapArgList")});
-    if (!__innerMap__)
+    const __innerSet__ = this.#outerMap.get(${defines.get("mapArgument0")})
+    if (!__innerSet__)
       return false;
 
-    const __setHash__ = this.#setHasher.getHashIfExists(${defines.get("setArgList")});
-    if (!__setHash__ || !__innerMap__.has(__setHash__))
+    if (!__innerSet__.has(${defines.get("setArgument0")}))
       return false;
 
-    __innerMap__.delete(__setHash__);
+    __innerSet__.delete(${defines.get("setArgument0")});
     this.#sizeOfAll--;
 
-    if (__innerMap__.size === 0) {
-      this.#outerMap.delete(__mapHash__);
+    if (__innerSet__.size === 0) {
+      this.#outerMap.delete(${defines.get("mapArgument0")});
     }
 
     return true;
@@ -143,32 +128,32 @@ ${docs.buildBlock("delete", 2)}
 
 ${docs.buildBlock("deleteSets", 2)}
   deleteSets(${defines.get("mapArgList")}) {${invokeMapValidate}
-    const [__innerMap__, __mapHash__] = this.#getInnerMap(${defines.get("mapArgList")});
-    if (!__innerMap__)
+    const __innerSet__ = this.#outerMap.get(${defines.get("mapArgument0")})
+    if (!__innerSet__)
       return false;
 
-    this.#outerMap.delete(__mapHash__);
-    this.#sizeOfAll -= __innerMap__.size;
+    this.#outerMap.delete(${defines.get("mapArgument0")});
+    this.#sizeOfAll -= __innerSet__.size;
     return true;
   }
 
 ${docs.buildBlock("forEachSet", 2)}
   forEach(__callback__, __thisArg__) {
     this.#outerMap.forEach(
-      __innerMap__ => __innerMap__.forEach(
-        __keySet__ => __callback__.apply(__thisArg__, __keySet__.concat(this))
+      (__innerSet__, ${defines.get("mapArgument0")}) => __innerSet__.forEach(
+        ${defines.get("setArgument0")} => __callback__.apply(__thisArg__, [${defines.get("mapArgument0")}, ${defines.get("setArgument0")}, this])
       )
     );
   }
 
 ${docs.buildBlock("forEachMapSet", 2)}
-  forEachSet(${defines.get("mapArgList")}, __callback__, __thisArg__) {${invokeMapValidate}
-    const [__innerMap__] = this.#getInnerMap(${defines.get("mapArgList")});
-    if (!__innerMap__)
+  forEachSet(${defines.get("mapArgument0")}, __callback__, __thisArg__) {${invokeMapValidate}
+    const __innerSet__ = this.#outerMap.get(${defines.get("mapArgument0")})
+    if (!__innerSet__)
       return;
 
-    __innerMap__.forEach(
-      __keySet__ => __callback__.apply(__thisArg__, __keySet__.concat(this))
+    __innerSet__.forEach(
+      ${defines.get("setArgument0")} => __callback__.apply(__thisArg__, [${defines.get("mapArgument0")}, ${defines.get("setArgument0")}, this])
     );
   }
 
@@ -176,18 +161,17 @@ ${docs.buildBlock("forEachCallbackSet", 2)}
 
 ${docs.buildBlock("has", 2)}
   has(${defines.get("mapArgList")}, ${defines.get("setArgList")}) {${invokeValidate}
-    const [__innerMap__] = this.#getInnerMap(${defines.get("mapArgList")});
-    if (!__innerMap__)
+    const __innerSet__ = this.#outerMap.get(${defines.get("mapArgument0")})
+    if (!__innerSet__)
       return false;
 
-    const __setHash__ = this.#setHasher.getHashIfExists(${defines.get("setArgList")});
-    return __setHash__ ? __innerMap__.has(__setHash__) : false;
+    return __innerSet__.has(${defines.get("setArgument0")});
   }
 
 ${docs.buildBlock("hasSet", 2)}
   hasSets(${defines.get("mapArgList")}) {${invokeMapValidate}
-    const [__innerMap__] = this.#getInnerMap(${defines.get("mapArgList")});
-    return Boolean(__innerMap__);
+    const __innerSet__ = this.#outerMap.get(${defines.get("mapArgument0")})
+    return Boolean(__innerSet__);
   }
 
 ${defines.has("validateArguments") ? `
@@ -199,27 +183,22 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
   ` : ``}
 ${docs.buildBlock("values", 2)}
   * values() {
-    const __outerIter__ = this.#outerMap.values();
+    const __outerIter__ = this.#outerMap.entries();
 
-    for (let __innerMap__ of __outerIter__) {
-      for (let __value__ of __innerMap__.values())
-        yield __value__;
+    for (let [${defines.get("mapArgument0")}, __innerSet__] of __outerIter__) {
+      for (let ${defines.get("setArgument0")} of __innerSet__.values())
+        yield [${defines.get("mapArgument0")}, ${defines.get("setArgument0")}];
     }
   }
 
 ${docs.buildBlock("valuesSet", 2)}
-  * valuesSet(${defines.get("mapArgList")}) {${invokeMapValidate}
-    const [__innerMap__] = this.#getInnerMap(${defines.get("mapArgList")});
-    if (!__innerMap__)
+  * valuesSet(${defines.get("mapArgument0")}) {${invokeMapValidate}
+    const __innerSet__ = this.#outerMap.get(${defines.get("mapArgument0")})
+    if (!__innerSet__)
       return;
 
-    for (let __value__ of __innerMap__.values())
-      yield __value__;
-  }
-
-  #getInnerMap(...__mapArguments__) {
-    const __hash__ = this.#mapHasher.getHashIfExists(...__mapArguments__);
-    return __hash__ ? [this.#outerMap.get(__hash__), __hash__] : [null];
+    for (let ${defines.get("setArgument0")} of __innerSet__.values())
+      yield [${defines.get("mapArgument0")}, ${defines.get("setArgument0")}];
   }
 
 ${defines.has("validateArguments") ? `

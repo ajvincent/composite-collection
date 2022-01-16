@@ -1,5 +1,7 @@
 import CollectionConfiguration from "#source/CollectionConfiguration.mjs";
 import CodeGenerator from "#source/CodeGenerator.mjs";
+import CompileTimeOptions from "#source/CompileTimeOptions.mjs";
+
 import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";
 
 import { PromiseAllSequence } from "#support/generateCollectionTools.mjs";
@@ -93,8 +95,6 @@ function defineCollection(className, mapKeyCount, useWeakMapKeys, setKeyCount, u
  * @param {boolean} disableKeyOptimization True if we need to disable the optimization.
  */
 async function createCollectionFiles(dirName, extraKeyCount, disableKeyOptimization) {
-  void extraKeyCount;
-
   const generatedDir = path.join(specTopDir, dirName, "generated");
   await fs.mkdir(generatedDir, { recursive: true });
 
@@ -148,12 +148,14 @@ async function createCollectionFiles(dirName, extraKeyCount, disableKeyOptimizat
     const [className, config] = arg;
     const leafName = className + ".mjs";
     console.log("Generating collection: spec/_02_single-keytype-optimizations/" + dirName + "/generated/" + leafName);
+
     const generator = new CodeGenerator(
       config,
       path.join(generatedDir, leafName),
       Promise.resolve(),
-      { disableKeyOptimization }
+      new CompileTimeOptions({ disableKeyOptimization })
     );
+
     await generator.completionPromise;
   });
 }
