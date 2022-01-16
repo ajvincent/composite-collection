@@ -1,5 +1,8 @@
 {
   "globals": {
     "MethodTemplate": "readonly"
+  },
+  "rules": {
+    "no-console": "error"
   }
 }

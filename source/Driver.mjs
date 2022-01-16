@@ -76,6 +76,7 @@ export default class Driver extends CompletionPromise {
           return list;
         }
         catch (ex) {
+          // eslint-disable-next-line no-console
           console.error("\n\nException happened for " + relativePath + "\n\n");
           throw ex;
         }
@@ -100,6 +101,7 @@ export default class Driver extends CompletionPromise {
         return generator;
       }
       catch (ex) {
+        // eslint-disable-next-line no-console
         console.error("Failed on " + configToRelativePath.get(config));
         throw ex;
       }

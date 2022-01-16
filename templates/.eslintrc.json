@@ -1,5 +1,8 @@
 {
   "globals": {
     "JSDocGenerator": "readonly"
+  },
+  "rules": {
+    "no-console": "error"
   }
 }
