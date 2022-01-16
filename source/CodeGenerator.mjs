@@ -170,7 +170,6 @@ export default class CodeGenerator extends CompletionPromise {
  * Generator: https://github.com/ajvincent/composite-collection/
 `.trim(),
       this.#compileOptions.license ? ` * @license ${this.#compileOptions.license}` : "",
-      this.#compileOptions.sourceFile ? ` * Source: ${this.#compileOptions.sourceFile}` : "",
       this.#compileOptions.author ? ` * @author ${this.#compileOptions.author}` : "",
       this.#compileOptions.copyright ? ` * @copyright ${this.#compileOptions.copyright}` : "",
       fileOverview,

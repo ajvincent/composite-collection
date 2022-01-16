@@ -15,9 +15,6 @@ function validString(value) {
  */
 export default class CompileTimeOptions {
   constructor(properties) {
-    this.sourceFile       = validString(properties.sourceFile);
-    this.sourcesDirectory = validString(properties.sourcesDirectory);
-
     this.licenseText      = validString(properties.licenseText);
     this.license          = validString(properties.license);
     this.author           = validString(properties.author);

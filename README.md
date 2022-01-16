@@ -62,11 +62,20 @@ Here's code you could use to [generate this collection](spec/integration/fixture
 
 ```javascript
 import CompositeDriver from "composite-collection/Driver";
+import CompileTimeOptions from "composite-collection/CompileTimeOptions";
 import path from "path";
+
+const options = new CompileTimeOptions({
+  licenseText: "// insert your license text here, commented out",
+  license: "short-license-string for JSDoc",
+  author: "author name <author e-mail>",
+  copyright: "© copyright string",
+});
 
 const driver = new CompositeDriver(
   path.join(process.cwd(), "configurations"),
-  path.join(process.cwd(), "collections")
+  path.join(process.cwd(), "collections"),
+  options
 );
 
 driver.start();
@@ -86,6 +95,8 @@ wfMM.add(key1, callback1);
 wfMM.add(key1, callback2);
 ```
 
+The [CompileTimeOptions](source/CompileTimeOptions.mjs) modify the generated output to include metadata such as the license, author and copyright.
+
 ## Definitions
 
 By a "strong" key, I mean the collection holds a strong reference to the argument.  This means that unless the user explicitly deletes the key in the collection,
@@ -104,6 +115,8 @@ Currently supported (version 0.4.0):
 - A simple configuration API
 - Generating code and matching JSDoc comments
   - Comprehensive API in each collection for setting, getting and iterating over entries
+  - Support for [@license](https://jsdoc.app/tags-license.html), [@author](https://jsdoc.app/tags-author.html), and [@copyright](https://jsdoc.app/tags-copyright.html) tags via [composite-collection/CompileTimeOptions](source/CompileTimeOptions.mjs)
+  - Inserting license boilerplate at the top via the `.licenseText` property of CompileTimeOptions
 - Support for multiple weak keys, multiple strong keys
 - Argument validation
   - Including user modules for types
@@ -205,7 +218,7 @@ One-to-one hashtables go through an additional set of steps.
 
 1. The user writes a [CollectionConfiguration](source/CollectionConfiguration.mjs) instance as I document above.
 2. The [`templates`](templates) directory holds template JavaScript files in [JavaScript template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), enclosed in functions taking a `defines` Map argument and at least one `docs` "JSDocGenerator" argument.
-3. For strongly held keys, the [`CodeGenerator`](source/CodeGenerator.mjs) module writes an import for a [`KeyHasher`](source/exports/keys/Hasher.mjs) module, which the [`Driver`](source/Driver.mjs) module copies into the destination directory.  The `KeyHasher` holds weak references to objects, and returns a string hash for the module's use.
-4. For weakly held keys (and strongly held keys associated with them), the `CodeGenerator` module writes an import for a [`WeakKeyComposer`](exports/keys/Composite.mjs) module.  The `Driver` module copies this module into the destination directory.  The `WeakKeyComposer` holds the weak and strong references as the collection specified.  It returns vanilla objects (`WeakKey` objects) for the module's use.
+3. For strongly held keys, the template specifies a [`KeyHasher`](source/exports/keys/Hasher.mjs) module to import, which the [`Driver`](source/Driver.mjs) module copies into the destination directory.  The `KeyHasher` holds weak references to objects, and returns a string hash for the module's use.
+4. For weakly held keys (and strongly held keys associated with them), the template specifies a [`WeakKeyComposer`](exports/keys/Composite.mjs) module to import.  The `Driver` module copies this module into the destination directory.  The `WeakKeyComposer` holds the weak and strong references as the collection specified.  It returns vanilla objects (`WeakKey` objects) for the module's use.
 5. The `CodeGenerator` uses the configuration and fills a [`JSDocGenerator`](source/JSDocGenerator.mjs) instance with the necessary fields to format JSDoc comments for the code it will generate.
 6. The `CodeGenerator` combines the template, the configuration and the `JSDocGenerator` into a [JavaScript module file](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) ready for either web browsers or [NodeJS](https://www.nodejs.org) applications to use.  The module will store `WeakKey` objects in a private WeakMap, and hashes in a private Map.  The module will `export default` the final collection class.
