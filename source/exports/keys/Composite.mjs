@@ -1,17 +1,46 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * @license MPL-2.0
+ * @author Alexander J. Vincent <ajvincent@gmail.com>
+ * @copyright © 2021-2022 Alexander J. Vincent
+ * @file
+ * This transforms multiple object keys into a "weak key" object.  The weak arguments
+ * in WeakKeyComposer.prototype.getKey() are the only guarantees that the weak key
+ * will continue to exist:  if one of the weak arguments is no longer reachable,
+ * the weak key is subject to garbage collection.
+ */
+
 import KeyHasher from "./Hasher.mjs";
 
-/* Two levels of keys:
+// eslint-disable-next-line jsdoc/require-property
+/** @typedef {object} WeakKey */
+// eslint-disable-next-line jsdoc/require-property
+/** @typedef {object} FinalizerKey */
+/** @typedef {string} hash */
+
+/**
+ * @private
+ * @classdesc
+ * Internally, there are two levels of keys:
  * finalizerKey is a frozen object which never leaves this module.
  * weakKey is the actual key we give to the caller.
  *
- * Each weak argument, through keyFinalizer, holds a strong reference to finalizerKey
- * finalizerKey, through finalizerToPublic, holds a strong reference to weakKey
+ * Each weak argument, through keyFinalizer, holds a strong reference to finalizerKey.
+ * finalizerKey, through finalizerToPublic, holds a strong reference to weakKey.
  * weakKeyPropertyMap holds a strong reference to an instance of WeakKeyPropertyBag,
  *   which holds weak references to finalizerKey and weakKey.
  * hashToPropertyMap holds a strong reference to the same instance of WeakKeyPropertyBag.
  */
-
 class WeakKeyPropertyBag {
+  /**
+   * @param {FinalizerKey} finalizerKey    The finalizer key for deleting the weak key object.
+   * @param {WeakKey}      weakKey         The weak key object.
+   * @param {hash}         hash            A hash of all the arguments from a KeyHasher.
+   * @param {*[]}          strongArguments The list of strong arguments.
+   */
   constructor(finalizerKey, weakKey, hash, strongArguments) {
     this.finalizerKeyRef = new WeakRef(finalizerKey);
     this.weakKeyRef = new WeakRef(weakKey);
@@ -27,13 +56,12 @@ class WeakKeyPropertyBag {
   }
 }
 
+/**
+ * The weak key composer.
+ *
+ * @public
+ */
 export default class WeakKeyComposer {
-  // eslint-disable-next-line jsdoc/require-property
-  /** @typedef {object} WeakKey */
-  // eslint-disable-next-line jsdoc/require-property
-  /** @typedef {object} FinalizerKey */
-  /** @typedef {string} hash */
-
   /** @type {string[]} @constant */
   #weakArgList;
 
