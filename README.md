@@ -223,7 +223,7 @@ If you want a more complex hashtable structure (multiple keys, argument validati
   - `innerType` is:
     - "Set" for maps of strong sets
     - "WeakSet" for weak maps of weak sets
-    - Strong maps of weak sets are illegal because it's unclear when we would hold references to the strong map keys.
+    - Maps of weak sets are illegal because it's unclear when we would hold references to the strong map keys.
 - `setFileOverview(overview);` to set a top-level file overview
 - `importLines(blockOfTest);` to specify top-level module imports
 - `addMapKey(argumentName, description, holdWeak, options);` to specify keys in order (one at a time)
