@@ -27,12 +27,6 @@ import KeyHasher from "./Hasher.mjs";
  * Internally, there are two levels of keys:
  * finalizerKey is a frozen object which never leaves this module.
  * weakKey is the actual key we give to the caller.
- *
- * Each weak argument, through keyFinalizer, holds a strong reference to finalizerKey.
- * finalizerKey, through finalizerToPublic, holds a strong reference to weakKey.
- * weakKeyPropertyMap holds a strong reference to an instance of WeakKeyPropertyBag,
- *   which holds weak references to finalizerKey and weakKey.
- * hashToPropertyMap holds a strong reference to the same instance of WeakKeyPropertyBag.
  */
 class WeakKeyPropertyBag {
   /**
@@ -60,6 +54,13 @@ class WeakKeyPropertyBag {
  * The weak key composer.
  *
  * @public
+ * @classdesc
+ *
+ * Each weak argument, through #keyFinalizer, holds a strong reference to finalizerKey.
+ * #finalizerToPublic maps from finalizerKey to weakKey.
+ * #weakKeyPropertyMap maps from weakKey to an instance of WeakKeyPropertyBag,
+ *   which holds weak references to finalizerKey and weakKey.
+ * #hashToPropertyMap maps from a hash to the same instance of WeakKeyPropertyBag.
  */
 export default class WeakKeyComposer {
   /** @type {string[]} @constant */
