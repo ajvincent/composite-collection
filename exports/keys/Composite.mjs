@@ -159,13 +159,8 @@ export default class WeakKeyComposer {
    */
   hasKey(weakArguments, strongArguments) {
     const fullArgList = weakArguments.concat(strongArguments);
-
-    if (!this.#keyHasher.hasHash(...fullArgList)) {
-      return false;
-    }
-
-    const hash = this.#keyHasher.getHash(...fullArgList);
-    return this.#hashToPropertyMap.has(hash);
+    const hash = this.#keyHasher.getHashIfExists(...fullArgList);
+    return hash ? this.#hashToPropertyMap.has(hash) : false;
   }
 
   /**
@@ -198,13 +193,11 @@ export default class WeakKeyComposer {
 
     const fullArgList = weakArguments.concat(strongArguments);
 
-    if (!this.#keyHasher.hasHash(...fullArgList)) {
+    const hash = this.#keyHasher.getHashIfExists(...fullArgList);
+    if (!hash)
       return false;
-    }
 
-    const hash = this.#keyHasher.getHash(...fullArgList);
     const properties = this.#hashToPropertyMap.get(hash);
-
     if (!properties)
       return false;
 

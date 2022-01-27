@@ -19,7 +19,6 @@ describe("KeyHasher-new", () => {
     expect(Reflect.ownKeys(KeyHasher.prototype)).toEqual([
       "constructor",
       "getHash",
-      "hasHash",
       "getHashIfExists",
     ]);
   });
@@ -37,11 +36,6 @@ describe("KeyHasher-new", () => {
     expect(Reflect.ownKeys(hasher)).toEqual([]);
   });
 
-  it(".hasHash() returns false for an unknown key", () => {
-    const keyList = objects.slice(0, 3);
-    expect(hasher.hasHash(...keyList)).toBe(false);
-  });
-
   describe(".getHash()", () => {
     it("generates a consistent hash for an initial key", () => {
       const expected = [1,2,3].join(",");
@@ -50,10 +44,10 @@ describe("KeyHasher-new", () => {
 
       const actual = hasher.getHash(...keyList);
       expect(actual).toEqual(expected);
-      expect(hasher.hasHash(...keyList)).toBe(true);
+      expect(hasher.getHashIfExists(...keyList)).toBe(expected);
 
       expect(hasher.getHash(...keyList)).toEqual(expected);
-      expect(hasher.hasHash(...keyList)).toBe(true);
+      expect(hasher.getHashIfExists(...keyList)).toBe(expected);
     });
 
     it("accepts primitives for keys", () => {

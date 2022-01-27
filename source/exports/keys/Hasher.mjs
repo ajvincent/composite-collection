@@ -40,10 +40,6 @@ export default class KeyHasher {
     return args.map(arg => this.#requireKey(arg)).join(",");
   }
 
-  hasHash(...args) {
-    return args.every(arg => this.#getMap(arg).has(arg));
-  }
-
   getHashIfExists(...args) {
     const values = [];
     const result = args.every(arg => {
