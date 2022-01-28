@@ -9,7 +9,7 @@ describe("KeyHasher-new", () => {
   }
   Object.freeze(objects);
 
-  beforeEach(() => hasher = new KeyHasher(["row", "column", "floor"]));
+  beforeEach(() => hasher = new KeyHasher());
 
   it("class is frozen", () => {
     expect(typeof KeyHasher).toBe("function");
