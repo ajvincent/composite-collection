@@ -1,7 +1,7 @@
 import WeakKeyComposer from "#source/exports/keys/Composite.mjs";
 import ToHoldRefsMatchers from "#support/toHoldReferences.mjs";
 
-describe("WeakKey-WeakRefNew composer", () => {
+describe("WeakKeyComposer", () => {
   it("class is frozen", () => {
     expect(Object.isFrozen(WeakKeyComposer)).toBe(true);
     expect(Object.isFrozen(WeakKeyComposer.prototype)).toBe(true);

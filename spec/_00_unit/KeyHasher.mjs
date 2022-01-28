@@ -1,7 +1,7 @@
 import KeyHasher from "#source/exports/keys/Hasher.mjs";
 import ToHoldRefsMatchers from "#support/toHoldReferences.mjs";
 
-describe("KeyHasher-new", () => {
+describe("KeyHasher", () => {
   let hasher;
   const objects = [];
   for (let i = 0; i < 6; i++) {
