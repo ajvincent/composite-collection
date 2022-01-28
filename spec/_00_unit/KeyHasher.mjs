@@ -72,7 +72,7 @@ describe("KeyHasher", () => {
       expect(hasher.getHash(...keyList)).toEqual(expected);
     });
 
-    it("generates new hash indexes for unknown objects", () => {
+    it("generates new hash indices for unknown objects", () => {
       const expected = [4,5,6].join(",");
 
       const keyList = objects.slice(0, 3);
@@ -82,6 +82,26 @@ describe("KeyHasher", () => {
       expect(actual).toEqual(expected);
 
       expect(hasher.getHash(...keyList)).toEqual(expected);
+    });
+
+    it("produces a different hash for keys in a different order by default", () => {
+      const expected = [3, 2, 1].join(",");
+      const keyList = objects.slice(0, 3);
+      hasher.getHash(...keyList);
+
+      keyList.reverse();
+
+      expect(hasher.getHash(...keyList)).toBe(expected);
+    });
+
+    it("produces the same hash for keys in a different order if we require that behavior at construction time", () => {
+      hasher = new KeyHasher(true);
+      const expected = [1, 2, 3].join(",");
+      const keyList = objects.slice(0, 3);
+      hasher.getHash(...keyList);
+
+      keyList.reverse();
+      expect(hasher.getHash(...keyList)).toBe(expected);
     });
   });
 
@@ -96,6 +116,26 @@ describe("KeyHasher", () => {
     it("returns an empty string for an unknown hash", () => {
       const keyList = objects.slice(0, 3);
       expect(hasher.getHashIfExists(...keyList)).toEqual("");
+    });
+
+    it("produces the same hash for keys in a different order if we require that behavior at construction time", () => {
+      hasher = new KeyHasher(true);
+      const keyList = objects.slice(0, 3);
+      const expected = hasher.getHash(...keyList);
+
+      keyList.reverse();
+      expect(hasher.getHashIfExists(...keyList)).toBe(expected);
+    });
+
+    it("returns a different hash for keys in a different order by default", () => {
+      const keyList = objects.slice(0, 3);
+      const firstHash = hasher.getHash(...keyList);
+
+      keyList.reverse();
+
+      const hash = hasher.getHashIfExists(...keyList);
+      expect(hash).not.toBe("");
+      expect(hash).not.toBe(firstHash);
     });
   });
 
