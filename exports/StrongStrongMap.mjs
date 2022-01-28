@@ -35,7 +35,7 @@ class StrongStrongMap {
    * @type {KeyHasher}
    * @constant
    */
-  #hasher = new KeyHasher(["key1", "key2"]);
+  #hasher = new KeyHasher();
 
   constructor() {
     if (arguments.length > 0) {

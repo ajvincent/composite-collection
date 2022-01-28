@@ -23,7 +23,7 @@ class ${defines.get("className")} {
   #outerMap = new Map();
 
   /** @type {KeyHasher} @constant */
-  #setHasher = new KeyHasher(${defines.get("setArgNameList")});
+  #setHasher = new KeyHasher();
 
   /** @type {number} */
   #sizeOfAll = 0;

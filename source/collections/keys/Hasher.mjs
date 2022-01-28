@@ -19,6 +19,9 @@ export default class KeyHasher {
   /** @type {Map<*, string>} @constant */
   #strongValueToHash = new Map();
 
+  /** @type {boolean} @constant */
+  #sortKeys = false;
+
   #getMap(key) {
     return Object(key) === key ? this.#weakValueToHash : this.#strongValueToHash;
   }
@@ -30,14 +33,21 @@ export default class KeyHasher {
     return map.get(key);
   }
 
-  constructor() {
+  /**
+   * @param {boolean} sortKeys True if we should sort the keys we generate.
+   */
+  constructor(sortKeys = false) {
     if (new.target !== KeyHasher)
       throw new Error("You cannot subclass KeyHasher!");
+    this.#sortKeys = Boolean(sortKeys);
     Object.freeze(this);
   }
 
   getHash(...args) {
-    return args.map(arg => this.#requireKey(arg)).join(",");
+    const rv = args.map(arg => this.#requireKey(arg));
+    if (this.#sortKeys)
+      rv.sort();
+    return rv.join(",");
   }
 
   getHashIfExists(...args) {
@@ -48,7 +58,14 @@ export default class KeyHasher {
       values.push(rv);
       return rv;
     });
-    return result ? values.join(",") : "";
+
+    if (!result)
+      return "";
+
+    if (this.#sortKeys)
+      values.sort();
+
+    return values.join(",");
   }
 }
 

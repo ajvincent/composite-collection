@@ -23,7 +23,7 @@ class ${defines.get("className")} {
    * @type {KeyHasher}
    * @constant
    */
-  #hasher = new KeyHasher(${defines.get("argNameList")});
+  #hasher = new KeyHasher();
 
   constructor() {
     if (arguments.length > 0) {

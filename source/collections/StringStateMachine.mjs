@@ -28,7 +28,7 @@ class StringStateMachine {
   #root = new Map;
 
   /** @type {KeyHasher} @constant */
-  #hasher = new KeyHasher(["currentState", "nextState"]);
+  #hasher = new KeyHasher();
 
   constructor() {
     if (arguments.length > 0) {

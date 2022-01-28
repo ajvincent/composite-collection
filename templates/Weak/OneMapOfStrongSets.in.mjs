@@ -22,7 +22,7 @@ class ${defines.get("className")} {
   #root = new WeakMap();
 
   /** @type {KeyHasher} @constant */
-  #setHasher = new KeyHasher(${defines.get("setArgNameList")});
+  #setHasher = new KeyHasher();
 
   constructor() {
     if (arguments.length > 0) {

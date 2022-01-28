@@ -112,7 +112,7 @@ export default class WeakKeyComposer {
     this.#weakArgList = weakArgList.slice();
     this.#strongArgList = strongArgList.slice();
 
-    this.#keyHasher = new KeyHasher(weakArgList.concat(strongArgList));
+    this.#keyHasher = new KeyHasher();
 
     Object.freeze(this);
   }
