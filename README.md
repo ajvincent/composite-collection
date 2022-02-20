@@ -144,7 +144,7 @@ Maps of weak sets don't make sense right now:  they turn into glorified composit
 
 ## Guidelines for using this package
 
-As of January 15, 2022, the *composite-collection* package is still under development.  That said, I suggest the following practices for developers using this package to follow.
+I suggest the following practices for developers using this package to follow.
 
 - If you want one or two or even three of this package's exported collection modules, copy and paste the modules into your project as-is.  They already have license boilerplate and JSDoc specifying the copyright and author information.
   - Don't forget to copy the `exports/keys` directory to your destination as well!  Almost all the collection modules depend on the files in there.
@@ -158,7 +158,7 @@ As of January 15, 2022, the *composite-collection* package is still under develo
 
 ## Features
 
-Currently supported (version 0.4.0):
+Currently supported (version 1.0.0):
 
 - ECMAScript class modules with all the pieces you need
 - A simple configuration API
