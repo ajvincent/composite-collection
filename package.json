@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "description": "Composing Maps, WeakMaps, Sets and WeakSets into generated classes",
   "scripts": {
-    "clean": "jake clean",
-    "debug": "jake clean debug",
-    "eslint": "jake eslint",
-    "test": "jake clean test",
-    "all": "jake clean test export eslint",
-    "bootstrap": "jake bootstrap",
+    "clean": "node ./build/main.mjs clean",
+    "debug": "node ./build/main.mjs clean debug",
+    "eslint": "node ./build/main.mjs eslint",
+    "test": "node ./build/main.mjs clean test",
+    "all": "node ./build/main.mjs clean test export eslint",
+    "bootstrap": "node ./build/main.mjs bootstrap",
     "bootstrap-build": "node ./jake-targets/bootstrap-build.mjs"
   },
   "repository": {
