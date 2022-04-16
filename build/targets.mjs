@@ -77,7 +77,6 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
       const targets = [
         "build",
         "jake-targets",
-        "Jakefile",
         "source",
         "spec",
         "templates",
