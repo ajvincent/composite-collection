@@ -2,6 +2,10 @@
 
 Composing Maps, WeakMaps, Sets and WeakSets into generated classes
 
+## TypeScript support
+
+See [the TypeScript README](typescript/README.md) for the details.
+
 ## Summary
 
 How often do you find yourself writing code like this?
