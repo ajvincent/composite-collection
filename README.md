@@ -206,7 +206,7 @@ map.get(blueObj); // returns redObj
 
 The [`composite-collection/OneToOneSimpleMap`](exports/OneToOneSimpleMap.mjs) module implements this with its `bindOneToOne(value1, value2)` method.  Lookups via `.get(value)` point from the source value to the target value.  
 
-However, this misses an important bit of context:  the _namespace_ each object belongs to.  You could easily declare a relationship of two tuples: `("red", redObj) === ("blue", blueObj)`.  This tuple arrangement adds the missing context with minimal overhead.
+However, this misses an important bit of context:  the *namespace* each object belongs to.  You could easily declare a relationship of two tuples: `("red", redObj) === ("blue", blueObj)`.  This tuple arrangement adds the missing context with minimal overhead.
 
 More significantly, having a second argument in each tuple allows you to define other namespaces and other relationships:  `("green", greenObj) === ("red", redObj)`.  
 The simple hashtable above can't do this.  To support this, there are the [`composite-collection/OneToOneStrongMap`](exports/OneToOneStrongMap.mjs) and [`composite-collection/OneToOneWeakMap`](exports/OneToOneWeakMap.mjs) modules.
