@@ -9,7 +9,8 @@
     "test": "node ./build/main.mjs clean test",
     "all": "node ./build/main.mjs clean test export eslint",
     "bootstrap": "node ./build/main.mjs bootstrap",
-    "bootstrap-build": "node ./jake-targets/bootstrap-build.mjs"
+    "bootstrap-build": "node ./jake-targets/bootstrap-build.mjs",
+    "tsc": "tsc --project ./typescript/tsconfig.json"
   },
   "repository": {
     "type": "git",
