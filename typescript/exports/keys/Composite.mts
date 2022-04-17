@@ -14,12 +14,6 @@ import KeyHasher from "./Hasher.mjs"
  * the weak key is subject to garbage collection.
  */
 
-// eslint-disable-next-line jsdoc/require-property
-/** @typedef {object} WeakKey */
-// eslint-disable-next-line jsdoc/require-property
-/** @typedef {object} FinalizerKey */
-/** @typedef {string} hash */
-
 class WeakKey {
 
 }
