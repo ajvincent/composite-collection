@@ -18,14 +18,14 @@ export default class KeyHasher {
     return map.get(key);
   }
 
-  getHash(args: ReadonlyArray<any>): string {
+  getHash(...args: ReadonlyArray<any>): string {
     const rv = args.map(arg => this.#requireKey(arg));
     if (this.#sortKeys)
       rv.sort();
     return rv.join(",");
   }
 
-  getHashIfExists(args: ReadonlyArray<any>): string {
+  getHashIfExists(...args: ReadonlyArray<any>): string {
     const values: string[] = [];
     const result = args.every(arg => {
       const rv = this.#getMap(arg).get(arg);

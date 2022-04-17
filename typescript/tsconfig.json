@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "module": "ES2022",
+    "sourceMap": true,
+  },
+
+  "extends": "@tsconfig/node16/tsconfig.json"
+}

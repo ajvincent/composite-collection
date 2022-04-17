@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/ajvincent/composite-collection#readme",
   "devDependencies": {
+    "@tsconfig/node16": "^1.0.2",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
     "acorn-stage3": "^4.0.0",
