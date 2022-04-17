@@ -14,7 +14,7 @@ function validString(value) {
  * @public
  */
 export default class CompileTimeOptions {
-  constructor(properties) {
+  constructor(properties = {}) {
     this.licenseText      = validString(properties.licenseText);
     this.license          = validString(properties.license);
     this.author           = validString(properties.author);
@@ -27,6 +27,11 @@ export default class CompileTimeOptions {
      * @type {boolean}
      */
     this.disableKeyOptimization = Boolean(properties.disableKeyOptimization);
+
+    /**
+     * True if we should generate TypeScript .mts files, instead of .mjs files.
+     */
+    this.generateTypeScript = Boolean(properties.generateTypeScript);
   }
 }
 Object.freeze(CompileTimeOptions);
