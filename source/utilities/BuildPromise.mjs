@@ -110,6 +110,7 @@ export default class BuildPromise {
   }
 
   async #run() {
+    // eslint-disable-next-line no-console
     console.log("Starting " + this.target + "...");
 
     if ((BuildPromise.#status === "ready") && (this === BuildPromise.main))
@@ -140,6 +141,7 @@ export default class BuildPromise {
       }
     }
 
+    // eslint-disable-next-line no-console
     console.log("Completed " + this.target + "!");
   }
 

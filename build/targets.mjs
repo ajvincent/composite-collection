@@ -1,4 +1,4 @@
-import BuildPromise from './BuildPromise.mjs';
+import BuildPromise from '#source/utilities/BuildPromise.mjs';
 
 import { fork } from 'child_process';
 import fs from "fs/promises";
