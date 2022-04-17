@@ -62,6 +62,7 @@ try {
     console.timeLog("stage", "stage 1 @ " + stageDirs[0]);
     await copyToStage(masterDirectory, stageDirs[0]);
     await buildCollections(masterDirectory, stageDirs[0]);
+    await compileTypeScript(stageDirs[0]);
     await runAllStage(stageDirs[0]);
   }
   catch (ex) {
@@ -74,6 +75,7 @@ try {
     console.timeLog("stage", "stage 2 @ " + stageDirs[1]);
     await copyToStage(stageDirs[0], stageDirs[1]);
     await buildCollections(stageDirs[0], stageDirs[1]);
+    await compileTypeScript(stageDirs[1]);
     await runAllStage(stageDirs[1]);
   }
   catch (ex) {
@@ -88,6 +90,7 @@ try {
     console.timeLog("stage", "stage 3 @ " + stageDirs[2]);
     await copyToStage(stageDirs[1], stageDirs[2]);
     await buildCollections(stageDirs[1], stageDirs[2]);
+    await compileTypeScript(stageDirs[2]);
     await runAllStage(stageDirs[2]);
   }
   catch (ex) {
@@ -135,6 +138,17 @@ async function copyToStage(sourceDir, targetDir) {
     dot: true,
   });
   console.timeLog("stage", "copyToStage completed");
+}
+
+/**
+ * Compile the TypeScript files in a stage.
+ *
+ * @param {string} targetDir The target stage.
+ */
+async function compileTypeScript(targetDir) {
+  console.timeLog("stage", "starting compileTypeScript");
+  await npm(targetDir, "tsc");
+  console.timeLog("stage", "compileTypeScript completed");
 }
 
 /**
