@@ -4,7 +4,7 @@ Composing Maps, WeakMaps, Sets and WeakSets into generated classes
 
 ## TypeScript support
 
-See [the TypeScript README](typescript/README.md) for the details.
+See [the TypeScript README](typescript-templates/README.md) for the details.
 
 ## Summary
 
