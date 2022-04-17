@@ -1,23 +1,18 @@
-declare class KeyHasher {
-  #private;
-  getHash(...args: ReadonlyArray<any>): string;
-  getHashIfExists(...args: ReadonlyArray<any>): string;
-}
-
+import KeyHasher from "./Hasher";
 /**
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this
-* file, You can obtain one at https://mozilla.org/MPL/2.0/.
-*
-* @license MPL-2.0
-* @author Alexander J. Vincent <ajvincent@gmail.com>
-* @copyright © 2021-2022 Alexander J. Vincent
-* @file
-* This transforms multiple object keys into a "weak key" object.  The weak arguments
-* in WeakKeyComposer.prototype.getKey() are the only guarantees that the weak key
-* will continue to exist:  if one of the weak arguments is no longer reachable,
-* the weak key is subject to garbage collection.
-*/
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * @license MPL-2.0
+ * @author Alexander J. Vincent <ajvincent@gmail.com>
+ * @copyright © 2021-2022 Alexander J. Vincent
+ * @file
+ * This transforms multiple object keys into a "weak key" object.  The weak arguments
+ * in WeakKeyComposer.prototype.getKey() are the only guarantees that the weak key
+ * will continue to exist:  if one of the weak arguments is no longer reachable,
+ * the weak key is subject to garbage collection.
+ */
 
 // eslint-disable-next-line jsdoc/require-property
 /** @typedef {object} WeakKey */
@@ -34,12 +29,12 @@ class FinalizerKey {
 type hash = string;
 
 /**
-* @private
-* @classdesc
-* Internally, there are two levels of keys:
-* finalizerKey is a frozen object which never leaves this module.
-* weakKey is the actual key we give to the caller.
-*/
+ * @private
+ * @classdesc
+ * Internally, there are two levels of keys:
+ * finalizerKey is a frozen object which never leaves this module.
+ * weakKey is the actual key we give to the caller.
+ */
 class WeakKeyPropertyBag {
 finalizerKeyRef: WeakRef<FinalizerKey>;
 weakKeyRef: WeakRef<WeakKey>;
@@ -69,17 +64,17 @@ constructor(finalizerKey: FinalizerKey, weakKey: WeakKey, hash: hash, strongArgu
 }
 
 /**
-* The weak key composer.
-*
-* @public
-* @classdesc
-*
-* Each weak argument, through #keyFinalizer, holds a strong reference to finalizerKey.
-* #finalizerToPublic maps from finalizerKey to weakKey.
-* #weakKeyPropertyMap maps from weakKey to an instance of WeakKeyPropertyBag,
-*   which holds weak references to finalizerKey and weakKey.
-* #hashToPropertyMap maps from a hash to the same instance of WeakKeyPropertyBag.
-*/
+ * The weak key composer.
+ *
+ * @public
+ * @classdesc
+ *
+ * Each weak argument, through #keyFinalizer, holds a strong reference to finalizerKey.
+ * #finalizerToPublic maps from finalizerKey to weakKey.
+ * #weakKeyPropertyMap maps from weakKey to an instance of WeakKeyPropertyBag,
+ *   which holds weak references to finalizerKey and weakKey.
+ * #hashToPropertyMap maps from a hash to the same instance of WeakKeyPropertyBag.
+ */
 export default class WeakKeyComposer {
 /** @type {string[]} @constant */
 #weakArgList: ReadonlyArray<string>;
@@ -100,7 +95,6 @@ export default class WeakKeyComposer {
 /** @constant */
 #weakKeyPropertyMap: WeakMap<WeakKey, WeakKeyPropertyBag> = new WeakMap;
 
-/** @type {Map<hash, WeakKeyPropertyBag>} */
 #hashToPropertyMap: Map<hash, WeakKeyPropertyBag> = new Map;
 
 /**

@@ -1,11 +1,11 @@
-export class KeyHasher {
-  #hashCount: number = 0;
+export default class KeyHasher {
+  #hashCount = 0;
 
   #weakValueToHash: WeakMap<object, string> = new WeakMap;
 
   #strongValueToHash: Map<any, string> = new Map;
 
-  #sortKeys: boolean = false;
+  #sortKeys = false;
 
   #getMap(key: any) {
     return Object(key) === key ? this.#weakValueToHash : this.#strongValueToHash;

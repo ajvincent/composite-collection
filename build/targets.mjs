@@ -80,6 +80,7 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
         "source",
         "spec",
         "templates",
+        "typescript"
       ];
   
       const buildModulePath = path.join(process.cwd(), "exports/keys/Hasher.mjs");
@@ -93,7 +94,7 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
       if (stats?.isFile()) {
         targets.push("exports");
       }
-  
+
       return runModule("./node_modules/eslint/bin/eslint.js", [
         ...targets,
         "--max-warnings=0"
