@@ -4,6 +4,8 @@ import { fork } from 'child_process';
 import fs from "fs/promises";
 import path from "path";
 
+import cleanTree from "./tools/clean.mjs";
+
 /**
  * Run a specific submodule.
  *
@@ -41,7 +43,7 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
 { // clean
   const target = BuildPromise.get("clean");
   target.description = "Clean all build artifacts";
-  target.addTask(() => runModule("./jake-targets/clean.mjs"));
+  target.addTask(() => cleanTree());
 }
 
 { // test
