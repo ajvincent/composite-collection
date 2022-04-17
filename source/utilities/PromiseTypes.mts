@@ -12,7 +12,7 @@ TypeScript apparently doesn't recognize arrow functions in constructors.
 export class Deferred<T> {
   resolve: PromiseResolver<T>;
   reject: PromiseRejecter;
-  promise: Promise<any>;
+  promise: Promise<T>;
 
   constructor() {
     this.resolve = (value) => {
