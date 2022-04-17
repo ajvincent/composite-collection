@@ -1,8 +1,5 @@
 {
-  "globals": {
-    "MethodTemplate": "readonly"
-  },
   "rules": {
-    "no-console": "error"
+    "@typescript-eslint/no-explicit-any": 0
   }
 }

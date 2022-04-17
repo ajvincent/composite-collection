@@ -29,6 +29,8 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
   return p;
 }
 
+// #region javascript targets
+
 { // export
   const target = BuildPromise.get("export");
   target.description = "Export all modules.";
@@ -79,8 +81,7 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
         "jake-targets",
         "source",
         "spec",
-        "templates",
-        "typescript"
+        "templates"
       ];
   
       const buildModulePath = path.join(process.cwd(), "exports/keys/Hasher.mjs");
@@ -114,6 +115,12 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
     ]
   ));
 }
+
+// #endregion javascript targets
+
+// #region typescript targets
+
+// #endregion typescript targets
 
 BuildPromise.markReady();
 

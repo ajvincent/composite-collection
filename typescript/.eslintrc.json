@@ -27,9 +27,5 @@
   "plugins": [
     "jasmine",
     "@typescript-eslint"
-  ],
-  "rules": {
-    "jsdoc/require-param-type": 0,
-    "jsdoc/require-returns-type": 0
-  }
+  ]
 }
