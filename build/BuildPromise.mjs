@@ -28,8 +28,11 @@ export default class BuildPromise {
   /** @type {Function[]} @constant */
   #tasks = [];
 
-  /** @type {boolean} */
-  #hasStarted = false;
+  /** @type {Function} @constant */
+  #pendingStart;
+
+  /** @type {Promise<void>} @constant */
+  #runPromise;
 
   /**
    * @param {string} target The build target.
@@ -41,6 +44,9 @@ export default class BuildPromise {
       throw new Error("Build step has started");
     this.target = target;
     this.description = "";
+
+    let p = new Promise(resolve => this.#pendingStart = resolve);
+    this.#runPromise = p.then(() => this.#run());
   }
 
   /** @type {string} */
@@ -103,10 +109,7 @@ export default class BuildPromise {
     return targets;
   }
 
-  async run() {
-    if (this.#hasStarted)
-      return;
-    this.#hasStarted = true;
+  async #run() {
     console.log("Starting " + this.target + "...");
 
     if ((BuildPromise.#status === "ready") && (this === BuildPromise.main))
@@ -138,6 +141,11 @@ export default class BuildPromise {
     }
 
     console.log("Completed " + this.target + "!");
+  }
+
+  async run() {
+    this.#pendingStart();
+    await this.#runPromise;
   }
 
   /** @type {BuildPromise} @constant */
