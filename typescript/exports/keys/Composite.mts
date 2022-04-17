@@ -15,10 +15,14 @@ import KeyHasher from "./Hasher.mjs"
  */
 
 class WeakKey {
-
+  constructor() {
+    Object.freeze(this);
+  }
 }
 class FinalizerKey {
-
+  constructor() {
+    Object.freeze(this);
+  }
 }
 type hash = string;
 
@@ -34,7 +38,7 @@ class WeakKeyPropertyBag {
   weakKeyRef: WeakRef<WeakKey>;
   hash: hash;
   strongRefSet: Set<any> | undefined;
-  strongRef: any;
+  strongRef: any | undefined;
 
   /**
    * @param {FinalizerKey} finalizerKey    The finalizer key for deleting the weak key object.
@@ -141,8 +145,8 @@ export default class WeakKeyComposer {
       return properties.weakKeyRef.deref() || null;
     }
 
-    const finalizerKey = Object.freeze({});
-    const weakKey = Object.freeze({});
+    const finalizerKey = new FinalizerKey;
+    const weakKey = new WeakKey;
 
     properties = new WeakKeyPropertyBag(finalizerKey, weakKey, hash, strongArguments);
 
