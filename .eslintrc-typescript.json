@@ -7,11 +7,14 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:jsdoc/recommended"
   ],
+
   "ignorePatterns": [
-    "exports/**/*.mjs"
+    "**/*.mjs"
   ],
+
   "overrides": [
     {
       "files": [
@@ -25,7 +28,9 @@
     "sourceType": "module"
   },
   "plugins": [
+    "@typescript-eslint",
     "jasmine",
-    "@typescript-eslint"
-  ]
+    "jsdoc"
+  ],
+  "root": true
 }

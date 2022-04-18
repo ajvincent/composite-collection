@@ -12,7 +12,7 @@ class BuildPromise {
   #subtargets: string[] = [];
 
   /** @type {Function[]} @constant */
-  #tasks: Function[] = [];
+  #tasks: (() => void)[] = [];
 
   #pendingStart: PromiseResolver<null>;
 
@@ -67,7 +67,7 @@ class BuildPromise {
   /**
    * @param {Function} callback The task.
    */
-  addTask(callback: Function) {
+  addTask(callback: (() => void)) {
     if (this.#ownerSet.status !== "not started")
       throw new Error("Build step has started");
     if (typeof callback !== "function")

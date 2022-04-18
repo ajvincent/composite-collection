@@ -1,4 +1,5 @@
 {
+  "extends": "../.eslintrc-typescript.json",
   "rules": {
     "@typescript-eslint/no-explicit-any": 0
   }

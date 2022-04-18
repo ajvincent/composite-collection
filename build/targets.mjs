@@ -89,7 +89,7 @@ const BPSet = new BuildPromiseSet;
         "spec",
         "templates"
       ];
-  
+
       const buildModulePath = path.join(process.cwd(), "exports/keys/Hasher.mjs");
       let stats;
       try {
@@ -119,7 +119,61 @@ const BPSet = new BuildPromiseSet;
 // #endregion javascript targets
 
 // #region typescript targets
+{
+  const jsTarget = BPSet.get("test:build");
+  jsTarget.addSubtarget("typescript:eslint-prebuild");
 
+  const target = BPSet.get("typescript:eslint-prebuild");
+  // general linting
+  /*
+  target.addTask(
+    async () => {
+      console.log("general linting");
+
+      const targets = [
+        // "build"
+        // "spec",
+        // "templates",
+        // "typescript-templates",
+      ];
+
+      const buildModulePath = path.join(process.cwd(), "exports/keys/Hasher.mjs");
+      let stats;
+      try {
+        stats = await fs.stat(buildModulePath);
+      }
+      catch (ex) {
+        // do nothing
+      }
+      if (stats?.isFile()) {
+        targets.push("exports");
+      }
+
+      await runModule("./node_modules/eslint/bin/eslint.js", [
+        "-c", "./.eslintrc-typescript.json",
+        "--max-warnings=0",
+        ...targets,
+      ]);
+    }
+  );
+  */
+
+  /* @typescript:no-explicit-any disabled */
+  target.addTask(
+    async () => {
+      console.log("@typescript:no-explicit-any disabled");
+      const targets = [
+        "source",
+      ];
+
+      await runModule("./node_modules/eslint/bin/eslint.js", [
+        "-c", "./source/.eslintrc-typescript.json",
+        "--max-warnings=0",
+        ...targets,
+      ]);
+    }
+  );
+}
 // #endregion typescript targets
 
 BPSet.markReady();
