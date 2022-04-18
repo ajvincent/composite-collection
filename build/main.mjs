@@ -1,7 +1,6 @@
-import main from "./targets.mjs";
-import BuildPromise from '#source/utilities/BuildPromise.mjs';
+import BPSet from "./targets.mjs";
 
 const targets = process.argv.slice(2);
-targets.forEach(t => main.addSubtarget(t));
-await main.run();
-BuildPromise.markClosed();
+targets.forEach(t => BPSet.main.addSubtarget(t));
+await BPSet.main.run();
+BPSet.markClosed();

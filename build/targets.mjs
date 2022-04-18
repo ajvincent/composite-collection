@@ -1,4 +1,4 @@
-import BuildPromise from '#source/utilities/BuildPromise.mjs';
+import BuildPromiseSet from '#source/utilities/BuildPromise.mjs';
 
 import { fork } from 'child_process';
 import fs from "fs/promises";
@@ -34,50 +34,52 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
   return p;
 }
 
+const BPSet = new BuildPromiseSet;
+
 // #region javascript targets
 
 { // export
-  const target = BuildPromise.get("export");
+  const target = BPSet.get("export");
   target.description = "Export all modules.";
   target.addSubtarget("test");
   target.addTask(() => buildExportedCollections());
 }
 
 { // clean
-  const target = BuildPromise.get("clean");
+  const target = BPSet.get("clean");
   target.description = "Clean all build artifacts";
   target.addTask(() => cleanTree());
 }
 
 { // test
-  const target = BuildPromise.get("test");
+  const target = BPSet.get("test");
   target.description = "Run all tests.";
   target.addSubtarget("test:run");
 }
 
 { // test:build
-  const target = BuildPromise.get("test:build");
+  const target = BPSet.get("test:build");
   target.description = "Build spec-generated code";
   target.addSubtarget("clean");
   target.addTask(() => buildSpecGeneratedCode());
 }
 
 { // test:run
-  const target = BuildPromise.get("test:run");
+  const target = BPSet.get("test:run");
   target.description = "Execute Jasmine tests";
   target.addSubtarget("test:build");
   target.addTask(() => runModule("./node_modules/jasmine/bin/jasmine.js", [], []));
 }
 
 { // debug
-  const target = BuildPromise.get("debug");
+  const target = BPSet.get("debug");
   target.description = "Run all tests, ready to debug.";
   target.addSubtarget("test:build");
   target.addTask(() => runModule("./node_modules/jasmine/bin/jasmine.js", [], ["--inspect-brk"]));
 }
 
 { // eslint
-  const target = BuildPromise.get("eslint");
+  const target = BPSet.get("eslint");
   target.description = "eslint support";
   target.addTask(
     async () => {
@@ -109,7 +111,7 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
 }
 
 { // bootstrap
-  const target = BuildPromise.get("bootstrap");
+  const target = BPSet.get("bootstrap");
   target.description = "Run bootstrap build to regenerate collection modules"
   target.addTask(() => bootstrapRun());
 }
@@ -120,6 +122,6 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
 
 // #endregion typescript targets
 
-BuildPromise.markReady();
+BPSet.markReady();
 
-export default BuildPromise.main;
+export default BPSet;

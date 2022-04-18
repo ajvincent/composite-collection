@@ -1,38 +1,31 @@
 import { Deferred } from "./PromiseTypes.mjs";
 import { DefaultMap } from "./DefaultMap.mjs";
-export default class BuildPromise {
-    static #status = "not started";
-    static markReady() {
-        this.#status = "ready";
-    }
-    static markClosed() {
-        this.#status = "closed";
-    }
-    /** @type {Map<string, BuildPromise>} @constant */
-    static #map = new DefaultMap;
-    /**
-     * @param {string} targetName The target name.
-     * @returns {BuildPromise} The build promise.
-     */
-    static get(targetName) {
-        return this.#map.getDefault(targetName, () => new BuildPromise(targetName));
-    }
+class BuildPromise {
+    #ownerSet;
     /** @type {string[]} @constant */
     #subtargets = [];
     /** @type {Function[]} @constant */
     #tasks = [];
-    /** @type {Function} @constant */
     #pendingStart;
-    /** @type {Promise<void>} @constant */
     #runPromise;
     target;
+    #setStatus;
     /**
-     * @param {string} target The build target.
+     * @callback setStatusCallback
+     * @param {string} value
+     * @returns {void}
      */
-    constructor(target) {
-        if ((typeof target !== "string") || (target === ""))
+    /**
+     * @param {BuildPromiseSet}   ownerSet  The set owning this.
+     * @param {setStatusCallback} setStatus Friend-like access to the owner set's #status property.
+     * @param {string}            target    The build target.
+     */
+    constructor(ownerSet, setStatus, target) {
+        this.#ownerSet = ownerSet;
+        this.#setStatus = setStatus;
+        if (target === "")
             throw new Error("Target must be a non-empty string!");
-        if (BuildPromise.#status !== "not started")
+        if (this.#ownerSet.status !== "not started")
             throw new Error("Build step has started");
         this.target = target;
         this.description = "";
@@ -49,7 +42,7 @@ export default class BuildPromise {
     set description(value) {
         if (this.#description)
             throw new Error("Description already set for target " + this.target);
-        if (BuildPromise.#status !== "not started")
+        if (this.#ownerSet.status !== "not started")
             throw new Error("Build step has started");
         this.#description = value;
     }
@@ -57,7 +50,7 @@ export default class BuildPromise {
      * @param {Function} callback The task.
      */
     addTask(callback) {
-        if (BuildPromise.#status !== "not started")
+        if (this.#ownerSet.status !== "not started")
             throw new Error("Build step has started");
         if (typeof callback !== "function")
             throw new Error("callback must be a function!");
@@ -71,15 +64,15 @@ export default class BuildPromise {
             throw new Error("Cannot include main target");
         if (target === this.target)
             throw new Error("Cannot include this as its own subtarget");
-        if (this === BuildPromise.main) {
-            if (BuildPromise.#status !== "ready") {
-                throw new Error("Cannot attach targets to main target until we are ready (call BuildPromise.markReady())");
+        if (this === this.#ownerSet.main) {
+            if (this.#ownerSet.status !== "ready") {
+                throw new Error("Cannot attach targets to main target until we are ready (call BuildPromiseSet.markReady())");
             }
         }
-        else if (BuildPromise.#status !== "not started") {
+        else if (this.#ownerSet.status !== "not started") {
             throw new Error("Build step has started");
         }
-        else if (BuildPromise.get(target).deepTargets.includes(this.target))
+        else if (this.#ownerSet.get(target).deepTargets.includes(this.target))
             throw new Error(`${target} already has a dependency on ${this.target}`);
         this.#subtargets.push(target);
     }
@@ -87,24 +80,24 @@ export default class BuildPromise {
     get deepTargets() {
         let targets = this.#subtargets.slice();
         for (let i = 0; i < targets.length; i++) {
-            targets.push(...BuildPromise.get(targets[i]).deepTargets);
+            targets.push(...this.#ownerSet.get(targets[i]).deepTargets);
         }
         return targets;
     }
     async #run() {
         // eslint-disable-next-line no-console
         console.log("Starting " + this.target + "...");
-        if ((BuildPromise.#status === "ready") && (this === BuildPromise.main))
-            BuildPromise.#status = "running";
-        if (BuildPromise.#status !== "running")
+        if ((this.#ownerSet.status === "ready") && (this === this.#ownerSet.main))
+            this.#setStatus("running");
+        if (this.#ownerSet.status !== "running")
             throw new Error("Build promises are not running!");
-        const subtargets = this.#subtargets.map(st => BuildPromise.get(st));
+        const subtargets = this.#subtargets.map(st => this.#ownerSet.get(st));
         for (let i = 0; i < subtargets.length; i++) {
             try {
                 await subtargets[i].run();
             }
             catch (ex) {
-                BuildPromise.#status = "errored";
+                this.#setStatus("errored");
                 throw ex;
             }
         }
@@ -117,7 +110,7 @@ export default class BuildPromise {
                 await task();
             }
             catch (ex) {
-                BuildPromise.#status = "errored";
+                this.#setStatus("errored");
                 throw ex;
             }
         }
@@ -128,9 +121,35 @@ export default class BuildPromise {
         this.#pendingStart(null);
         await this.#runPromise;
     }
-    /** @type {BuildPromise} @constant */
-    static main = new BuildPromise("main");
 }
 Object.freeze(BuildPromise.prototype);
 Object.freeze(BuildPromise);
+export default class BuildPromiseSet {
+    #status = "not started";
+    markReady() {
+        this.#status = "ready";
+    }
+    markClosed() {
+        this.#status = "closed";
+    }
+    get status() {
+        return this.#status;
+    }
+    /** @type {Map<string, BuildPromise>} @constant */
+    #map = new DefaultMap;
+    /** @type {BuildPromise} @constant */
+    main;
+    #setStatusCallback;
+    constructor() {
+        this.#setStatusCallback = (value) => this.#status = value;
+        this.main = new BuildPromise(this, this.#setStatusCallback, "main");
+    }
+    /**
+     * @param {string} targetName The target name.
+     * @returns {BuildPromise} The build promise.
+     */
+    get(targetName) {
+        return this.#map.getDefault(targetName, () => new BuildPromise(this, this.#setStatusCallback, targetName));
+    }
+}
 //# sourceMappingURL=BuildPromise.mjs.map
