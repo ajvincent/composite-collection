@@ -3,3 +3,5 @@ spec/*/generated/**/*.mjs
 typescript/**/*.d.ts
 typescript/**/*.mjs
 typescript/**/*.map
+
+source/playground
