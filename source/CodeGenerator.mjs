@@ -12,7 +12,7 @@ import TemplateGenerators from "./TemplateGenerators.mjs";
 
 import fs from "fs/promises";
 import beautify from "js-beautify";
-import CollectionType from "./CollectionType.mjs";
+import CollectionType from "./generatorTools/CollectionType.mjs";
 
 /**
  * Stringify a list of keys into an argument name list suitable for macros.

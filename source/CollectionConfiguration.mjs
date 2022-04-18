@@ -8,7 +8,7 @@
 import { parse } from "acorn";
 
 import ConfigurationStateGraphs from "./ConfigurationStateGraphs.mjs";
-import CollectionType from "./CollectionType.mjs";
+import CollectionType from "./generatorTools/CollectionType.mjs";
 
 /**
  * Extract an abstract syntax tree from Acorn parsing a lambda function's source.

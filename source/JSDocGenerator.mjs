@@ -1,4 +1,4 @@
-import CollectionType from "./CollectionType.mjs";
+import CollectionType from "./generatorTools/CollectionType.mjs";
 import defaultMethods from "./jsdoc-method-sets/default.mjs";
 
 /**

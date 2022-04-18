@@ -1,5 +1,5 @@
 import JSDocGenerator from "#source/JSDocGenerator.mjs";
-import CollectionType from "#source/CollectionType.mjs";
+import CollectionType from "#source/generatorTools/CollectionType.mjs";
 import { ESLint } from "eslint";
 
 /**
