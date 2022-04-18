@@ -1,5 +1,5 @@
-import CollectionType from "./generatorTools/CollectionType.mjs";
-import defaultMethods from "./jsdoc-method-sets/default.mjs";
+import CollectionType from "./CollectionType.mjs";
+import defaultMethods from "../jsdoc-method-sets/default.mjs";
 
 /**
  * This represents the parameters part of a JSDoc comment.
