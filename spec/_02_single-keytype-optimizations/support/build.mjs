@@ -152,7 +152,6 @@ async function createCollectionFiles(dirName, extraKeyCount, disableKeyOptimizat
     const generator = new CodeGenerator(
       config,
       path.join(generatedDir, leafName),
-      Promise.resolve(),
       new CompileTimeOptions({ disableKeyOptimization })
     );
 

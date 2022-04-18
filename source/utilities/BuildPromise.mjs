@@ -56,8 +56,6 @@ export class BuildPromise {
     addTask(callback) {
         if (this.#ownerSet.status !== "not started")
             throw new Error("Build step has started");
-        if (typeof callback !== "function")
-            throw new Error("callback must be a function!");
         this.#tasks.push(callback);
     }
     /**
@@ -135,7 +133,8 @@ Object.freeze(BuildPromise);
 export class BuildPromiseSet {
     #status = "not started";
     markReady() {
-        this.#status = "ready";
+        if (this.#status === "not started")
+            this.#status = "ready";
     }
     markClosed() {
         this.#status = "closed";

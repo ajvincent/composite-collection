@@ -5,6 +5,17 @@ void(BuildPromise); // necessary for type checking in eslint on the generated mo
 export class GeneratorPromiseSet extends BuildPromiseSet {
   #knownTargets: Set<string> = new Set;
 
+  #owner: object;
+  constructor(owner: object) {
+    super();
+    this.#owner = owner;
+    this.#knownTargets.add(this.main.target);
+  }
+
+  get owner() : object {
+    return this.#owner;
+  }
+
   /**
    * @param {string} targetName The target name.
    * @returns {BuildPromise} The build promise.

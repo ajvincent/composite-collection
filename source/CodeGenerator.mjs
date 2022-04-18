@@ -5,10 +5,14 @@
 /** @typedef {string} identifier */
 
 import CollectionConfiguration from "composite-collection/Configuration";
-import { CompletionPromise } from "./utilities/PromiseTypes.mjs";
 import CompileTimeOptions from "./CompileTimeOptions.mjs";
 
 import CollectionType from "./generatorTools/CollectionType.mjs";
+import {
+  GeneratorPromiseSet,
+  CodeGeneratorBase,
+  generatorToPromiseSet,
+} from "./generatorTools/GeneratorPromiseSet.mjs";
 import JSDocGenerator from "./generatorTools/JSDocGenerator.mjs";
 import TemplateGenerators from "./generatorTools/TemplateGenerators.mjs";
 
@@ -25,8 +29,10 @@ function buildArgNameList(keys) {
   return '[' + keys.map(key => `"${key}"`).join(", ") + ']'
 }
 
+void(GeneratorPromiseSet)
+
 /** @package */
-export default class CodeGenerator extends CompletionPromise {
+export default class CodeGenerator extends CodeGeneratorBase {
   // #region private properties
   /** @type {object} @constant */
   #configurationData;
@@ -87,11 +93,10 @@ export default class CodeGenerator extends CompletionPromise {
   /**
    * @param {CollectionConfiguration} configuration  The configuration to use.
    * @param {string}                  targetPath     The directory to write the collection to.
-   * @param {Promise}                 startPromise   Where we should attach our asynchronous operations to.
    * @param {CompileTimeOptions}      compileOptions Flags from an owner which may override configurations.
    */
-  constructor(configuration, targetPath, startPromise, compileOptions = {}) {
-    super(startPromise, () => this.#buildCollection());
+  constructor(configuration, targetPath, compileOptions = {}) {
+    super();
 
     this.#compileOptions = (compileOptions instanceof CompileTimeOptions) ? compileOptions : {};
 
@@ -111,9 +116,9 @@ export default class CodeGenerator extends CompletionPromise {
     this.#configurationData = configuration.cloneData();
     this.#targetPath = targetPath;
 
-    this.completionPromise.catch(
-      () => this.#status = "aborted"
-    );
+    const gpSet = new GeneratorPromiseSet(this);
+    generatorToPromiseSet.set(this, gpSet);
+
     Object.seal(this);
   }
 
@@ -144,7 +149,29 @@ export default class CodeGenerator extends CompletionPromise {
    * @returns {Promise<identifier>} The class name.
    */
   async run() {
-    return this.completionPromise;
+    const gpSet = generatorToPromiseSet.get(this);
+    if (gpSet.owner !== this)
+      throw new Error("This CodeGenerator belongs to another object!");
+
+    const hasInitialTasks = gpSet.has(this.#targetPath);
+    const bp = gpSet.get(this.#targetPath);
+
+    if (!hasInitialTasks) {
+      bp.addTask(() => this.#buildCollection());
+    }
+
+    gpSet.markReady();
+    gpSet.main.addSubtarget(this.#targetPath);
+
+    try {
+      await gpSet.main.run();
+    }
+    catch (ex) {
+      this.#status = "aborted";
+      throw ex;
+    }
+
+    return this.#configurationData.className;
   }
 
   // #endregion public members
@@ -474,8 +501,6 @@ export default class CodeGenerator extends CompletionPromise {
       return;
     }
 
-    let resolve, subStartPromise = new Promise(res => resolve = res);
-
     const subCompileOptions = Object.create(this.#compileOptions);
     subCompileOptions[CodeGenerator.#internalFlagsSymbol] = new Set([
       "prevent export",
@@ -486,11 +511,9 @@ export default class CodeGenerator extends CompletionPromise {
     this.#oneToOneSubGenerator = new CodeGenerator(
       base,
       this.#targetPath,
-      subStartPromise,
       subCompileOptions
     );
 
-    resolve();
     await this.#oneToOneSubGenerator.run();
 
     this.#generatedCode += this.#oneToOneSubGenerator.generatedCode + "\n";

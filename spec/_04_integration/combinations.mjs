@@ -43,10 +43,7 @@ describe("Combinations of auto-generated configurations:", () => {
       leafName += ".mjs";
       const outFilePath = path.join(cleanup.tempDir, leafName);
 
-      let start;
-      let p = new Promise(res => start = res)
-      const generator = new CodeGenerator(config, outFilePath, p);
-      start();
+      const generator = new CodeGenerator(config, outFilePath);
       await generator.run();
 
       const outFileURL = url.pathToFileURL(outFilePath);
@@ -77,10 +74,7 @@ describe("Combinations of auto-generated configurations:", () => {
       leafName += ".mjs";
       const outFilePath = path.join(cleanup.tempDir, leafName);
 
-      let start;
-      const p = new Promise(res => start = res);
-      const generator = new CodeGenerator(config, outFilePath, p);
-      start();
+      const generator = new CodeGenerator(config, outFilePath);
       await generator.run();
 
       const outFileURL = url.pathToFileURL(outFilePath);
@@ -200,10 +194,7 @@ describe("Combinations of auto-generated configurations:", () => {
       leafName += ".mjs";
       const outFilePath = path.join(cleanup.tempDir, leafName);
 
-      let start;
-      const p = new Promise(res => start = res);
-      const generator = new CodeGenerator(config, outFilePath, p);
-      start();
+      const generator = new CodeGenerator(config, outFilePath);
       await generator.run();
 
       const outFileURL = url.pathToFileURL(outFilePath);

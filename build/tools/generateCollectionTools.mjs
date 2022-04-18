@@ -54,13 +54,9 @@ async function generateOneCollection(config, target) {
   }
 
   // Generate the module.
-  let resolve;
-  let p = new Promise(res => resolve = res);
-
   const targetFile = path.join(process.cwd(), target);
 
-  const generator = new CodeGenerator(configModule, targetFile, p, compileOptions);
-  resolve();
+  const generator = new CodeGenerator(configModule, targetFile, compileOptions);
   await generator.run();
 }
 

@@ -93,14 +93,12 @@ export default class Driver extends CompletionPromise {
 
     await fs.mkdir(this.#targetsPath, { recursive: true });
 
-    const startNow = Promise.resolve();
 
     const generators = await Promise.all(configs.map(async config => {
       try {
         const generator = new CodeGenerator(
           config,
           path.normalize(path.join(this.#targetsPath, configToRelativePath.get(config))),
-          startNow,
           this.#compileTimeOptions
         );
 
