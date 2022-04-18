@@ -8,11 +8,12 @@ import CollectionConfiguration from "composite-collection/Configuration";
 import { CompletionPromise } from "./utilities/PromiseTypes.mjs";
 import JSDocGenerator from "./JSDocGenerator.mjs";
 import CompileTimeOptions from "./CompileTimeOptions.mjs";
-import TemplateGenerators from "./TemplateGenerators.mjs";
+
+import CollectionType from "./generatorTools/CollectionType.mjs";
+import TemplateGenerators from "./generatorTools/TemplateGenerators.mjs";
 
 import fs from "fs/promises";
 import beautify from "js-beautify";
-import CollectionType from "./generatorTools/CollectionType.mjs";
 
 /**
  * Stringify a list of keys into an argument name list suitable for macros.

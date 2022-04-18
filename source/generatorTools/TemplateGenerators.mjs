@@ -7,7 +7,7 @@ import { pathToFileURL } from "url";
 import { getAllFiles } from 'get-all-files';
 
 
-const templateDirURL = new URL("../templates", import.meta.url);
+const templateDirURL = new URL("../../templates", import.meta.url);
 const templateDir = templateDirURL.pathname;
 const allFiles = await getAllFiles(templateDir).toArray();
 await Promise.all(allFiles.map(async fullPath => {
