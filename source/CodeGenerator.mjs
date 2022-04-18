@@ -27,6 +27,7 @@ function buildArgNameList(keys) {
 
 /** @package */
 export default class CodeGenerator extends CompletionPromise {
+  // #region private properties
   /** @type {object} @constant */
   #configurationData;
 
@@ -51,10 +52,13 @@ export default class CodeGenerator extends CompletionPromise {
   /** @type {Set?} @constant */
   #internalFlagSet;
 
+  /** @constant */
   static #internalFlagsSymbol = Symbol("package flags");
 
+  /** @type {CodeGenerator | null} */
   #oneToOneSubGenerator = null;
 
+  /** @type {Map<string, string>} @constant */
   static #mapOfStrongSetsTemplates = new Map([
     /*
     key:
@@ -76,6 +80,10 @@ export default class CodeGenerator extends CompletionPromise {
     ["1W/1S", "Weak/OneMapOfOneStrongSet"],
   ]);
 
+  // #endregion private properties
+
+  // #region public members
+
   /**
    * @param {CollectionConfiguration} configuration  The configuration to use.
    * @param {string}                  targetPath     The directory to write the collection to.
@@ -83,7 +91,7 @@ export default class CodeGenerator extends CompletionPromise {
    * @param {CompileTimeOptions}      compileOptions Flags from an owner which may override configurations.
    */
   constructor(configuration, targetPath, startPromise, compileOptions = {}) {
-    super(startPromise, () => this.buildCollection());
+    super(startPromise, () => this.#buildCollection());
 
     this.#compileOptions = (compileOptions instanceof CompileTimeOptions) ? compileOptions : {};
 
@@ -115,19 +123,40 @@ export default class CodeGenerator extends CompletionPromise {
   }
 
   /**
+   * @public
+   * @type {string}
+   *
+   * The generated code at this point.  Used in #buildOneToOneBase() by a parent CodeGenerator.
+   */
+  get generatedCode() {
+    return this.#generatedCode;
+  }
+
+  get requiresKeyHasher() {
+    return this.#generatedCode?.includes(" new KeyHasher(");
+  }
+
+  get requiresWeakKeyComposer() {
+    return this.#generatedCode?.includes(" new WeakKeyComposer(");
+  }
+
+  /**
    * @returns {Promise<identifier>} The class name.
    */
   async run() {
     return this.completionPromise;
   }
 
+  // #endregion public members
+
+  // #region private methods
   /**
    * Generate the code!
    *
    * @returns {identifier} The class name.
    * @see https://www.youtube.com/watch?v=nUCoYcxNMBE s/love/code/g
    */
-  async buildCollection() {
+  async #buildCollection() {
     this.#status = "in progress";
 
     if (this.#configurationData.collectionTemplate === "OneToOne/Map") {
@@ -148,18 +177,6 @@ export default class CodeGenerator extends CompletionPromise {
 
     this.#status = "completed";
     return this.#configurationData.className;
-  }
-
-  get generatedCode() {
-    return this.#generatedCode;
-  }
-
-  get requiresKeyHasher() {
-    return this.#generatedCode?.includes(" new KeyHasher(");
-  }
-
-  get requiresWeakKeyComposer() {
-    return this.#generatedCode?.includes(" new WeakKeyComposer(");
   }
 
   #filePrologue() {
@@ -478,6 +495,8 @@ export default class CodeGenerator extends CompletionPromise {
 
     this.#generatedCode += this.#oneToOneSubGenerator.generatedCode + "\n";
   }
+
+  // #endregion private methods
 }
 Object.freeze(CodeGenerator);
 Object.freeze(CodeGenerator.prototype);
