@@ -29,13 +29,17 @@ import which from "which";
 import { spawn } from "child_process";
 
 import { hashAllFiles } from "./hash-all-files.mjs";
-import tempDirWithCleanup from "../spec/support/tempDirWithCleanup.mjs"
+import tempDirWithCleanup from "#support/tempDirWithCleanup.mjs"
 
 import path from "path";
 import fs from "fs/promises";
 import { getAllFiles } from 'get-all-files';
 import { pathToFileURL } from "url";
 
+/**
+ * Run a bootstrap build.
+ */
+export default async function() {
 const masterDirectory = process.cwd();
 
 const stageDirs = [];
@@ -124,6 +128,8 @@ finally {
   await cleanupAll.promise;
 
   console.timeEnd("stage");
+}
+
 }
 
 /**

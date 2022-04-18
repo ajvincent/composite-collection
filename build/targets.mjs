@@ -5,6 +5,7 @@ import fs from "fs/promises";
 import path from "path";
 
 import cleanTree from "./tools/clean.mjs";
+import bootstrapRun from "./tools/bootstrap.mjs";
 
 /**
  * Run a specific submodule.
@@ -109,13 +110,7 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
 { // bootstrap
   const target = BuildPromise.get("bootstrap");
   target.description = "Run bootstrap build to regenerate collection modules"
-  target.addTask(() => runModule(
-    "./jake-targets/bootstrap.mjs",
-    [],
-    [
-      //"--inspect-brk"
-    ]
-  ));
+  target.addTask(() => bootstrapRun());
 }
 
 // #endregion javascript targets
