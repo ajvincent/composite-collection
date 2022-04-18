@@ -1,4 +1,4 @@
-import CompletionPromise from "./CompletionPromise.mjs";
+import { CompletionPromise } from "./utilities/PromiseTypes.mjs";
 import CodeGenerator from "./CodeGenerator.mjs";
 import CompileTimeOptions from "./CompileTimeOptions.mjs";
 

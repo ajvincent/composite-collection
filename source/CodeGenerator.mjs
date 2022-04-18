@@ -5,7 +5,7 @@
 /** @typedef {string} identifier */
 
 import CollectionConfiguration from "composite-collection/Configuration";
-import CompletionPromise from "./CompletionPromise.mjs";
+import { CompletionPromise } from "./utilities/PromiseTypes.mjs";
 import JSDocGenerator from "./JSDocGenerator.mjs";
 import CompileTimeOptions from "./CompileTimeOptions.mjs";
 import TemplateGenerators from "./TemplateGenerators.mjs";

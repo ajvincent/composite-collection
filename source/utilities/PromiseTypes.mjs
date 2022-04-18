@@ -53,7 +53,7 @@ export class CompletionPromise {
     #abortException = null;
     #completionPromise;
     constructor(startPromise, resolver) {
-        this.#completionPromise = startPromise.then(resolver).catch(abortException => this.abort(abortException));
+        this.#completionPromise = startPromise.then(resolver).catch(abortException => this.#abort(abortException));
     }
     get completionPromise() {
         return this.#completionPromise;
@@ -64,7 +64,7 @@ export class CompletionPromise {
      * @param {Error} exception The rejection value.
      * @throws
      */
-    async abort(exception) {
+    #abort(exception) {
         this.#abortException = exception;
         throw exception;
     }
