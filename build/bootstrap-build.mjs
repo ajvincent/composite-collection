@@ -26,5 +26,4 @@ const rawContents = await fs.readFile(publishingFile, { encoding: "utf-8" });
 const compileOptions = new CompileTimeOptions(JSON.parse(rawContents));
 
 const driver = new CompositeDriver(configDir, collectionsDir, compileOptions);
-driver.start();
 await driver.run();

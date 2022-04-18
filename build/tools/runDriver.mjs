@@ -15,8 +15,6 @@ import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
  */
 export default async function runDriver(sourceDir, targetDir) {
   const driver = new CompositeDriver(sourceDir, targetDir);
-
-  driver.start();
   await driver.run();
 
   // Verify the Driver provided a valid module in each file exporting a function.

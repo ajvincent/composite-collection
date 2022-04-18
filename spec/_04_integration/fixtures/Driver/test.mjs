@@ -5,8 +5,6 @@ const driver = new CompositeDriver(
   path.join(process.cwd(), "configurations"),
   path.join(process.cwd(), "collections")
 );
-
-driver.start();
 await driver.run();
 
 const WeakFunctionMultiMap = (await import(new URL("collections/WeakFunctionMultiMap.mjs", import.meta.url))).default;

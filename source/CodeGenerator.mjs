@@ -150,26 +150,29 @@ export default class CodeGenerator extends CodeGeneratorBase {
    */
   async run() {
     const gpSet = generatorToPromiseSet.get(this);
-    if (gpSet.owner !== this)
-      throw new Error("This CodeGenerator belongs to another object!");
-
     const hasInitialTasks = gpSet.has(this.#targetPath);
     const bp = gpSet.get(this.#targetPath);
 
     if (!hasInitialTasks) {
-      bp.addTask(() => this.#buildCollection());
+      bp.addTask(async () => {
+        try {
+          return await this.#buildCollection();
+        }
+        catch (ex) {
+          this.#status = "aborted";
+          throw ex;
+        }
+      });
     }
+
+    if (gpSet.owner !== this)
+      return;
 
     gpSet.markReady();
-    gpSet.main.addSubtarget(this.#targetPath);
+    if (!gpSet.main.deepTargets.includes(this.#targetPath))
+      gpSet.main.addSubtarget(this.#targetPath);
 
-    try {
-      await gpSet.main.run();
-    }
-    catch (ex) {
-      this.#status = "aborted";
-      throw ex;
-    }
+    await gpSet.main.run();
 
     return this.#configurationData.className;
   }
