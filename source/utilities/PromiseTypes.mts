@@ -28,6 +28,43 @@ export class Deferred<T> {
   }
 }
 
+/**
+ * Evaluate a callback asynchronously for every element of an array, sequentially.
+ *
+ * @param {*[]} elementArray The array of objects to pass into the callback.
+ * @param {Function} callback The callback function.
+ * @returns {Promise} Resolved if the sequence passes.
+ * @see {Promise.all}
+ * @see {Array.prototype.reduce}
+ */
+export async function PromiseAllSequence(
+  elementArray: any[],
+  callback: (value: any) => any
+) : Promise<any>
+{
+  return elementArray.reduce(async (previousPromise, element) => {
+    await previousPromise;
+    return callback(element);
+  }, Promise.resolve());
+}
+
+/**
+ * Evaluate a callback asynchronously for every element of an array, in parallel.
+ *
+ * @param {*[]} elementArray The array of objects to pass into the callback.
+ * @param {Function} callback The callback function.
+ * @returns {Promise} Resolved if the sequence passes.
+ * @see {Promise.all}
+ * @see {Array.prototype.map}
+ */
+export async function PromiseAllParallel(
+  elementArray: any[],
+  callback: (value: any) => any
+) : Promise<any>
+{
+  return Promise.all(elementArray.map(element => callback(element)));
+}
+
 export class CompletionPromise {
   #abortException: Error | null = null;
 

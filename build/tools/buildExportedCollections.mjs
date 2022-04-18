@@ -2,8 +2,9 @@ import fs from 'fs/promises';
 import path from "path";
 import url from "url";
 
+import { PromiseAllSequence } from "#source/utilities/PromiseTypes.mjs";
+
 import {
-  PromiseAllSequence,
   copyFileTasks,
   generateCollections
 } from "#support/generateCollectionTools.mjs";

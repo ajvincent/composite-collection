@@ -1,4 +1,4 @@
-import { PromiseAllSequence } from "#support/generateCollectionTools.mjs";
+import { PromiseAllSequence } from "#source/utilities/PromiseTypes.mjs";
 import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";
 
 import fs from "fs/promises";

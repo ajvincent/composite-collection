@@ -2,7 +2,7 @@ import CollectionConfiguration from "#source/CollectionConfiguration.mjs";
 import CodeGenerator from "#source/CodeGenerator.mjs";
 import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";
 
-import { PromiseAllSequence } from "#support/generateCollectionTools.mjs";
+import { PromiseAllSequence } from "#source/utilities/PromiseTypes.mjs";
 import { copyFileTasks } from "#support/generateCollectionTools.mjs";
 
 import fs from "fs/promises";

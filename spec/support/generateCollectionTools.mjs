@@ -1,38 +1,11 @@
 import CodeGenerator from "composite-collection/CodeGenerator";
 import CompileTimeOptions from "composite-collection/CompileTimeOptions";
 
+import { PromiseAllSequence } from "#source/utilities/PromiseTypes.mjs";
+
 import path from "path";
 import fs from 'fs/promises';
 import url from "url";
-
-/**
- * Evaluate a callback asynchronously for every element of an array, sequentially.
- *
- * @param {*[]} elementArray The array of objects to pass into the callback.
- * @param {Function} callback The callback function.
- * @returns {Promise} Resolved if the sequence passes.
- * @see {Promise.all}
- * @see {Array.prototype.reduce}
- */
-export async function PromiseAllSequence(elementArray, callback) {
-  return elementArray.reduce(async (previousPromise, element) => {
-    await previousPromise;
-    return callback(element);
-  }, Promise.resolve());
-}
-
-/**
- * Evaluate a callback asynchronously for every element of an array, in parallel.
- *
- * @param {*[]} elementArray The array of objects to pass into the callback.
- * @param {Function} callback The callback function.
- * @returns {Promise} Resolved if the sequence passes.
- * @see {Promise.all}
- * @see {Array.prototype.map}
- */
-export async function PromiseAllParallel(elementArray, callback) {
-  return Promise.all(elementArray.map(element => callback(element)));
-}
 
 /**
  * Define simple file-copying tasks.
@@ -59,7 +32,7 @@ export async function copyFileTasks(sourceDir, targetDir, leafNames) {
  * @param {string} config The source configuration.
  * @param {string} target The target directory.
  */
-async function generateOneCollection(config, target,) {
+async function generateOneCollection(config, target) {
   // Import the configuration module.
   const sourceFileURL = url.pathToFileURL(path.join(process.cwd(), config));
   const configModule = (await import(sourceFileURL)).default;

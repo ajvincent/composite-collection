@@ -6,7 +6,7 @@ import runDriver from "./runDriver.mjs";
 import {
   PromiseAllSequence,
   PromiseAllParallel,
-} from "#support/generateCollectionTools.mjs";
+} from "#source/utilities/PromiseTypes.mjs";
 
 import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
 
