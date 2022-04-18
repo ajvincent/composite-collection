@@ -1,6 +1,6 @@
 import { Deferred } from "./PromiseTypes.mjs";
 import { DefaultMap } from "./DefaultMap.mjs";
-class BuildPromise {
+export class BuildPromise {
     #ownerSet;
     /** @type {string[]} @constant */
     #subtargets = [];
@@ -132,7 +132,7 @@ class BuildPromise {
 }
 Object.freeze(BuildPromise.prototype);
 Object.freeze(BuildPromise);
-export default class BuildPromiseSet {
+export class BuildPromiseSet {
     #status = "not started";
     markReady() {
         this.#status = "ready";
@@ -165,4 +165,6 @@ export default class BuildPromiseSet {
         return this.#map.getDefault(targetName, () => new BuildPromise(this, this.#setStatusCallback, targetName, this.#writeToConsole));
     }
 }
+Object.freeze(BuildPromiseSet.prototype);
+Object.freeze(BuildPromiseSet);
 //# sourceMappingURL=BuildPromise.mjs.map

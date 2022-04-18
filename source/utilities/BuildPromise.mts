@@ -5,7 +5,7 @@ import type { PromiseResolver } from "./PromiseTypes.mjs";
 
 type setStatusCallback = (value: string) => void
 
-class BuildPromise {
+export class BuildPromise {
   #ownerSet: Readonly<BuildPromiseSet>;
 
   /** @type {string[]} @constant */
@@ -172,7 +172,7 @@ class BuildPromise {
 Object.freeze(BuildPromise.prototype);
 Object.freeze(BuildPromise);
 
-export default class BuildPromiseSet {
+export class BuildPromiseSet {
   #status = "not started";
 
   markReady(): void {
@@ -217,3 +217,6 @@ export default class BuildPromiseSet {
     );
   }
 }
+
+Object.freeze(BuildPromiseSet.prototype);
+Object.freeze(BuildPromiseSet);
