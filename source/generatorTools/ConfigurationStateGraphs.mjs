@@ -1,4 +1,4 @@
-import StringStateMachine from "./collections/StringStateMachine.mjs";
+import StringStateMachine from "../collections/StringStateMachine.mjs";
 let machinesLocked = false;
 
 class ConfigurationStateMachine extends StringStateMachine {

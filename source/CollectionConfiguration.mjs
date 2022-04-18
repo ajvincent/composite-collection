@@ -7,7 +7,7 @@
 
 import { parse } from "acorn";
 
-import ConfigurationStateGraphs from "./ConfigurationStateGraphs.mjs";
+import ConfigurationStateGraphs from "./generatorTools/ConfigurationStateGraphs.mjs";
 import CollectionType from "./generatorTools/CollectionType.mjs";
 
 /**
