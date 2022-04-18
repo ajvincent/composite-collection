@@ -1,6 +1,9 @@
-import { fork } from 'child_process';
+import CodeGenerator from "composite-collection/CodeGenerator";
+import CompileTimeOptions from "composite-collection/CompileTimeOptions";
+
 import path from "path";
 import fs from 'fs/promises';
+import url from "url";
 
 /**
  * Evaluate a callback asynchronously for every element of an array, sequentially.
@@ -32,30 +35,6 @@ export async function PromiseAllParallel(elementArray, callback) {
 }
 
 /**
- * Run a specific submodule.
- *
- * @param {string}   pathToModule  The module to run.
- * @param {string[]} moduleArgs    Arguments we pass into the module.
- * @param {string[]} extraNodeArgs Arguments we pass to node.
- * @returns {Promise<void>}
- */
-export function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
-  let resolve, reject;
-  let p = new Promise((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  const child = fork(pathToModule, moduleArgs, {
-    execArgv: process.execArgv.concat("--expose-gc", ...extraNodeArgs),
-    silent: false
-  });
-  child.on('exit', code => code ? reject(code) : resolve());
-
-  return p;
-}
-
-/**
  * Define simple file-copying tasks.
  *
  * @param {string}   sourceDir The source directory.
@@ -75,6 +54,44 @@ export async function copyFileTasks(sourceDir, targetDir, leafNames) {
 }
 
 /**
+ * Generate one collection.
+ *
+ * @param {string} config The source configuration.
+ * @param {string} target The target directory.
+ */
+async function generateOneCollection(config, target,) {
+  // Import the configuration module.
+  const sourceFileURL = url.pathToFileURL(path.join(process.cwd(), config));
+  const configModule = (await import(sourceFileURL)).default;
+
+  // Look for compile-time options in an adjacent publishing.json file.
+  const publishing = "publishing.json";
+  let compileOptions = {};
+  let publishingFile;
+  if (path.isAbsolute(publishing))
+    publishingFile = publishing;
+  else
+    publishingFile = path.normalize(path.join(process.cwd(), config, "..", publishing));
+  try {
+    const rawContents = await fs.readFile(publishingFile, { encoding: "utf-8" });
+    compileOptions = new CompileTimeOptions(JSON.parse(rawContents));
+  }
+  catch (ex) {
+    // do nothing
+  }
+
+  // Generate the module.
+  let resolve;
+  let p = new Promise(res => resolve = res);
+
+  const targetFile = path.join(process.cwd(), target);
+
+  const generator = new CodeGenerator(configModule, targetFile, p, compileOptions);
+  resolve();
+  await generator.completionPromise;
+}
+
+/**
  * Generate composite collections.
  *
  * @param {string}   sourceDir The directory holding the configurations.
@@ -87,10 +104,6 @@ export async function generateCollections(sourceDir, targetDir, leafNames) {
           targetFile = targetDir + "/" + leaf;
 
     console.log("Generating collection: " + targetFile);
-    return runModule(
-      "./jake-targets/generateCollection.mjs",
-      [configFile, targetFile],
-      []
-    );
+    return generateOneCollection(configFile, targetFile);
   });
 }

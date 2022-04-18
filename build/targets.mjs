@@ -83,7 +83,6 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
     async () => {
       const targets = [
         "build",
-        "jake-targets",
         "source",
         "spec",
         "templates"
