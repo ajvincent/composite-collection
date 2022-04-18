@@ -16,7 +16,7 @@ import buildSpecGeneratedCode from './tools/buildSpecGeneratedCode.mjs';
  * @param {string[]} moduleArgs    Arguments we pass into the module.
  * @param {string[]} extraNodeArgs Arguments we pass to node.
  * @returns {Promise<void>}
- * @see spec/support/generateCollectionTools.mjs
+ * @see /build/tools/generateCollectionTools.mjs
  */
 function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
   let resolve, reject;
@@ -122,6 +122,8 @@ const BPSet = new BuildPromiseSet;
 { // typescript:eslint-prebuild
   const jsTarget = BPSet.get("test:build");
   jsTarget.addSubtarget("typescript:eslint-prebuild");
+
+  BPSet.get("eslint").addSubtarget("typescript:eslint-prebuild");
 
   const target = BPSet.get("typescript:eslint-prebuild");
   // general linting

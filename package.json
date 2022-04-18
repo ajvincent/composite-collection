@@ -71,6 +71,7 @@
     "./OneToOneWeakMap": "./exports/OneToOneWeakMap.mjs"
   },
   "imports": {
+    "#build/*": "./build/*",
     "#source/*": "./source/*",
     "#spec/*": "./spec/*",
     "#support/*": "./spec/support/*"

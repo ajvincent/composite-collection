@@ -1,4 +1,4 @@
-import { copyFileTasks, generateCollections } from "#support/generateCollectionTools.mjs";
+import { copyFileTasks, generateCollections } from "#build/tools/generateCollectionTools.mjs";
 
 /**
  * Generate additional support files for the collections in ../generated.

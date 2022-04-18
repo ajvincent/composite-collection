@@ -3,7 +3,7 @@ import CodeGenerator from "#source/CodeGenerator.mjs";
 import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";
 
 import { PromiseAllSequence } from "#source/utilities/PromiseTypes.mjs";
-import { copyFileTasks } from "#support/generateCollectionTools.mjs";
+import { copyFileTasks } from "#build/tools/generateCollectionTools.mjs";
 
 import fs from "fs/promises";
 import path from "path";

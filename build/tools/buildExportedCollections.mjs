@@ -7,7 +7,7 @@ import { PromiseAllSequence } from "#source/utilities/PromiseTypes.mjs";
 import {
   copyFileTasks,
   generateCollections
-} from "#support/generateCollectionTools.mjs";
+} from "./generateCollectionTools.mjs";
 
 import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
 
