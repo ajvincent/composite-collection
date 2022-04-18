@@ -15,12 +15,15 @@ class BuildPromise {
      * @param {string} value
      * @returns {void}
      */
+    /** @type {boolean} @constant */
+    #writeToConsole;
     /**
-     * @param {BuildPromiseSet}   ownerSet  The set owning this.
-     * @param {setStatusCallback} setStatus Friend-like access to the owner set's #status property.
-     * @param {string}            target    The build target.
+     * @param {BuildPromiseSet}   ownerSet       The set owning this.
+     * @param {setStatusCallback} setStatus      Friend-like access to the owner set's #status property.
+     * @param {string}            target         The build target.
+     * @param {boolean}           writeToConsole True if we should write to the console.
      */
-    constructor(ownerSet, setStatus, target) {
+    constructor(ownerSet, setStatus, target, writeToConsole) {
         this.#ownerSet = ownerSet;
         this.#setStatus = setStatus;
         if (target === "")
@@ -32,6 +35,7 @@ class BuildPromise {
         let deferred = new Deferred;
         this.#pendingStart = deferred.resolve;
         this.#runPromise = deferred.promise.then(() => this.#run());
+        this.#writeToConsole = writeToConsole;
     }
     /** @type {string} */
     #description = "";
@@ -85,8 +89,10 @@ class BuildPromise {
         return targets;
     }
     async #run() {
-        // eslint-disable-next-line no-console
-        console.log("Starting " + this.target + "...");
+        if (this.#writeToConsole) {
+            // eslint-disable-next-line no-console
+            console.log("Starting " + this.target + "...");
+        }
         if ((this.#ownerSet.status === "ready") && (this === this.#ownerSet.main))
             this.#setStatus("running");
         if (this.#ownerSet.status !== "running")
@@ -114,8 +120,10 @@ class BuildPromise {
                 throw ex;
             }
         }
-        // eslint-disable-next-line no-console
-        console.log("Completed " + this.target + "!");
+        if (this.#writeToConsole) {
+            // eslint-disable-next-line no-console
+            console.log("Completed " + this.target + "!");
+        }
     }
     async run() {
         this.#pendingStart(null);
@@ -140,18 +148,21 @@ export default class BuildPromiseSet {
     /** @type {BuildPromise} @constant */
     main;
     #setStatusCallback;
-    constructor() {
+    /** @type {boolean} @constant */
+    #writeToConsole;
+    constructor(writeToConsole = false) {
         this.#setStatusCallback = (value) => {
             this.#status = value;
         };
-        this.main = new BuildPromise(this, this.#setStatusCallback, "main");
+        this.#writeToConsole = writeToConsole;
+        this.main = new BuildPromise(this, this.#setStatusCallback, "main", this.#writeToConsole);
     }
     /**
      * @param {string} targetName The target name.
      * @returns {BuildPromise} The build promise.
      */
     get(targetName) {
-        return this.#map.getDefault(targetName, () => new BuildPromise(this, this.#setStatusCallback, targetName));
+        return this.#map.getDefault(targetName, () => new BuildPromise(this, this.#setStatusCallback, targetName, this.#writeToConsole));
     }
 }
 //# sourceMappingURL=BuildPromise.mjs.map

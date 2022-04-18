@@ -34,7 +34,7 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
   return p;
 }
 
-const BPSet = new BuildPromiseSet;
+const BPSet = new BuildPromiseSet(true);
 
 // #region javascript targets
 

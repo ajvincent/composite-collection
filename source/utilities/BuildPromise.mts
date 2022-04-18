@@ -28,12 +28,22 @@ class BuildPromise {
    * @returns {void}
    */
 
+  /** @type {boolean} @constant */
+  #writeToConsole: Readonly<boolean>;
+
   /**
-   * @param {BuildPromiseSet}   ownerSet  The set owning this.
-   * @param {setStatusCallback} setStatus Friend-like access to the owner set's #status property.
-   * @param {string}            target    The build target.
+   * @param {BuildPromiseSet}   ownerSet       The set owning this.
+   * @param {setStatusCallback} setStatus      Friend-like access to the owner set's #status property.
+   * @param {string}            target         The build target.
+   * @param {boolean}           writeToConsole True if we should write to the console.
    */
-  constructor(ownerSet: BuildPromiseSet, setStatus: setStatusCallback, target: string) {
+  constructor(
+    ownerSet: BuildPromiseSet,
+    setStatus: setStatusCallback,
+    target: string,
+    writeToConsole: boolean,
+  )
+  {
     this.#ownerSet = ownerSet;
     this.#setStatus = setStatus;
 
@@ -47,6 +57,8 @@ class BuildPromise {
     let deferred = new Deferred;
     this.#pendingStart = deferred.resolve;
     this.#runPromise = deferred.promise.then(() => this.#run());
+
+    this.#writeToConsole = writeToConsole;
   }
 
   /** @type {string} */
@@ -110,8 +122,10 @@ class BuildPromise {
   }
 
   async #run(): Promise<void> {
-    // eslint-disable-next-line no-console
-    console.log("Starting " + this.target + "...");
+    if (this.#writeToConsole) {
+      // eslint-disable-next-line no-console
+      console.log("Starting " + this.target + "...");
+    }
 
     if ((this.#ownerSet.status === "ready") && (this === this.#ownerSet.main))
       this.#setStatus("running");
@@ -143,8 +157,10 @@ class BuildPromise {
       }
     }
 
-    // eslint-disable-next-line no-console
-    console.log("Completed " + this.target + "!");
+    if (this.#writeToConsole) {
+      // eslint-disable-next-line no-console
+      console.log("Completed " + this.target + "!");
+    }
   }
 
   async run(): Promise<void> {
@@ -179,11 +195,15 @@ export default class BuildPromiseSet {
 
   #setStatusCallback: setStatusCallback;
 
-  constructor() {
+  /** @type {boolean} @constant */
+  #writeToConsole;
+
+  constructor(writeToConsole = false) {
     this.#setStatusCallback = (value: string): void => {
       this.#status = value;
     };
-    this.main = new BuildPromise(this, this.#setStatusCallback, "main");
+    this.#writeToConsole = writeToConsole;
+    this.main = new BuildPromise(this, this.#setStatusCallback, "main", this.#writeToConsole);
   }
 
   /**
@@ -193,7 +213,7 @@ export default class BuildPromiseSet {
   get(targetName: string) : BuildPromise {
     return this.#map.getDefault(
       targetName,
-      () => new BuildPromise(this, this.#setStatusCallback, targetName)
+      () => new BuildPromise(this, this.#setStatusCallback, targetName, this.#writeToConsole)
     );
   }
 }
