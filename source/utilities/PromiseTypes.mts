@@ -15,11 +15,11 @@ export class Deferred<T> {
   promise: Promise<T>;
 
   constructor() {
-    this.resolve = (value) => {
+    this.resolve = (value): void => {
       void(value);
     };
-    this.reject = (reason) => {
-      void(reason);
+    this.reject = (reason): void => {
+      throw reason;
     }
     this.promise = new Promise((res, rej) => {
       this.resolve = res;
@@ -86,7 +86,7 @@ export class CompletionPromise {
    * @param {Error} exception The rejection value.
    * @throws
    */
-  #abort(exception: Error) {
+  #abort(exception: Error): void {
     this.#abortException = exception;
     throw exception;
   }

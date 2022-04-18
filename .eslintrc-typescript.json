@@ -32,5 +32,8 @@
     "jasmine",
     "jsdoc"
   ],
-  "root": true
+  "root": true,
+  "rules": {
+    "@typescript-eslint/explicit-function-return-type": ["error"]
+  }
 }

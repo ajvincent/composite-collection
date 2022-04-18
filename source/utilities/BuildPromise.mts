@@ -53,7 +53,7 @@ class BuildPromise {
   #description = "";
 
   /** @type {string} */
-  get description() {
+  get description(): string {
     return this.#description;
   }
   set description(value) {
@@ -67,7 +67,7 @@ class BuildPromise {
   /**
    * @param {Function} callback The task.
    */
-  addTask(callback: (() => void)) {
+  addTask(callback: (() => void)): void {
     if (this.#ownerSet.status !== "not started")
       throw new Error("Build step has started");
     if (typeof callback !== "function")
@@ -78,7 +78,7 @@ class BuildPromise {
   /**
    * @param {string} target The subtarget.
    */
-  addSubtarget(target: Readonly<string>) {
+  addSubtarget(target: Readonly<string>): void {
     if (target === "main")
       throw new Error("Cannot include main target");
 
@@ -109,7 +109,7 @@ class BuildPromise {
     return targets;
   }
 
-  async #run() {
+  async #run(): Promise<void> {
     // eslint-disable-next-line no-console
     console.log("Starting " + this.target + "...");
 
@@ -147,7 +147,7 @@ class BuildPromise {
     console.log("Completed " + this.target + "!");
   }
 
-  async run() {
+  async run(): Promise<void> {
     this.#pendingStart(null);
     await this.#runPromise;
   }
@@ -159,11 +159,11 @@ Object.freeze(BuildPromise);
 export default class BuildPromiseSet {
   #status = "not started";
 
-  markReady() {
+  markReady(): void {
     this.#status = "ready";
   }
 
-  markClosed() {
+  markClosed(): void {
     this.#status = "closed";
   }
 
@@ -180,7 +180,9 @@ export default class BuildPromiseSet {
   #setStatusCallback: setStatusCallback;
 
   constructor() {
-    this.#setStatusCallback = (value: string) => this.#status = value;
+    this.#setStatusCallback = (value: string): void => {
+      this.#status = value;
+    };
     this.main = new BuildPromise(this, this.#setStatusCallback, "main");
   }
 

@@ -141,7 +141,9 @@ export default class BuildPromiseSet {
     main;
     #setStatusCallback;
     constructor() {
-        this.#setStatusCallback = (value) => this.#status = value;
+        this.#setStatusCallback = (value) => {
+            this.#status = value;
+        };
         this.main = new BuildPromise(this, this.#setStatusCallback, "main");
     }
     /**
