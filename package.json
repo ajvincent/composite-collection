@@ -53,10 +53,12 @@
   "exports": {
     "./KeyHasher": "./exports/keys/Hasher.mjs",
     "./WeakKeyComposer": "./exports/keys/Composite.mjs",
-    "./Driver": "./source/Driver.mjs",
+
     "./CodeGenerator": "./source/CodeGenerator.mjs",
     "./Configuration": "./source/CollectionConfiguration.mjs",
     "./CompileTimeOptions": "./source/CompileTimeOptions.mjs",
+    "./Driver": "./source/Driver.mjs",
+
     "./StrongStrongMap": "./exports/StrongStrongMap.mjs",
     "./StrongStrongSet": "./exports/StrongStrongSet.mjs",
     "./WeakWeakMap": "./exports/WeakWeakMap.mjs",
