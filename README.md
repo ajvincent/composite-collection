@@ -83,7 +83,7 @@ const driver = new CompositeDriver(
 );
 
 driver.start();
-await driver.completionPromise;
+await driver.run();
 
 // at this point, "./collections/WeakFunctionMultiMap.mjs" has everything you need
 ```

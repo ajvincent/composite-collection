@@ -156,7 +156,7 @@ async function createCollectionFiles(dirName, extraKeyCount, disableKeyOptimizat
       new CompileTimeOptions({ disableKeyOptimization })
     );
 
-    await generator.completionPromise;
+    await generator.run();
   });
 }
 

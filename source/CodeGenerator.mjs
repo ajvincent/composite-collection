@@ -115,6 +115,13 @@ export default class CodeGenerator extends CompletionPromise {
   }
 
   /**
+   * @returns {Promise<identifier>} The class name.
+   */
+  async run() {
+    return this.completionPromise;
+  }
+
+  /**
    * Generate the code!
    *
    * @returns {identifier} The class name.
@@ -467,7 +474,7 @@ export default class CodeGenerator extends CompletionPromise {
     );
 
     resolve();
-    await this.#oneToOneSubGenerator.completionPromise;
+    await this.#oneToOneSubGenerator.run();
 
     this.#generatedCode += this.#oneToOneSubGenerator.generatedCode + "\n";
   }

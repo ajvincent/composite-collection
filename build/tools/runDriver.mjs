@@ -17,7 +17,7 @@ export default async function runDriver(sourceDir, targetDir) {
   const driver = new CompositeDriver(sourceDir, targetDir);
 
   driver.start();
-  await driver.completionPromise;
+  await driver.run();
 
   // Verify the Driver provided a valid module in each file exporting a function.
   // This is a preamble to testing the module.

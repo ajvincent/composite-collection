@@ -47,7 +47,7 @@ describe("Combinations of auto-generated configurations:", () => {
       let p = new Promise(res => start = res)
       const generator = new CodeGenerator(config, outFilePath, p);
       start();
-      await generator.completionPromise;
+      await generator.run();
 
       const outFileURL = url.pathToFileURL(outFilePath);
 
@@ -81,7 +81,7 @@ describe("Combinations of auto-generated configurations:", () => {
       const p = new Promise(res => start = res);
       const generator = new CodeGenerator(config, outFilePath, p);
       start();
-      await generator.completionPromise;
+      await generator.run();
 
       const outFileURL = url.pathToFileURL(outFilePath);
 
@@ -201,7 +201,7 @@ describe("Combinations of auto-generated configurations:", () => {
       const p = new Promise(res => start = res);
       const generator = new CodeGenerator(config, outFilePath, p);
       start();
-      await generator.completionPromise;
+      await generator.run();
 
       const outFileURL = url.pathToFileURL(outFilePath);
 

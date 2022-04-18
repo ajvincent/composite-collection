@@ -57,6 +57,13 @@ export default class Driver extends CompletionPromise {
   }
 
   /**
+   * @returns {Promise<void>}
+   */
+  async run() {
+    return this.completionPromise;
+  }
+
+  /**
    * Build and write the collections for the target directory, based on a source directory of configurations.
    */
   async #buildAll() {
@@ -97,7 +104,7 @@ export default class Driver extends CompletionPromise {
           this.#compileTimeOptions
         );
 
-        await generator.completionPromise;
+        await generator.run();
         return generator;
       }
       catch (ex) {

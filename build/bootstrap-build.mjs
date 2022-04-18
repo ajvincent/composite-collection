@@ -27,4 +27,4 @@ const compileOptions = new CompileTimeOptions(JSON.parse(rawContents));
 
 const driver = new CompositeDriver(configDir, collectionsDir, compileOptions);
 driver.start();
-await driver.completionPromise;
+await driver.run();

@@ -61,7 +61,7 @@ async function generateOneCollection(config, target) {
 
   const generator = new CodeGenerator(configModule, targetFile, p, compileOptions);
   resolve();
-  await generator.completionPromise;
+  await generator.run();
 }
 
 /**
