@@ -119,7 +119,7 @@ const BPSet = new BuildPromiseSet;
 // #endregion javascript targets
 
 // #region typescript targets
-{
+{ // typescript:eslint-prebuild
   const jsTarget = BPSet.get("test:build");
   jsTarget.addSubtarget("typescript:eslint-prebuild");
 
