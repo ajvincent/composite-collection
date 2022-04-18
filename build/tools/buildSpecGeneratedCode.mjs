@@ -66,6 +66,16 @@ async function invokeSpecBuildModule(targetFile) {
 }
 
 /**
+ * Build spec-generated code
+ */
+export default async function() {
+
+const specDirs = await fs.readdir(
+  path.join(process.cwd(), "spec"),
+  {encoding: "utf-8", "withFileTypes": true}
+);
+
+/**
  * @param {Function} filter The filter function.
  * @param {Function} action The action to take.
  */
@@ -88,11 +98,6 @@ async function iterateOverSpecDirs(filter, action) {
 
   await PromiseAllSequence(directories, action);
 }
-
-const specDirs = await fs.readdir(
-  path.join(process.cwd(), "spec"),
-  {encoding: "utf-8", "withFileTypes": true}
-);
 
 await iterateOverSpecDirs(
   hasSupportBuild,
@@ -141,3 +146,4 @@ console.log("Started verifying generated modules");
   });
 }
 console.log("Finished verifying generated modules");
+}

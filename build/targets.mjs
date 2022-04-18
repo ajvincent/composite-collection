@@ -7,6 +7,7 @@ import path from "path";
 import cleanTree from "./tools/clean.mjs";
 import bootstrapRun from "./tools/bootstrap.mjs";
 import buildExportedCollections from "./tools/buildExportedCollections.mjs";
+import buildSpecGeneratedCode from './tools/buildSpecGeneratedCode.mjs';
 
 /**
  * Run a specific submodule.
@@ -58,7 +59,7 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
   const target = BuildPromise.get("test:build");
   target.description = "Build spec-generated code";
   target.addSubtarget("clean");
-  target.addTask(() => runModule("./jake-targets/buildSpecGeneratedCode.mjs"));
+  target.addTask(() => buildSpecGeneratedCode());
 }
 
 { // test:run
