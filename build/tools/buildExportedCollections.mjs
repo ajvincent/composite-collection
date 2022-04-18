@@ -10,6 +10,11 @@ import {
 
 import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
 
+/**
+ * Export all modules.
+ */
+export default async function() {
+
 console.log("Starting to build exported collections");
 
 const targetDir = path.join(process.cwd(), "exports");
@@ -57,3 +62,4 @@ console.log("Started verifying generated modules");
   });
 }
 console.log("Finished verifying generated modules");
+}

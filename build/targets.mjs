@@ -6,6 +6,7 @@ import path from "path";
 
 import cleanTree from "./tools/clean.mjs";
 import bootstrapRun from "./tools/bootstrap.mjs";
+import buildExportedCollections from "./tools/buildExportedCollections.mjs";
 
 /**
  * Run a specific submodule.
@@ -38,7 +39,7 @@ function runModule(pathToModule, moduleArgs = [], extraNodeArgs = []) {
   const target = BuildPromise.get("export");
   target.description = "Export all modules.";
   target.addSubtarget("test");
-  target.addTask(() => runModule("./jake-targets/buildExportedCollections.mjs"));
+  target.addTask(() => buildExportedCollections());
 }
 
 { // clean
