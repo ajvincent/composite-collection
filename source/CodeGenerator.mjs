@@ -17,7 +17,9 @@ import JSDocGenerator from "./generatorTools/JSDocGenerator.mjs";
 import TemplateGenerators from "./generatorTools/TemplateGenerators.mjs";
 
 import fs from "fs/promises";
+import path from "path";
 import beautify from "js-beautify";
+
 
 /**
  * Stringify a list of keys into an argument name list suitable for macros.
@@ -116,7 +118,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
     this.#configurationData = configuration.cloneData();
     this.#targetPath = targetPath;
 
-    const gpSet = new GeneratorPromiseSet(this);
+    const gpSet = new GeneratorPromiseSet(this, path.dirname(targetPath));
     generatorToPromiseSet.set(this, gpSet);
 
     Object.seal(this);
@@ -168,11 +170,10 @@ export default class CodeGenerator extends CodeGeneratorBase {
     if (gpSet.owner !== this)
       return;
 
-    gpSet.markReady();
-    if (!gpSet.main.deepTargets.includes(this.#targetPath))
-      gpSet.main.addSubtarget(this.#targetPath);
+    if (!gpSet.generatorsTarget.deepTargets.includes(this.#targetPath))
+      gpSet.generatorsTarget.addSubtarget(this.#targetPath);
 
-    await gpSet.main.run();
+    await gpSet.runMain();
 
     return this.#configurationData.className;
   }
@@ -200,7 +201,13 @@ export default class CodeGenerator extends CodeGeneratorBase {
       this.#buildDefines();
       this.#buildDocGenerator();
     }
+
     this.#generateSource();
+    const gpSet = generatorToPromiseSet.get(this);
+    if (this.requiresKeyHasher)
+      gpSet.requireKeyHasher();
+    if (this.requiresWeakKeyComposer)
+      gpSet.requireWeakKeyComposer();
 
     if (!this.#internalFlagSet?.has("prevent export"))
       await this.#writeSource();

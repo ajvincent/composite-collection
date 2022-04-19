@@ -10,8 +10,6 @@ import fs from "fs/promises";
 import path from "path";
 import readDirsDeep from "./utilities/readDirsDeep.mjs";
 
-const projectRoot = url.fileURLToPath(new URL("..", import.meta.url));
-
 export default class Driver {
   /** @type {string} @constant */
   #sourcesPath;
@@ -23,7 +21,7 @@ export default class Driver {
   #compileTimeOptions = null;
 
   /** @type {GeneratorPromiseSet} @constant */
-  #generatorPromiseSet = new GeneratorPromiseSet(this);
+  #generatorPromiseSet;
 
   #pendingStart;
 
@@ -56,6 +54,8 @@ export default class Driver {
     let deferred = new Deferred;
     this.#pendingStart = deferred.resolve;
     this.#runPromise = deferred.promise.then(() => this.#buildAll());
+
+    this.#generatorPromiseSet = new GeneratorPromiseSet(this, targetDir);
   }
 
   /**
@@ -97,7 +97,8 @@ export default class Driver {
     await fs.mkdir(this.#targetsPath, { recursive: true });
 
     const targetPaths = [];
-    const generators = await PromiseAllSequence(configs, async config => {
+
+    await PromiseAllSequence(configs, async config => {
       try {
         const targetPath = path.normalize(path.join(
           this.#targetsPath, configToRelativePath.get(config)
@@ -119,32 +120,7 @@ export default class Driver {
       }
     });
 
-    // It'd be better if each CodeGenerator did its own production of KeyHasher and WeakKeyComposer,
-    // but this will preserve existing code for now.
-    this.#generatorPromiseSet.main.addTask(async () => {
-      const requiresWeakKeyComposer = generators.some(g => g.requiresWeakKeyComposer);
-      const requiresKeyHasher = requiresWeakKeyComposer || generators.some(g => g.requiresKeyHasher);
-  
-      if (requiresKeyHasher) {
-        await fs.mkdir(path.join(this.#targetsPath, "keys"), { recursive: true });
-  
-        await fs.copyFile(
-          path.join(projectRoot, "source/exports/keys/Hasher.mjs"),
-          path.join(this.#targetsPath, "keys/Hasher.mjs")
-        );
-      }
-  
-      if (requiresWeakKeyComposer) {
-        await fs.copyFile(
-          path.join(projectRoot, "source/exports/keys/Composite.mjs"),
-          path.join(this.#targetsPath, "keys/Composite.mjs")
-        );
-      }
-    });
-
-    this.#generatorPromiseSet.markReady();
-    targetPaths.forEach(t => this.#generatorPromiseSet.main.addSubtarget(t));
-
-    await this.#generatorPromiseSet.main.run();
+    targetPaths.forEach(t => this.#generatorPromiseSet.generatorsTarget.addSubtarget(t));
+    await this.#generatorPromiseSet.runMain();
   }
 }

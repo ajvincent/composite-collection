@@ -5,7 +5,6 @@ import url from "url";
 import { PromiseAllSequence } from "#source/utilities/PromiseTypes.mjs";
 
 import {
-  copyFileTasks,
   generateCollections
 } from "./generateCollectionTools.mjs";
 
@@ -19,15 +18,6 @@ export default async function() {
 console.log("Starting to build exported collections");
 
 const targetDir = path.join(process.cwd(), "exports");
-
-await copyFileTasks(
-  "source/exports",
-  "exports",
-  [
-    "keys/Hasher.mjs",
-    "keys/Composite.mjs",
-  ]
-);
 
 const exportDir = path.join(process.cwd(), "source/exports");
 const entries = (await fs.readdir(exportDir, { encoding: "utf-8", withFileTypes: true}));
