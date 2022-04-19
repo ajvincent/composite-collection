@@ -131,9 +131,12 @@ export class BuildPromise {
       throw new Error("Build promises are not running!");
 
     const subtargets = this.#subtargets.map(st => this.#ownerSet.get(st));
-    for (let i = 0; i < subtargets.length; i++) {
+    while (subtargets.length) {
+      const subtarget = subtargets.shift();
       try {
-        await subtargets[i].run();
+        if (!subtarget)
+          throw new Error("assertion: unreachable");
+        await subtarget.run();
       }
       catch (ex) {
         this.#setStatus("errored");
@@ -146,7 +149,7 @@ export class BuildPromise {
       const task = tasks.shift();
       try {
         if (!task)
-          throw new Error("foo");
+          throw new Error("assertion: unreachable");
         await task();
       }
       catch (ex) {
