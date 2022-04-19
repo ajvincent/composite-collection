@@ -3,7 +3,6 @@ import CodeGenerator from "#source/CodeGenerator.mjs";
 import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";
 
 import { PromiseAllSequence } from "#source/utilities/PromiseTypes.mjs";
-import { copyFileTasks } from "#build/tools/generateCollectionTools.mjs";
 
 import fs from "fs/promises";
 import path from "path";
@@ -135,15 +134,6 @@ async function createCollectionFiles(dirName, extraKeyCount, disableKeyOptimizat
       configSequence.push([className, config]);
     });
   });
-
-  await copyFileTasks(
-    "source/exports",
-    "spec/_02_single-keytype-optimizations/" + dirName + "/generated",
-    [
-      "keys/Hasher.mjs",
-      "keys/Composite.mjs",
-    ]
-  );
 
   await PromiseAllSequence(configSequence, async arg => {
     const [className, config] = arg;

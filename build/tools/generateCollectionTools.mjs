@@ -8,25 +8,6 @@ import fs from 'fs/promises';
 import url from "url";
 
 /**
- * Define simple file-copying tasks.
- *
- * @param {string}   sourceDir The source directory.
- * @param {string}   targetDir The target directory.
- * @param {string[]} leafNames The paths to the files to copy.
- */
-export async function copyFileTasks(sourceDir, targetDir, leafNames) {
-  await PromiseAllSequence(leafNames, async leaf => {
-    const sourceFile = path.join(process.cwd(), sourceDir, leaf),
-          targetFile = path.join(process.cwd(), targetDir, leaf);
-
-    // Yes, we could use file() here, but this project is still pretty small.
-    console.log(`Copying from ${sourceDir} to ${targetDir}, ${leaf}`);
-    await fs.mkdir(path.dirname(targetFile), { recursive: true });
-    await fs.copyFile(sourceFile, targetFile);
-  });
-}
-
-/**
  * Generate one collection.
  *
  * @param {string} config The source configuration.

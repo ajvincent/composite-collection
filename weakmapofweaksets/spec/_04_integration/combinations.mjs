@@ -10,19 +10,9 @@ import url from "url";
 const key8 = {}, key4 = {}, key2 = {}, key1 = {}, value = {};
 
 describe("Combinations of auto-generated configurations:", () => {
-  let cleanup, filesCopied = null;
+  let cleanup;
   beforeAll(async () => {
     cleanup = await tempDirWithCleanup();
-
-    filesCopied = Promise.all([
-      "keys/Hasher.mjs",
-      "keys/Composite.mjs",
-    ].map(async leafName => {
-      const sourceFile = path.join(process.cwd(), "source", "exports", leafName);
-      const targetFile = path.join(cleanup.tempDir, leafName);
-      await fs.mkdir(path.dirname(targetFile), { recursive: true });
-      await fs.copyFile(sourceFile, targetFile);
-    }));
   });
 
   afterAll(async () => {
@@ -31,8 +21,6 @@ describe("Combinations of auto-generated configurations:", () => {
   });
 
   it("3 part keys of maps", async () => {
-    await filesCopied;
-
     for (let i = 0; i < 8; i++) {
       let leafName = "combo_" + i.toString(2);
       const config = new CollectionConfiguration(leafName, i === 0 ? "Map" : "WeakMap");
@@ -62,8 +50,6 @@ describe("Combinations of auto-generated configurations:", () => {
   });
 
   it("3 part keys of sets", async () => {
-    await filesCopied;
-
     for (let i = 0; i < 8; i++) {
       let leafName = "combo_" + i.toString(2);
       const config = new CollectionConfiguration(leafName, i === 0 ? "Set" : "WeakSet");
@@ -92,8 +78,6 @@ describe("Combinations of auto-generated configurations:", () => {
   });
 
   it("2 part map keys followed by 2 part set keys", async () => {
-    await filesCopied;
-
     let generatedCount = 0;
     for (let i = 0; i < 16; i++) {
       let config = null;
