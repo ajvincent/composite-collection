@@ -1,16 +1,20 @@
 export class DefaultMap extends Map {
     getDefault(key, builder) {
-        const value = this.get(key) || builder();
-        if (!this.has(key))
+        let value = this.get(key);
+        if (!value) {
+            value = builder();
             this.set(key, value);
+        }
         return value;
     }
 }
 export class DefaultWeakMap extends WeakMap {
     getDefault(key, builder) {
-        const value = this.get(key) || builder();
-        if (!this.has(key))
+        let value = this.get(key);
+        if (!value) {
+            value = builder();
             this.set(key, value);
+        }
         return value;
     }
 }
