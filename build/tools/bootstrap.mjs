@@ -65,6 +65,7 @@ try {
   try {
     console.timeLog("stage", "stage 1 @ " + stageDirs[0]);
     await copyToStage(masterDirectory, stageDirs[0]);
+    // Build collections first before compiling TypeScript, because we might generate the collections as TypeScript.
     await buildCollections(masterDirectory, stageDirs[0]);
     await compileTypeScript(stageDirs[0]);
     await runAllStage(stageDirs[0]);
