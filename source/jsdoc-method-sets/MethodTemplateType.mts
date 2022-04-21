@@ -14,7 +14,7 @@
  * @property {boolean?}    isGenerator        If true, provides a 'yield' instead of a 'return'.
  * @see jsdoc-method-sets/default.mjs for typical objects.
  */
-export abstract class MethodTemplate {
+export default abstract class MethodTemplate {
   isTypeDef?: boolean;
   isProperty?: boolean;
   returnVoid?: boolean;

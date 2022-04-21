@@ -1,4 +1,4 @@
-import { MethodTemplate } from "./MethodTemplateType.mjs";
+import MethodTemplate from "./MethodTemplateType.mjs";
 void (MethodTemplate);
 /**
  * @returns {Array<string, MethodTemplate>[]} The templates to feed into a Map.

@@ -767,11 +767,6 @@ describe("JSDocGenerator for maps", () => {
      * @constant
      */`);
   });
-
-  it("throws for invoking addParameter with a first argument that isn't a CollectionType", () => {
-    generator = new JSDocGenerator("SoloStrongMap", false);
-    expect(() => generator.addParameter("Car", "car", "The car.")).toThrowError("parameter must be a CollectionType!");
-  });
 });
 
 describe("JSDocGenerator for sets", () => {
@@ -1126,11 +1121,6 @@ describe("JSDocGenerator for sets", () => {
      * @type {Map<string, SoloStrongSet~valueAndKeySet>}
      * @constant
      */`);
-  });
-
-  it("throws for invoking addParameter with a first argument that isn't a CollectionType", () => {
-    generator = new JSDocGenerator("SoloStrongSet", true);
-    expect(() => generator.addParameter("Car", "car", "The car.")).toThrowError("parameter must be a CollectionType!");
   });
 });
 

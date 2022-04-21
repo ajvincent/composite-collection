@@ -1,4 +1,4 @@
-import { MethodTemplate } from "./MethodTemplateType.mjs";
+import MethodTemplate from "./MethodTemplateType.mjs";
 import type { stringAndTemplate } from "./MethodTemplateType.mjs";
 
 void(MethodTemplate);
