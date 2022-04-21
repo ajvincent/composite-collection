@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import fs from "fs/promises";
-import { getAllFiles } from 'get-all-files';
+import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
 
 /* Why does this file exist?
    https://en.wikipedia.org/wiki/Bootstrapping_(compilers)
@@ -41,21 +41,10 @@ export async function getHashFileList(root) {
     "."
   ];
 
-  let allFiles = await getAllFiles(root, {
-    isExcludedDir: dir => {
-      dir = dir.replace(root, "");
-      return ignoredDirs.some(ignorable => dir.startsWith(ignorable));
-    },
-  }).toArray();
-
-  allFiles = (await Promise.all(allFiles.map(async f => {
-    if (!f)
-      return false;
-    return (await fs.lstat(f)).isSymbolicLink() ? null : f
-  }))).filter(Boolean);
-  allFiles.sort();
-
-  return allFiles;
+  return (await readDirsDeep(root, dir => {
+    dir = dir.replace(root, "");
+    return ignoredDirs.some(ignorable => dir.startsWith(ignorable));
+  })).files;
 }
 
 /**

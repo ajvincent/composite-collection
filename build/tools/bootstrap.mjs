@@ -29,11 +29,11 @@ import which from "which";
 import { spawn } from "child_process";
 
 import { hashAllFiles } from "./hash-all-files.mjs";
+import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
 import tempDirWithCleanup from "#support/tempDirWithCleanup.mjs"
 
 import path from "path";
 import fs from "fs/promises";
-import { getAllFiles } from 'get-all-files';
 import { pathToFileURL } from "url";
 
 /**
@@ -173,11 +173,7 @@ async function buildCollections(sourceDir, targetDir) {
   await cleanAndRecreate(collectionsDir);
 
   const urlToClass = pathToFileURL(path.join(sourceDir, "source/CollectionConfiguration.mjs"));
-  let configFileList = await getAllFiles(configDir).toArray();
-  configFileList = (await Promise.all(configFileList.map(async f => {
-    return (await fs.lstat(f)).isSymbolicLink() ? null : f
-  }))).filter(Boolean);
-  configFileList.sort();
+  let configFileList = (await readDirsDeep(configDir)).files;
 
   /**
    * @typedef {string} pathToFile

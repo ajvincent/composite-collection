@@ -3,20 +3,18 @@
  * @package
  */
 const TemplateGenerators = new Map();
-import { pathToFileURL } from "url";
-import { getAllFiles } from 'get-all-files';
-import fs from "fs/promises";
 
+import { pathToFileURL } from "url";
+import readDirsDeep from "../utilities/readDirsDeep.mjs";
 
 const templateDirURL = new URL("../../templates", import.meta.url);
 const templateDir = templateDirURL.pathname;
-const allFiles = await getAllFiles(templateDir).toArray();
+
+const allFiles = (await readDirsDeep(templateDir)).files;
+
 await Promise.all(allFiles.map(async fullPath => {
   let baseName = fullPath.substr(templateDir.length + 1);
   if (!baseName.endsWith(".in.mjs"))
-    return;
-
-  if ((await fs.lstat(fullPath)).isSymbolicLink())
     return;
 
   const targetFileURL = pathToFileURL(fullPath);

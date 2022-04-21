@@ -1,9 +1,9 @@
+import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
 import tempDirWithCleanup from "#support/tempDirWithCleanup.mjs";
 
 import url from "url";
 import fs from "fs/promises";
 import path from "path";
-import { getAllFiles } from "get-all-files";
 import which from "which";
 import { exec } from "child_process";
 import { promisify } from "util";
@@ -20,11 +20,9 @@ it("Driver generates a valid set of classes", async () => {
   try {
     // copy package files
     {
-      const fileList = await getAllFiles(sourceDir).toArray();
+      const fileList = (await readDirsDeep(sourceDir)).files;
 
       await Promise.all(fileList.map(async sourceFile => {
-        if ((await fs.lstat(sourceFile)).isSymbolicLink())
-          return;
         const targetFile = sourceFile.replace(sourceDir, targetDir);
         await fs.mkdir(path.dirname(targetFile), { recursive: true });
         await fs.copyFile(
