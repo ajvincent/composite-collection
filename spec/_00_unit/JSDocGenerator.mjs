@@ -264,62 +264,6 @@ describe("JSDocGenerator validation: ", () => {
     expect(result).toEqual(['jsdoc/require-param']);
   });
 
-  it("throws for missing a parameter description", async () => {
-    doc.addParameter(nameType);
-    doc.addParameter(atTimeTime);
-    expect(
-      () => doc.addParameter(new CollectionType(
-        "foods",
-        "WeakMap",
-        "string[]",
-        "",
-        ""
-      ))
-    ).toThrowError("description must be a non-empty string!");
-  });
-
-  it("throws for a whitespace-only parameter description", async () => {
-    doc.addParameter(nameType);
-    doc.addParameter(atTimeTime);
-    expect(
-      () => doc.addParameter(new CollectionType(
-        "foods",
-        "WeakMap",
-        "string[]",
-        "    ",
-        ""
-      ))
-    ).toThrowError("description must be a non-empty string!");
-  });
-
-  it("throws for missing a parameter type", async () => {
-    doc.addParameter(nameType);
-    doc.addParameter(atTimeTime);
-    expect(
-      () => doc.addParameter(new CollectionType(
-        "foods",
-        "WeakMap",
-        "",
-        "The foods the customer ordered.",
-        ""
-      ))
-    ).toThrowError("argumentType must be a non-empty string!");
-  });
-
-  it("throws for missing a parameter name", async () => {
-    doc.addParameter(nameType);
-    doc.addParameter(atTimeTime);
-    expect(
-      () => doc.addParameter(new CollectionType(
-        "",
-        "WeakMap",
-        "string[]",
-        "The foods the customer ordered.",
-        ""
-      ))
-    ).toThrowError("argumentName must be a non-empty string!");
-  });
-
   it("fails ESLint with an extra parameter", async () => {
     doc.addParameter(nameType);
     doc.addParameter(atTimeTime);
