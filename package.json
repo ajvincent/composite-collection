@@ -47,18 +47,15 @@
   "dependencies": {
     "acorn": "^8.6.0",
     "argparse": "^2.0.1",
-    "get-all-files": "^4.1.0",
     "js-beautify": "^1.14.0"
   },
   "exports": {
     "./KeyHasher": "./exports/keys/Hasher.mjs",
     "./WeakKeyComposer": "./exports/keys/Composite.mjs",
-
     "./CodeGenerator": "./source/CodeGenerator.mjs",
     "./Configuration": "./source/CollectionConfiguration.mjs",
     "./CompileTimeOptions": "./source/CompileTimeOptions.mjs",
     "./Driver": "./source/Driver.mjs",
-
     "./StrongStrongMap": "./exports/StrongStrongMap.mjs",
     "./StrongStrongSet": "./exports/StrongStrongSet.mjs",
     "./WeakWeakMap": "./exports/WeakWeakMap.mjs",
