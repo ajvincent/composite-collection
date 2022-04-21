@@ -53,8 +53,8 @@ class StringStateMachine {
   /**
    * Add a key set to this collection.
    *
-   * @param {Function} currentState The current state.
-   * @param {Function} nextState    An allowable next state.
+   * @param {string} currentState The current state.
+   * @param {string} nextState    An allowable next state.
    * @returns {StringStateMachine} This collection.
    * @public
    */
@@ -78,8 +78,8 @@ class StringStateMachine {
   /**
    * Delete an element from the collection by the given key sequence.
    *
-   * @param {Function} currentState The current state.
-   * @param {Function} nextState    An allowable next state.
+   * @param {string} currentState The current state.
+   * @param {string} nextState    An allowable next state.
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
@@ -105,16 +105,16 @@ class StringStateMachine {
    * An user-provided callback to .forEach().
    *
    * @callback StringStateMachine~ForEachCallback
-   * @param {Function}           currentState   The current state.
-   * @param {Function}           nextState      An allowable next state.
+   * @param {string}             currentState   The current state.
+   * @param {string}             nextState      An allowable next state.
    * @param {StringStateMachine} __collection__ This collection.
    */
 
   /**
    * Report if the collection has a value for a key set.
    *
-   * @param {Function} currentState The current state.
-   * @param {Function} nextState    An allowable next state.
+   * @param {string} currentState The current state.
+   * @param {string} nextState    An allowable next state.
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
@@ -126,8 +126,8 @@ class StringStateMachine {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {Function} currentState The current state.
-   * @param {Function} nextState    An allowable next state.
+   * @param {string} currentState The current state.
+   * @param {string} nextState    An allowable next state.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    * @public
    */
@@ -149,8 +149,8 @@ class StringStateMachine {
   /**
    * Throw if the key set is not valid.
    *
-   * @param {Function} currentState The current state.
-   * @param {Function} nextState    An allowable next state.
+   * @param {string} currentState The current state.
+   * @param {string} nextState    An allowable next state.
    * @throws for an invalid key set.
    */
   #requireValidKey(currentState, nextState) {
@@ -161,8 +161,8 @@ class StringStateMachine {
   /**
    * Determine if a set of keys is valid.
    *
-   * @param {Function} currentState The current state.
-   * @param {Function} nextState    An allowable next state.
+   * @param {string} currentState The current state.
+   * @param {string} nextState    An allowable next state.
    * @returns {boolean} True if the validation passes, false if it doesn't.
    */
   #isValidKey(currentState, nextState) {
