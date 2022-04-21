@@ -123,13 +123,13 @@ describe("WeakKeyComposer", () => {
 
     it(".getKey() builds an unique object key for a given key set", () => {
       const composite1 = composer.getKey(...keySet1);
-      expect(composite1).toEqual({});
+      expect(Object(composite1)).toBe(composite1);
       expect(Object.isFrozen(composite1)).toBe(true);
 
       expect(composer.getKey(...keySet1)).toBe(composite1);
 
       const composite2 = composer.getKey(...keySet2);
-      expect(composite2).toEqual({});
+      expect(Object(composite2)).toBe(composite2);
       expect(Object.isFrozen(composite2)).toBe(true);
       expect(composite2).not.toBe(composite1);
 
@@ -137,7 +137,7 @@ describe("WeakKeyComposer", () => {
       expect(composer.getKey(...keySet2)).toBe(composite2);
 
       const composite3 = composer.getKey(...keySet3);
-      expect(composite3).toEqual({});
+      expect(Object(composite3)).toBe(composite3);
       expect(Object.isFrozen(composite3)).toBe(true);
       expect(composite3).not.toBe(composite1);
       expect(composite3).not.toBe(composite2);
@@ -178,7 +178,7 @@ describe("WeakKeyComposer", () => {
       expect(composer.deleteKey(...keySet1)).toBe(true);
 
       const composite2 = composer.getKey(...keySet1);
-      expect(composite2).toEqual({});
+      expect(Object(composite2)).toBe(composite2);
       expect(Object.isFrozen(composite2)).toBe(true);
       expect(composite2).not.toBe(composite1);
     });
