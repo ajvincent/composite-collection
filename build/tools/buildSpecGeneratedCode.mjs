@@ -9,6 +9,7 @@ import {
 } from "#source/utilities/PromiseTypes.mjs";
 
 import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
+import verifyGeneratedModules from "./verifyGeneratedModules.mjs";
 
 const specRoot = path.join(process.cwd(), "spec");
 
@@ -135,15 +136,7 @@ console.log("Started verifying generated modules");
     return /\/spec\/.*\/generated\/.*\.mjs$/.test(pathToFile);
   });
 
-  await PromiseAllSequence(files, async targetFile => {
-    const relPath = targetFile.replace(process.cwd(), "")
-    console.log("Verifying: " + relPath);
-    // Verify the module exports a function.  (This is a preamble to testing the module.)
-    const targetFileURL = url.pathToFileURL(targetFile);
-    const targetModule = (await import(targetFileURL)).default;
-    if (typeof targetModule !== "function")
-      throw new Error("Compilation failed for " + relPath);
-  });
+  await verifyGeneratedModules(files);
 }
 console.log("Finished verifying generated modules");
 }

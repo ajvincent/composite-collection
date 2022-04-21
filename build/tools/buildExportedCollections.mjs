@@ -1,12 +1,10 @@
 import fs from 'fs/promises';
 import path from "path";
-import url from "url";
-
-import { PromiseAllSequence } from "#source/utilities/PromiseTypes.mjs";
 
 import {
   generateCollections
 } from "./generateCollectionTools.mjs";
+import verifyGeneratedModules from "./verifyGeneratedModules.mjs";
 
 import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
 
@@ -38,19 +36,8 @@ console.log("Finished building exported collections");
 console.log("Started verifying generated modules");
 {
   let {files} = await readDirsDeep(targetDir);
-  files = files.filter(pathToFile => {
-    return /\/.*\.mjs$/.test(pathToFile);
-  });
-
-  await PromiseAllSequence(files, async targetFile => {
-    const relPath = targetFile.replace(process.cwd(), "")
-    console.log("Verifying: " + relPath);
-    // Verify the module exports a function.  (This is a preamble to testing the module.)
-    const targetFileURL = url.pathToFileURL(targetFile);
-    const targetModule = (await import(targetFileURL)).default;
-    if (typeof targetModule !== "function")
-      throw new Error("Compilation failed for " + relPath);
-  });
+  files = files.filter(pathToFile => /\/.*\.mjs$/.test(pathToFile));
+  await verifyGeneratedModules(files);
 }
 console.log("Finished verifying generated modules");
 }

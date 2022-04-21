@@ -50,6 +50,7 @@
     "js-beautify": "^1.14.0"
   },
   "exports": {
+    "./DefaultMap": "./exports/keys/DefaultMap.mjs",
     "./KeyHasher": "./exports/keys/Hasher.mjs",
     "./WeakKeyComposer": "./exports/keys/Composite.mjs",
     "./CodeGenerator": "./source/CodeGenerator.mjs",

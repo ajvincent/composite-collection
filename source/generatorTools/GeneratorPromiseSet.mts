@@ -88,6 +88,11 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     await fs.mkdir(path.join(this.#targetDir, "keys"), { recursive: true });
 
     await fs.copyFile(
+      path.join(projectRoot, "source/exports/keys/DefaultMap.mjs"),
+      path.join(this.#targetDir, "keys/DefaultMap.mjs")
+    );
+
+    await fs.copyFile(
       path.join(projectRoot, "source/exports/keys/Hasher.mjs"),
       path.join(this.#targetDir, "keys/Hasher.mjs")
     );

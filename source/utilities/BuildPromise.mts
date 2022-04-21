@@ -1,5 +1,5 @@
 import { Deferred } from "./PromiseTypes.mjs";
-import { DefaultMap } from "./DefaultMap.mjs";
+import { DefaultMap } from "../exports/keys/DefaultMap.mjs";
 
 import type { PromiseResolver } from "./PromiseTypes.mjs";
 
@@ -166,7 +166,7 @@ export class BuildPromise {
 
   async run(): Promise<void> {
     this.#pendingStart(null);
-    await this.#runPromise;
+    return await this.#runPromise;
   }
 }
 

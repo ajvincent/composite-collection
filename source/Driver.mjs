@@ -63,7 +63,7 @@ export default class Driver {
    */
   async run() {
     this.#pendingStart(null);
-    await this.#runPromise;
+    return await this.#runPromise;
   }
 
   /**

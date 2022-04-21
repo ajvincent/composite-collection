@@ -1,5 +1,5 @@
 import { Deferred } from "./PromiseTypes.mjs";
-import { DefaultMap } from "./DefaultMap.mjs";
+import { DefaultMap } from "../exports/keys/DefaultMap.mjs";
 export class BuildPromise {
     #ownerSet;
     /** @type {string[]} @constant */
@@ -128,7 +128,7 @@ export class BuildPromise {
     }
     async run() {
         this.#pendingStart(null);
-        await this.#runPromise;
+        return await this.#runPromise;
     }
 }
 Object.freeze(BuildPromise.prototype);
