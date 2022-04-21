@@ -1,71 +1,38 @@
-/**
- * @public
- */
+var MapOrSetType;
+(function (MapOrSetType) {
+    MapOrSetType["Map"] = "Map";
+    MapOrSetType["Set"] = "Set";
+    MapOrSetType["WeakMap"] = "WeakMap";
+    MapOrSetType["WeakSet"] = "WeakSet";
+})(MapOrSetType || (MapOrSetType = {}));
+/** @public */
 export default class CollectionType {
-  /**
-   * A simple data structure.
-   *
-   * @param {string}    argumentName   The name of the argument.
-   * @param {string}    mapOrSetType   "Map", "Set", "WeakMap", "WeakSet".
-   * @param {string}    argumentType   A JSDoc-printable type for the argument.
-   * @param {string}    description    A JSDoc-printable description.
-   * @param {string?}   argumentValidator A method to use for testing the argument.
-   */
-  constructor(argumentName, mapOrSetType, argumentType, description, argumentValidator) {
-    CollectionType.#validateString("argumentName", argumentName);
-    if (!CollectionType.#mapOrSetTypes.has(mapOrSetType))
-      throw new Error(`mapOrSetType must be "Map", "Set", "WeakMap", or "WeakSet"!`);
-    CollectionType.#validateString("argumentType", argumentType);
-    CollectionType.#validateString("description", description);
-
+    argumentName;
+    mapOrSetType;
+    argumentType;
+    description;
+    argumentValidator;
     /**
-     * @public
-     * @constant
-     * @type {string}
+     * A simple data structure.
+     *
+     * @param {string}        argumentName   The name of the argument.
+     * @param {string}        mapOrSetType   "Map", "Set", "WeakMap", "WeakSet".
+     * @param {string}        argumentType   A JSDoc-printable type for the argument.
+     * @param {string}        description    A JSDoc-printable description.
+     * @param {string | null} argumentValidator A method to use for testing the argument.
      */
-    this.argumentName = argumentName.trim();
-
-    /**
-     * @public
-     * @constant
-     * @type {string}
-     */
-    this.mapOrSetType = mapOrSetType;
-
-    /**
-     * @public
-     * @constant
-     * @type {string}
-     */
-    this.argumentType = argumentType.trim();
-
-    /**
-     * @public
-     * @constant
-     * @type {string}
-     */
-    this.description = description.trim();
-
-    /**
-     * @public
-     * @constant
-     * @type {string?}
-     */
-    this.argumentValidator = argumentValidator ? argumentValidator.trim() : null;
-
-    Object.freeze(this);
-  }
-
-  get isMapArgument() {
-    return this.mapOrSetType.endsWith("Map");
-  }
-
-  static #validateString(name, value) {
-    if ((typeof value !== "string") || !value.trim())
-      throw new Error(`${name} must be a non-empty string!`);
-  }
-
-  static #mapOrSetTypes = new Set(["Map", "Set", "WeakMap", "WeakSet"]);
+    constructor(argumentName, mapOrSetType, argumentType, description, argumentValidator) {
+        this.argumentName = argumentName.trim();
+        this.mapOrSetType = mapOrSetType;
+        this.argumentType = argumentType.trim();
+        this.description = description.trim();
+        this.argumentValidator = argumentValidator ? argumentValidator.trim() : null;
+        Object.freeze(this);
+    }
+    get isMapArgument() {
+        return this.mapOrSetType.endsWith("Map");
+    }
 }
 Object.freeze(CollectionType);
 Object.freeze(CollectionType.prototype);
+//# sourceMappingURL=CollectionType.mjs.map
