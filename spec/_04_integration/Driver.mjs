@@ -21,7 +21,10 @@ it("Driver generates a valid set of classes", async () => {
     // copy package files
     {
       const fileList = await getAllFiles(sourceDir).toArray();
+
       await Promise.all(fileList.map(async sourceFile => {
+        if ((await fs.lstat(sourceFile)).isSymbolicLink())
+          return;
         const targetFile = sourceFile.replace(sourceDir, targetDir);
         await fs.mkdir(path.dirname(targetFile), { recursive: true });
         await fs.copyFile(

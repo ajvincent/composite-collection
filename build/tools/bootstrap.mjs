@@ -173,7 +173,11 @@ async function buildCollections(sourceDir, targetDir) {
   await cleanAndRecreate(collectionsDir);
 
   const urlToClass = pathToFileURL(path.join(sourceDir, "source/CollectionConfiguration.mjs"));
-  const configFileList = await getAllFiles(configDir).toArray();
+  let configFileList = await getAllFiles(configDir).toArray();
+  configFileList = (await Promise.all(configFileList.map(async f => {
+    return (await fs.lstat(f)).isSymbolicLink() ? null : f
+  }))).filter(Boolean);
+  configFileList.sort();
 
   /**
    * @typedef {string} pathToFile

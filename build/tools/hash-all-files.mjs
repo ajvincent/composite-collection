@@ -48,7 +48,11 @@ export async function getHashFileList(root) {
     },
   }).toArray();
 
-  allFiles = allFiles.filter(Boolean);
+  allFiles = (await Promise.all(allFiles.map(async f => {
+    if (!f)
+      return false;
+    return (await fs.lstat(f)).isSymbolicLink() ? null : f
+  }))).filter(Boolean);
   allFiles.sort();
 
   return allFiles;
