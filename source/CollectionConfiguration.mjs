@@ -5,52 +5,9 @@
  * This defines a data structure for configuring a composite of Maps and Sets.
  */
 
-import { parse } from "acorn";
-
+import AcornInterface from "./generatorTools/AcornInterface.mjs";
 import ConfigurationStateGraphs from "./generatorTools/ConfigurationStateGraphs.mjs";
 import CollectionType from "./generatorTools/CollectionType.mjs";
-
-/**
- * Extract an abstract syntax tree from Acorn parsing a lambda function's source.
- *
- * @param {Function} fn The function to parse.
- * @returns {*[]} The source, parameters and body for the function.
- */
-function getNormalFunctionAST(fn) {
-  let source = fn.toString().replace(/^function\s*\(/, "function foo(");
-
-  let astNode, abort = false;
-  try {
-    const ast = parse(source, {
-      ecmaVersion: 2021,
-      onToken(t) {
-        if ((t.type.keyword !== "throw") || (t.value !== "throw"))
-          return;
-        abort = true;
-        throw new Error("Throw statements must not be in validator functions!");
-      }
-    });
-    astNode = ast.body[0];
-  }
-  catch (ex) {
-    throw abort ? ex : new Error("Acorn couldn't parse the function... why?");
-  }
-
-  if (astNode.type === "ExpressionStatement")
-    astNode = astNode.expression;
-
-  if ((astNode.type !== "ArrowFunctionExpression") &&
-      (astNode.type !== "FunctionDeclaration"))
-    throw new Error("Unsupported function type from acorn: " + astNode.type);
-
-  if (astNode.generator)
-    throw new Error("Generator functions are not allowed here!");
-
-  if (astNode.async)
-    throw new Error("Async functions are not allowed here!");
-
-  return [source, astNode.params, astNode.body];
-}
 
 /** @readonly */
 const PREDEFINED_TYPES = new Map([
@@ -146,16 +103,8 @@ export default class CollectionConfiguration {
     if (/^__.*__$/.test(identifier))
       throw new Error("This module reserves variable names starting and ending with a double underscore for itself.");
 
-    {
-      let idToken;
-      try {
-        idToken = parse("let " + identifier, {ecmaVersion: 2021}).body[0].declarations[0].id.name;
-      }
-      catch (ex) {
-        // do nothing
-      }
-      if (idToken !== identifier)
-        throw new Error(`"${identifier}" is not a valid JavaScript identifier!`);
+    if (!AcornInterface.isIdentifier(identifier)) {
+      throw new Error(`"${identifier}" is not a valid JavaScript identifier!`);
     }
   }
 
@@ -172,7 +121,7 @@ export default class CollectionConfiguration {
     if (typeof callback !== "function")
       throw new Error(`${argumentName} must be a function${mayOmit ? " or omitted" : ""}!`);
 
-    const [source, params, body] = getNormalFunctionAST(callback);
+    const [source, params, body] = AcornInterface.getNormalFunctionAST(callback);
     if ((params.length !== 1) || (params[0].name !== singleParamName))
       throw new Error(`${argumentName} must be a function with a single argument, "${singleParamName}"!`);
 
