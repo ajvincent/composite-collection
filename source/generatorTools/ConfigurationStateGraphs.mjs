@@ -1,7 +1,8 @@
-import StringStateMachine from "../collections/StringStateMachine.mjs";
+//import StringStateMachine from "../collections/StringStateMachine.mjs";
+import LocalStringStateMachine from "./LocalStringStateMachine.mjs";
 let machinesLocked = false;
 
-class ConfigurationStateMachine extends StringStateMachine {
+class ConfigurationStateMachine extends LocalStringStateMachine {
   add(...args) {
     if (machinesLocked)
       throw new Error("This state machine is not modifiable!");
