@@ -1,10 +1,3 @@
-var MapOrSetType;
-(function (MapOrSetType) {
-    MapOrSetType["Map"] = "Map";
-    MapOrSetType["Set"] = "Set";
-    MapOrSetType["WeakMap"] = "WeakMap";
-    MapOrSetType["WeakSet"] = "WeakSet";
-})(MapOrSetType || (MapOrSetType = {}));
 /** @public */
 export default class CollectionType {
     argumentName;

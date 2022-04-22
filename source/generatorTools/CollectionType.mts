@@ -1,9 +1,4 @@
-enum MapOrSetType {
-  Map = "Map",
-  Set = "Set",
-  WeakMap = "WeakMap",
-  WeakSet = "WeakSet"
-}
+type MapOrSetType = "Map" | "Set"| "WeakMap" | "WeakSet";
 
 /** @public */
 export default class CollectionType {
