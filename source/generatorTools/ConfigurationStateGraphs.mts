@@ -1,129 +1,173 @@
 //import StringStateMachine from "../collections/StringStateMachine.mjs";
 import LocalStringStateMachine from "./LocalStringStateMachine.mjs";
-let machinesLocked = false;
+import type { valueTuple } from "./LocalStringStateMachine.mjs";
 
-class ConfigurationStateMachine extends LocalStringStateMachine {
-  add(currentState: string, nextState: string) : this {
-    if (machinesLocked)
-      throw new Error("This state machine is not modifiable!");
-    return super.add(currentState, nextState);
+class ConfigurationStateMachine {
+  /** @type {LocalStringStateMachine} @constant @readonly */
+  #stringStates: LocalStringStateMachine;
+
+  /** @type {string} */
+  #currentState = "start";
+
+  constructor(__iterable__: valueTuple[]) {
+    this.#stringStates = new LocalStringStateMachine(__iterable__);
+    Object.seal(this);
   }
 
-  delete(currentState: string, nextState: string) : boolean {
-    void(currentState);
-    void(nextState);
-    throw new Error("This state machine is not modifiable!");
+  /** @type {string} */
+  get currentState() : string {
+    return this.#currentState;
   }
 
-  clear() : void {
-    throw new Error("This state machine is not modifiable!");
+  /**
+   * Do a state transition, if we allow it.
+   *
+   * @param {string} nextState The next state.
+   * @returns {boolean} True if the transition succeeded.
+   */
+  doStateTransition(nextState: string) : boolean {
+    const mayTransition = this.#stringStates.has(this.#currentState, nextState);
+    if (mayTransition)
+      this.#currentState = nextState;
+    return mayTransition;
+  }
+
+  /**
+   * Intercept errors from a method, and mark this as errored out if we see one.
+   *
+   * @param {Function} callback The function
+   * @returns {any} The return value from the callback.
+   */
+  catchErrorState(callback: () => any) : any {
+    if (this.#currentState === "errored")
+      throw new Error("This configuration is dead due to a previous error!");
+
+    try {
+      return callback();
+    }
+    catch (ex) {
+      this.#currentState = "errored";
+      throw ex;
+    }
+  }
+
+  /**
+   * Intercept errors from a method, and mark this as errored out if we see one.
+   *
+   * @param {Function} callback The function
+   * @returns {any} The return value from the callback.
+   * @async
+   */
+  async catchErrorAsync(callback: () => Promise<any>) : Promise<any> {
+    if (this.#currentState === "errored")
+      throw new Error("This configuration is dead due to a previous error!");
+
+    try {
+      return await callback();
+    }
+    catch (ex) {
+      this.#currentState = "errored";
+      throw ex;
+    }
+  }
+
+  static Map() : ConfigurationStateMachine {
+    return new ConfigurationStateMachine([
+      ["start", "startMap"],
+
+      ["startMap", "fileOverview"],
+      ["startMap", "importLines"],
+      ["startMap", "mapKeys"],
+
+      ["fileOverview", "importLines"],
+      ["fileOverview", "mapKeys"],
+
+      ["importLines", "mapKeys"],
+      ["importLines", "hasValueFilter"],
+
+      ["mapKeys", "mapKeys"],
+      ["mapKeys", "keyLink"],
+      ["mapKeys", "hasValueFilter"],
+      ["mapKeys", "locked"],
+
+      ["keyLink", "keyLink"],
+      ["keyLink", "hasValueFilter"],
+      ["keyLink", "locked"],
+
+      ["hasValueFilter", "locked"],
+
+      ["locked", "locked"],
+    ])
+  }
+
+  static Set() : ConfigurationStateMachine {
+    return new ConfigurationStateMachine([
+      ["start", "startSet"],
+
+      ["startSet", "fileOverview"],
+      ["startSet", "importLines"],
+      ["startSet", "setElements"],
+
+      ["fileOverview", "importLines"],
+      ["fileOverview", "setElements"],
+
+      ["importLines", "setElements"],
+
+      ["setElements", "setElements"],
+      ["setElements", "keyLink"],
+      ["setElements", "locked"],
+
+      ["keyLink", "keyLink"],
+      ["keyLink", "locked"],
+
+      ["locked", "locked"],
+    ])
+  }
+
+  static MapOfSets() : ConfigurationStateMachine {
+    return new ConfigurationStateMachine([
+      ["start", "startMapOfSets"],
+
+      ["startMapOfSets", "fileOverview"],
+      ["startMapOfSets", "importLines"],
+      ["startMapOfSets", "mapKeys"],
+
+      ["fileOverview", "importLines"],
+      ["fileOverview", "mapKeys"],
+
+      ["importLines", "mapKeys"],
+
+      ["mapKeys", "mapKeys"],
+      ["mapKeys", "setElements"],
+
+      ["setElements", "setElements"],
+      ["setElements", "keyLink"],
+      ["setElements", "locked"],
+
+      ["keyLink", "keyLink"],
+      ["keyLink", "locked"],
+
+      ["locked", "locked"],
+    ])
+  }
+
+  static OneToOne() : ConfigurationStateMachine {
+    return new ConfigurationStateMachine([
+      ["start", "startOneToOne"],
+
+      ["startOneToOne", "fileOverview"],
+      ["startOneToOne", "configureOneToOne"],
+
+      ["fileOverview", "configureOneToOne"],
+
+      ["configureOneToOne", "locked"],
+
+      ["locked", "locked"],
+    ])
   }
 }
 
-/**
- * @type {Map<string, LocalStringStateMachine>}
- */
-const ConfigurationStateGraphs: Map<string, LocalStringStateMachine> = new Map;
+Object.freeze(ConfigurationStateMachine.prototype);
+Object.freeze(ConfigurationStateMachine)
 
-ConfigurationStateGraphs.set(
-  "Map",
-  new ConfigurationStateMachine([
-    ["start", "startMap"],
-
-    ["startMap", "fileOverview"],
-    ["startMap", "importLines"],
-    ["startMap", "mapKeys"],
-
-    ["fileOverview", "importLines"],
-    ["fileOverview", "mapKeys"],
-
-    ["importLines", "mapKeys"],
-    ["importLines", "hasValueFilter"],
-
-    ["mapKeys", "mapKeys"],
-    ["mapKeys", "keyLink"],
-    ["mapKeys", "hasValueFilter"],
-    ["mapKeys", "locked"],
-
-    ["keyLink", "keyLink"],
-    ["keyLink", "hasValueFilter"],
-    ["keyLink", "locked"],
-
-    ["hasValueFilter", "locked"],
-
-    ["locked", "locked"],
-  ])
-);
-
-ConfigurationStateGraphs.set(
-  "Set",
-  new ConfigurationStateMachine([
-    ["start", "startSet"],
-
-    ["startSet", "fileOverview"],
-    ["startSet", "importLines"],
-    ["startSet", "setElements"],
-
-    ["fileOverview", "importLines"],
-    ["fileOverview", "setElements"],
-
-    ["importLines", "setElements"],
-
-    ["setElements", "setElements"],
-    ["setElements", "keyLink"],
-    ["setElements", "locked"],
-
-    ["keyLink", "keyLink"],
-    ["keyLink", "locked"],
-
-    ["locked", "locked"],
-  ])
-);
-
-ConfigurationStateGraphs.set(
-  "MapOfSets",
-  new ConfigurationStateMachine([
-    ["start", "startMap"],
-
-    ["startMap", "fileOverview"],
-    ["startMap", "importLines"],
-    ["startMap", "mapKeys"],
-
-    ["fileOverview", "importLines"],
-    ["fileOverview", "mapKeys"],
-
-    ["importLines", "mapKeys"],
-
-    ["mapKeys", "mapKeys"],
-    ["mapKeys", "setElements"],
-
-    ["setElements", "setElements"],
-    ["setElements", "keyLink"],
-    ["setElements", "locked"],
-
-    ["keyLink", "keyLink"],
-    ["keyLink", "locked"],
-
-    ["locked", "locked"],
-  ])
-);
-
-ConfigurationStateGraphs.set(
-  "OneToOne",
-  new ConfigurationStateMachine([
-    ["start", "startOneToOne"],
-
-    ["startOneToOne", "fileOverview"],
-    ["startOneToOne", "configureOneToOne"],
-
-    ["fileOverview", "configureOneToOne"],
-
-    ["configureOneToOne", "locked"],
-
-    ["locked", "locked"],
-  ])
-);
-
-machinesLocked = true;
-
-export default ConfigurationStateGraphs;
+export default ConfigurationStateMachine;

@@ -6,7 +6,7 @@
  */
 
 import AcornInterface from "./generatorTools/AcornInterface.mjs";
-import ConfigurationStateGraphs from "./generatorTools/ConfigurationStateGraphs.mjs";
+import ConfigurationStateMachine from "./generatorTools/ConfigurationStateGraphs.mjs";
 import CollectionType from "./generatorTools/CollectionType.mjs";
 
 /** @readonly */
@@ -26,12 +26,6 @@ const PREDEFINED_TYPES = new Map([
  * @public
  */
 export default class CollectionConfiguration {
-  /** @type {Map<string, Set<string>>} */
-  #stateTransitionsGraph;
-
-  /** @type {string} */
-  #currentState = "start";
-
   /** @type {string} @constant */
   #className;
 
@@ -65,12 +59,8 @@ export default class CollectionConfiguration {
   /** @type {number} */
   #argCount = 0;
 
-  #doStateTransition(nextState) {
-    const mayTransition = this.#stateTransitionsGraph.has(this.#currentState, nextState);
-    if (mayTransition)
-      this.#currentState = nextState;
-    return mayTransition;
-  }
+  /** @type {ConfigurationStateMachine} */
+  #stateMachine;
 
   /**
    * Validate a string argument.
@@ -134,32 +124,6 @@ export default class CollectionConfiguration {
       throw new Error(argumentName + " contains a comment that would end the JSDoc block!");
   }
 
-  #catchErrorState(callback) {
-    if (this.#currentState === "errored")
-      throw new Error("This configuration is dead due to a previous error!");
-
-    try {
-      return callback();
-    }
-    catch (ex) {
-      this.#currentState = "errored";
-      throw ex;
-    }
-  }
-
-  async #catchErrorAsync(callback) {
-    if (this.#currentState === "errored")
-      throw new Error("This configuration is dead due to a previous error!");
-
-    try {
-      return await callback();
-    }
-    catch (ex) {
-      this.#currentState = "errored";
-      throw ex;
-    }
-  }
-
   /**
    * @param {identifier} className The name of the class to define.
    * @param {string}     outerType One of "Map", "WeakMap", "Set", "WeakSet".
@@ -200,20 +164,20 @@ export default class CollectionConfiguration {
     }
 
     if (this.#collectionTemplate.includes("MapOf")) {
-      this.#stateTransitionsGraph = ConfigurationStateGraphs.get("MapOfSets");
-      this.#doStateTransition("startMap");
+      this.#stateMachine = ConfigurationStateMachine.MapOfSets();
+      this.#stateMachine.doStateTransition("startMapOfSets");
     }
     else if (outerType.endsWith("Map")) {
-      this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Map");
-      this.#doStateTransition("startMap");
+      this.#stateMachine = ConfigurationStateMachine.Map();
+      this.#stateMachine.doStateTransition("startMap");
     }
     else if (outerType.endsWith("Set")) {
-      this.#stateTransitionsGraph = ConfigurationStateGraphs.get("Set");
-      this.#doStateTransition("startSet");
+      this.#stateMachine = ConfigurationStateMachine.Set();
+      this.#stateMachine.doStateTransition("startSet");
     }
     else if (outerType === "OneToOne") {
-      this.#stateTransitionsGraph = ConfigurationStateGraphs.get("OneToOne");
-      this.#doStateTransition("startOneToOne");
+      this.#stateMachine = ConfigurationStateMachine.OneToOne();
+      this.#stateMachine.doStateTransition("startOneToOne");
     }
     else {
       throw new Error("Internal error, not reachable");
@@ -224,8 +188,9 @@ export default class CollectionConfiguration {
     Reflect.preventExtensions(this);
   }
 
+  /** @type {string} @package */
   get currentState() {
-    return this.#currentState;
+    return this.#stateMachine.currentState;
   }
 
   /**
@@ -235,8 +200,8 @@ export default class CollectionConfiguration {
    * @public
    */
   setFileOverview(fileOverview) {
-    return this.#catchErrorState(() => {
-      if (!this.#doStateTransition("fileOverview")) {
+    return this.#stateMachine.catchErrorState(() => {
+      if (!this.#stateMachine.doStateTransition("fileOverview")) {
         this.#throwIfLocked();
         throw new Error("You may only define the file overview at the start of the configuration!");
       }
@@ -252,7 +217,7 @@ export default class CollectionConfiguration {
    * @package
    */
   __cloneData__() {
-    return this.#catchErrorState(() => {
+    return this.#stateMachine.catchErrorState(() => {
       return {
         className: this.#className,
         collectionTemplate: this.#collectionTemplate,
@@ -282,8 +247,8 @@ export default class CollectionConfiguration {
    * @returns {void}
    */
   importLines(lines) {
-    return this.#catchErrorState(() => {
-      if (!this.#doStateTransition("importLines")) {
+    return this.#stateMachine.catchErrorState(() => {
+      if (!this.#stateMachine.doStateTransition("importLines")) {
         this.#throwIfLocked();
         throw new Error("You may only define import lines at the start of the configuration or immediately after the file overview!");
       }
@@ -308,8 +273,8 @@ export default class CollectionConfiguration {
    * @returns {void}
    */
   addMapKey(argumentName, description, holdWeak, options = {}) {
-    return this.#catchErrorState(() => {
-      if (!this.#doStateTransition("mapKeys")) {
+    return this.#stateMachine.catchErrorState(() => {
+      if (!this.#stateMachine.doStateTransition("mapKeys")) {
         this.#throwIfLocked();
         throw new Error("You must define map keys before calling .addSetElement(), .setValueType() or .lock()!");
       }
@@ -360,8 +325,8 @@ export default class CollectionConfiguration {
    * @returns {void}
    */
   addSetKey(argumentName, description, holdWeak, options = {}) {
-    return this.#catchErrorState(() => {
-      if (!this.#doStateTransition("setElements")) {
+    return this.#stateMachine.catchErrorState(() => {
+      if (!this.#stateMachine.doStateTransition("setElements")) {
         this.#throwIfLocked();
         throw new Error("You must define set keys before calling .setValueType() or .lock()!");
       }
@@ -435,11 +400,11 @@ export default class CollectionConfiguration {
    * @returns {void}
    */
   setValueType(type, description, validator = null) {
-    return this.#catchErrorState(() => {
-      if (!this.#doStateTransition("hasValueFilter")) {
+    return this.#stateMachine.catchErrorState(() => {
+      if (!this.#stateMachine.doStateTransition("hasValueFilter")) {
         this.#throwIfLocked();
 
-        if (this.#currentState === "hasValueFilter")
+        if (this.#stateMachine.currentState === "hasValueFilter")
           throw new Error("You can only set the value type once!");
         throw new Error("You can only call .setValueType() directly after calling .addMapKey()!");
       }
@@ -489,8 +454,8 @@ export default class CollectionConfiguration {
    * @returns {Promise<void>}
    */
   configureOneToOne(base, key, options = {}) {
-    return this.#catchErrorAsync(async () => {
-      if (!this.#doStateTransition("configureOneToOne")) {
+    return this.#stateMachine.catchErrorAsync(async () => {
+      if (!this.#stateMachine.doStateTransition("configureOneToOne")) {
         throw new Error("configureOneToOne can only be used for OneToOne collections, and exactly once!");
       }
 
@@ -576,8 +541,8 @@ export default class CollectionConfiguration {
   }
 
   lock() {
-    return this.#catchErrorState(() => {
-      if (!this.#doStateTransition("locked"))
+    return this.#stateMachine.catchErrorState(() => {
+      if (!this.#stateMachine.doStateTransition("locked"))
         throw new Error("You must define a map key or set element first!");
 
       if (this.#collectionTemplate === "OneToOne/Map")
@@ -604,7 +569,7 @@ export default class CollectionConfiguration {
   }
 
   #throwIfLocked() {
-    if (this.#currentState === "locked") {
+    if (this.#stateMachine.currentState === "locked") {
       throw new Error("You have already locked this configuration!");
     }
   }

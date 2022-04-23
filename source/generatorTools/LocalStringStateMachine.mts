@@ -3,7 +3,7 @@
 
 import KeyHasher from "../exports/keys/Hasher.mjs";
 
-type valueTuple = [string, string];
+export type valueTuple = [string, string];
 
 type ForEachCallbackType = (currentState: string, nextState: string, __this__: LocalStringStateMachine) => void;
 
