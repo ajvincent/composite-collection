@@ -90,7 +90,7 @@ describe("CollectionConfiguration", () => {
       config.setFileOverview(overview);
       expect(() => {
         config.setFileOverview("foo");
-      }).toThrowError("fileOverview has already been set!");
+      }).toThrowError("You may only define the file overview at the start of the configuration!");
     });
 
     it("throws for setting to a non-string value", () => {

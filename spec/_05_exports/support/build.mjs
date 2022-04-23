@@ -7,7 +7,7 @@ import { generateCollections } from "#build/tools/generateCollectionTools.mjs";
  * Generate additional support files for the collections in ../generated.
  */
 export default async function buildAdditionalFiles() {
-const exportDir = path.join(process.cwd(), "source/exports");
+  const exportDir = path.join(process.cwd(), "source/exports");
   const entries = (await fs.readdir(exportDir, { encoding: "utf-8", withFileTypes: true}));
   const files = entries.reduce((fileList, entry) => {
     if (entry.isFile() && (path.extname(entry.name) === ".mjs"))

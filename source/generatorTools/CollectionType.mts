@@ -1,4 +1,4 @@
-type MapOrSetType = "Map" | "Set"| "WeakMap" | "WeakSet";
+export type MapOrSetType = "Map" | "Set"| "WeakMap" | "WeakSet";
 
 /** @public */
 export default class CollectionType {
