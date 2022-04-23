@@ -10,7 +10,7 @@ describe("CollectionConfiguration", () => {
       "constructor",
       "currentState",
       "setFileOverview",
-      "cloneData",
+      "__cloneData__",
       "importLines",
       "addMapKey",
       "addSetKey",
@@ -83,7 +83,7 @@ describe("CollectionConfiguration", () => {
         config.setFileOverview(overview);
       }).not.toThrow();
 
-      expect(config.cloneData().fileOverview).toBe(overview);
+      expect(config.__cloneData__().fileOverview).toBe(overview);
     });
 
     it("throws for setting twice", () => {
@@ -99,6 +99,34 @@ describe("CollectionConfiguration", () => {
       }).toThrowError(`fileOverview must be a non-empty string!`);
     });
   });
+
+  describe(".importLines()", () => {
+    let config;
+    const lines = `import FooMap from "./FooMap.mjs";`.trim();
+
+    beforeEach(() => config = new CollectionConfiguration("FooMap", "Map"));
+    it("can be set once to a string", () => {
+      expect(() => {
+        config.importLines(lines);
+      }).not.toThrow();
+
+      expect(config.__cloneData__().importLines).toBe(lines);
+    });
+
+    it("throws for setting twice", () => {
+      config.importLines(lines);
+      expect(() => {
+        config.importLines("foo");
+      }).toThrowError("You may only define import lines at the start of the configuration or immediately after the file overview!");
+    });
+
+    it("throws for setting to a non-string value", () => {
+      expect(() => {
+        config.importLines(Symbol("foo"));
+      }).toThrowError(`lines must be a non-empty string!`);
+    });
+  });
+
 
   describe(".addMapKey()", () => {
     let config, options, type1Args;
@@ -122,7 +150,7 @@ describe("CollectionConfiguration", () => {
     it("defines a collection type when called without an argument filter", () => {
       config.addMapKey(...type1Args);
 
-      const typeData = config.cloneData();
+      const typeData = config.__cloneData__();
       expect(typeData.parameterToTypeMap.size).toBe(1);
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
@@ -148,7 +176,7 @@ describe("CollectionConfiguration", () => {
       options.argumentValidator = argumentValidator;
       config.addMapKey(...type1Args);
 
-      const typeData = config.cloneData();
+      const typeData = config.__cloneData__();
       expect(typeData.parameterToTypeMap.size).toBe(1);
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
@@ -174,7 +202,7 @@ describe("CollectionConfiguration", () => {
       delete options.argumentType;
       config.addMapKey(...type1Args);
 
-      const typeData = config.cloneData();
+      const typeData = config.__cloneData__();
       expect(typeData.parameterToTypeMap.size).toBe(1);
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
@@ -202,7 +230,7 @@ describe("CollectionConfiguration", () => {
       args.splice(2, 1, false);
       config.addMapKey(...args);
 
-      const typeData = config.cloneData();
+      const typeData = config.__cloneData__();
       expect(typeData.parameterToTypeMap.size).toBe(1);
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
@@ -240,7 +268,7 @@ describe("CollectionConfiguration", () => {
         config.addMapKey(...args);
       }
 
-      const typeData = config.cloneData();
+      const typeData = config.__cloneData__();
       expect(typeData.parameterToTypeMap.size).toBe(argCount);
 
       Array.from(typeData.parameterToTypeMap.values()).forEach((t, index) => {
@@ -438,7 +466,7 @@ describe("CollectionConfiguration", () => {
     it("defines a collection type when called without an argument filter", () => {
       config.addSetKey(...type1Args);
 
-      const typeData = config.cloneData();
+      const typeData = config.__cloneData__();
       expect(typeData.parameterToTypeMap.size).toBe(1);
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
@@ -464,7 +492,7 @@ describe("CollectionConfiguration", () => {
       options.argumentValidator = argumentValidator;
       config.addSetKey(...type1Args);
 
-      const typeData = config.cloneData();
+      const typeData = config.__cloneData__();
       expect(typeData.parameterToTypeMap.size).toBe(1);
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
@@ -497,7 +525,7 @@ describe("CollectionConfiguration", () => {
 
       config.addSetKey(...type1Args);
 
-      const typeData = config.cloneData();
+      const typeData = config.__cloneData__();
       expect(typeData.parameterToTypeMap.size).toBe(1);
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
@@ -526,7 +554,7 @@ describe("CollectionConfiguration", () => {
 
       config.addSetKey(...args);
 
-      const typeData = config.cloneData();
+      const typeData = config.__cloneData__();
       expect(typeData.parameterToTypeMap.size).toBe(1);
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
@@ -564,7 +592,7 @@ describe("CollectionConfiguration", () => {
         config.addSetKey(...args);
       }
 
-      const typeData = config.cloneData();
+      const typeData = config.__cloneData__();
       expect(typeData.parameterToTypeMap.size).toBe(argCount);
 
       Array.from(typeData.parameterToTypeMap.values()).forEach((t, index) => {
@@ -735,7 +763,7 @@ describe("CollectionConfiguration", () => {
       expect(() => config.setValueType("Car", "The car.", valueFilter)).not.toThrow();
       expect(wasCalled).toBe(false);
 
-      const data = config.cloneData();
+      const data = config.__cloneData__();
       expect(data.valueType).not.toBe(null);
       expect(data.valueType.mapOrSetType).toBe("Map");
       expect(data.valueType.argumentName).toBe("value");
@@ -901,7 +929,7 @@ describe("CollectionConfiguration", () => {
     expect(() => config.addMapKey("#x", true)).toThrow();
 
     expect(() => {
-      config.cloneData()
+      config.__cloneData__()
     }).toThrowError("This configuration is dead due to a previous error!");
   });
 });

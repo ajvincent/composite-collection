@@ -164,7 +164,7 @@ describe("Combinations of auto-generated configurations:", () => {
       catch (ex) {
         void(ex);
         /*
-        let diagnostic = config.cloneData().collectionTemplate;
+        let diagnostic = config.__cloneData__().collectionTemplate;
         diagnostic += ": ";
         diagnostic += key8Weak ? "W" : "S";
         diagnostic += key4Weak ? "W" : "S";

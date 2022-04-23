@@ -13,7 +13,7 @@ describe("CodeGenerator(OneToOneMap) rejects base configurations for ", () => {
       const baseConfig = useModule ? (await import(`#spec/_01_collection-generator/configurations/${className}.mjs`)).default : className;
 
       const config = new CollectionConfiguration("IllegalOneToOneMap", "OneToOne");
-      const key = getKey(baseConfig.cloneData ? baseConfig.cloneData() : "");
+      const key = getKey(baseConfig.__cloneData__ ? baseConfig.__cloneData__() : "");
 
       await expectAsync(
         config.configureOneToOne(baseConfig || className, key)

@@ -236,10 +236,11 @@ export default class CollectionConfiguration {
    */
   setFileOverview(fileOverview) {
     return this.#catchErrorState(() => {
-      this.#doStateTransition("fileOverview");
+      if (!this.#doStateTransition("fileOverview")) {
+        this.#throwIfLocked();
+        throw new Error("You may only define the file overview at the start of the configuration!");
+      }
       this.#stringArg("fileOverview", fileOverview);
-      if (this.#fileoverview)
-        throw new Error("fileOverview has already been set!");
       this.#fileoverview = fileOverview;
     });
   }
@@ -250,7 +251,7 @@ export default class CollectionConfiguration {
    * @returns {object} The configuration.
    * @package
    */
-  cloneData() {
+  __cloneData__() {
     return this.#catchErrorState(() => {
       return {
         className: this.#className,
@@ -284,8 +285,9 @@ export default class CollectionConfiguration {
     return this.#catchErrorState(() => {
       if (!this.#doStateTransition("importLines")) {
         this.#throwIfLocked();
-        throw new Error("You may only define import lines at the start of the configuration!");
+        throw new Error("You may only define import lines at the start of the configuration or immediately after the file overview!");
       }
+      this.#stringArg("lines", lines);
       this.#importLines = lines.toString().trim();
     });
   }
@@ -503,7 +505,7 @@ export default class CollectionConfiguration {
           throw new Error("The base configuration must be locked!");
         }
 
-        configData = base.cloneData();
+        configData = base.__cloneData__();
         if ((configData.collectionTemplate === "Weak/Map") ||
             ((configData.collectionTemplate === "Solo/Map") && (configData.weakMapKeys.length > 0))) {
           this.#oneToOneBase = base;
@@ -545,7 +547,7 @@ export default class CollectionConfiguration {
   static #weakMapMockConfiguration = Object.freeze({
     lock: () => null,
 
-    cloneData: () => {
+    __cloneData__: () => {
       return {
         className: "WeakMap",
         importLines: "",
@@ -566,7 +568,7 @@ export default class CollectionConfiguration {
   })
 
   static #oneToOneLockedPrivateKey(baseConfiguration, privateKeyName) {
-    const weakKeys = baseConfiguration.cloneData().weakMapKeys;
+    const weakKeys = baseConfiguration.__cloneData__().weakMapKeys;
     if (weakKeys.includes(privateKeyName))
       return;
     const names = weakKeys.map(name => `"${name}"`).join(", ");
