@@ -31,11 +31,11 @@ ConfigurationStateGraphs.set(
     ["start", "startMap"],
 
     ["startMap", "fileOverview"],
-    ["startMap", "mapKeys"],
     ["startMap", "importLines"],
+    ["startMap", "mapKeys"],
 
-    ["fileOverview", "mapKeys"],
     ["fileOverview", "importLines"],
+    ["fileOverview", "mapKeys"],
 
     ["importLines", "mapKeys"],
     ["importLines", "hasValueFilter"],
@@ -61,11 +61,11 @@ ConfigurationStateGraphs.set(
     ["start", "startSet"],
 
     ["startSet", "fileOverview"],
-    ["startSet", "setElements"],
     ["startSet", "importLines"],
+    ["startSet", "setElements"],
 
-    ["fileOverview", "setElements"],
     ["fileOverview", "importLines"],
+    ["fileOverview", "setElements"],
 
     ["importLines", "setElements"],
 
@@ -86,11 +86,11 @@ ConfigurationStateGraphs.set(
     ["start", "startMap"],
 
     ["startMap", "fileOverview"],
-    ["startMap", "mapKeys"],
     ["startMap", "importLines"],
+    ["startMap", "mapKeys"],
 
-    ["fileOverview", "mapKeys"],
     ["fileOverview", "importLines"],
+    ["fileOverview", "mapKeys"],
 
     ["importLines", "mapKeys"],
 
