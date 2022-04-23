@@ -6,8 +6,9 @@
  */
 
 import AcornInterface from "./generatorTools/AcornInterface.mjs";
-import ConfigurationStateMachine from "./generatorTools/ConfigurationStateMachine.mjs";
 import CollectionType from "./generatorTools/CollectionType.mjs";
+import ConfigurationData from "./generatorTools/ConfigurationData.mjs";
+import ConfigurationStateMachine from "./generatorTools/ConfigurationStateMachine.mjs";
 
 /** @readonly */
 const PREDEFINED_TYPES = new Map([
@@ -26,11 +27,8 @@ const PREDEFINED_TYPES = new Map([
  * @public
  */
 export default class CollectionConfiguration {
-  /** @type {string} @constant */
-  #className;
-
-  /** @type {string} @readonly */
-  #collectionTemplate;
+  /** @type {ConfigurationData} @constant */
+  #configurationData;
 
   /** @type {string} */
   #importLines = "";
@@ -138,8 +136,9 @@ export default class CollectionConfiguration {
     if (PREDEFINED_TYPES.has(className))
       throw new Error(`You can't override the ${className} primordial!`);
 
-    this.#collectionTemplate = PREDEFINED_TYPES.get(outerType);
-    if (!this.#collectionTemplate)
+
+    let template = PREDEFINED_TYPES.get(outerType);
+    if (!template)
       throw new Error(`outerType must be one of ${Array.from(PREDEFINED_TYPES.keys()).join(", ")}!`);
 
     switch (innerType) {
@@ -149,7 +148,7 @@ export default class CollectionConfiguration {
       case "Set":
         if (!outerType.endsWith("Map"))
           throw new Error("outerType must be a Map or WeakMap when an innerType is not null!");
-        this.#collectionTemplate += "OfStrongSets";
+        template += "OfStrongSets";
         break;
 
         /*
@@ -163,7 +162,7 @@ export default class CollectionConfiguration {
         throw new Error("innerType must be a Set, or null!");
     }
 
-    if (this.#collectionTemplate.includes("MapOf")) {
+    if (template.includes("MapOf")) {
       this.#stateMachine = ConfigurationStateMachine.MapOfSets();
       this.#stateMachine.doStateTransition("startMapOfSets");
     }
@@ -183,7 +182,8 @@ export default class CollectionConfiguration {
       throw new Error("Internal error, not reachable");
     }
 
-    this.#className = className;
+    this.#configurationData = new ConfigurationData(className, template);
+    this.#configurationData.setConfiguration(this);
 
     Reflect.preventExtensions(this);
   }
@@ -218,9 +218,7 @@ export default class CollectionConfiguration {
    */
   __cloneData__() {
     return this.#stateMachine.catchErrorState(() => {
-      return {
-        className: this.#className,
-        collectionTemplate: this.#collectionTemplate,
+      return this.#configurationData.cloneData({
         importLines: this.#importLines,
         parameterToTypeMap: new Map(this.#parameterToTypeMap),
         weakMapKeys: this.#weakMapKeys.slice(),
@@ -229,14 +227,12 @@ export default class CollectionConfiguration {
         strongSetElements: this.#strongSetElements.slice(),
         valueType: this.#valueCollectionType,
         fileOverview: this.#fileoverview,
-        requiresKeyHasher: this.#collectionTemplate.includes("Strong"),
-        requiresWeakKey:   this.#collectionTemplate.includes("Weak"),
 
         /* OneToOne-specific fields */
         oneToOneKeyName: this.#oneToOneKeyName,
         oneToOneBase: this.#oneToOneBase,
         oneToOneOptions: this.#oneToOneOptions,
-      }
+      });
     });
   }
 
@@ -285,7 +281,7 @@ export default class CollectionConfiguration {
       } = options;
 
       this.#validateKey(argumentName, holdWeak, argumentType, description, argumentValidator);
-      if (holdWeak && !this.#collectionTemplate.startsWith("Weak/Map"))
+      if (holdWeak && !this.#configurationData.collectionTemplate.startsWith("Weak/Map"))
         throw new Error("Strong maps cannot have weak map keys!");
 
       const validatorSource = (argumentValidator !== null) ?
@@ -337,7 +333,7 @@ export default class CollectionConfiguration {
       } = options;
 
       this.#validateKey(argumentName, holdWeak, argumentType, description, argumentValidator);
-      if (holdWeak && !/Weak\/?Set/.test(this.#collectionTemplate))
+      if (holdWeak && !/Weak\/?Set/.test(this.#configurationData.collectionTemplate))
         throw new Error("Strong sets cannot have weak set keys!");
 
       const validatorSource = (argumentValidator !== null) ?
@@ -384,7 +380,7 @@ export default class CollectionConfiguration {
     if (this.#parameterToTypeMap.has(argumentName))
       throw new Error(`Argument name "${argumentName}" has already been defined!`);
 
-    if ((argumentName === "value") && !this.#collectionTemplate.includes("Set"))
+    if ((argumentName === "value") && !this.#configurationData.collectionTemplate.includes("Set"))
       throw new Error(`The argument name "value" is reserved!`);
 
     if (typeof holdWeak !== "boolean")
@@ -419,8 +415,8 @@ export default class CollectionConfiguration {
         "value", "Map", type, description, validatorSource
       );
 
-      if (this.#collectionTemplate.includes("Set")) {
-        const holdWeak = /Weak\/?Set/.test(this.#collectionTemplate);
+      if (this.#configurationData.collectionTemplate.includes("Set")) {
+        const holdWeak = /Weak\/?Set/.test(this.#configurationData.collectionTemplate);
         if (holdWeak)
           this.#weakMapKeys.push("value");
         else
@@ -545,13 +541,13 @@ export default class CollectionConfiguration {
       if (!this.#stateMachine.doStateTransition("locked"))
         throw new Error("You must define a map key or set element first!");
 
-      if (this.#collectionTemplate === "OneToOne/Map")
+      if (this.#configurationData.collectionTemplate === "OneToOne/Map")
         return;
 
-      if (this.#collectionTemplate.startsWith("Weak/Map") && !this.#weakMapKeys.length)
+      if (this.#configurationData.collectionTemplate.startsWith("Weak/Map") && !this.#weakMapKeys.length)
         throw new Error("A weak map keyset must have at least one weak key!");
 
-      if (/Weak\/?Set/.test(this.#collectionTemplate) && !this.#weakSetElements.length)
+      if (/Weak\/?Set/.test(this.#configurationData.collectionTemplate) && !this.#weakSetElements.length)
         throw new Error("A weak set keyset must have at least one weak key!");
 
       let argCount = this.#argCount;
@@ -563,7 +559,7 @@ export default class CollectionConfiguration {
 
       if (argCount === 1) {
         // Use a solo collection template.
-        this.#collectionTemplate = this.#collectionTemplate.replace(/^\w+/g, "Solo");
+        this.#configurationData.collectionTemplate = this.#configurationData.collectionTemplate.replace(/^\w+/g, "Solo");
       }
     });
   }

@@ -1,5 +1,4 @@
 import ConfigurationStateMachine from "#source/generatorTools/ConfigurationStateMachine.mjs";
-void ConfigurationStateMachine;
 
 describe("ConfigurationStateMachine", () => {
   it("class is frozen", () => {
