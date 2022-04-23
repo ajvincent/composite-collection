@@ -1,7 +1,7 @@
 type CollectionConfiguration = object;
 
 /**
- * Configuration data class for internal use.  This class should never throw exceptions.
+ * Configuration data class for internal use.  This class should never throw exceptions intentionally.
  */
 export default class ConfigurationData {
   static #configToDataMap: WeakMap<CollectionConfiguration, ConfigurationData> = new WeakMap;
@@ -21,16 +21,26 @@ export default class ConfigurationData {
   /** @type {string} @constant */
   collectionTemplate: string;
 
+  /** @type {string | null} */
+  fileOverview: string | null = null;
+
   constructor(className: string, collectionTemplate: string) {
     this.className = className;
-    Reflect.defineProperty(this, "className", {
-      writable: false,
-      enumerable: true,
-      configurable: false,
-    });
-
     this.collectionTemplate = collectionTemplate;
+    this.#markReadonly("className");
   }
+
+  #markReadonly(...keys: string[]) : void {
+    keys.forEach(key => {
+      Reflect.defineProperty(this, key, ConfigurationData.#readonlyDesc);
+    })
+  }
+
+  static #readonlyDesc: Readonly<PropertyDescriptor> = {
+    writable: false,
+    enumerable: true,
+    configurable: false
+  };
 
   get requiresKeyHasher() : boolean {
     return this.collectionTemplate.includes("Strong");
@@ -38,6 +48,11 @@ export default class ConfigurationData {
 
   get requiresWeakKey() : boolean {
     return this.collectionTemplate.includes("Weak");
+  }
+
+  setFileOverview(overview: string) : void {
+    this.fileOverview = overview;
+    this.#markReadonly("fileOverview");
   }
 
   cloneData(properties: object = {}) : ConfigurationData {
@@ -53,7 +68,8 @@ export default class ConfigurationData {
    * @param {ConfigurationData} target The target.
    */
   #assignToClone(target: ConfigurationData) : void {
-    void(target);
+    if (this.fileOverview)
+      target.setFileOverview(this.fileOverview);
   }
 
   /**

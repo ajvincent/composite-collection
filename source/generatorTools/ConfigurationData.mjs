@@ -1,5 +1,5 @@
 /**
- * Configuration data class for internal use.  This class should never throw exceptions.
+ * Configuration data class for internal use.  This class should never throw exceptions intentionally.
  */
 export default class ConfigurationData {
     static #configToDataMap = new WeakMap;
@@ -11,20 +11,32 @@ export default class ConfigurationData {
     className = "";
     /** @type {string} @constant */
     collectionTemplate;
+    /** @type {string | null} */
+    fileOverview = null;
     constructor(className, collectionTemplate) {
         this.className = className;
-        Reflect.defineProperty(this, "className", {
-            writable: false,
-            enumerable: true,
-            configurable: false,
-        });
         this.collectionTemplate = collectionTemplate;
+        this.#markReadonly("className");
     }
+    #markReadonly(...keys) {
+        keys.forEach(key => {
+            Reflect.defineProperty(this, key, ConfigurationData.#readonlyDesc);
+        });
+    }
+    static #readonlyDesc = {
+        writable: false,
+        enumerable: true,
+        configurable: false
+    };
     get requiresKeyHasher() {
         return this.collectionTemplate.includes("Strong");
     }
     get requiresWeakKey() {
         return this.collectionTemplate.includes("Weak");
+    }
+    setFileOverview(overview) {
+        this.fileOverview = overview;
+        this.#markReadonly("fileOverview");
     }
     cloneData(properties = {}) {
         const result = new ConfigurationData(this.className, this.collectionTemplate);
@@ -38,7 +50,8 @@ export default class ConfigurationData {
      * @param {ConfigurationData} target The target.
      */
     #assignToClone(target) {
-        void (target);
+        if (this.fileOverview)
+            target.setFileOverview(this.fileOverview);
     }
     /**
      * Temporary method to define additional properties.

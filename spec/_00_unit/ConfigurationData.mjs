@@ -17,6 +17,7 @@ describe("ConfigurationData", () => {
       "constructor",
       "requiresKeyHasher",
       "requiresWeakKey",
+      "setFileOverview",
       "cloneData",
       "setConfiguration",
     ]);
@@ -33,12 +34,13 @@ describe("ConfigurationData", () => {
     ]);
   });
 
-  it("instances initialized via constructor have className, collectionTemplate", () => {
+  it("initialized via constructor have className, collectionTemplate", () => {
     const data = new ConfigurationData("Foo", "Bar");
     expect(Object.isSealed(data)).toBe(false);
     expect(Reflect.ownKeys(data)).toEqual([
       "className",
       "collectionTemplate",
+      "fileOverview",
     ]);
 
     expect(data.className).toBe("Foo");
@@ -46,6 +48,17 @@ describe("ConfigurationData", () => {
 
     expect(data.collectionTemplate).toBe("Bar");
     expect(isWritable(data, "collectionTemplate")).toBe(true);
+
+    expect(data.fileOverview).toBe(null);
+    expect(isWritable(data, "fileOverview")).toBe(true);
+  });
+
+  it(".fileOverview is settable via .setFileOverview() once", () => {
+    const data = new ConfigurationData("Foo", "Bar");
+    data.setFileOverview("my overview");
+
+    expect(data.fileOverview).toBe("my overview");
+    expect(isWritable(data, "fileOverview")).toBe(false);
   });
 
   describe(".cloneData() succeeds with", () => {
@@ -55,6 +68,17 @@ describe("ConfigurationData", () => {
       const clone = data.cloneData();
       expect(clone.className).toBe(data.className);
       expect(clone.collectionTemplate).toBe(data.collectionTemplate);
+    });
+
+    it("the file overview", () => {
+      const data = new ConfigurationData("Foo", "Bar");
+      data.setFileOverview("my overview");
+
+      const clone = data.cloneData();
+      expect(clone.className).toBe(data.className);
+      expect(clone.collectionTemplate).toBe(data.collectionTemplate);
+      expect(clone.fileOverview).toBe("my overview");
+      expect(isWritable(clone, "fileOverview")).toBe(false);
     });
   });
 });

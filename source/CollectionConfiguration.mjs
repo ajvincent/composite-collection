@@ -51,9 +51,6 @@ export default class CollectionConfiguration {
   /** @type {CollectionType} */
   #valueCollectionType = null;
 
-  /** @type {string?} */
-  #fileoverview = null;
-
   /** @type {number} */
   #argCount = 0;
 
@@ -206,7 +203,7 @@ export default class CollectionConfiguration {
         throw new Error("You may only define the file overview at the start of the configuration!");
       }
       this.#stringArg("fileOverview", fileOverview);
-      this.#fileoverview = fileOverview;
+      this.#configurationData.setFileOverview(fileOverview);
     });
   }
 
@@ -226,7 +223,6 @@ export default class CollectionConfiguration {
         weakSetElements: this.#weakSetElements.slice(),
         strongSetElements: this.#strongSetElements.slice(),
         valueType: this.#valueCollectionType,
-        fileOverview: this.#fileoverview,
 
         /* OneToOne-specific fields */
         oneToOneKeyName: this.#oneToOneKeyName,
