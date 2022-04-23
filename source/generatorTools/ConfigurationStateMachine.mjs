@@ -7,7 +7,7 @@ class ConfigurationStateMachine {
     #currentState = "start";
     constructor(__iterable__) {
         this.#stringStates = new LocalStringStateMachine(__iterable__);
-        Object.seal(this);
+        Object.freeze(this);
     }
     /** @type {string} */
     get currentState() {

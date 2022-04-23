@@ -11,7 +11,7 @@ class ConfigurationStateMachine {
 
   constructor(__iterable__: valueTuple[]) {
     this.#stringStates = new LocalStringStateMachine(__iterable__);
-    Object.seal(this);
+    Object.freeze(this);
   }
 
   /** @type {string} */
