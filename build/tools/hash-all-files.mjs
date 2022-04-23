@@ -6,7 +6,7 @@ import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
    https://en.wikipedia.org/wiki/Bootstrapping_(compilers)
 
    There are certain points within composite-collection that can benefit
-   from code it generates.  The state machines in ConfigurationStateGraphs.mjs
+   from code it generates.  The state machines in ConfigurationStateMachine.mjs
    are one example.  Another would be static analysis to trace our weak keys
    and collections to make sure we're not accidentally holding a weak reference
    strongly.

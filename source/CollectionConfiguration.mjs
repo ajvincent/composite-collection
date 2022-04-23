@@ -6,7 +6,7 @@
  */
 
 import AcornInterface from "./generatorTools/AcornInterface.mjs";
-import ConfigurationStateMachine from "./generatorTools/ConfigurationStateGraphs.mjs";
+import ConfigurationStateMachine from "./generatorTools/ConfigurationStateMachine.mjs";
 import CollectionType from "./generatorTools/CollectionType.mjs";
 
 /** @readonly */

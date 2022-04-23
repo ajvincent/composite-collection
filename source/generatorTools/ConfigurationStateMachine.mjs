@@ -131,4 +131,4 @@ class ConfigurationStateMachine {
 Object.freeze(ConfigurationStateMachine.prototype);
 Object.freeze(ConfigurationStateMachine);
 export default ConfigurationStateMachine;
-//# sourceMappingURL=ConfigurationStateGraphs.mjs.map
+//# sourceMappingURL=ConfigurationStateMachine.mjs.map

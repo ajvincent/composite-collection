@@ -1,4 +1,4 @@
-// CollectionConfiguration => ConfigurationStateGraphs => StringStateMachine => CollectionConfiguration
+// CollectionConfiguration => ConfigurationStateMachine => StringStateMachine => CollectionConfiguration
 // So I'm creating a local copy while I figure out the rest.
 import KeyHasher from "../exports/keys/Hasher.mjs";
 /**
