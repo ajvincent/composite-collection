@@ -30,9 +30,6 @@ export default class CollectionConfiguration {
   /** @type {ConfigurationData} @constant */
   #configurationData;
 
-  /** @type {number} */
-  #argCount = 0;
-
   /** @type {ConfigurationStateMachine} */
   #stateMachine;
 
@@ -268,7 +265,6 @@ export default class CollectionConfiguration {
         validatorSource
       );
       this.#configurationData.defineArgument(collectionType);
-      this.#argCount++;
     });
   }
 
@@ -314,8 +310,6 @@ export default class CollectionConfiguration {
         validatorSource
       );
       this.#configurationData.defineArgument(collectionType);
-
-      this.#argCount++;
     });
   }
 
@@ -498,7 +492,7 @@ export default class CollectionConfiguration {
       if (/Weak\/?Set/.test(this.#configurationData.collectionTemplate) && !this.#configurationData.weakSetElements.length)
         throw new Error("A weak set keyset must have at least one weak key!");
 
-      let argCount = this.#argCount;
+      let argCount = this.#configurationData.parameterToTypeMap.size;
       if (argCount === 0) {
         if (!this.#configurationData.valueType)
           throw new Error("State machine error:  we should have some steps now!");
