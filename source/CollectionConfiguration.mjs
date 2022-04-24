@@ -30,9 +30,6 @@ export default class CollectionConfiguration {
   /** @type {ConfigurationData} @constant */
   #configurationData;
 
-  /** @type {CollectionType} */
-  #valueCollectionType = null;
-
   /** @type {number} */
   #argCount = 0;
 
@@ -198,8 +195,6 @@ export default class CollectionConfiguration {
   __cloneData__() {
     return this.#stateMachine.catchErrorState(() => {
       return this.#configurationData.cloneData({
-        valueType: this.#valueCollectionType,
-
         /* OneToOne-specific fields */
         oneToOneKeyName: this.#oneToOneKeyName,
         oneToOneBase: this.#oneToOneBase,
@@ -372,7 +367,7 @@ export default class CollectionConfiguration {
         this.#validatorArg("validator", validator, "value", true) :
         null;
 
-      this.#valueCollectionType = new CollectionType(
+      this.#configurationData.valueType = new CollectionType(
         "value", "Map", type, description, validatorSource
       );
     });
@@ -505,7 +500,7 @@ export default class CollectionConfiguration {
 
       let argCount = this.#argCount;
       if (argCount === 0) {
-        if (!this.#valueCollectionType)
+        if (!this.#configurationData.valueType)
           throw new Error("State machine error:  we should have some steps now!");
         argCount++;
       }

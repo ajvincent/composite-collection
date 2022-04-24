@@ -27,6 +27,8 @@ export default class ConfigurationData {
     parameterToTypeMap = new Map;
     /** @type {ParameterNames} */
     #parameterNames = new ParameterNames;
+    /** @type {CollectionType | null} */
+    valueType = null;
     constructor(className, collectionTemplate) {
         this.className = className;
         this.collectionTemplate = collectionTemplate;
@@ -82,11 +84,11 @@ export default class ConfigurationData {
     #assignToClone(target) {
         if (this.fileOverview)
             target.setFileOverview(this.fileOverview);
-        if (this.importLines)
-            target.importLines = this.importLines;
+        target.importLines = this.importLines;
         // Argument parameters
         for (let value of this.parameterToTypeMap.values())
             target.defineArgument(value);
+        target.valueType = this.valueType;
     }
     /**
      * Temporary method to define additional properties.

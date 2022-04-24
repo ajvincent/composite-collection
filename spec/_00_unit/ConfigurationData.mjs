@@ -49,6 +49,7 @@ describe("ConfigurationData", () => {
       "fileOverview",
       "importLines",
       "parameterToTypeMap",
+      "valueType",
     ]);
 
     expect(data.className).toBe("Foo");
@@ -144,6 +145,21 @@ describe("ConfigurationData", () => {
     });
   });
 
+  it(".valueType is settable", () => {
+    const value = new CollectionType(
+      "value",
+      "WeakMap",
+      "Shape",
+      "The shape of the object"
+    );
+
+    const data = new ConfigurationData("FooMap", "WeakMap", "Set");
+    data.valueType = value;
+    // this might seem obvious, but if we converted to just a setter...
+    expect(data.valueType).toBe(value);
+    expect(isWritable(data, "valueType")).toBe(true);
+  });
+
   describe(".cloneData() succeeds with", () => {
     it("just the className and the collection template", () => {
       const data = new ConfigurationData("Foo", "Bar");
@@ -182,7 +198,7 @@ describe("ConfigurationData", () => {
       beforeEach(() => {
         data = new ConfigurationData("FooMap", "WeakMap", "Set");
       })
-  
+
       it("weak map argument", () => {
         const value = new CollectionType(
           "weakArg1",
@@ -250,6 +266,22 @@ describe("ConfigurationData", () => {
         expect(clone.weakSetElements).toEqual([]);
         expect(clone.strongSetElements).toEqual(["strongArg2"]);
       });
+    });
+
+    it("the value type", () => {
+      const value = new CollectionType(
+        "value",
+        "WeakMap",
+        "Shape",
+        "The shape of the object"
+      );
+  
+      const data = new ConfigurationData("FooMap", "WeakMap", "Set");
+      data.valueType = value;
+
+      const clone = data.cloneData();
+      expect(clone.valueType).toEqual(data.valueType);
+      expect(isWritable(clone, "valueType")).toBe(true);
     });
   });
 });
