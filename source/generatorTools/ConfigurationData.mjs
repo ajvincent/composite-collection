@@ -6,6 +6,18 @@ class ParameterNames {
     WeakSet = [];
     Set = [];
 }
+class OneToOneData {
+    key;
+    baseConfig;
+    options;
+    constructor(key, baseConfig, options) {
+        this.key = key;
+        this.baseConfig = baseConfig;
+        this.options = JSON.parse(JSON.stringify(options));
+        Object.freeze(this);
+        Object.freeze(this.options);
+    }
+}
 /**
  * Configuration data class for internal use.  This class should never throw exceptions intentionally.
  */
@@ -16,7 +28,7 @@ export default class ConfigurationData {
         return data?.cloneData(properties);
     }
     /** @type {string} @constant */
-    className = "";
+    className;
     /** @type {string} @constant */
     collectionTemplate;
     /** @type {string | null} */
@@ -29,6 +41,7 @@ export default class ConfigurationData {
     #parameterNames = new ParameterNames;
     /** @type {CollectionType | null} */
     valueType = null;
+    #oneToOneData = null;
     constructor(className, collectionTemplate) {
         this.className = className;
         this.collectionTemplate = collectionTemplate;
@@ -70,6 +83,21 @@ export default class ConfigurationData {
     get strongSetElements() {
         return this.#parameterNames.Set.slice();
     }
+    /** @type {string} */
+    get oneToOneKeyName() {
+        return this.#oneToOneData?.key ?? "";
+    }
+    /** @type {object | null} */
+    get oneToOneBase() {
+        return this.#oneToOneData?.baseConfig ?? null;
+    }
+    /** @type {object | null} */
+    get oneToOneOptions() {
+        return this.#oneToOneData?.options ?? null;
+    }
+    setOneToOne(key, baseConfig, options) {
+        this.#oneToOneData = new OneToOneData(key, baseConfig, options);
+    }
     cloneData(properties = {}) {
         const result = new ConfigurationData(this.className, this.collectionTemplate);
         this.#assignToClone(result);
@@ -89,6 +117,9 @@ export default class ConfigurationData {
         for (let value of this.parameterToTypeMap.values())
             target.defineArgument(value);
         target.valueType = this.valueType;
+        if (this.#oneToOneData) {
+            target.setOneToOne(this.#oneToOneData.key, this.#oneToOneData.baseConfig, this.#oneToOneData.options);
+        }
     }
     /**
      * Temporary method to define additional properties.

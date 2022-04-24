@@ -24,6 +24,10 @@ describe("ConfigurationData", () => {
       "strongMapKeys",
       "weakSetElements",
       "strongSetElements",
+      "oneToOneKeyName",
+      "oneToOneBase",
+      "oneToOneOptions",
+      "setOneToOne",
       "cloneData",
       "setConfiguration",
     ]);
@@ -58,8 +62,9 @@ describe("ConfigurationData", () => {
     expect(data.collectionTemplate).toBe("Bar");
     expect(isWritable(data, "collectionTemplate")).toBe(true);
 
-    expect(data.fileOverview).toBe(null);
-    expect(isWritable(data, "fileOverview")).toBe(true);
+    expect(data.oneToOneKeyName).toBe("");
+    expect(data.oneToOneBase).toBe(null);
+    expect(data.oneToOneOptions).toBe(null);
   });
 
   it(".fileOverview is settable via .setFileOverview() once", () => {
@@ -158,6 +163,19 @@ describe("ConfigurationData", () => {
     // this might seem obvious, but if we converted to just a setter...
     expect(data.valueType).toBe(value);
     expect(isWritable(data, "valueType")).toBe(true);
+  });
+
+  it(".setOneToOne() sets the one-to-one base configuration", () => {
+    const baseData = new ConfigurationData("Foo", "Bar");
+    const data = new ConfigurationData("Car", "Highway");
+    const options = { distance: 200, units: "miles" };
+
+    data.setOneToOne("direction", baseData, options);
+
+    expect(data.oneToOneKeyName).toBe("direction");
+    expect(data.oneToOneBase).toBe(baseData);
+    expect(data.oneToOneOptions).toEqual(options);
+    expect(data.oneToOneOptions).not.toBe(options);
   });
 
   describe(".cloneData() succeeds with", () => {
@@ -282,6 +300,22 @@ describe("ConfigurationData", () => {
       const clone = data.cloneData();
       expect(clone.valueType).toEqual(data.valueType);
       expect(isWritable(clone, "valueType")).toBe(true);
+    });
+
+    it("a one-to-one base configuration", () => {
+      const baseData = new ConfigurationData("Foo", "Bar");
+      const data = new ConfigurationData("Car", "Highway");
+      const options = { distance: 200, units: "miles" };
+  
+      data.setOneToOne("direction", baseData, options);
+  
+      const clone = data.cloneData();
+
+      expect(clone.oneToOneKeyName).toBe("direction");
+      expect(clone.oneToOneBase).toBe(baseData);
+      expect(clone.oneToOneOptions).toEqual(data.oneToOneOptions);
+      expect(clone.oneToOneOptions).not.toBe(data.oneToOneOptions);
+      expect(clone.oneToOneOptions).not.toBe(options);
     });
   });
 });

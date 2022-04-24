@@ -193,9 +193,6 @@ export default class CollectionConfiguration {
     return this.#stateMachine.catchErrorState(() => {
       return this.#configurationData.cloneData({
         /* OneToOne-specific fields */
-        oneToOneKeyName: this.#oneToOneKeyName,
-        oneToOneBase: this.#oneToOneBase,
-        oneToOneOptions: this.#oneToOneOptions,
       });
     });
   }
@@ -367,13 +364,6 @@ export default class CollectionConfiguration {
     });
   }
 
-  /*
-  OneToOne-specific fields
-   */
-  #oneToOneKeyName = "";
-  #oneToOneBase = null;
-  #oneToOneOptions = null;
-
   /**
    * @typedef {object} oneToOneOptions
    * @property {string?} pathToBaseModule Indicates the import line for the base module's location.
@@ -399,9 +389,7 @@ export default class CollectionConfiguration {
 
       this.#identifierArg("privateKeyName", key);
 
-      this.#oneToOneKeyName = key;
-
-      let configData;
+      let configData, retrievedBase;
       if (base instanceof CollectionConfiguration) {
         if (base.currentState !== "locked") {
           /* We dare not modify the base configuration lest other code use it to generate a different file. */
@@ -411,19 +399,19 @@ export default class CollectionConfiguration {
         configData = base.__cloneData__();
         if ((configData.collectionTemplate === "Weak/Map") ||
             ((configData.collectionTemplate === "Solo/Map") && (configData.weakMapKeys.length > 0))) {
-          this.#oneToOneBase = base;
+          retrievedBase = base;
           CollectionConfiguration.#oneToOneLockedPrivateKey(base, key);
         }
       }
       else if (typeof base === "string") {
-        this.#oneToOneBase = await CollectionConfiguration.#getOneToOneBaseByString(base, key);
+        retrievedBase = await CollectionConfiguration.#getOneToOneBaseByString(base, key);
       }
 
-      if (!this.#oneToOneBase) {
+      if (!retrievedBase) {
         throw new Error("The base configuration must be a WeakMap CollectionConfiguration, 'WeakMap', 'composite-collection/WeakStrongMap', or 'composite-collection/WeakWeakMap'!");
       }
 
-      this.#oneToOneOptions = Object.freeze(JSON.parse(JSON.stringify(options)));
+      this.#configurationData.setOneToOne(key, retrievedBase, options);
     });
   }
 

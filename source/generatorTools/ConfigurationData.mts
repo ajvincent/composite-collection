@@ -9,6 +9,21 @@ class ParameterNames {
   Set: string[] = [];
 }
 
+class OneToOneData {
+  key: string;
+  baseConfig: CollectionConfiguration;
+  options: object;
+
+  constructor(key: string, baseConfig: CollectionConfiguration, options: object) {
+    this.key = key;
+    this.baseConfig = baseConfig;
+    this.options = JSON.parse(JSON.stringify(options));
+
+    Object.freeze(this);
+    Object.freeze(this.options);
+  }
+}
+
 /**
  * Configuration data class for internal use.  This class should never throw exceptions intentionally.
  */
@@ -25,7 +40,7 @@ export default class ConfigurationData {
   }
 
   /** @type {string} @constant */
-  className = "";
+  className: string;
 
   /** @type {string} @constant */
   collectionTemplate: string;
@@ -44,6 +59,8 @@ export default class ConfigurationData {
 
   /** @type {CollectionType | null} */
   valueType: CollectionType | null = null;
+
+  #oneToOneData: OneToOneData | null = null;
 
   constructor(className: string, collectionTemplate: string) {
     this.className = className;
@@ -97,6 +114,25 @@ export default class ConfigurationData {
     return this.#parameterNames.Set.slice();
   }
 
+  /** @type {string} */
+  get oneToOneKeyName() : string {
+    return this.#oneToOneData?.key ?? "";
+  }
+
+  /** @type {object | null} */
+  get oneToOneBase(): Partial<CollectionConfiguration> | null {
+    return this.#oneToOneData?.baseConfig ?? null;
+  }
+
+  /** @type {object | null} */
+  get oneToOneOptions() : object | null {
+    return this.#oneToOneData?.options ?? null;
+  }
+
+  setOneToOne(key: string, baseConfig: CollectionConfiguration, options: object) : void {
+    this.#oneToOneData = new OneToOneData(key, baseConfig, options);
+  }
+
   cloneData(properties: object = {}) : ConfigurationData {
     const result = new ConfigurationData(this.className, this.collectionTemplate);
     this.#assignToClone(result);
@@ -119,6 +155,14 @@ export default class ConfigurationData {
       target.defineArgument(value);
 
     target.valueType = this.valueType;
+
+    if (this.#oneToOneData) {
+      target.setOneToOne(
+        this.#oneToOneData.key,
+        this.#oneToOneData.baseConfig,
+        this.#oneToOneData.options
+      );
+    }
   }
 
   /**
