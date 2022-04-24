@@ -41,6 +41,7 @@ describe("ConfigurationData", () => {
       "className",
       "collectionTemplate",
       "fileOverview",
+      "importLines",
     ]);
 
     expect(data.className).toBe("Foo");
@@ -59,6 +60,14 @@ describe("ConfigurationData", () => {
 
     expect(data.fileOverview).toBe("my overview");
     expect(isWritable(data, "fileOverview")).toBe(false);
+  });
+
+  it(".importLines is settable", () => {
+    const data = new ConfigurationData("Foo", "Bar");
+    data.importLines = "import Something from './elsewhere.mjs';\n";
+
+    expect(data.importLines).toBe("import Something from './elsewhere.mjs';\n");
+    expect(isWritable(data, "importLines")).toBe(true);
   });
 
   describe(".cloneData() succeeds with", () => {

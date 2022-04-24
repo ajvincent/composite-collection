@@ -13,6 +13,8 @@ export default class ConfigurationData {
     collectionTemplate;
     /** @type {string | null} */
     fileOverview = null;
+    /** @type {string} */
+    importLines = "";
     constructor(className, collectionTemplate) {
         this.className = className;
         this.collectionTemplate = collectionTemplate;
@@ -52,6 +54,8 @@ export default class ConfigurationData {
     #assignToClone(target) {
         if (this.fileOverview)
             target.setFileOverview(this.fileOverview);
+        if (this.importLines)
+            target.importLines = this.importLines;
     }
     /**
      * Temporary method to define additional properties.

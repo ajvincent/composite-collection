@@ -30,9 +30,6 @@ export default class CollectionConfiguration {
   /** @type {ConfigurationData} @constant */
   #configurationData;
 
-  /** @type {string} */
-  #importLines = "";
-
   /** @type {Map<identifier, CollectionType>} @constant */
   #parameterToTypeMap = new Map();
 
@@ -216,7 +213,6 @@ export default class CollectionConfiguration {
   __cloneData__() {
     return this.#stateMachine.catchErrorState(() => {
       return this.#configurationData.cloneData({
-        importLines: this.#importLines,
         parameterToTypeMap: new Map(this.#parameterToTypeMap),
         weakMapKeys: this.#weakMapKeys.slice(),
         strongMapKeys: this.#strongMapKeys.slice(),
@@ -245,7 +241,7 @@ export default class CollectionConfiguration {
         throw new Error("You may only define import lines at the start of the configuration or immediately after the file overview!");
       }
       this.#stringArg("lines", lines);
-      this.#importLines = lines.toString().trim();
+      this.#configurationData.importLines = lines.toString().trim();
     });
   }
 
