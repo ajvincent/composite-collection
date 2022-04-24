@@ -59,6 +59,9 @@ export default class ConfigurationData {
     get weakMapKeys() {
         return this.#parameterNames.WeakMap.slice();
     }
+    get strongMapKeys() {
+        return this.#parameterNames.Map.slice();
+    }
     cloneData(properties = {}) {
         const result = new ConfigurationData(this.className, this.collectionTemplate);
         this.#assignToClone(result);

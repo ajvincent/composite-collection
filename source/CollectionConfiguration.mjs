@@ -31,9 +31,6 @@ export default class CollectionConfiguration {
   #configurationData;
 
   /** @type {identifier[]} */
-  #strongMapKeys = [];
-
-  /** @type {identifier[]} */
   #weakSetElements = [];
 
   /** @type {identifier[]} */
@@ -207,7 +204,6 @@ export default class CollectionConfiguration {
   __cloneData__() {
     return this.#stateMachine.catchErrorState(() => {
       return this.#configurationData.cloneData({
-        strongMapKeys: this.#strongMapKeys.slice(),
         weakSetElements: this.#weakSetElements.slice(),
         strongSetElements: this.#strongSetElements.slice(),
         valueType: this.#valueCollectionType,
@@ -285,10 +281,6 @@ export default class CollectionConfiguration {
         validatorSource
       );
       this.#configurationData.defineArgument(collectionType);
-
-      if (!holdWeak)
-        this.#strongMapKeys.push(argumentName);
-
       this.#argCount++;
     });
   }
