@@ -90,6 +90,10 @@ export default class ConfigurationData {
     return this.#parameterNames.WeakSet.slice();
   }
 
+  get strongSetElements() : string[] {
+    return this.#parameterNames.Set.slice();
+  }
+
   cloneData(properties: object = {}) : ConfigurationData {
     const result = new ConfigurationData(this.className, this.collectionTemplate);
     this.#assignToClone(result);
