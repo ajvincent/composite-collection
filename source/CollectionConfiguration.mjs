@@ -190,11 +190,9 @@ export default class CollectionConfiguration {
    * @package
    */
   __cloneData__() {
-    return this.#stateMachine.catchErrorState(() => {
-      return this.#configurationData.cloneData({
-        /* OneToOne-specific fields */
-      });
-    });
+    return this.#stateMachine.catchErrorState(
+      () => this.#configurationData.cloneData()
+    );
   }
 
   /**

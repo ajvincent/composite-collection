@@ -23,9 +23,9 @@ class OneToOneData {
  */
 export default class ConfigurationData {
     static #configToDataMap = new WeakMap;
-    static cloneData(configuration, properties) {
+    static cloneData(configuration) {
         const data = this.#configToDataMap.get(configuration);
-        return data?.cloneData(properties);
+        return data?.cloneData();
     }
     /** @type {string} @constant */
     className;
@@ -98,10 +98,9 @@ export default class ConfigurationData {
     setOneToOne(key, baseConfig, options) {
         this.#oneToOneData = new OneToOneData(key, baseConfig, options);
     }
-    cloneData(properties = {}) {
+    cloneData() {
         const result = new ConfigurationData(this.className, this.collectionTemplate);
         this.#assignToClone(result);
-        this.#extend(result, properties);
         return result;
     }
     /**
@@ -120,19 +119,6 @@ export default class ConfigurationData {
         if (this.#oneToOneData) {
             target.setOneToOne(this.#oneToOneData.key, this.#oneToOneData.baseConfig, this.#oneToOneData.options);
         }
-    }
-    /**
-     * Temporary method to define additional properties.
-     *
-     * @param {ConfigurationData} target     The target.
-     * @param {object}            properties A property bag.
-     */
-    #extend(target, properties) {
-        const keys = Reflect.ownKeys(properties);
-        keys.forEach(key => {
-            const desc = Reflect.getOwnPropertyDescriptor(properties, key);
-            Reflect.defineProperty(target, key, desc);
-        });
     }
     setConfiguration(configuration) {
         ConfigurationData.#configToDataMap.set(configuration, this);

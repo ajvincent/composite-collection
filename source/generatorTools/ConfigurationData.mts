@@ -32,11 +32,10 @@ export default class ConfigurationData {
 
   static cloneData(
     configuration: CollectionConfiguration,
-    properties: object
   ) : ConfigurationData | undefined
   {
     const data = this.#configToDataMap.get(configuration);
-    return data?.cloneData(properties);
+    return data?.cloneData();
   }
 
   /** @type {string} @constant */
@@ -133,10 +132,9 @@ export default class ConfigurationData {
     this.#oneToOneData = new OneToOneData(key, baseConfig, options);
   }
 
-  cloneData(properties: object = {}) : ConfigurationData {
+  cloneData() : ConfigurationData {
     const result = new ConfigurationData(this.className, this.collectionTemplate);
     this.#assignToClone(result);
-    this.#extend(result, properties);
     return result;
   }
 
@@ -163,20 +161,6 @@ export default class ConfigurationData {
         this.#oneToOneData.options
       );
     }
-  }
-
-  /**
-   * Temporary method to define additional properties.
-   *
-   * @param {ConfigurationData} target     The target.
-   * @param {object}            properties A property bag.
-   */
-  #extend(target: ConfigurationData, properties: object) : void {
-    const keys = Reflect.ownKeys(properties);
-    keys.forEach(key => {
-      const desc = Reflect.getOwnPropertyDescriptor(properties, key)!;
-      Reflect.defineProperty(target, key, desc);
-    });
   }
 
   setConfiguration(configuration: CollectionConfiguration) : void {
