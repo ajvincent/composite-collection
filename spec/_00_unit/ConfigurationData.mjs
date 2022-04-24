@@ -20,6 +20,7 @@ describe("ConfigurationData", () => {
       "requiresWeakKey",
       "setFileOverview",
       "defineArgument",
+      "weakMapKeys",
       "cloneData",
       "setConfiguration",
     ]);
@@ -88,6 +89,7 @@ describe("ConfigurationData", () => {
       );
       data.defineArgument(value);
       expect(data.parameterToTypeMap.get("weakArg1")).toBe(value);
+      expect(data.weakMapKeys).toEqual(["weakArg1"]);
     });
 
     it("strong map argument", () => {
@@ -99,6 +101,7 @@ describe("ConfigurationData", () => {
       );
       data.defineArgument(value);
       expect(data.parameterToTypeMap.get("strongArg1")).toBe(value);
+      expect(data.weakMapKeys).toEqual([]);
     });
 
     it("weak set argument", () => {
@@ -110,6 +113,7 @@ describe("ConfigurationData", () => {
       );
       data.defineArgument(value);
       expect(data.parameterToTypeMap.get("weakArg2")).toBe(value);
+      expect(data.weakMapKeys).toEqual([]);
     });
 
     it("strong set argument", () => {
@@ -121,6 +125,7 @@ describe("ConfigurationData", () => {
       );
       data.defineArgument(value);
       expect(data.parameterToTypeMap.get("strongArg2")).toBe(value);
+      expect(data.weakMapKeys).toEqual([]);
     });
   });
 
@@ -174,8 +179,9 @@ describe("ConfigurationData", () => {
 
         const clone = data.cloneData();
         expect(clone.parameterToTypeMap.get("weakArg1")).toBe(value);
+        expect(clone.weakMapKeys).toEqual(["weakArg1"]);
       });
-  
+
       it("strong map argument", () => {
         const value = new CollectionType(
           "strongArg1",
@@ -187,6 +193,7 @@ describe("ConfigurationData", () => {
 
         const clone = data.cloneData();
         expect(clone.parameterToTypeMap.get("strongArg1")).toBe(value);
+        expect(clone.weakMapKeys).toEqual([]);
       });
 
       it("weak set argument", () => {
@@ -200,8 +207,9 @@ describe("ConfigurationData", () => {
 
         const clone = data.cloneData();
         expect(clone.parameterToTypeMap.get("weakArg2")).toBe(value);
+        expect(clone.weakMapKeys).toEqual([]);
       });
-  
+
       it("strong set argument", () => {
         const value = new CollectionType(
           "strongArg2",
@@ -213,6 +221,7 @@ describe("ConfigurationData", () => {
 
         const clone = data.cloneData();
         expect(clone.parameterToTypeMap.get("strongArg2")).toBe(value);
+        expect(clone.weakMapKeys).toEqual([]);
       });
     });
   });

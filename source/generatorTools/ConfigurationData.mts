@@ -1,8 +1,13 @@
 type CollectionConfiguration = object;
-type identifier = string;
 import CollectionType from "./CollectionType.mjs";
 void(CollectionType);
-//import type { MapOrSetType } from "./CollectionType.mjs";
+
+class ParameterNames {
+  WeakMap: string[] = [];
+  Map: string[] = [];
+  WeakSet: string[] = [];
+  Set: string[] = [];
+}
 
 /**
  * Configuration data class for internal use.  This class should never throw exceptions intentionally.
@@ -31,7 +36,11 @@ export default class ConfigurationData {
   /** @type {string} */
   importLines = "";
 
-  parameterToTypeMap: Map<identifier, CollectionType> = new Map;
+  /** @type {Map<string, CollectionType>} */
+  parameterToTypeMap: Map<string, CollectionType> = new Map;
+
+  /** @type {ParameterNames} */
+  #parameterNames = new ParameterNames;
 
   constructor(className: string, collectionTemplate: string) {
     this.className = className;
@@ -66,6 +75,11 @@ export default class ConfigurationData {
 
   defineArgument(collectionType: CollectionType) : void {
     this.parameterToTypeMap.set(collectionType.argumentName, collectionType);
+    this.#parameterNames[collectionType.mapOrSetType].push(collectionType.argumentName);
+  }
+
+  get weakMapKeys() : string[] {
+    return this.#parameterNames.WeakMap.slice();
   }
 
   cloneData(properties: object = {}) : ConfigurationData {
@@ -89,8 +103,6 @@ export default class ConfigurationData {
     // Argument parameters
     for (let value of this.parameterToTypeMap.values())
       target.defineArgument(value);
-
-    target.parameterToTypeMap = new Map(this.parameterToTypeMap);
   }
 
   /**

@@ -31,9 +31,6 @@ export default class CollectionConfiguration {
   #configurationData;
 
   /** @type {identifier[]} */
-  #weakMapKeys = [];
-
-  /** @type {identifier[]} */
   #strongMapKeys = [];
 
   /** @type {identifier[]} */
@@ -210,7 +207,6 @@ export default class CollectionConfiguration {
   __cloneData__() {
     return this.#stateMachine.catchErrorState(() => {
       return this.#configurationData.cloneData({
-        weakMapKeys: this.#weakMapKeys.slice(),
         strongMapKeys: this.#strongMapKeys.slice(),
         weakSetElements: this.#weakSetElements.slice(),
         strongSetElements: this.#strongSetElements.slice(),
@@ -290,9 +286,7 @@ export default class CollectionConfiguration {
       );
       this.#configurationData.defineArgument(collectionType);
 
-      if (holdWeak)
-        this.#weakMapKeys.push(argumentName);
-      else
+      if (!holdWeak)
         this.#strongMapKeys.push(argumentName);
 
       this.#argCount++;
@@ -402,14 +396,6 @@ export default class CollectionConfiguration {
       this.#valueCollectionType = new CollectionType(
         "value", "Map", type, description, validatorSource
       );
-
-      if (this.#configurationData.collectionTemplate.includes("Set")) {
-        const holdWeak = /Weak\/?Set/.test(this.#configurationData.collectionTemplate);
-        if (holdWeak)
-          this.#weakMapKeys.push("value");
-        else
-          this.#strongMapKeys.push("value");
-      }
     });
   }
 
@@ -532,7 +518,7 @@ export default class CollectionConfiguration {
       if (this.#configurationData.collectionTemplate === "OneToOne/Map")
         return;
 
-      if (this.#configurationData.collectionTemplate.startsWith("Weak/Map") && !this.#weakMapKeys.length)
+      if (this.#configurationData.collectionTemplate.startsWith("Weak/Map") && !this.#configurationData.weakMapKeys.length)
         throw new Error("A weak map keyset must have at least one weak key!");
 
       if (/Weak\/?Set/.test(this.#configurationData.collectionTemplate) && !this.#weakSetElements.length)
