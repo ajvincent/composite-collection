@@ -447,28 +447,19 @@ export default class CollectionConfiguration {
     return null;
   }
 
+  /** @type {ConfigurationData} @readonly @constant */
+  static #weakMapMockConfigurationData = (function() {
+    const data = new ConfigurationData("WeakMap", "");
+    data.defineArgument(new CollectionType(
+      "key", "WeakMap", "object", "The key.", ""
+    ));
+    return data;
+  }());
+
   static #weakMapMockConfiguration = Object.freeze({
     lock: () => null,
-
-    __cloneData__: () => {
-      return {
-        className: "WeakMap",
-        importLines: "",
-        collectionTemplate: "",
-        weakMapKeys: ["key"],
-        parameterToTypeMap: new Map([
-          ["key", new CollectionType("key", "WeakMap", "object", "The key.", "")],
-        ]),
-        strongMapKeys: [],
-        weakSetElements: [],
-        strongSetElements: [],
-        valueType: null,
-        fileOverview: null,
-        requiresKeyHasher: false,
-        requiresWeakKey: false,
-      };
-    },
-  })
+    __cloneData__: () => CollectionConfiguration.#weakMapMockConfigurationData.cloneData(),
+  });
 
   static #oneToOneLockedPrivateKey(baseConfiguration, privateKeyName) {
     const weakKeys = baseConfiguration.__cloneData__().weakMapKeys;
