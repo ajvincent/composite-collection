@@ -31,9 +31,6 @@ export default class CollectionConfiguration {
   #configurationData;
 
   /** @type {identifier[]} */
-  #weakSetElements = [];
-
-  /** @type {identifier[]} */
   #strongSetElements = [];
 
   /** @type {CollectionType} */
@@ -204,7 +201,7 @@ export default class CollectionConfiguration {
   __cloneData__() {
     return this.#stateMachine.catchErrorState(() => {
       return this.#configurationData.cloneData({
-        weakSetElements: this.#weakSetElements.slice(),
+        weakSetElements: this.#configurationData.weakSetElements.slice(),
         strongSetElements: this.#strongSetElements.slice(),
         valueType: this.#valueCollectionType,
 
@@ -328,9 +325,7 @@ export default class CollectionConfiguration {
       );
       this.#configurationData.defineArgument(collectionType);
 
-      if (holdWeak)
-        this.#weakSetElements.push(argumentName);
-      else
+      if (!holdWeak)
         this.#strongSetElements.push(argumentName);
 
       this.#argCount++;
@@ -513,7 +508,7 @@ export default class CollectionConfiguration {
       if (this.#configurationData.collectionTemplate.startsWith("Weak/Map") && !this.#configurationData.weakMapKeys.length)
         throw new Error("A weak map keyset must have at least one weak key!");
 
-      if (/Weak\/?Set/.test(this.#configurationData.collectionTemplate) && !this.#weakSetElements.length)
+      if (/Weak\/?Set/.test(this.#configurationData.collectionTemplate) && !this.#configurationData.weakSetElements.length)
         throw new Error("A weak set keyset must have at least one weak key!");
 
       let argCount = this.#argCount;

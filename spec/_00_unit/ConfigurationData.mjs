@@ -22,6 +22,7 @@ describe("ConfigurationData", () => {
       "defineArgument",
       "weakMapKeys",
       "strongMapKeys",
+      "weakSetElements",
       "cloneData",
       "setConfiguration",
     ]);
@@ -92,6 +93,7 @@ describe("ConfigurationData", () => {
       expect(data.parameterToTypeMap.get("weakArg1")).toBe(value);
       expect(data.weakMapKeys).toEqual(["weakArg1"]);
       expect(data.strongMapKeys).toEqual([]);
+      expect(data.weakSetElements).toEqual([]);
     });
 
     it("strong map argument", () => {
@@ -105,6 +107,7 @@ describe("ConfigurationData", () => {
       expect(data.parameterToTypeMap.get("strongArg1")).toBe(value);
       expect(data.weakMapKeys).toEqual([]);
       expect(data.strongMapKeys).toEqual(["strongArg1"]);
+      expect(data.weakSetElements).toEqual([]);
     });
 
     it("weak set argument", () => {
@@ -118,6 +121,7 @@ describe("ConfigurationData", () => {
       expect(data.parameterToTypeMap.get("weakArg2")).toBe(value);
       expect(data.weakMapKeys).toEqual([]);
       expect(data.strongMapKeys).toEqual([]);
+      expect(data.weakSetElements).toEqual(["weakArg2"]);
     });
 
     it("strong set argument", () => {
@@ -131,6 +135,7 @@ describe("ConfigurationData", () => {
       expect(data.parameterToTypeMap.get("strongArg2")).toBe(value);
       expect(data.weakMapKeys).toEqual([]);
       expect(data.strongMapKeys).toEqual([]);
+      expect(data.weakSetElements).toEqual([]);
     });
   });
 
@@ -186,6 +191,7 @@ describe("ConfigurationData", () => {
         expect(clone.parameterToTypeMap.get("weakArg1")).toBe(value);
         expect(clone.weakMapKeys).toEqual(["weakArg1"]);
         expect(clone.strongMapKeys).toEqual([]);
+        expect(clone.weakSetElements).toEqual([]);
       });
 
       it("strong map argument", () => {
@@ -201,6 +207,7 @@ describe("ConfigurationData", () => {
         expect(clone.parameterToTypeMap.get("strongArg1")).toBe(value);
         expect(clone.weakMapKeys).toEqual([]);
         expect(clone.strongMapKeys).toEqual(["strongArg1"]);
+        expect(clone.weakSetElements).toEqual([]);
       });
 
       it("weak set argument", () => {
@@ -216,6 +223,7 @@ describe("ConfigurationData", () => {
         expect(clone.parameterToTypeMap.get("weakArg2")).toBe(value);
         expect(clone.weakMapKeys).toEqual([]);
         expect(clone.strongMapKeys).toEqual([]);
+        expect(clone.weakSetElements).toEqual(["weakArg2"]);
       });
 
       it("strong set argument", () => {
@@ -231,6 +239,7 @@ describe("ConfigurationData", () => {
         expect(clone.parameterToTypeMap.get("strongArg2")).toBe(value);
         expect(clone.weakMapKeys).toEqual([]);
         expect(clone.strongMapKeys).toEqual([]);
+        expect(clone.weakSetElements).toEqual([]);
       });
     });
   });
