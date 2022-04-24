@@ -33,13 +33,15 @@ export default class CollectionConfiguration {
   /** @type {ConfigurationStateMachine} */
   #stateMachine;
 
+  // #region static validation of argument properties
+
   /**
    * Validate a string argument.
    *
    * @param {string}  argumentName The name of the argument.
    * @param {string}  value        The argument value.
    */
-  #stringArg(argumentName, value) {
+  static #stringArg(argumentName, value) {
     if ((typeof value !== "string") || (value.length === 0))
       throw new Error(`${argumentName} must be a non-empty string!`);
   }
@@ -51,8 +53,8 @@ export default class CollectionConfiguration {
    * @param {identifier} identifier  The identifier to insert into the generated code.
    * @throws
    */
-  #identifierArg(argName, identifier) {
-    this.#stringArg(argName, identifier);
+  static #identifierArg(argName, identifier) {
+    CollectionConfiguration.#stringArg(argName, identifier);
     if (identifier !== identifier.trim())
       throw new Error(argName + " must not have leading or trailing whitespace!");
 
@@ -78,7 +80,7 @@ export default class CollectionConfiguration {
    * @param {boolean}  mayOmit         True if the function may be omitted.
    * @returns {string} The body of the function.
    */
-  #validatorArg(argumentName, callback, singleParamName, mayOmit = false) {
+  static #validatorArg(argumentName, callback, singleParamName, mayOmit = false) {
     if (typeof callback !== "function")
       throw new Error(`${argumentName} must be a function${mayOmit ? " or omitted" : ""}!`);
 
@@ -89,11 +91,15 @@ export default class CollectionConfiguration {
     return source.substring(body.start, body.end + 1);
   }
 
-  #jsdocField(argumentName, value) {
-    this.#stringArg(argumentName, value);
+  static #jsdocField(argumentName, value) {
+    CollectionConfiguration.#stringArg(argumentName, value);
     if (value.includes("*/"))
       throw new Error(argumentName + " contains a comment that would end the JSDoc block!");
   }
+
+  // #endregion static validation of argument properties
+
+  // #region The primary CollectionConfiguration public API (excluding OneToOne and lock())
 
   /**
    * @param {identifier} className The name of the class to define.
@@ -105,7 +111,7 @@ export default class CollectionConfiguration {
     if (new.target !== CollectionConfiguration)
       throw new Error("You cannot subclass CollectionConfiguration!");
 
-    this.#identifierArg("className", className);
+    CollectionConfiguration.#identifierArg("className", className);
     if (PREDEFINED_TYPES.has(className))
       throw new Error(`You can't override the ${className} primordial!`);
 
@@ -178,7 +184,7 @@ export default class CollectionConfiguration {
         this.#throwIfLocked();
         throw new Error("You may only define the file overview at the start of the configuration!");
       }
-      this.#stringArg("fileOverview", fileOverview);
+      CollectionConfiguration.#stringArg("fileOverview", fileOverview);
       this.#configurationData.setFileOverview(fileOverview);
     });
   }
@@ -207,7 +213,7 @@ export default class CollectionConfiguration {
         this.#throwIfLocked();
         throw new Error("You may only define import lines at the start of the configuration or immediately after the file overview!");
       }
-      this.#stringArg("lines", lines);
+      CollectionConfiguration.#stringArg("lines", lines);
       this.#configurationData.importLines = lines.toString().trim();
     });
   }
@@ -244,7 +250,7 @@ export default class CollectionConfiguration {
         throw new Error("Strong maps cannot have weak map keys!");
 
       const validatorSource = (argumentValidator !== null) ?
-        this.#validatorArg(
+        CollectionConfiguration.#validatorArg(
           "argumentValidator",
           argumentValidator,
           argumentName,
@@ -289,7 +295,7 @@ export default class CollectionConfiguration {
         throw new Error("Strong sets cannot have weak set keys!");
 
       const validatorSource = (argumentValidator !== null) ?
-        this.#validatorArg(
+        CollectionConfiguration.#validatorArg(
           "argumentValidator",
           argumentValidator,
           argumentName,
@@ -309,12 +315,12 @@ export default class CollectionConfiguration {
   }
 
   #validateKey(argumentName, holdWeak, argumentType, description, argumentValidator) {
-    this.#identifierArg("argumentName", argumentName);
-    this.#jsdocField("argumentType", argumentType);
-    this.#jsdocField("description", description);
+    CollectionConfiguration.#identifierArg("argumentName", argumentName);
+    CollectionConfiguration.#jsdocField("argumentType", argumentType);
+    CollectionConfiguration.#jsdocField("description", description);
 
     if (argumentValidator !== null) {
-      this.#validatorArg(
+      CollectionConfiguration.#validatorArg(
         "argumentValidator",
         argumentValidator,
         argumentName,
@@ -350,10 +356,10 @@ export default class CollectionConfiguration {
         throw new Error("You can only call .setValueType() directly after calling .addMapKey()!");
       }
 
-      this.#stringArg("type", type);
-      this.#stringArg("description", description);
+      CollectionConfiguration.#stringArg("type", type);
+      CollectionConfiguration.#stringArg("description", description);
       const validatorSource = (validator !== null) ?
-        this.#validatorArg("validator", validator, "value", true) :
+        CollectionConfiguration.#validatorArg("validator", validator, "value", true) :
         null;
 
       this.#configurationData.valueType = new CollectionType(
@@ -361,6 +367,10 @@ export default class CollectionConfiguration {
       );
     });
   }
+
+  // #endregion The actual CollectionConfiguration public API.
+
+  // #region One-to-one map configuration and static helpers.
 
   /**
    * @typedef {object} oneToOneOptions
@@ -385,7 +395,7 @@ export default class CollectionConfiguration {
         throw new Error("configureOneToOne can only be used for OneToOne collections, and exactly once!");
       }
 
-      this.#identifierArg("privateKeyName", key);
+      CollectionConfiguration.#identifierArg("privateKeyName", key);
 
       let configData, retrievedBase;
       if (base instanceof CollectionConfiguration) {
@@ -454,6 +464,8 @@ export default class CollectionConfiguration {
     const names = weakKeys.map(name => `"${name}"`).join(", ");
     throw new Error(`Invalid weak key name for the base configuration.  Valid names are ${names}.`);
   }
+
+  // #endregion One-to-one map configuration and static helpers.
 
   lock() {
     return this.#stateMachine.catchErrorState(() => {
