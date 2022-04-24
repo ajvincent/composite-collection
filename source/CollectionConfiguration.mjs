@@ -30,9 +30,6 @@ export default class CollectionConfiguration {
   /** @type {ConfigurationData} @constant */
   #configurationData;
 
-  /** @type {Map<identifier, CollectionType>} @constant */
-  #parameterToTypeMap = new Map();
-
   /** @type {identifier[]} */
   #weakMapKeys = [];
 
@@ -213,7 +210,6 @@ export default class CollectionConfiguration {
   __cloneData__() {
     return this.#stateMachine.catchErrorState(() => {
       return this.#configurationData.cloneData({
-        parameterToTypeMap: new Map(this.#parameterToTypeMap),
         weakMapKeys: this.#weakMapKeys.slice(),
         strongMapKeys: this.#strongMapKeys.slice(),
         weakSetElements: this.#weakSetElements.slice(),
@@ -292,7 +288,7 @@ export default class CollectionConfiguration {
         description,
         validatorSource
       );
-      this.#parameterToTypeMap.set(argumentName, collectionType);
+      this.#configurationData.defineArgument(collectionType);
 
       if (holdWeak)
         this.#weakMapKeys.push(argumentName);
@@ -344,7 +340,7 @@ export default class CollectionConfiguration {
         description,
         validatorSource
       );
-      this.#parameterToTypeMap.set(argumentName, collectionType);
+      this.#configurationData.defineArgument(collectionType);
 
       if (holdWeak)
         this.#weakSetElements.push(argumentName);
@@ -369,7 +365,7 @@ export default class CollectionConfiguration {
       );
     }
 
-    if (this.#parameterToTypeMap.has(argumentName))
+    if (this.#configurationData.parameterToTypeMap.has(argumentName))
       throw new Error(`Argument name "${argumentName}" has already been defined!`);
 
     if ((argumentName === "value") && !this.#configurationData.collectionTemplate.includes("Set"))

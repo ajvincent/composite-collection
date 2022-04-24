@@ -1,3 +1,6 @@
+import CollectionType from "./CollectionType.mjs";
+void (CollectionType);
+//import type { MapOrSetType } from "./CollectionType.mjs";
 /**
  * Configuration data class for internal use.  This class should never throw exceptions intentionally.
  */
@@ -15,6 +18,7 @@ export default class ConfigurationData {
     fileOverview = null;
     /** @type {string} */
     importLines = "";
+    parameterToTypeMap = new Map;
     constructor(className, collectionTemplate) {
         this.className = className;
         this.collectionTemplate = collectionTemplate;
@@ -40,6 +44,9 @@ export default class ConfigurationData {
         this.fileOverview = overview;
         this.#markReadonly("fileOverview");
     }
+    defineArgument(collectionType) {
+        this.parameterToTypeMap.set(collectionType.argumentName, collectionType);
+    }
     cloneData(properties = {}) {
         const result = new ConfigurationData(this.className, this.collectionTemplate);
         this.#assignToClone(result);
@@ -56,6 +63,10 @@ export default class ConfigurationData {
             target.setFileOverview(this.fileOverview);
         if (this.importLines)
             target.importLines = this.importLines;
+        // Argument parameters
+        for (let value of this.parameterToTypeMap.values())
+            target.defineArgument(value);
+        target.parameterToTypeMap = new Map(this.parameterToTypeMap);
     }
     /**
      * Temporary method to define additional properties.

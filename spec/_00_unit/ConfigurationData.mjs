@@ -1,4 +1,5 @@
 import ConfigurationData from "#source/generatorTools/ConfigurationData.mjs";
+import CollectionType from "#source/generatorTools/CollectionType.mjs";
 
 /**
  * @type {any}             value The value to check.
@@ -18,6 +19,7 @@ describe("ConfigurationData", () => {
       "requiresKeyHasher",
       "requiresWeakKey",
       "setFileOverview",
+      "defineArgument",
       "cloneData",
       "setConfiguration",
     ]);
@@ -42,6 +44,7 @@ describe("ConfigurationData", () => {
       "collectionTemplate",
       "fileOverview",
       "importLines",
+      "parameterToTypeMap",
     ]);
 
     expect(data.className).toBe("Foo");
@@ -70,6 +73,57 @@ describe("ConfigurationData", () => {
     expect(isWritable(data, "importLines")).toBe(true);
   });
 
+  describe(".defineArgument() lets us define a ", () => {
+    let data;
+    beforeEach(() => {
+      data = new ConfigurationData("FooMap", "WeakMap", "Set");
+    })
+
+    it("weak map argument", () => {
+      const value = new CollectionType(
+        "weakArg1",
+        "WeakMap",
+        "Shape",
+        "The shape of the object"
+      );
+      data.defineArgument(value);
+      expect(data.parameterToTypeMap.get("weakArg1")).toBe(value);
+    });
+
+    it("strong map argument", () => {
+      const value = new CollectionType(
+        "strongArg1",
+        "Map",
+        "Shape",
+        "The shape of the object"
+      );
+      data.defineArgument(value);
+      expect(data.parameterToTypeMap.get("strongArg1")).toBe(value);
+    });
+
+    it("weak set argument", () => {
+      const value = new CollectionType(
+        "weakArg2",
+        "WeakSet",
+        "Shape",
+        "The shape of the object"
+      );
+      data.defineArgument(value);
+      expect(data.parameterToTypeMap.get("weakArg2")).toBe(value);
+    });
+
+    it("strong set argument", () => {
+      const value = new CollectionType(
+        "strongArg2",
+        "Set",
+        "Shape",
+        "The shape of the object"
+      );
+      data.defineArgument(value);
+      expect(data.parameterToTypeMap.get("strongArg2")).toBe(value);
+    });
+  });
+
   describe(".cloneData() succeeds with", () => {
     it("just the className and the collection template", () => {
       const data = new ConfigurationData("Foo", "Bar");
@@ -77,6 +131,8 @@ describe("ConfigurationData", () => {
       const clone = data.cloneData();
       expect(clone.className).toBe(data.className);
       expect(clone.collectionTemplate).toBe(data.collectionTemplate);
+
+      expect(clone).not.toBe(data);
     });
 
     it("the file overview", () => {
@@ -88,6 +144,76 @@ describe("ConfigurationData", () => {
       expect(clone.collectionTemplate).toBe(data.collectionTemplate);
       expect(clone.fileOverview).toBe("my overview");
       expect(isWritable(clone, "fileOverview")).toBe(false);
+    });
+
+    it("the import lines", () => {
+      const data = new ConfigurationData("Foo", "Bar");
+      data.importLines = "import Something from './elsewhere.mjs';\n";
+
+      const clone = data.cloneData();
+      expect(clone.className).toBe(data.className);
+      expect(clone.collectionTemplate).toBe(data.collectionTemplate);
+      expect(clone.importLines).toBe("import Something from './elsewhere.mjs';\n");
+      expect(isWritable(clone, "importLines")).toBe(true);
+    });
+
+    describe("defining arguments", () => {
+      let data;
+      beforeEach(() => {
+        data = new ConfigurationData("FooMap", "WeakMap", "Set");
+      })
+  
+      it("weak map argument", () => {
+        const value = new CollectionType(
+          "weakArg1",
+          "WeakMap",
+          "Shape",
+          "The shape of the object"
+        );
+        data.defineArgument(value);
+
+        const clone = data.cloneData();
+        expect(clone.parameterToTypeMap.get("weakArg1")).toBe(value);
+      });
+  
+      it("strong map argument", () => {
+        const value = new CollectionType(
+          "strongArg1",
+          "Map",
+          "Shape",
+          "The shape of the object"
+        );
+        data.defineArgument(value);
+
+        const clone = data.cloneData();
+        expect(clone.parameterToTypeMap.get("strongArg1")).toBe(value);
+      });
+
+      it("weak set argument", () => {
+        const value = new CollectionType(
+          "weakArg2",
+          "WeakSet",
+          "Shape",
+          "The shape of the object"
+        );
+        data.defineArgument(value);
+
+        const clone = data.cloneData();
+        expect(clone.parameterToTypeMap.get("weakArg2")).toBe(value);
+      });
+  
+      it("strong set argument", () => {
+        const value = new CollectionType(
+          "strongArg2",
+          "Set",
+          "Shape",
+          "The shape of the object"
+        );
+        data.defineArgument(value);
+
+        const clone = data.cloneData();
+        expect(clone.parameterToTypeMap.get("strongArg2")).toBe(value);
+      });
     });
   });
 });
