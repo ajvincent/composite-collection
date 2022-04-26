@@ -73,6 +73,7 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
         await PromiseAllParallel(fileList, async (leaf) => fs.copyFile(path.join(projectRoot, "source/exports/keys", leaf), path.join(this.#targetDir, "keys", leaf)));
     }
 }
+// This is here so the TypeScript generator can derive from it.
 export class CodeGeneratorBase {
 }
 export const generatorToPromiseSet = new WeakMap;

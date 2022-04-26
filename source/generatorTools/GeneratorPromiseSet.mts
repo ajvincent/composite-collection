@@ -100,6 +100,7 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
   }
 }
 
+// This is here so the TypeScript generator can derive from it.
 export class CodeGeneratorBase {}
 
 export const generatorToPromiseSet: WeakMap<CodeGeneratorBase, GeneratorPromiseSet> = new WeakMap;

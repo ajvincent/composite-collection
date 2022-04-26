@@ -1,4 +1,4 @@
-type CollectionConfiguration = object;
+import CollectionConfiguration from "../CollectionConfiguration.mjs";
 import CollectionType from "./CollectionType.mjs";
 void(CollectionType);
 
@@ -9,10 +9,14 @@ class ParameterNames {
   Set: string[] = [];
 }
 
+export type oneToOneOptions = {
+  pathToBaseModule?: string;
+}
+
 class OneToOneData {
   key: string;
   baseConfig: CollectionConfiguration | symbol;
-  options: object;
+  options: oneToOneOptions;
 
   constructor(key: string, baseConfig: CollectionConfiguration | symbol, options: object) {
     this.key = key;
@@ -140,16 +144,16 @@ export default class ConfigurationData {
   }
 
   /** @type {object | null} */
-  get oneToOneBase(): Partial<CollectionConfiguration> | symbol | null {
+  get oneToOneBase(): CollectionConfiguration | symbol | null {
     return this.#oneToOneData?.baseConfig ?? null;
   }
 
   /** @type {object | null} */
-  get oneToOneOptions() : object | null {
+  get oneToOneOptions() : oneToOneOptions | null {
     return this.#oneToOneData?.options ?? null;
   }
 
-  setOneToOne(key: string, baseConfig: CollectionConfiguration | symbol, options: object) : void {
+  setOneToOne(key: string, baseConfig: CollectionConfiguration | symbol, options: oneToOneOptions) : void {
     this.#oneToOneData = new OneToOneData(key, baseConfig, options);
   }
 

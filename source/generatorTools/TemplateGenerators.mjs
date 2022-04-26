@@ -1,5 +1,6 @@
+import { PromiseAllParallel } from "../utilities/PromiseTypes.mjs";
 /**
- * @type {Map<string, string>}
+ * @type {Map<string, Function>}
  * @package
  */
 const TemplateGenerators = new Map();
@@ -7,7 +8,7 @@ import readDirsDeep from "../utilities/readDirsDeep.mjs";
 const templateDirURL = new URL("../../templates", import.meta.url);
 const templateDir = templateDirURL.pathname;
 const allFiles = (await readDirsDeep(templateDir)).files;
-await Promise.all(allFiles.map(async (fullPath) => {
+await PromiseAllParallel(allFiles, async (fullPath) => {
     let baseName = fullPath.substring(templateDir.length + 1);
     if (!baseName.endsWith(".in.mjs"))
         return;
@@ -16,6 +17,6 @@ await Promise.all(allFiles.map(async (fullPath) => {
         TemplateGenerators.set(baseName.replace(/\.in\.mjs$/, ""), generator);
     else
         throw new Error("generator isn't a function?");
-}));
+});
 export default TemplateGenerators;
 //# sourceMappingURL=TemplateGenerators.mjs.map

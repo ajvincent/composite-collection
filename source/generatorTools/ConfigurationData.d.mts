@@ -1,5 +1,8 @@
-declare type CollectionConfiguration = object;
+import CollectionConfiguration from "../CollectionConfiguration.mjs";
 import CollectionType from "./CollectionType.mjs";
+export declare type oneToOneOptions = {
+    pathToBaseModule?: string;
+};
 /**
  * Configuration data class for internal use.  This class should never throw exceptions intentionally.
  */
@@ -31,11 +34,10 @@ export default class ConfigurationData {
     /** @type {string} */
     get oneToOneKeyName(): string;
     /** @type {object | null} */
-    get oneToOneBase(): Partial<CollectionConfiguration> | symbol | null;
+    get oneToOneBase(): CollectionConfiguration | symbol | null;
     /** @type {object | null} */
-    get oneToOneOptions(): object | null;
-    setOneToOne(key: string, baseConfig: CollectionConfiguration | symbol, options: object): void;
+    get oneToOneOptions(): oneToOneOptions | null;
+    setOneToOne(key: string, baseConfig: CollectionConfiguration | symbol, options: oneToOneOptions): void;
     cloneData(): ConfigurationData;
     setConfiguration(configuration: CollectionConfiguration): void;
 }
-export {};
