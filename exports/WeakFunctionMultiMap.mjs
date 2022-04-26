@@ -302,14 +302,9 @@ class WeakFunctionMultiMap {
     }
     return true;
   }
-}
 
-Reflect.defineProperty(WeakFunctionMultiMap, Symbol.toStringTag, {
-  value: "WeakFunctionMultiMap",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
+  [Symbol.toStringTag] = "WeakFunctionMultiMap";
+}
 
 Object.freeze(WeakFunctionMultiMap);
 Object.freeze(WeakFunctionMultiMap.prototype);

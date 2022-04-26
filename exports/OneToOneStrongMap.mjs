@@ -152,14 +152,9 @@ class OneToOneStrongMap {
     if (!this.isValidValue(value))
       throw new Error(argName + " is not a valid value!");
   }
-}
 
-Reflect.defineProperty(OneToOneStrongMap, Symbol.toStringTag, {
-  value: "OneToOneStrongMap",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
+  [Symbol.toStringTag] = "OneToOneStrongMap";
+}
 
 Object.freeze(OneToOneStrongMap);
 Object.freeze(OneToOneStrongMap.prototype);

@@ -31,7 +31,7 @@ const key1Importable = new MockImportable(5),
  * @param {Function} ctor The class.
  */
 function oneKeyMapTests(ctor) {
-describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
+describe(ctor.prototype[Symbol.toStringTag] + " supports valid keys ", () => {
   let testMap = null;
   beforeEach(() => testMap = new ctor);
   afterEach(() => testMap = null);
@@ -97,7 +97,7 @@ describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
  * @param {Function} ctor The class.
  */
 function twoKeyMapTests(ctor) {
-describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
+describe(ctor.prototype[Symbol.toStringTag] + " supports valid keys ", () => {
   let testMap = null;
   beforeEach(() => testMap = new ctor);
   afterEach(() => testMap = null);
@@ -196,7 +196,7 @@ describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
  * @param {Function} ctor The class.
  */
 function oneKeySetTests(ctor) {
-describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
+describe(ctor.prototype[Symbol.toStringTag] + " supports valid keys ", () => {
   let testSet = null;
   beforeEach(() => testSet = new ctor);
   afterEach(() => testSet = null);
@@ -224,7 +224,7 @@ describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
  * @param {Function} ctor The class.
  */
 function twoKeySetTests(ctor) {
-describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
+describe(ctor.prototype[Symbol.toStringTag] + " supports valid keys ", () => {
   let testSet = null;
   beforeEach(() => testSet = new ctor);
   afterEach(() => testSet = null);
@@ -263,7 +263,7 @@ describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
  * @param {boolean} enableHasSets True if the ".hasSets()" method should exist.
  */
 function mapSetKeyTests(ctor, enableHasSets) {
-describe(ctor[Symbol.toStringTag] + " supports valid keys ", () => {
+describe(ctor.prototype[Symbol.toStringTag] + " supports valid keys ", () => {
   let testSet = null;
   beforeEach(() => testSet = new ctor);
   afterEach(() => testSet = null);

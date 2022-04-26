@@ -127,14 +127,9 @@ class WeakWeakSet {
 
     return true;
   }
-}
 
-Reflect.defineProperty(WeakWeakSet, Symbol.toStringTag, {
-  value: "WeakWeakSet",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
+  [Symbol.toStringTag] = "WeakWeakSet";
+}
 
 Object.freeze(WeakWeakSet);
 Object.freeze(WeakWeakSet.prototype);

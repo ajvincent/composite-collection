@@ -178,18 +178,12 @@ class StringStateMachine {
     return true;
   }
 
-}
+  [Symbol.iterator]() {
+    return this.values();
+  }
 
-StringStateMachine[Symbol.iterator] = function() {
-  return this.values();
+  [Symbol.toStringTag] = "StringStateMachine";
 }
-
-Reflect.defineProperty(StringStateMachine, Symbol.toStringTag, {
-  value: "StringStateMachine",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
 
 Object.freeze(StringStateMachine);
 Object.freeze(StringStateMachine.prototype);

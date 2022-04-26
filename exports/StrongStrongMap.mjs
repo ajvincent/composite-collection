@@ -189,18 +189,12 @@ class StrongStrongMap {
       yield valueAndKeySet.value;
   }
 
-}
+  [Symbol.iterator]() {
+    return this.entries();
+  }
 
-StrongStrongMap[Symbol.iterator] = function() {
-  return this.entries();
+  [Symbol.toStringTag] = "StrongStrongMap";
 }
-
-Reflect.defineProperty(StrongStrongMap, Symbol.toStringTag, {
-  value: "StrongStrongMap",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
 
 Object.freeze(StrongStrongMap);
 Object.freeze(StrongStrongMap.prototype);

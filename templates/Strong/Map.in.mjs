@@ -149,18 +149,13 @@ ${docs.buildBlock("isValidValuePrivate", 2)}
     return true;
   }
   ` : ``}
-}
 
-${defines.get("className")}[Symbol.iterator] = function() {
-  return this.entries();
-}
+  [Symbol.iterator]() {
+    return this.entries();
+  }
 
-Reflect.defineProperty(${defines.get("className")}, Symbol.toStringTag, {
-  value: "${defines.get("className")}",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
+  [Symbol.toStringTag] = "${defines.get("className")}";
+}
 
 Object.freeze(${defines.get("className")});
 Object.freeze(${defines.get("className")}.prototype);

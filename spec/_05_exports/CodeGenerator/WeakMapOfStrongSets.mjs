@@ -37,10 +37,16 @@ describe("CodeGenerator(WeakMapOfStrongSets.mjs)", () => {
     ]);
   });
 
-  it("instances have no public properties", () => {
-    const map = new WeakMapOfStrongSets();
-    expect(Reflect.ownKeys(map)).toEqual([]);
+  it("instances have only symbol public properties", () => {
+    expect(Reflect.ownKeys(testSet)).toEqual([
+      Symbol.toStringTag,
+    ]);
   });
+
+  it("instances stringify to a string with the className", () => {
+    expect(testSet.toString().includes("WeakMapOfStrongSets")).toBe(true);
+  });
+
 
   it("adding one value", () => {
     refSet.add(key1);

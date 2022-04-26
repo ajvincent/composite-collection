@@ -38,12 +38,18 @@ describe("CodeGenerator(StrongMapOfStrongSets.mjs)", () => {
       "hasSets",
       "values",
       "valuesSet",
+      Symbol.iterator,
     ]);
   });
 
-  it("instances have no public properties", () => {
-    const map = new StrongMapOfStrongSets();
-    expect(Reflect.ownKeys(map)).toEqual([]);
+  it("instances have only symbol public properties", () => {
+    expect(Reflect.ownKeys(testSet)).toEqual([
+      Symbol.toStringTag,
+    ]);
+  });
+
+  it("instances stringify to a string with the className", () => {
+    expect(testSet.toString().includes("StrongMapOfStrongSets")).toBe(true);
   });
 
   it("adding one value", () => {

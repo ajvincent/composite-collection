@@ -25,9 +25,14 @@ describe("CodeGenerator(StrongWeakMap.mjs),", () => {
     ]);
   });
 
-  it("instances have no public properties", () => {
-    const map = new StrongWeakMap();
-    expect(Reflect.ownKeys(map)).toEqual([]);
+  it("instances have only symbol public properties", () => {
+    expect(Reflect.ownKeys(testMap)).toEqual([
+      Symbol.toStringTag,
+    ]);
+  });
+
+  it("instances stringify to a string with the className", () => {
+    expect(testMap.toString()).toContain("StrongWeakMap");
   });
 
   it("exposes all methods of a weak map, but not those of a strong map", () => {
