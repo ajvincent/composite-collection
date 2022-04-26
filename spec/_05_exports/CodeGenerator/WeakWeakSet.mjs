@@ -28,9 +28,14 @@ describe("CodeGenerator(WeakWeakSet.mjs)", () => {
     ]);
   });
 
-  it("instances have no public properties", () => {
-    const map = new WeakWeakSet();
-    expect(Reflect.ownKeys(map)).toEqual([]);
+  it("instances have only symbol public properties", () => {
+    expect(Reflect.ownKeys(testSet)).toEqual([
+      Symbol.toStringTag,
+    ]);
+  });
+
+  it("instances stringify to a string with the className", () => {
+    expect(testSet.toString().includes("WeakWeakSet")).toBe(true);
   });
 
   it("exposes all methods of a weak set, but not those of a strong set", () => {

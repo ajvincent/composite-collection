@@ -27,13 +27,20 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
       "keys",
       "set",
       "values",
+      Symbol.iterator,
     ]);
   });
 
-  it("instances have no public properties", () => {
-    const map = new StrongStrongMap();
-    expect(Reflect.ownKeys(map)).toEqual([]);
+  it("instances have only symbol public properties", () => {
+    expect(Reflect.ownKeys(testMap)).toEqual([
+      Symbol.toStringTag,
+    ]);
   });
+
+  it("instances stringify to a string with the className", () => {
+    expect(testMap.toString().includes("StrongStrongMap")).toBe(true);
+  });
+
 
   it("setting one value", () => {
     const key1 = {isKey1: true}, key2 = {isKey2: true}, value = "value";

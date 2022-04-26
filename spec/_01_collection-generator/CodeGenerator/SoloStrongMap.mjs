@@ -33,9 +33,14 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
     ]);
   });
 
-  it("instances have no public properties", () => {
-    const map = new SoloStrongMap();
-    expect(Reflect.ownKeys(map)).toEqual([]);
+  it("instances have only symbol public properties", () => {
+    expect(Reflect.ownKeys(testMap)).toEqual([
+      Symbol.toStringTag,
+    ]);
+  });
+
+  it("instances stringify to a string with the className", () => {
+    expect(testMap.toString().includes("SoloStrongMap")).toBe(true);
   });
 
   it("setting one value", () => {

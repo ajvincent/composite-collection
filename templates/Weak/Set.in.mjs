@@ -103,14 +103,9 @@ ${docs.buildBlock("isValidKeyPrivate", 2)}
 ${defines.get("validateArguments") || ""}
     return true;
   }
-}
 
-Reflect.defineProperty(${defines.get("className")}, Symbol.toStringTag, {
-  value: "${defines.get("className")}",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
+  [Symbol.toStringTag] = "${defines.get("className")}";
+}
 
 Object.freeze(${defines.get("className")});
 Object.freeze(${defines.get("className")}.prototype);

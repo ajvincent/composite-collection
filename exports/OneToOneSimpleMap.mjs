@@ -55,14 +55,9 @@ class OneToOneSimpleMap extends WeakMap {
   set() {
     throw new Error("Not implemented, use .bindOneToOne(value_1, value_2);");
   }
-}
 
-Reflect.defineProperty(OneToOneSimpleMap, Symbol.toStringTag, {
-  value: "OneToOneSimpleMap",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
+  [Symbol.toStringTag] = "OneToOneSimpleMap";
+}
 
 Object.freeze(OneToOneSimpleMap);
 Object.freeze(OneToOneSimpleMap.prototype);

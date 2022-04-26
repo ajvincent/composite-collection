@@ -243,18 +243,14 @@ ${docs.buildBlock("isValidMapKeyPrivate", 2)}
     return true;
   }
   ` : ``}
+
+  [Symbol.iterator]() {
+    return this.values();
+  }
+
+  [Symbol.toStringTag] = "${defines.get("className")}";
 }
 
-${defines.get("className")}[Symbol.iterator] = function() {
-  return this.values();
-}
-
-Reflect.defineProperty(${defines.get("className")}, Symbol.toStringTag, {
-  value: "${defines.get("className")}",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
 
 Object.freeze(${defines.get("className")});
 Object.freeze(${defines.get("className")}.prototype);

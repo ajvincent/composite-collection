@@ -152,14 +152,9 @@ class OneToOneWeakMap {
     if (!this.isValidValue(value))
       throw new Error(argName + " is not a valid value!");
   }
-}
 
-Reflect.defineProperty(OneToOneWeakMap, Symbol.toStringTag, {
-  value: "OneToOneWeakMap",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
+  [Symbol.toStringTag] = "OneToOneWeakMap";
+}
 
 Object.freeze(OneToOneWeakMap);
 Object.freeze(OneToOneWeakMap.prototype);

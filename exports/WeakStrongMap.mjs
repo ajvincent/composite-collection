@@ -142,14 +142,8 @@ class WeakStrongMap {
     return true;
   }
 
+  [Symbol.toStringTag] = "WeakStrongMap";
 }
-
-Reflect.defineProperty(WeakStrongMap, Symbol.toStringTag, {
-  value: "WeakStrongMap",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
 
 Object.freeze(WeakStrongMap);
 Object.freeze(WeakStrongMap.prototype);

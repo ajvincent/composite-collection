@@ -212,6 +212,8 @@ ${defines.get("bindArgList").length ? `
     if (!this.isValidValue(value))
       throw new Error(argName + " is not a valid value!");
   }
+
+  [Symbol.toStringTag] = "${defines.get("className")}";
 }
     `;
   }
@@ -267,19 +269,13 @@ defines.get("baseClassName") !== "WeakMap" ? `
   set() {
     throw new Error("Not implemented, use .bindOneToOne(value_1, value_2);");
   }
+
+  [Symbol.toStringTag] = "${defines.get("className")}";
 }
     `;
   }
 
   return classDefinition + `
-
-Reflect.defineProperty(${defines.get("className")}, Symbol.toStringTag, {
-  value: "${defines.get("className")}",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
-
 Object.freeze(${defines.get("className")});
 Object.freeze(${defines.get("className")}.prototype);
 `}

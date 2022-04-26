@@ -288,18 +288,12 @@ class StrongMapOfStrongSets {
       yield [mapKey, setKey];
   }
 
-}
+  [Symbol.iterator]() {
+    return this.values();
+  }
 
-StrongMapOfStrongSets[Symbol.iterator] = function() {
-  return this.values();
+  [Symbol.toStringTag] = "StrongMapOfStrongSets";
 }
-
-Reflect.defineProperty(StrongMapOfStrongSets, Symbol.toStringTag, {
-  value: "StrongMapOfStrongSets",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
 
 Object.freeze(StrongMapOfStrongSets);
 Object.freeze(StrongMapOfStrongSets.prototype);

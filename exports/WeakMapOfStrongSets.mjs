@@ -298,14 +298,9 @@ class WeakMapOfStrongSets {
 
     return true;
   }
-}
 
-Reflect.defineProperty(WeakMapOfStrongSets, Symbol.toStringTag, {
-  value: "WeakMapOfStrongSets",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
+  [Symbol.toStringTag] = "WeakMapOfStrongSets";
+}
 
 Object.freeze(WeakMapOfStrongSets);
 Object.freeze(WeakMapOfStrongSets.prototype);

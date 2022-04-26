@@ -132,18 +132,12 @@ class StrongStrongSet {
       yield __value__;
   }
 
-}
+  [Symbol.iterator]() {
+    return this.values();
+  }
 
-StrongStrongSet[Symbol.iterator] = function() {
-  return this.values();
+  [Symbol.toStringTag] = "StrongStrongSet";
 }
-
-Reflect.defineProperty(StrongStrongSet, Symbol.toStringTag, {
-  value: "StrongStrongSet",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
 
 Object.freeze(StrongStrongSet);
 Object.freeze(StrongStrongSet.prototype);
