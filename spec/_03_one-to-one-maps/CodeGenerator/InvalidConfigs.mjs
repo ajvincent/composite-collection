@@ -1,4 +1,5 @@
 import CollectionConfiguration from "composite-collection/Configuration";
+import ConfigurationData from "#source/generatorTools/ConfigurationData.mjs";
 
 describe("CodeGenerator(OneToOneMap) rejects base configurations for ", () => {
   /**
@@ -13,27 +14,33 @@ describe("CodeGenerator(OneToOneMap) rejects base configurations for ", () => {
       const baseConfig = useModule ? (await import(`#spec/_01_collection-generator/configurations/${className}.mjs`)).default : className;
 
       const config = new CollectionConfiguration("IllegalOneToOneMap", "OneToOne");
-      const key = getKey(baseConfig.__cloneData__ ? baseConfig.__cloneData__() : "");
+      const key = getKey(ConfigurationData.cloneData(baseConfig) || "");
 
-      await expectAsync(
-        config.configureOneToOne(baseConfig || className, key)
-      ).toBeRejectedWithError(
-        "The base configuration must be a WeakMap CollectionConfiguration, 'WeakMap', 'composite-collection/WeakStrongMap', or 'composite-collection/WeakWeakMap'!"
-      );
+      try {
+        await expectAsync(
+          config.configureOneToOne(baseConfig || className, key)
+        ).toBeRejectedWithError(
+          "The base configuration must be a WeakMap CollectionConfiguration, 'WeakMap', 'composite-collection/WeakStrongMap', or 'composite-collection/WeakWeakMap'!",
+        );
+      }
+      catch (ex) {
+        console.log("Failed on " + className)
+        throw ex;
+      }
     });
   }
 
-  moduleSpec("SoloStrongMap", true, config => config.strongMapKeys[0]);
+  moduleSpec("SoloStrongMap", true, data => data.strongMapKeys[0]);
 
-  moduleSpec("SoloStrongSet", true, config => config.strongSetElements[0]);
+  moduleSpec("SoloStrongSet", true, data => data.strongSetElements[0]);
 
-  moduleSpec("SoloWeakSet", true, config => config.weakSetElements[0]);
+  moduleSpec("SoloWeakSet", true, data => data.weakSetElements[0]);
 
   moduleSpec("Map", false, () => "key");
 
-  moduleSpec("StrongStrongMapImportable", true, config => config.strongMapKeys[0]);
+  moduleSpec("StrongStrongMapImportable", true, data => data.strongMapKeys[0]);
 
-  moduleSpec("StrongStrongSetImportable", true, config => config.strongSetElements[0]);
+  moduleSpec("StrongStrongSetImportable", true, data => data.strongSetElements[0]);
 
   moduleSpec("composite-collection/StrongStrongMap", false, () => "key1");
 

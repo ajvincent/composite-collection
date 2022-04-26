@@ -190,18 +190,6 @@ export default class CollectionConfiguration {
   }
 
   /**
-   * Clone the configuration data for use in code generation.
-   *
-   * @returns {object} The configuration.
-   * @package
-   */
-  __cloneData__() {
-    return this.#stateMachine.catchErrorState(
-      () => this.#configurationData.cloneData()
-    );
-  }
-
-  /**
    * Set the module import lines.
    *
    * @param {string} lines The JavaScript code to inject.
@@ -404,7 +392,7 @@ export default class CollectionConfiguration {
           throw new Error("The base configuration must be locked!");
         }
 
-        configData = base.__cloneData__();
+        configData = ConfigurationData.cloneData(base);
         if ((configData.collectionTemplate === "Weak/Map") ||
             ((configData.collectionTemplate === "Solo/Map") && (configData.weakMapKeys.length > 0))) {
           retrievedBase = base;
@@ -425,7 +413,7 @@ export default class CollectionConfiguration {
 
   static async #getOneToOneBaseByString(baseConfiguration, privateKeyName) {
     if (baseConfiguration === "WeakMap") {
-      return CollectionConfiguration.#weakMapMockConfiguration;
+      return ConfigurationData.WeakMapConfiguration;
     }
 
     if (baseConfiguration === "composite-collection/WeakStrongMap") {
@@ -443,22 +431,8 @@ export default class CollectionConfiguration {
     return null;
   }
 
-  /** @type {ConfigurationData} @readonly @constant */
-  static #weakMapMockConfigurationData = (function() {
-    const data = new ConfigurationData("WeakMap", "");
-    data.defineArgument(new CollectionType(
-      "key", "WeakMap", "object", "The key.", ""
-    ));
-    return data;
-  }());
-
-  static #weakMapMockConfiguration = Object.freeze({
-    lock: () => null,
-    __cloneData__: () => CollectionConfiguration.#weakMapMockConfigurationData.cloneData(),
-  });
-
   static #oneToOneLockedPrivateKey(baseConfiguration, privateKeyName) {
-    const weakKeys = baseConfiguration.__cloneData__().weakMapKeys;
+    const weakKeys = ConfigurationData.cloneData(baseConfiguration).weakMapKeys;
     if (weakKeys.includes(privateKeyName))
       return;
     const names = weakKeys.map(name => `"${name}"`).join(", ");

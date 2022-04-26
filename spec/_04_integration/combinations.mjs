@@ -1,4 +1,5 @@
 import CollectionConfiguration from "#source/CollectionConfiguration.mjs";
+//import ConfigurationData from "../../source/generatorTools/ConfigurationData.mjs";
 import CodeGenerator from "#source/CodeGenerator.mjs";
 
 import tempDirWithCleanup from "#support/tempDirWithCleanup.mjs";
@@ -164,7 +165,7 @@ describe("Combinations of auto-generated configurations:", () => {
       catch (ex) {
         void(ex);
         /*
-        let diagnostic = config.__cloneData__().collectionTemplate;
+        let diagnostic = ConfigurationData.cloneData(config).collectionTemplate;
         diagnostic += ": ";
         diagnostic += key8Weak ? "W" : "S";
         diagnostic += key4Weak ? "W" : "S";

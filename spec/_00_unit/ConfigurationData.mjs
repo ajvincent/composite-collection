@@ -39,8 +39,9 @@ describe("ConfigurationData", () => {
       "name",
       "prototype",
 
-      // static methods
+      // static fields
       "cloneData",
+      "WeakMapConfiguration",
     ]);
   });
 

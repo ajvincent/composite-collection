@@ -11,10 +11,10 @@ class ParameterNames {
 
 class OneToOneData {
   key: string;
-  baseConfig: CollectionConfiguration;
+  baseConfig: CollectionConfiguration | symbol;
   options: object;
 
-  constructor(key: string, baseConfig: CollectionConfiguration, options: object) {
+  constructor(key: string, baseConfig: CollectionConfiguration | symbol, options: object) {
     this.key = key;
     this.baseConfig = baseConfig;
     this.options = JSON.parse(JSON.stringify(options));
@@ -30,10 +30,31 @@ class OneToOneData {
 export default class ConfigurationData {
   static #configToDataMap: WeakMap<CollectionConfiguration, ConfigurationData> = new WeakMap;
 
+  /** @type {ConfigurationData} */
+  static #weakMapMockConfigurationData?: ConfigurationData;
+
+  static WeakMapConfiguration = Symbol("WeakMapConfiguration");
+
   static cloneData(
-    configuration: CollectionConfiguration,
+    configuration: CollectionConfiguration | symbol,
   ) : ConfigurationData | undefined
   {
+    if (configuration === this.WeakMapConfiguration) {
+      let data = this.#weakMapMockConfigurationData;
+
+      if (!data) {
+        data = new ConfigurationData("WeakMap", "")
+        data.defineArgument(new CollectionType(
+          "key", "WeakMap", "object", "The key.", ""
+        ));
+        this.#weakMapMockConfigurationData = data;
+      }
+
+      return data.cloneData();
+    }
+
+    if (typeof configuration === "symbol")
+      return undefined;
     const data = this.#configToDataMap.get(configuration);
     return data?.cloneData();
   }
@@ -119,7 +140,7 @@ export default class ConfigurationData {
   }
 
   /** @type {object | null} */
-  get oneToOneBase(): Partial<CollectionConfiguration> | null {
+  get oneToOneBase(): Partial<CollectionConfiguration> | symbol | null {
     return this.#oneToOneData?.baseConfig ?? null;
   }
 
@@ -128,7 +149,7 @@ export default class ConfigurationData {
     return this.#oneToOneData?.options ?? null;
   }
 
-  setOneToOne(key: string, baseConfig: CollectionConfiguration, options: object) : void {
+  setOneToOne(key: string, baseConfig: CollectionConfiguration | symbol, options: object) : void {
     this.#oneToOneData = new OneToOneData(key, baseConfig, options);
   }
 
