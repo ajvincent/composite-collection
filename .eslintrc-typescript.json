@@ -12,7 +12,8 @@
   ],
 
   "ignorePatterns": [
-    "**/*.mjs"
+    "**/*.mjs",
+    "**/*.d.mts"
   ],
 
   "overrides": [

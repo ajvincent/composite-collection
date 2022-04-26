@@ -30,6 +30,7 @@ import { spawn } from "child_process";
 
 import { hashAllFiles } from "./hash-all-files.mjs";
 import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
+import { PromiseAllParallel } from "#source/utilities/PromiseTypes.mjs";
 import tempDirWithCleanup from "#support/tempDirWithCleanup.mjs"
 
 import path from "path";
@@ -192,23 +193,23 @@ async function buildCollections(sourceDir, targetDir) {
 
      So I temporarily convert each import to an explicit URL to the source stage, and rewrite the file appropriately.
   */
-  await Promise.all(configFileList.map(async fullPath => {
+  await PromiseAllParallel(configFileList, async fullPath => {
     let contents = await fs.readFile(fullPath, { encoding: "utf-8" });
     configMap.set(fullPath, contents);
 
     contents = contents.replace(sourceString, targetString);
 
     await fs.writeFile(fullPath, contents, { encoding: "utf-8" });
-  }));
+  });
 
   // This starts the actual code generation in the target directory, driven by the source directory.
   await npm(sourceDir, "bootstrap-build", "--", targetDir);
 
   // For a clean repository, it's important to undo the changes to the import lines.
-  await Promise.all(configFileList.map(async fullPath => {
+  await PromiseAllParallel(configFileList, async fullPath => {
     const contents = configMap.get(fullPath);
     await fs.writeFile(fullPath, contents, { encoding: "utf-8" });
-  }));
+  });
 
   console.timeLog("stage", "buildCollections completed");
 }

@@ -1,4 +1,5 @@
 import { BuildPromise, BuildPromiseSet } from "../utilities/BuildPromise.mjs";
+import { PromiseAllParallel } from "../utilities/PromiseTypes.mjs";
 
 import url from "url";
 import fs from "fs/promises";
@@ -30,8 +31,7 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     this.#generatorsTarget = this.get("(generators)");
     this.#exportKeysTarget = this.get("(export keys)");
 
-    this.#exportKeysTarget.addTask(() => this.#exportKeyHasher());
-    this.#exportKeysTarget.addTask(() => this.#exportWeakKeyComposer());
+    this.#exportKeysTarget.addTask(() => this.#exportKeyFiles());
   }
 
   get owner() : object {
@@ -82,29 +82,21 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     await this.main.run();
   }
 
-  async #exportKeyHasher() : Promise<void> {
+  async #exportKeyFiles() : Promise<void> {
     if (!this.#requireKeyHasher)
       return;
+
+    let fileList = await fs.readdir(path.join(projectRoot, "source/exports/keys"));
+    if (!this.#requireWeakKeyComposer) {
+      fileList = fileList.filter(f => !f.startsWith("Composite."));
+    }
+
     await fs.mkdir(path.join(this.#targetDir, "keys"), { recursive: true });
 
-    await fs.copyFile(
-      path.join(projectRoot, "source/exports/keys/DefaultMap.mjs"),
-      path.join(this.#targetDir, "keys/DefaultMap.mjs")
-    );
-
-    await fs.copyFile(
-      path.join(projectRoot, "source/exports/keys/Hasher.mjs"),
-      path.join(this.#targetDir, "keys/Hasher.mjs")
-    );
-  }
-
-  async #exportWeakKeyComposer() : Promise<void> {
-    if (!this.#requireWeakKeyComposer)
-      return;
-    await fs.copyFile(
-      path.join(projectRoot, "source/exports/keys/Composite.mjs"),
-      path.join(this.#targetDir, "keys/Composite.mjs")
-    );
+    await PromiseAllParallel(fileList, async (leaf) => fs.copyFile(
+      path.join(projectRoot, "source/exports/keys", leaf),
+      path.join(this.#targetDir, "keys", leaf)
+    ));
   }
 }
 

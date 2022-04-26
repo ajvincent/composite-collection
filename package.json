@@ -10,6 +10,7 @@
     "all": "node ./build/main.mjs clean test export eslint",
     "bootstrap": "node ./build/main.mjs bootstrap",
     "bootstrap-build": "node ./build/bootstrap-build.mjs",
+    "bootstrap-debug": "node --inspect-brk ./build/bootstrap-build.mjs",
     "tsc": "tsc"
   },
   "repository": {

@@ -4,6 +4,7 @@
     "module": "es2022",
     "target": "es2022",
     "sourceMap": true,
+    "declaration": true
   },
 
   "extends": "@tsconfig/node16/tsconfig.json"
