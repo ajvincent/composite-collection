@@ -10,7 +10,7 @@ export default async function() {
     readDirsDeep(
       path.join(process.cwd(), "exports")
     ).then((propertyBag => propertyBag.files.filter(file => path.extname(file) === ".mjs"))),
-  
+
     readDirsDeep(
       path.join(process.cwd(), "spec")
     ).then(propertyBag => propertyBag.files.filter(file => /\/spec\/.*\/generated\/.*\.mjs$/.test(file))),

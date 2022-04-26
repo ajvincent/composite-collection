@@ -68,7 +68,7 @@ try {
     // Build collections first before compiling TypeScript, because we might generate the collections as TypeScript.
     await buildCollections(masterDirectory, stageDirs[0]);
     await compileTypeScript(stageDirs[0]);
-    await runAllStage(stageDirs[0]);
+    await runStage(stageDirs[0], "clean");
   }
   catch (ex) {
     console.error("failed at stage 1");
@@ -81,7 +81,7 @@ try {
     await copyToStage(stageDirs[0], stageDirs[1]);
     await buildCollections(stageDirs[0], stageDirs[1]);
     await compileTypeScript(stageDirs[1]);
-    await runAllStage(stageDirs[1]);
+    await runStage(stageDirs[1], "all");
   }
   catch (ex) {
     console.error("failed at stage 2");
@@ -96,7 +96,7 @@ try {
     await copyToStage(stageDirs[1], stageDirs[2]);
     await buildCollections(stageDirs[1], stageDirs[2]);
     await compileTypeScript(stageDirs[2]);
-    await runAllStage(stageDirs[2]);
+    await runStage(stageDirs[2], "all");
   }
   catch (ex) {
     console.error("failed at stage 3");
@@ -217,11 +217,12 @@ async function buildCollections(sourceDir, targetDir) {
  * Build a bootstrap stage.
  *
  * @param {string} stageDir The working directory to build in.
+ * @param {string} target   The build target.
  */
-async function runAllStage(stageDir) {
-  console.timeLog("stage", "starting runAllStage");
-  await npm(stageDir, "all");
-  console.timeLog("stage", "runAllStage completed");
+async function runStage(stageDir, target) {
+  console.timeLog("stage", `starting runStage(${target})`);
+  await npm(stageDir, target);
+  console.timeLog("stage", `runStage(${target}) completed`);
 }
 
 /**
