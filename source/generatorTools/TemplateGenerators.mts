@@ -2,7 +2,7 @@ import { PromiseAllParallel } from "../utilities/PromiseTypes.mjs";
 
 import JSDocGenerator from "./JSDocGenerator.mjs";
 import type { PreprocessorDefines } from "../CodeGenerator.mjs";
-export type TemplateFunction = (defines: PreprocessorDefines, ...docs: JSDocGenerator[]) => string;
+export type TemplateFunction = (defines: PreprocessorDefines, ...docGenerators: JSDocGenerator[]) => string;
 
 /**
  * @type {Map<string, Function>}
