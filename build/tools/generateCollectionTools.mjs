@@ -53,7 +53,12 @@ export async function generateCollections(sourceDir, targetDir, leafNames) {
     const configFile = sourceDir + "/" + leaf,
           targetFile = targetDir + "/" + leaf;
 
-    console.log("Generating collection: " + targetFile);
-    return generateOneCollection(configFile, targetFile);
+    try {
+      return generateOneCollection(configFile, targetFile);
+    }
+    catch (ex) {
+      console.error("Failed in generating collection: " + targetFile);
+      throw ex;
+    }
   });
 }

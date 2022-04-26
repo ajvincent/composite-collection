@@ -137,15 +137,20 @@ async function createCollectionFiles(dirName, extraKeyCount, disableKeyOptimizat
   await PromiseAllSequence(configSequence, async arg => {
     const [className, config] = arg;
     const leafName = className + ".mjs";
-    console.log("Generating collection: spec/_02_single-keytype-optimizations/" + dirName + "/generated/" + leafName);
 
-    const generator = new CodeGenerator(
-      config,
-      path.join(generatedDir, leafName),
-      new CompileTimeOptions({ disableKeyOptimization })
-    );
+    try {
+      const generator = new CodeGenerator(
+        config,
+        path.join(generatedDir, leafName),
+        new CompileTimeOptions({ disableKeyOptimization })
+      );
 
-    await generator.run();
+      await generator.run();
+    }
+    catch (ex) {
+      console.error("Failed in generating collection: spec/_02_single-keytype-optimizations/" + dirName + "/generated/" + leafName);
+      throw ex;
+    }
   });
 }
 
