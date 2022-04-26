@@ -125,7 +125,7 @@ export default class CollectionConfiguration {
     return source.substring(body.start, body.end + 1);
   }
 
-  static #jsdocField(argumentName: string, value: string) {
+  static #jsdocField(argumentName: string, value: string) : void {
     CollectionConfiguration.#stringArg(argumentName, value);
     if (value.includes("*/"))
       throw new Error(argumentName + " contains a comment that would end the JSDoc block!");
@@ -216,7 +216,7 @@ export default class CollectionConfiguration {
    * @type {string} fileOverview The overview.
    * @public
    */
-  setFileOverview(fileOverview: string) {
+  setFileOverview(fileOverview: string) : void {
     return this.#stateMachine.catchErrorState(() => {
       if (!this.#stateMachine.doStateTransition("fileOverview")) {
         this.#throwIfLocked();
@@ -233,7 +233,7 @@ export default class CollectionConfiguration {
    * @param {string} lines The JavaScript code to inject.
    * @returns {void}
    */
-  importLines(lines: string) {
+  importLines(lines: string) : void {
     return this.#stateMachine.catchErrorState(() => {
       if (!this.#stateMachine.doStateTransition("importLines")) {
         this.#throwIfLocked();
@@ -258,7 +258,7 @@ export default class CollectionConfiguration {
     description: string,
     holdWeak: boolean,
     options: CollectionTypeOptions = {}
-  )
+  ) : void
   {
     return this.#stateMachine.catchErrorState(() => {
       if (!this.#stateMachine.doStateTransition("mapKeys")) {
@@ -309,7 +309,7 @@ export default class CollectionConfiguration {
     description: string,
     holdWeak: boolean,
     options: CollectionTypeOptions = {}
-  )
+  ) : void
   {
     return this.#stateMachine.catchErrorState(() => {
       if (!this.#stateMachine.doStateTransition("setElements")) {
@@ -352,7 +352,7 @@ export default class CollectionConfiguration {
     argumentType: string,
     description: string,
     argumentValidator: ArgumentValidator | null
-  )
+  ) : void
   {
     CollectionConfiguration.#identifierArg("argumentName", argumentName);
     CollectionConfiguration.#jsdocField("argumentType", argumentType);
@@ -389,7 +389,7 @@ export default class CollectionConfiguration {
     type: string,
     description: string,
     validator?: ArgumentValidator
-  )
+  ) : void
   {
     return this.#stateMachine.catchErrorState(() => {
       if (!this.#stateMachine.doStateTransition("hasValueFilter")) {
@@ -430,7 +430,7 @@ export default class CollectionConfiguration {
     base: CollectionConfiguration | OneToOneBaseString,
     key: string,
     options: oneToOneOptions = {}
-  )
+  ) : Promise<void>
   {
     return this.#stateMachine.catchErrorAsync(async () => {
       if (!this.#stateMachine.doStateTransition("configureOneToOne")) {
@@ -468,7 +468,7 @@ export default class CollectionConfiguration {
   static async #getOneToOneBaseByString(
     baseConfiguration: OneToOneBaseString,
     privateKeyName: string
-  )
+  ) : Promise<CollectionConfiguration | symbol | null>
   {
     if (baseConfiguration === "WeakMap") {
       return ConfigurationData.WeakMapConfiguration;
@@ -492,7 +492,7 @@ export default class CollectionConfiguration {
   static #oneToOneLockedPrivateKey(
     baseConfiguration: CollectionConfiguration,
     privateKeyName: string
-  )
+  ) : void
   {
     const weakKeys = ConfigurationData.cloneData(baseConfiguration)!.weakMapKeys;
     if (weakKeys.includes(privateKeyName))
@@ -503,7 +503,7 @@ export default class CollectionConfiguration {
 
   // #endregion One-to-one map configuration and static helpers.
 
-  lock() {
+  lock() : void {
     return this.#stateMachine.catchErrorState(() => {
       if (!this.#stateMachine.doStateTransition("locked"))
         throw new Error("You must define a map key or set element first!");
@@ -531,7 +531,7 @@ export default class CollectionConfiguration {
     });
   }
 
-  #throwIfLocked() {
+  #throwIfLocked() : void {
     if (this.#stateMachine.currentState === "locked") {
       throw new Error("You have already locked this configuration!");
     }
