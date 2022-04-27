@@ -1,5 +1,5 @@
-export declare type PromiseResolver<T> = (value: T | PromiseLike<T>) => void;
-export declare type PromiseRejecter = (reason?: any) => void;
+export declare type PromiseResolver<T> = (value: T | PromiseLike<T>) => unknown;
+export declare type PromiseRejecter = (reason?: unknown) => unknown;
 export declare class Deferred<T> {
     resolve: PromiseResolver<T>;
     reject: PromiseRejecter;
@@ -15,7 +15,7 @@ export declare class Deferred<T> {
  * @see {Promise.all}
  * @see {Array.prototype.reduce}
  */
-export declare function PromiseAllSequence(elementArray: any[], callback: (value: any) => any): Promise<any[]>;
+export declare function PromiseAllSequence<E, V>(elementArray: E[], callback: (value: E) => Promise<V>): Promise<V[]>;
 /**
  * Evaluate a callback asynchronously for every element of an array, in parallel.
  *
@@ -25,4 +25,4 @@ export declare function PromiseAllSequence(elementArray: any[], callback: (value
  * @see {Promise.all}
  * @see {Array.prototype.map}
  */
-export declare function PromiseAllParallel(elementArray: any[], callback: (value: any) => any): Promise<any[]>;
+export declare function PromiseAllParallel<E, V>(elementArray: E[], callback: (value: E) => Promise<V>): Promise<V[]>;

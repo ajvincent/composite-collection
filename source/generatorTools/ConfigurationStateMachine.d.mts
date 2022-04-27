@@ -17,7 +17,7 @@ declare class ConfigurationStateMachine {
      * @param {Function} callback The function
      * @returns {any} The return value from the callback.
      */
-    catchErrorState(callback: () => any): any;
+    catchErrorState<R>(callback: () => R): R;
     /**
      * Intercept errors from a method, and mark this as errored out if we see one.
      *
@@ -25,7 +25,7 @@ declare class ConfigurationStateMachine {
      * @returns {any} The return value from the callback.
      * @async
      */
-    catchErrorAsync(callback: () => Promise<any>): Promise<any>;
+    catchErrorAsync<R>(callback: () => Promise<R>): Promise<R>;
     static Map(): ConfigurationStateMachine;
     static Set(): ConfigurationStateMachine;
     static MapOfSets(): ConfigurationStateMachine;

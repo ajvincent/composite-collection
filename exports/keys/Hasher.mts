@@ -28,13 +28,15 @@ export default class KeyHasher {
   /** @type {boolean} @constant */
   #sortKeys = false;
 
-  #getMap(key: unknown) : WeakRefMap | StrongRefMap {
-    return Object(key) === key ? this.#weakValueToHash : this.#strongValueToHash;
+  #incrementer: (() => string) = () => {
+    return (++this.#hashCount).toString(36);
   }
 
-  #requireKey(key: any) : string {
-    const map = this.#getMap(key);
-    return map.getDefault(key, () => (++this.#hashCount).toString(36));
+  #requireKey(key: unknown) : string {
+    if (Object(key) === key) {
+      return this.#weakValueToHash.getDefault(key as object, this.#incrementer);
+    }
+    return this.#strongValueToHash.getDefault(key, this.#incrementer);
   }
 
   /**
@@ -54,10 +56,15 @@ export default class KeyHasher {
     return rv.join(",");
   }
 
-  getHashIfExists(...args: any[]) : string {
+  getHashIfExists(...args: unknown[]) : string {
     const values: string[] = [];
     const result = args.every(arg => {
-      const rv = this.#getMap(arg).get(arg);
+      let rv: string | undefined;
+      if (Object(arg) === arg)
+        rv = this.#weakValueToHash.get(arg as object);
+      else
+        rv = this.#strongValueToHash.get(arg);
+
       if (rv)
         values.push(rv);
       return rv;

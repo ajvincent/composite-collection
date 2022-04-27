@@ -93,7 +93,7 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
 
     await fs.mkdir(path.join(this.#targetDir, "keys"), { recursive: true });
 
-    await PromiseAllParallel(fileList, async (leaf) => fs.copyFile(
+    await PromiseAllParallel(fileList, async (leaf: string) => fs.copyFile(
       path.join(projectRoot, "source/exports/keys", leaf),
       path.join(this.#targetDir, "keys", leaf)
     ));

@@ -38,7 +38,7 @@ class ConfigurationStateMachine {
    * @param {Function} callback The function
    * @returns {any} The return value from the callback.
    */
-  catchErrorState(callback: () => any) : any {
+  catchErrorState<R>(callback: () => R) : R {
     if (this.#currentState === "errored")
       throw new Error("This configuration is dead due to a previous error!");
 
@@ -58,7 +58,7 @@ class ConfigurationStateMachine {
    * @returns {any} The return value from the callback.
    * @async
    */
-  async catchErrorAsync(callback: () => Promise<any>) : Promise<any> {
+  async catchErrorAsync<R>(callback: () => Promise<R>) : Promise<R> {
     if (this.#currentState === "errored")
       throw new Error("This configuration is dead due to a previous error!");
 

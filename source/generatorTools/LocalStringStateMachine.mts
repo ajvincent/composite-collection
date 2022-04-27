@@ -99,8 +99,8 @@ class LocalStringStateMachine {
    * @param {object}          __thisArg__  Value to use as this when executing callback.
    * @public
    */
-  forEach(__callback__: ForEachCallbackType, __thisArg__: any): void {
-    this.#root.forEach((valueSet: valueTuple) : any => {
+  forEach(__callback__: ForEachCallbackType, __thisArg__: unknown): void {
+    this.#root.forEach((valueSet: valueTuple) : void => {
       __callback__.apply(__thisArg__, [...valueSet, this]);
     });
   }

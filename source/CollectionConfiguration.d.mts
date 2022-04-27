@@ -7,7 +7,7 @@
 import type { MapOrSetType } from "./generatorTools/CollectionType.mjs";
 declare type outerType = MapOrSetType | "OneToOne";
 declare type innerType = "Set" | null;
-declare type ArgumentValidator = (arg: any) => any;
+declare type ArgumentValidator = (arg: unknown) => unknown;
 declare type OneToOneBaseString = "WeakMap" | "composite-collection/WeakStrongMap" | "composite-collection/WeakWeakMap";
 /**
  * @typedef CollectionTypeOptions

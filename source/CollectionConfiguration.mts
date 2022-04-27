@@ -23,7 +23,7 @@ import type { MapOrSetType } from "./generatorTools/CollectionType.mjs";
 
 type outerType = MapOrSetType | "OneToOne";
 type innerType = "Set" | null;
-type ArgumentValidator = (arg: any) => any;
+type ArgumentValidator = (arg: unknown) => unknown;
 type OneToOneBaseString = "WeakMap" | "composite-collection/WeakStrongMap" | "composite-collection/WeakWeakMap";
 
 /**
@@ -110,7 +110,7 @@ export default class CollectionConfiguration {
    */
   static #validatorArg(
     argumentName: string,
-    callback: ((arg: any) => any),
+    callback: ArgumentValidator,
     singleParamName: string,
     mayOmit = false
   ) : string

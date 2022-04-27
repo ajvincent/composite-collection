@@ -16,5 +16,5 @@ export default class KeyHasher {
      */
     constructor(sortKeys?: boolean);
     getHash(...args: unknown[]): string;
-    getHashIfExists(...args: any[]): string;
+    getHashIfExists(...args: unknown[]): string;
 }

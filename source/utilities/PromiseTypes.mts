@@ -1,6 +1,6 @@
 //
-export type PromiseResolver<T> = (value: T | PromiseLike<T>) => void;
-export type PromiseRejecter = (reason?: any) => void;
+export type PromiseResolver<T> = (value: T | PromiseLike<T>) => unknown;
+export type PromiseRejecter = (reason?: unknown) => unknown;
 
 /*
 TypeScript apparently doesn't recognize arrow functions in constructors.
@@ -37,12 +37,12 @@ export class Deferred<T> {
  * @see {Promise.all}
  * @see {Array.prototype.reduce}
  */
-export async function PromiseAllSequence(
-  elementArray: any[],
-  callback: (value: any) => any
-) : Promise<any[]>
+export async function PromiseAllSequence<E, V>(
+  elementArray: E[],
+  callback: (value: E) => Promise<V>
+) : Promise<V[]>
 {
-  return await elementArray.reduce(async (previousPromise, element) => {
+  return await elementArray.reduce(async (previousPromise: Promise<V[]>, element: E) => {
     const items = await previousPromise;
     items.push(await callback(element));
     return items;
@@ -58,10 +58,10 @@ export async function PromiseAllSequence(
  * @see {Promise.all}
  * @see {Array.prototype.map}
  */
-export async function PromiseAllParallel(
-  elementArray: any[],
-  callback: (value: any) => any
-) : Promise<any[]>
+export async function PromiseAllParallel<E, V>(
+  elementArray: E[],
+  callback: (value: E) => Promise<V>
+) : Promise<V[]>
 {
   return Promise.all(elementArray.map(element => callback(element)));
 }

@@ -42,7 +42,7 @@ declare class LocalStringStateMachine {
      * @param {object}          __thisArg__  Value to use as this when executing callback.
      * @public
      */
-    forEach(__callback__: ForEachCallbackType, __thisArg__: any): void;
+    forEach(__callback__: ForEachCallbackType, __thisArg__: unknown): void;
     /**
      * Report if the collection has a value for a key set.
      *
