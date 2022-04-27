@@ -127,16 +127,12 @@ const BPSet = new BuildPromiseSet(true);
 
   const target = BPSet.get("typescript:eslint-prebuild");
   // general linting
-  /*
   target.addTask(
     async () => {
-      console.log("general linting");
-
+      console.log("typescript linting");
       const targets = [
-        // "build"
-        // "spec",
-        // "templates",
-        // "typescript-templates",
+        "source",
+        "templates",
       ];
 
       const buildModulePath = path.join(process.cwd(), "exports/keys/Hasher.mjs");
@@ -153,23 +149,6 @@ const BPSet = new BuildPromiseSet(true);
 
       await runModule("./node_modules/eslint/bin/eslint.js", [
         "-c", "./.eslintrc-typescript.json",
-        "--max-warnings=0",
-        ...targets,
-      ]);
-    }
-  );
-  */
-
-  /* @typescript:no-explicit-any disabled */
-  target.addTask(
-    async () => {
-      console.log("@typescript:no-explicit-any disabled");
-      const targets = [
-        "source",
-      ];
-
-      await runModule("./node_modules/eslint/bin/eslint.js", [
-        "-c", "./source/.eslintrc-typescript.json",
         "--max-warnings=0",
         ...targets,
       ]);

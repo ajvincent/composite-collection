@@ -1,55 +1,55 @@
-import type { PreprocessorDefines, JSDocGenerator, TemplateFunction } from "../sharedTypes.mjs";
+import type { ReadonlyDefines, JSDocGenerator, TemplateFunction } from "../sharedTypes.mjs";
 
 /**
  * @param {Map}            defines The preprocessor macros.
  * @param {JSDocGenerator} docs    The primary documentation generator.
  * @returns {string}               The generated source code.
  */
-const preprocess: TemplateFunction = function preprocess(defines: PreprocessorDefines, docs: JSDocGenerator) {
+const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefines, docs: JSDocGenerator) {
   let invokeValidate = "";
-  if (defines.has("invokeValidate")) {
-    invokeValidate = `\n    this.#requireValidKey(${defines.get("argList")});\n`;
+  if (defines.invokeValidate) {
+    invokeValidate = `\n    this.#requireValidKey(${defines.argList});\n`;
   }
 
   return `
-${defines.get("importLines")}
+${defines.importLines}
 
-class ${defines.get("className")} extends ${defines.get("weakSetCount") ? "Weak" : ""}Set {
-${defines.get("invokeValidate") ? `
+class ${defines.className} extends ${defines.weakSetElements.length ? "Weak" : ""}Set {
+${defines.invokeValidate ? `
 ${docs.buildBlock("add", 2)}
-  add(${defines.get("argList")}) {${invokeValidate}
-    return super.add(${defines.get("argList")});
+  add(${defines.argList}) {${invokeValidate}
+    return super.add(${defines.argList});
   }
 ` : ``}
 
-${defines.has("validateArguments") ? `
+${defines.validateArguments ? `
 ${docs.buildBlock("isValidKeyPublic", 2)}
-  isValidKey(${defines.get("argList")}) {
-    return this.#isValidKey(${defines.get("argList")});
+  isValidKey(${defines.argList}) {
+    return this.#isValidKey(${defines.argList});
   }
 ` : ``}
 
-${defines.has("invokeValidate") ?
+${defines.invokeValidate ?
   `
 ${docs.buildBlock("requireValidKey", 2)}
-  #requireValidKey(${defines.get("argList")}) {
-    if (!this.#isValidKey(${defines.get("argList")}))
+  #requireValidKey(${defines.argList}) {
+    if (!this.#isValidKey(${defines.argList}))
       throw new Error("The ordered key set is not valid!");
   }
 
 ${docs.buildBlock("isValidKeyPrivate", 2)}
-  #isValidKey(${defines.get("argList")}) {
-${defines.get("validateArguments")}
+  #isValidKey(${defines.argList}) {
+${defines.validateArguments}
     return true;
   }
 
 ` : ``}
 
-  [Symbol.toStringTag] = "${defines.get("className")}";
+  [Symbol.toStringTag] = "${defines.className}";
 }
 
-Object.freeze(${defines.get("className")});
-Object.freeze(${defines.get("className")}.prototype);
+Object.freeze(${defines.className});
+Object.freeze(${defines.className}.prototype);
 `;
 }
 

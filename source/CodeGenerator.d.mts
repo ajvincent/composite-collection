@@ -3,10 +3,8 @@
  */
 /** @typedef {string} identifier */
 import CollectionConfiguration from "./CollectionConfiguration.mjs";
-import { oneToOneOptions } from "./generatorTools/ConfigurationData.mjs";
 import CompileTimeOptions from "./CompileTimeOptions.mjs";
 import { CodeGeneratorBase } from "./generatorTools/GeneratorPromiseSet.mjs";
-export declare type PreprocessorDefines = Map<string, string | string[] | boolean | number | oneToOneOptions | null>;
 /** @package */
 export default class CodeGenerator extends CodeGeneratorBase {
     #private;

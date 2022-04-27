@@ -1,6 +1,6 @@
 import JSDocGenerator from "./JSDocGenerator.mjs";
-import type { PreprocessorDefines } from "../CodeGenerator.mjs";
-export declare type TemplateFunction = (defines: PreprocessorDefines, ...docGenerators: JSDocGenerator[]) => string;
+import { ReadonlyDefines } from "./PreprocessorDefines.mjs";
+export declare type TemplateFunction = (defines: ReadonlyDefines, ...docGenerators: JSDocGenerator[]) => string;
 /**
  * @type {Map<string, Function>}
  * @package

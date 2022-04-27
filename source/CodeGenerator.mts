@@ -5,10 +5,13 @@
 /** @typedef {string} identifier */
 
 import CollectionConfiguration from "./CollectionConfiguration.mjs";
-import ConfigurationData, { oneToOneOptions } from "./generatorTools/ConfigurationData.mjs";
 import CompileTimeOptions from "./CompileTimeOptions.mjs";
 
 import CollectionType from "./generatorTools/CollectionType.mjs";
+import ConfigurationData from "./generatorTools/ConfigurationData.mjs";
+import JSDocGenerator from "./generatorTools/JSDocGenerator.mjs";
+import PreprocessorDefines from "./generatorTools/PreprocessorDefines.mjs";
+import TemplateGenerators, { TemplateFunction } from "./generatorTools/TemplateGenerators.mjs";
 import {
   GeneratorPromiseSet,
   CodeGeneratorBase,
@@ -18,15 +21,12 @@ import {
 import { Deferred } from "./utilities/PromiseTypes.mjs";
 import type { PromiseResolver } from "./utilities/PromiseTypes.mjs";
 
-import JSDocGenerator from "./generatorTools/JSDocGenerator.mjs";
-import TemplateGenerators, { TemplateFunction } from "./generatorTools/TemplateGenerators.mjs";
 
 import fs from "fs/promises";
 import path from "path";
 import beautify from "js-beautify";
 
 type InternalFlags = Set<string>;
-export type PreprocessorDefines = Map<string, string | string[] | boolean | number | oneToOneOptions | null>
 
 /** @package */
 export default class CodeGenerator extends CodeGeneratorBase {
@@ -78,7 +78,6 @@ export default class CodeGenerator extends CodeGeneratorBase {
   /** @type {CompileTimeOptions} @constant */
   #compileOptions: CompileTimeOptions;
 
-
   #pendingStart: PromiseResolver<null>;
 
   #runPromise: Readonly<Promise<string>>;
@@ -87,7 +86,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
   #status = "not started yet";
 
   /** @type {Map<string, *>} @constant */
-  #defines: PreprocessorDefines = new Map();
+  #defines: PreprocessorDefines = new PreprocessorDefines();
 
   /** @type {JSDocGenerator[]} */
   #docGenerators: JSDocGenerator[] = [];
@@ -282,81 +281,64 @@ export default class CodeGenerator extends CodeGeneratorBase {
   }
 
   #buildDefines() : void {
-    this.#defines.clear();
-
     const data = this.#configurationData;
-    this.#defines.set("className", data.className);
+    this.#defines.className = data.className;
 
     const mapKeys = data.weakMapKeys.concat(data.strongMapKeys);
     const setKeys = data.weakSetElements.concat(data.strongSetElements);
 
-    this.#defines.set("importLines", data.importLines);
+    this.#defines.importLines = data.importLines;
 
     {
       const keys = Array.from(data.parameterToTypeMap.keys());
-      this.#defines.set("argList", keys.join(", "));
-      this.#defines.set("argNameList", CodeGenerator.buildArgNameList(keys));
+      this.#defines.argList = keys.join(", ");
+      this.#defines.argNameList = CodeGenerator.buildArgNameList(keys);
     }
 
     const paramsData = Array.from(data.parameterToTypeMap.values());
 
     if (/Solo|Weak\/?Map/.test(data.collectionTemplate)) {
-      this.#defineArgCountAndLists("weakMap", data.weakMapKeys);
-      this.#defineArgCountAndLists("strongMap", data.strongMapKeys);
+      this.#defines.weakMapKeys = data.weakMapKeys.slice();
+      this.#defines.strongMapKeys = data.strongMapKeys.slice();
     }
 
     if (/Solo|Weak\/?Set/.test(data.collectionTemplate)) {
-      this.#defineArgCountAndLists("weakSet", data.weakSetElements);
-      this.#defineArgCountAndLists("strongSet", data.strongSetElements);
+      this.#defines.weakSetElements = data.weakSetElements.slice();
+      this.#defines.strongSetElements = data.strongSetElements.slice();
     }
 
     if (data.collectionTemplate.includes("MapOf")) {
-      this.#defineArgCountAndLists("map", mapKeys);
-      this.#defineArgCountAndLists("set", setKeys);
+      this.#defines.mapKeys = mapKeys;
+      this.#defines.setKeys = setKeys;
     }
 
     if (this.#defineValidatorCode(paramsData, "validateArguments", () => true))
-      this.#defines.set("invokeValidate", true);
+      this.#defines.invokeValidate =  true;
     this.#defineValidatorCode(paramsData, "validateMapArguments", pd => mapKeys.includes(pd.argumentName));
     this.#defineValidatorCode(paramsData, "validateSetArguments", pd => setKeys.includes(pd.argumentName));
 
     if (mapKeys.length) {
       const collection = data.parameterToTypeMap.get(mapKeys[0]) as CollectionType
-      this.#defines.set("mapArgument0Type", collection.argumentType);
+      this.#defines.mapArgument0Type = collection.argumentType;
     }
 
     if (setKeys.length) {
       const collection = data.parameterToTypeMap.get(setKeys[0]) as CollectionType;
-      this.#defines.set("setArgument0Type", collection.argumentType);
+      this.#defines.setArgument0Type = collection.argumentType;
     }
 
     if (data.valueType) {
       let filter = (data.valueType.argumentValidator || "").trim();
       if (filter)
-        this.#defines.set("validateValue", filter + "\n    ");
+        this.#defines.validateValue = filter + "\n    ";
 
-      this.#defines.set(
-        "valueType",
-        data.valueType.argumentType
-      );
+      this.#defines.valueType = data.valueType.argumentType;
     }
-  }
-
-  #defineArgCountAndLists(
-    prefix: string,
-    keyArray: string[]
-  ) : void
-  {
-    this.#defines.set(prefix + "Count", keyArray.length);
-    this.#defines.set(prefix + "ArgList", keyArray.join(", "));
-    this.#defines.set(prefix + "ArgNameList", JSON.stringify(keyArray));
-    if (keyArray.length)
-      this.#defines.set(prefix + "Argument0", keyArray[0]);
   }
 
   #defineValidatorCode(
     paramsData: CollectionType[],
-    defineName: string,
+    defineName: "validateArguments" | "validateMapArguments" | "validateSetArguments",
     filter: (value: CollectionType) => boolean
   ) : boolean
   {
@@ -365,36 +347,34 @@ export default class CodeGenerator extends CodeGeneratorBase {
     }).filter(Boolean).join("\n\n").trim();
 
     if (validatorCode) {
-      this.#defines.set(defineName, validatorCode);
+      this.#defines[defineName] = validatorCode;
     }
     return Boolean(validatorCode);
   }
 
   #buildOneToOneDefines(base: CollectionConfiguration | symbol) : void {
-    this.#defines.clear();
-
     const data = this.#configurationData;
     const baseData = ConfigurationData.cloneData(base) as ConfigurationData;
-    this.#defines.set("className", data.className);
-    this.#defines.set("baseClassName", baseData.className);
-    this.#defines.set("configureOptions", data.oneToOneOptions);
+    this.#defines.className = data.className;
+    this.#defines.baseClassName = baseData.className;
+    this.#defines.configureOptions = data.oneToOneOptions;
 
     const weakKeyName = data.oneToOneKeyName;
-    this.#defines.set("weakKeyName", weakKeyName);
+    this.#defines.weakKeyName = weakKeyName;
 
     // bindOneToOne arguments
     let keys = Array.from(baseData.parameterToTypeMap.keys());
-    this.#defines.set("baseArgList", keys.slice());
+    this.#defines.baseArgList = keys.slice();
 
     keys.splice(keys.indexOf(weakKeyName), 1);
-    this.#defines.set("bindArgList", keys);
+    this.#defines.bindArgList = keys;
 
     const wrapBaseClass = baseData.weakMapKeys.length + baseData.strongMapKeys.length >= 2;
-    this.#defines.set("wrapBaseClass", wrapBaseClass);
+    this.#defines.wrapBaseClass = wrapBaseClass;
 
     const parameters = Array.from(baseData.parameterToTypeMap.values());
-    this.#defines.set("baseClassValidatesKey", parameters.some(param => param.argumentValidator));
-    this.#defines.set("baseClassValidatesValue", Boolean(baseData.valueType?.argumentValidator));
+    this.#defines.baseClassValidatesKey = parameters.some(param => param.argumentValidator);
+    this.#defines.baseClassValidatesValue = Boolean(baseData.valueType?.argumentValidator);
   }
 
   #buildDocGenerator() : void {

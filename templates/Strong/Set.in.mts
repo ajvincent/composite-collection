@@ -1,21 +1,21 @@
-import type { PreprocessorDefines, JSDocGenerator, TemplateFunction } from "../sharedTypes.mjs";
+import type { ReadonlyDefines, JSDocGenerator, TemplateFunction } from "../sharedTypes.mjs";
 
 /**
  * @param {Map}            defines The preprocessor macros.
  * @param {JSDocGenerator} docs    The primary documentation generator.
  * @returns {string}               The generated source code.
  */
-const preprocess: TemplateFunction = function preprocess(defines: PreprocessorDefines, docs: JSDocGenerator) {
+const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefines, docs: JSDocGenerator) {
   let invokeValidate = "";
-  if (defines.has("invokeValidate")) {
-    invokeValidate = `\n    this.#requireValidKey(${defines.get("argList")});\n`;
+  if (defines.invokeValidate) {
+    invokeValidate = `\n    this.#requireValidKey(${defines.argList});\n`;
   }
 
   return `
-${defines.get("importLines")}
+${defines.importLines}
 import KeyHasher from "./keys/Hasher.mjs";
 
-class ${defines.get("className")} {
+class ${defines.className} {
   /** @typedef {string} hash */
 
   ${docs.buildBlock("rootContainerSet", 4)}
@@ -39,9 +39,9 @@ ${docs.buildBlock("getSize", 2)}
   }
 
 ${docs.buildBlock("add", 2)}
-  add(${defines.get("argList")}) {${invokeValidate}
-    const __hash__ = this.#hasher.getHash(${defines.get("argList")});
-    this.#root.set(__hash__, Object.freeze([${defines.get("argList")}]));
+  add(${defines.argList}) {${invokeValidate}
+    const __hash__ = this.#hasher.getHash(${defines.argList});
+    this.#root.set(__hash__, Object.freeze([${defines.argList}]));
     return this;
   }
 
@@ -51,8 +51,8 @@ ${docs.buildBlock("clear", 2)}
   }
 
 ${docs.buildBlock("delete", 2)}
-  delete(${defines.get("argList")}) {
-    const __hash__ = this.#hasher.getHashIfExists(${defines.get("argList")});
+  delete(${defines.argList}) {
+    const __hash__ = this.#hasher.getHashIfExists(${defines.argList});
     return __hash__ ? this.#root.delete(__hash__) : false;
   }
 
@@ -66,15 +66,15 @@ ${docs.buildBlock("forEachSet", 2)}
 ${docs.buildBlock("forEachCallbackSet", 2)}
 
 ${docs.buildBlock("has", 2)}
-  has(${defines.get("argList")}) {
-    const __hash__ = this.#hasher.getHashIfExists(${defines.get("argList")});
+  has(${defines.argList}) {
+    const __hash__ = this.#hasher.getHashIfExists(${defines.argList});
     return __hash__ ? this.#root.has(__hash__) : false;
   }
 
-${defines.has("validateArguments") ? `
+${defines.validateArguments ? `
 ${docs.buildBlock("isValidKeyPublic", 2)}
-  isValidKey(${defines.get("argList")}) {
-    return this.#isValidKey(${defines.get("argList")});
+  isValidKey(${defines.argList}) {
+    return this.#isValidKey(${defines.argList});
   }
 ` : ``}
 
@@ -83,17 +83,17 @@ ${docs.buildBlock("values", 2)}
     for (let __value__ of this.#root.values())
       yield __value__;
   }
-${defines.has("invokeValidate") ?
+${defines.invokeValidate ?
   `
   ${docs.buildBlock("requireValidKey", 2)}
-    #requireValidKey(${defines.get("argList")}) {
-      if (!this.#isValidKey(${defines.get("argList")}))
+    #requireValidKey(${defines.argList}) {
+      if (!this.#isValidKey(${defines.argList}))
         throw new Error("The ordered key set is not valid!");
     }
 
   ${docs.buildBlock("isValidKeyPrivate", 2)}
-    #isValidKey(${defines.get("argList")}) {
-  ${defines.get("validateArguments")}
+    #isValidKey(${defines.argList}) {
+  ${defines.validateArguments}
       return true;
     }
 ` : ``}
@@ -102,11 +102,11 @@ ${defines.has("invokeValidate") ?
     return this.values();
   }
 
-  [Symbol.toStringTag] = "${defines.get("className")}";
+  [Symbol.toStringTag] = "${defines.className}";
 }
 
-Object.freeze(${defines.get("className")});
-Object.freeze(${defines.get("className")}.prototype);
+Object.freeze(${defines.className});
+Object.freeze(${defines.className}.prototype);
 `;
 }
 

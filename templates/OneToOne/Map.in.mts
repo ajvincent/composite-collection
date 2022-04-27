@@ -1,6 +1,14 @@
-import type { PreprocessorDefines, JSDocGenerator, TemplateFunction } from "../sharedTypes.mjs";
+import type { ReadonlyDefines, JSDocGenerator, TemplateFunction } from "../sharedTypes.mjs";
 
-const buildArgNameList = (keys: string[]) => keys.join(", ");
+/**
+ * Serialize keys.
+ *
+ * @param {string[]} keys The keys.
+ * @returns {string} The keys serialized.
+ */
+function buildArgNameList(keys: string[]): string {
+  return keys.join(", ");
+}
 
 /**
  * Build an arguments list based on a suffix.
@@ -21,20 +29,20 @@ function buildNumberedArgs(args: string[], suffix: string, weakKeyName: string) 
  * @returns {string}                The generated source code.
  */
 const preprocess: TemplateFunction = function(
-  defines: PreprocessorDefines,
+  defines: ReadonlyDefines,
   soloDocs: JSDocGenerator,
   duoDocs: JSDocGenerator
 )
 {
-  const bindArgList = defines.get("bindArgList");
+  const bindArgList = defines.bindArgList;
   if (!Array.isArray(bindArgList))
     throw new Error("assertion: bindArgList must be an array!");
 
-  const baseArgList = defines.get("baseArgList");
+  const baseArgList = defines.baseArgList;
   if (!Array.isArray(baseArgList))
     throw new Error("assertion: baseArgList must be an array!");
 
-  const weakKeyName = defines.get("weakKeyName");
+  const weakKeyName = defines.weakKeyName;
   if (typeof weakKeyName !== "string")
     throw new Error("assertion: weakKeyName must be a string!");
 
@@ -52,11 +60,11 @@ const preprocess: TemplateFunction = function(
   const bindMapArgs = buildArgNameList(bindArgList);
 
   let classDefinition = "";
-  if (defines.get("wrapBaseClass")) {
+  if (defines.wrapBaseClass) {
     classDefinition = `
-class ${defines.get("className")} {
+class ${defines.className} {
   /** @constant */
-  #baseMap = new ${defines.get("baseClassName")};
+  #baseMap = new ${defines.baseClassName};
 
   /** @type {WeakMap<object, object>} @constant */
   #weakValueToInternalKeyMap = new WeakMap;
@@ -213,7 +221,7 @@ ${soloDocs.buildBlock("isValidKey", 2)}
 ${soloDocs.buildBlock("isValidValue", 2)}
   isValidValue(value) {
     return ${
-      defines.get("baseClassValidatesValue") ?
+      defines.baseClassValidatesValue ?
       "(Object(value) === value) && this.#baseMap.isValidValue(value)" :
       "Object(value) === value"
     };
@@ -231,16 +239,16 @@ ${bindArgList.length ? `
       throw new Error(argName + " is not a valid value!");
   }
 
-  [Symbol.toStringTag] = "${defines.get("className")}";
+  [Symbol.toStringTag] = "${defines.className}";
 }
     `;
   }
   else {
     classDefinition = `
-class ${defines.get("className")} extends ${defines.get("baseClassName")} {
+class ${defines.className} extends ${defines.baseClassName} {
 ${duoDocs.buildBlock("bindOneToOneSimple", 2)}
   bindOneToOne(value_1, value_2) {${
-    defines.get("baseClassValidatesKey") ? `
+    defines.baseClassValidatesKey ? `
     if (!this.isValidKey(value_1))
       throw new Error("value_1 mismatch!");
     if (!this.isValidKey(value_2))
@@ -271,14 +279,14 @@ ${duoDocs.buildBlock("bindOneToOneSimple", 2)}
    *
    * @param {*} value The value.
    * @returns {boolean} True if the value is valid.${
-defines.get("baseClassName") !== "WeakMap" ? `
+defines.baseClassName !== "WeakMap" ? `
    * @see the base map class for further constraints.` : ""
    }
    * @public
    */
   isValidValue(value) {
     return ${
-      defines.get("baseClassValidatesValue") ?
+      defines.baseClassValidatesValue ?
         "(Object(value) === value) && super.isValidValue(value)" :
         "Object(value) === value"
     };
@@ -288,14 +296,14 @@ defines.get("baseClassName") !== "WeakMap" ? `
     throw new Error("Not implemented, use .bindOneToOne(value_1, value_2);");
   }
 
-  [Symbol.toStringTag] = "${defines.get("className")}";
+  [Symbol.toStringTag] = "${defines.className}";
 }
     `;
   }
 
   return classDefinition + `
-Object.freeze(${defines.get("className")});
-Object.freeze(${defines.get("className")}.prototype);
+Object.freeze(${defines.className});
+Object.freeze(${defines.className}.prototype);
 `}
 
 export default preprocess;
