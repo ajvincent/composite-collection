@@ -19,7 +19,7 @@ import { Deferred } from "./utilities/PromiseTypes.mjs";
 import type { PromiseResolver } from "./utilities/PromiseTypes.mjs";
 
 import JSDocGenerator from "./generatorTools/JSDocGenerator.mjs";
-import TemplateGenerators from "./generatorTools/TemplateGenerators.mjs";
+import TemplateGenerators, { TemplateFunction } from "./generatorTools/TemplateGenerators.mjs";
 
 import fs from "fs/promises";
 import path from "path";
@@ -128,7 +128,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
       throw new Error("Target path should be a path to a file!");
 
     configuration.lock(); // this may throw, but if so, it's good that it does so.
-    this.#configurationData = ConfigurationData.cloneData(configuration)!;
+    this.#configurationData = ConfigurationData.cloneData(configuration) as ConfigurationData;
     this.#targetPath = targetPath;
 
     const gpSet = new GeneratorPromiseSet(this, path.dirname(targetPath));
@@ -179,7 +179,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
         this.#internalFlagSet = flags;
     }
 
-    const gpSet = generatorToPromiseSet.get(this)!;
+    const gpSet = generatorToPromiseSet.get(this) as GeneratorPromiseSet;
     const hasInitialTasks = gpSet.has(this.#targetPath);
     const bp = gpSet.get(this.#targetPath);
 
@@ -221,10 +221,9 @@ export default class CodeGenerator extends CodeGeneratorBase {
     this.#status = "in progress";
 
     if (this.#configurationData.collectionTemplate === "OneToOne/Map") {
-      const base = this.#configurationData.oneToOneBase;
-      if (!base)
-        throw new Error("assertion: unreachable");
-      if (ConfigurationData.cloneData(base)!.className !== "WeakMap") {
+      const base = this.#configurationData.oneToOneBase as CollectionConfiguration;
+      const data = ConfigurationData.cloneData(base) as ConfigurationData;
+      if (data.className !== "WeakMap") {
         await this.#buildOneToOneBase(base);
       }
       this.#buildOneToOneDefines(base);
@@ -236,7 +235,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
     }
 
     this.#generateSource();
-    const gpSet = generatorToPromiseSet.get(this)!;
+    const gpSet = generatorToPromiseSet.get(this) as GeneratorPromiseSet;
     if (this.requiresKeyHasher)
       gpSet.requireKeyHasher();
     if (this.requiresWeakKeyComposer)
@@ -322,17 +321,13 @@ export default class CodeGenerator extends CodeGeneratorBase {
     this.#defineValidatorCode(paramsData, "validateSetArguments", pd => setKeys.includes(pd.argumentName));
 
     if (mapKeys.length) {
-      this.#defines.set(
-        "mapArgument0Type",
-        data.parameterToTypeMap.get(mapKeys[0])!.argumentType
-      );
+      const collection = data.parameterToTypeMap.get(mapKeys[0]) as CollectionType
+      this.#defines.set("mapArgument0Type", collection.argumentType);
     }
 
     if (setKeys.length) {
-      this.#defines.set(
-        "setArgument0Type",
-        data.parameterToTypeMap.get(setKeys[0])!.argumentType
-      );
+      const collection = data.parameterToTypeMap.get(setKeys[0]) as CollectionType;
+      this.#defines.set("setArgument0Type", collection.argumentType);
     }
 
     if (data.valueType) {
@@ -379,7 +374,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
     this.#defines.clear();
 
     const data = this.#configurationData;
-    const baseData = ConfigurationData.cloneData(base)!;
+    const baseData = ConfigurationData.cloneData(base) as ConfigurationData;
     this.#defines.set("className", data.className);
     this.#defines.set("baseClassName", baseData.className);
     this.#defines.set("configureOptions", data.oneToOneOptions);
@@ -420,7 +415,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
   }
 
   async #buildOneToOneDocGenerators(base: CollectionConfiguration | symbol) : Promise<void> {
-    const baseData = ConfigurationData.cloneData(base)!;
+    const baseData = ConfigurationData.cloneData(base) as ConfigurationData;
 
     // For the solo doc generator, the value argument comes first.
     let generator = await this.#createOneToOneGenerator("oneToOneSoloArg");
@@ -451,7 +446,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
     addValue: boolean
   ) : void
   {
-    const baseData = ConfigurationData.cloneData(base)!;
+    const baseData = ConfigurationData.cloneData(base) as ConfigurationData;
 
     baseData.parameterToTypeMap.delete(this.#configurationData.oneToOneKeyName);
 
@@ -481,7 +476,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
   }
 
   #generateSource() : void {
-    const generator = TemplateGenerators.get(this.#chooseCollectionTemplate())!;
+    const generator = TemplateGenerators.get(this.#chooseCollectionTemplate()) as TemplateFunction;
 
     let codeSegments = [
       this.#generatedCode,
@@ -546,7 +541,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
   }
 
   async #buildOneToOneBase(base: CollectionConfiguration | symbol) : Promise<void> {
-    const baseData = ConfigurationData.cloneData(base)!;
+    const baseData = ConfigurationData.cloneData(base) as ConfigurationData;
     if (baseData.className === "WeakMap")
       return;
     if (typeof base === "symbol")

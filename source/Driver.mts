@@ -92,9 +92,10 @@ export default class Driver {
     const targetPaths: string[] = [];
 
     await PromiseAllParallel(configs, async config => {
+      const relativePath = configToRelativePath.get(config) as string;
       try {
         const targetPath = path.normalize(path.join(
-          this.#targetsPath, configToRelativePath.get(config)!
+          this.#targetsPath, relativePath
         ));
         const generator = new CodeGenerator(
           config, targetPath, this.#compileTimeOptions
@@ -108,7 +109,7 @@ export default class Driver {
       }
       catch (ex) {
         // eslint-disable-next-line no-console
-        console.error("Failed on " + configToRelativePath.get(config));
+        console.error("Failed on " + relativePath);
         throw ex;
       }
     });

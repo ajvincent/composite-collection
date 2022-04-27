@@ -151,7 +151,7 @@ export default class WeakKeyComposer {
     let properties = this.#hashToPropertyMap.get(hash);
     if (properties) {
       // Each weak argument indirectly holds a strong reference on the weak key.
-      return properties.weakKeyRef.deref()!;
+      return properties.weakKeyRef.deref() as object;
     }
 
     const finalizerKey = new FinalizerKey;
@@ -196,7 +196,7 @@ export default class WeakKeyComposer {
     let properties = this.#hashToPropertyMap.get(hash);
 
     // Each weak argument indirectly holds a strong reference on the weak key.
-    return properties ? properties.weakKeyRef.deref()! : null;
+    return properties ? properties.weakKeyRef.deref() as object : null;
   }
 
   /**
@@ -222,7 +222,7 @@ export default class WeakKeyComposer {
       return false;
 
     // Each weak argument indirectly holds a strong reference on the finalizer key.
-    const finalizerKey = properties.finalizerKeyRef.deref()!;
+    const finalizerKey = properties.finalizerKeyRef.deref() as object;
     return this.#deleteByFinalizerKey(finalizerKey);
   }
 
@@ -232,7 +232,7 @@ export default class WeakKeyComposer {
       return false;
 
     // Each weak argument indirectly holds a strong reference on the property bag.
-    const properties = this.#weakKeyPropertyMap.get(weakKey)!;
+    const properties = this.#weakKeyPropertyMap.get(weakKey) as WeakKeyPropertyBag;
 
     this.#keyFinalizer.unregister(finalizerKey);
     this.#finalizerToPublic.delete(finalizerKey);

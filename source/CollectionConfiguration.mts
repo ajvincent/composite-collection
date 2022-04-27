@@ -446,7 +446,7 @@ export default class CollectionConfiguration {
           throw new Error("The base configuration must be locked!");
         }
 
-        configData = ConfigurationData.cloneData(base)!;
+        configData = ConfigurationData.cloneData(base) as ConfigurationData;
         if ((configData.collectionTemplate === "Weak/Map") ||
             ((configData.collectionTemplate === "Solo/Map") && (configData.weakMapKeys.length > 0))) {
           retrievedBase = base;
@@ -494,7 +494,8 @@ export default class CollectionConfiguration {
     privateKeyName: string
   ) : void
   {
-    const weakKeys = ConfigurationData.cloneData(baseConfiguration)!.weakMapKeys;
+    const data = ConfigurationData.cloneData(baseConfiguration) as ConfigurationData;
+    const weakKeys = data.weakMapKeys;
     if (weakKeys.includes(privateKeyName))
       return;
     const names = weakKeys.map(name => `"${name}"`).join(", ");
