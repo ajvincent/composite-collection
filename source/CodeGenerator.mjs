@@ -364,7 +364,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
      * @returns {Promise<void>}
      */
     async #writeSource(gpSet) {
-        const targetPath = gpSet.getTemporaryPath(this.#targetPath);
+        const targetPath = await gpSet.getTemporaryPath(this.#targetPath);
         return fs.writeFile(targetPath, this.#generatedCode, { encoding: "utf-8" });
     }
     async #buildOneToOneBase(base) {

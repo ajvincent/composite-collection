@@ -1,6 +1,8 @@
 import { BuildPromise, BuildPromiseSet } from "../utilities/BuildPromise.mjs";
 export declare class GeneratorPromiseSet extends BuildPromiseSet {
     #private;
+    /** @type {BuildPromise} @constant */
+    generatorsTarget: BuildPromise;
     constructor(owner: object, targetDir: string);
     get owner(): object;
     /**
@@ -13,12 +15,10 @@ export declare class GeneratorPromiseSet extends BuildPromiseSet {
      * @returns {boolean} True if this is a known target.
      */
     has(targetName: string): boolean;
-    /** @type {BuildPromise} @constant */
-    get generatorsTarget(): BuildPromise;
-    getTemporaryPath(targetPath: string): string;
+    runMain(): Promise<void>;
+    getTemporaryPath(targetPath: string): Promise<string>;
     requireKeyHasher(): void;
     requireWeakKeyComposer(): void;
-    runMain(): Promise<void>;
 }
 export declare class CodeGeneratorBase {
 }
