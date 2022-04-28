@@ -1,5 +1,5 @@
 import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";
-import { describeForAllThree } from "../support/CodeGenerator.mjs";
+import { describeForAllThree } from "../support/SpecModuleLoader.mjs";
 import ToHoldRefsMatchers from "#support/toHoldReferences.mjs";
 
 describeForAllThree("StrongMapOfOptimizedStrongSets", (modules, mapMod, setMod) => {
