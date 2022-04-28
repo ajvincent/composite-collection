@@ -34,8 +34,8 @@ class WeakStrongMap {
   constructor() {
     if (arguments.length > 0) {
       const iterable = arguments[0];
-      for (let entry of iterable) {
-        this.set(...entry);
+      for (let [weakKey, strongKey, value] of iterable) {
+        this.set(weakKey, strongKey, value);
       }
     }
   }

@@ -24,8 +24,8 @@ class StrongMapOfStrongSets {
   constructor() {
     if (arguments.length > 0) {
       const iterable = arguments[0];
-      for (let entry of iterable) {
-        this.add(...entry);
+      for (let [mapKey, setKey] of iterable) {
+        this.add(mapKey, setKey);
       }
     }
   }

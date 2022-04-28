@@ -21,8 +21,8 @@ class ${defines.className} {
   constructor() {
     if (arguments.length > 0) {
       const iterable = arguments[0];
-      for (let entry of iterable) {
-        this.set(...entry);
+      for (let [${defines.argList}, value] of iterable) {
+        this.set(${defines.argList}, value);
       }
     }
   }

@@ -261,7 +261,9 @@ ${duoDocs.buildBlock("bindOneToOneSimple", 2)}
             "Object(value) === value"};
   }
 
-  set() {
+  set(key, value) {
+    void(key);
+    void(value);
     throw new Error("Not implemented, use .bindOneToOne(value_1, value_2);");
   }
 

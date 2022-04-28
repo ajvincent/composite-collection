@@ -33,8 +33,8 @@ class StrongStrongSet {
   constructor() {
     if (arguments.length > 0) {
       const iterable = arguments[0];
-      for (let entry of iterable) {
-        this.add(...entry);
+      for (let [key1, key2] of iterable) {
+        this.add(key1, key2);
       }
     }
   }

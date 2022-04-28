@@ -36,9 +36,9 @@ class ${defines.className} {
   }
 
 ${docs.buildBlock("add", 2)}
-  add(${defines.mapKeys.join(", ")}, ${defines.setKeys.join(", ")}) {
-    this.#requireValidKey(${defines.mapKeys.join(", ")}, ${defines.setKeys.join(", ")});
-    const __innerMap__ = this.#requireInnerMap(${defines.mapKeys.join(", ")});
+  add(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}) {
+    this.#requireValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")});
+    const __innerMap__ = this.#requireInnerMap(${defines.mapKeys[0]});
 
     // level 2: inner map to set
     const __setKeyHash__ = this.#setHasher.getHash(${defines.setKeys.join(", ")});
@@ -50,8 +50,8 @@ ${docs.buildBlock("add", 2)}
   }
 
 ${docs.buildBlock("addSets", 2)}
-  addSets(${defines.mapKeys.join(", ")}, __sets__) {
-    this.#requireValidMapKey(${defines.mapKeys.join(", ")});
+  addSets(${defines.mapKeys[0]}, __sets__) {
+    this.#requireValidMapKey(${defines.mapKeys[0]});
     const __array__ = Array.from(__sets__).map((__set__, __index__) => {
       __set__ = Array.from(__set__);
       if (__set__.length !== ${defines.setKeys.length}) {
@@ -59,11 +59,11 @@ ${docs.buildBlock("addSets", 2)}
           defines.setKeys.length > 1 ? "s" : ""
         }!\`);
       }
-      this.#requireValidKey(${defines.mapKeys.join(", ")}, ...__set__);
+      this.#requireValidKey(${defines.mapKeys[0]}, ...__set__);
       return __set__;
     });
 
-    const __innerMap__ = this.#requireInnerMap(${defines.mapKeys.join(", ")});
+    const __innerMap__ = this.#requireInnerMap(${defines.mapKeys[0]});
 
     // level 2: inner map to set
     __array__.forEach(__set__ => {
@@ -77,15 +77,15 @@ ${docs.buildBlock("addSets", 2)}
   }
 
 ${docs.buildBlock("clearSets", 2)}
-  clearSets(${defines.mapKeys.join(", ")}) {
-    this.#requireValidMapKey(${defines.mapKeys.join(", ")});
+  clearSets(${defines.mapKeys[0]}) {
+    this.#requireValidMapKey(${defines.mapKeys[0]});
     const __innerMap__ = this.#root.get(${defines.mapKeys[0]});
     __innerMap__?.clear();
   }
 
 ${docs.buildBlock("delete", 2)}
-  delete(${defines.mapKeys.join(", ")}, ${defines.setKeys.join(", ")}) {
-    this.#requireValidKey(${defines.mapKeys.join(", ")}, ${defines.setKeys.join(", ")});
+  delete(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}) {
+    this.#requireValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")});
     const __innerMap__ = this.#root.get(${defines.mapKeys[0]});
     if (!__innerMap__)
       return false;
@@ -97,7 +97,7 @@ ${docs.buildBlock("delete", 2)}
     const __returnValue__ = __innerMap__.delete(__setKeyHash__);
 
     if (__innerMap__.size === 0) {
-      this.deleteSets(${defines.mapKeys.join(", ")});
+      this.deleteSets(${defines.mapKeys[0]});
     }
 
     return __returnValue__;
@@ -110,29 +110,29 @@ ${docs.buildBlock("deleteSets", 2)}
   }
 
 ${docs.buildBlock("forEachMapSet", 2)}
-  forEachSet(${defines.mapKeys.join(", ")}, __callback__, __thisArg__) {
-    this.#requireValidMapKey(${defines.mapKeys.join(", ")});
+  forEachSet(${defines.mapKeys[0]}, __callback__, __thisArg__) {
+    this.#requireValidMapKey(${defines.mapKeys[0]});
     const __innerMap__ = this.#root.get(${defines.mapKeys[0]});
     if (!__innerMap__)
       return;
 
     __innerMap__.forEach(
-      __keySet__ => __callback__.apply(__thisArg__, [${defines.mapKeys.join(", ")}, ...__keySet__, this])
+      __keySet__ => __callback__.apply(__thisArg__, [${defines.mapKeys[0]}, ...__keySet__, this])
     );
   }
 
 ${docs.buildBlock("forEachCallbackSet", 2)}
 
 ${docs.buildBlock("getSizeOfSet", 2)}
-  getSizeOfSet(${defines.mapKeys.join(", ")}) {
-    this.#requireValidMapKey(${defines.mapKeys.join(", ")});
+  getSizeOfSet(${defines.mapKeys[0]}) {
+    this.#requireValidMapKey(${defines.mapKeys[0]});
     const __innerMap__ = this.#root.get(${defines.mapKeys[0]});
     return __innerMap__?.size || 0;
   }
 
 ${docs.buildBlock("has", 2)}
-  has(${defines.mapKeys.join(", ")}, ${defines.setKeys.join(", ")}) {
-    this.#requireValidKey(${defines.mapKeys.join(", ")}, ${defines.setKeys.join(", ")});
+  has(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}) {
+    this.#requireValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")});
     const __innerMap__ = this.#root.get(${defines.mapKeys[0]});
     if (!__innerMap__)
       return false;
@@ -143,19 +143,19 @@ ${docs.buildBlock("has", 2)}
   }
 
 ${docs.buildBlock("hasSet", 2)}
-  hasSets(${defines.mapKeys.join(", ")}) {
-    this.#requireValidMapKey(${defines.mapKeys.join(", ")});
+  hasSets(${defines.mapKeys[0]}) {
+    this.#requireValidMapKey(${defines.mapKeys[0]});
     return this.#root.has(${defines.mapKeys[0]});
   }
 
 ${docs.buildBlock("isValidKeyPublic", 2)}
-  isValidKey(${defines.mapKeys.join(", ")}, ${defines.setKeys.join(", ")}) {
-    return this.#isValidKey(${defines.mapKeys.join(", ")}, ${defines.setKeys.join(", ")});
+  isValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}) {
+    return this.#isValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")});
   }
 
 ${docs.buildBlock("valuesSet", 2)}
-  * valuesSet(${defines.mapKeys.join(", ")}) {
-    this.#requireValidMapKey(${defines.mapKeys.join(", ")});
+  * valuesSet(${defines.mapKeys[0]}) {
+    this.#requireValidMapKey(${defines.mapKeys[0]});
 
     const __innerMap__ = this.#root.get(${defines.mapKeys[0]});
     if (!__innerMap__)
@@ -163,7 +163,7 @@ ${docs.buildBlock("valuesSet", 2)}
 
     const __outerIter__ = __innerMap__.values();
     for (let __value__ of __outerIter__)
-      yield [${defines.mapKeys.join(", ")}, ...__value__];
+      yield [${defines.mapKeys[0]}, ...__value__];
   }
 
 ${docs.buildBlock("requireInnerCollectionPrivate", 2)}
@@ -175,8 +175,8 @@ ${docs.buildBlock("requireInnerCollectionPrivate", 2)}
   }
 
 ${docs.buildBlock("requireValidKey", 2)}
-  #requireValidKey(${defines.mapKeys.join(", ")}, ${defines.setKeys.join(", ")}) {
-    if (!this.#isValidKey(${defines.mapKeys.join(", ")}, ${defines.setKeys.join(", ")}))
+  #requireValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}) {
+    if (!this.#isValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}))
       throw new Error("The ordered key set is not valid!");
   }
 
