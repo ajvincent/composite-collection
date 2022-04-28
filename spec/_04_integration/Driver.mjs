@@ -1,5 +1,5 @@
 import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
-import tempDirWithCleanup from "#support/tempDirWithCleanup.mjs";
+import tempDirWithCleanup from "#source/utilities/tempDirWithCleanup.mjs";
 
 import url from "url";
 import fs from "fs/promises";

@@ -31,7 +31,7 @@ import { spawn } from "child_process";
 import { hashAllFiles } from "./hash-all-files.mjs";
 import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
 import { PromiseAllParallel } from "#source/utilities/PromiseTypes.mjs";
-import tempDirWithCleanup from "#support/tempDirWithCleanup.mjs"
+import tempDirWithCleanup from "#source/utilities/tempDirWithCleanup.mjs"
 
 import path from "path";
 import fs from "fs/promises";

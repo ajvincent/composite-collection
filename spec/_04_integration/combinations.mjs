@@ -2,7 +2,7 @@ import CollectionConfiguration from "#source/CollectionConfiguration.mjs";
 //import ConfigurationData from "../../source/generatorTools/ConfigurationData.mjs";
 import CodeGenerator from "#source/CodeGenerator.mjs";
 
-import tempDirWithCleanup from "#support/tempDirWithCleanup.mjs";
+import tempDirWithCleanup from "#source/utilities/tempDirWithCleanup.mjs";
 
 import fs from "fs/promises";
 import path from "path";
