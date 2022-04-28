@@ -253,6 +253,7 @@ describe("CodeGenerator(SoloStrongMap.mjs)", () => {
  * This is generated code.  Do not edit.
  *
  * Generator: https://github.com/ajvincent/composite-collection/
+ * Template: Solo/Map
  * I generated this file for testing purposes.
  *
  * This is only a test.

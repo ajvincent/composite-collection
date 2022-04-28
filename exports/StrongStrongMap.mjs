@@ -9,6 +9,7 @@
  * This is generated code.  Do not edit.
  *
  * Generator: https://github.com/ajvincent/composite-collection/
+ * Template: Strong/Map
  * @license MPL-2.0
  * @author Alexander J. Vincent <ajvincent@gmail.com>
  * @copyright © 2021-2022 Alexander J. Vincent

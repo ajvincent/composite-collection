@@ -195,6 +195,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
  * This is generated code.  Do not edit.
  *
  * Generator: https://github.com/ajvincent/composite-collection/
+ * Template: ${this.#configurationData.collectionTemplate}
 `.trim(),
             this.#compileOptions.license ? ` * @license ${this.#compileOptions.license}` : "",
             this.#compileOptions.author ? ` * @author ${this.#compileOptions.author}` : "",
@@ -321,7 +322,8 @@ export default class CodeGenerator extends CodeGeneratorBase {
         }
     }
     #generateSource() {
-        const generator = TemplateGenerators.get(this.#chooseCollectionTemplate());
+        this.#configurationData.collectionTemplate = this.#chooseCollectionTemplate();
+        const generator = TemplateGenerators.get(this.#configurationData.collectionTemplate);
         let codeSegments = [
             this.#generatedCode,
             generator(this.#defines, ...this.#docGenerators),
