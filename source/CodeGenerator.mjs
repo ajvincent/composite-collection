@@ -67,7 +67,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
     /** @type {string} */
     #generatedCode = "";
     /** @type {Set<string>?} @constant */
-    #internalFlagSet = new Set;
+    #internalFlagSet;
     /** @type {CodeGenerator | null} */
     #oneToOneSubGenerator = null;
     // #endregion private properties
@@ -178,7 +178,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
         if (this.requiresWeakKeyComposer)
             gpSet.requireWeakKeyComposer();
         if (!this.#internalFlagSet?.has("prevent export"))
-            await this.#writeSource();
+            await this.#writeSource(gpSet);
         this.#status = "completed";
         return this.#configurationData.className;
     }
@@ -359,8 +359,13 @@ export default class CodeGenerator extends CodeGeneratorBase {
         }
         return startTemplate;
     }
-    async #writeSource() {
-        return fs.writeFile(this.#targetPath, this.#generatedCode, { encoding: "utf-8" });
+    /**
+     * @param {GeneratorPromiseSet} gpSet The current promise set.
+     * @returns {Promise<void>}
+     */
+    async #writeSource(gpSet) {
+        const targetPath = gpSet.getTemporaryPath(this.#targetPath);
+        return fs.writeFile(targetPath, this.#generatedCode, { encoding: "utf-8" });
     }
     async #buildOneToOneBase(base) {
         const baseData = ConfigurationData.cloneData(base);

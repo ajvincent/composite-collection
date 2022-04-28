@@ -20,6 +20,7 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
 
   #generatorsTarget: BuildPromise;
   #exportKeysTarget: BuildPromise;
+  #copyToTargetDir: BuildPromise;
 
   constructor(owner: object, targetDir: string) {
     super();
@@ -30,6 +31,8 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
 
     this.#generatorsTarget = this.get("(generators)");
     this.#exportKeysTarget = this.get("(export keys)");
+    this.#copyToTargetDir  = this.get("(move to target directory)");
+    void(this.#copyToTargetDir);
 
     this.#exportKeysTarget.addTask(() => this.#exportKeyFiles());
   }
@@ -61,6 +64,10 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     return this.#generatorsTarget;
   }
 
+  getTemporaryPath(targetPath: string) : string {
+    return targetPath;
+  }
+
   requireKeyHasher() : void {
     if (this.#requireKeyHasher)
       return;
@@ -78,6 +85,7 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     this.markReady();
     this.main.addSubtarget("(generators)");
     this.main.addSubtarget("(export keys)");
+    this.main.addSubtarget("(move to target directory)");
 
     await this.main.run();
   }
@@ -91,11 +99,12 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
       fileList = fileList.filter(f => !f.startsWith("Composite."));
     }
 
-    await fs.mkdir(path.join(this.#targetDir, "keys"), { recursive: true });
+    const targetDir = this.getTemporaryPath(this.#targetDir);
+    await fs.mkdir(path.join(targetDir, "keys"), { recursive: true });
 
     await PromiseAllParallel(fileList, async (leaf: string) => fs.copyFile(
       path.join(projectRoot, "source/exports/keys", leaf),
-      path.join(this.#targetDir, "keys", leaf)
+      path.join(targetDir, "keys", leaf)
     ));
   }
 }

@@ -13,6 +13,7 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     #requireWeakKeyComposer = false;
     #generatorsTarget;
     #exportKeysTarget;
+    #copyToTargetDir;
     constructor(owner, targetDir) {
         super();
         this.#owner = owner;
@@ -20,6 +21,8 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
         this.#targetDir = targetDir;
         this.#generatorsTarget = this.get("(generators)");
         this.#exportKeysTarget = this.get("(export keys)");
+        this.#copyToTargetDir = this.get("(move to target directory)");
+        void (this.#copyToTargetDir);
         this.#exportKeysTarget.addTask(() => this.#exportKeyFiles());
     }
     get owner() {
@@ -45,6 +48,9 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     get generatorsTarget() {
         return this.#generatorsTarget;
     }
+    getTemporaryPath(targetPath) {
+        return targetPath;
+    }
     requireKeyHasher() {
         if (this.#requireKeyHasher)
             return;
@@ -60,6 +66,7 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
         this.markReady();
         this.main.addSubtarget("(generators)");
         this.main.addSubtarget("(export keys)");
+        this.main.addSubtarget("(move to target directory)");
         await this.main.run();
     }
     async #exportKeyFiles() {
@@ -69,8 +76,9 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
         if (!this.#requireWeakKeyComposer) {
             fileList = fileList.filter(f => !f.startsWith("Composite."));
         }
-        await fs.mkdir(path.join(this.#targetDir, "keys"), { recursive: true });
-        await PromiseAllParallel(fileList, async (leaf) => fs.copyFile(path.join(projectRoot, "source/exports/keys", leaf), path.join(this.#targetDir, "keys", leaf)));
+        const targetDir = this.getTemporaryPath(this.#targetDir);
+        await fs.mkdir(path.join(targetDir, "keys"), { recursive: true });
+        await PromiseAllParallel(fileList, async (leaf) => fs.copyFile(path.join(projectRoot, "source/exports/keys", leaf), path.join(targetDir, "keys", leaf)));
     }
 }
 // This is here so the TypeScript generator can derive from it.

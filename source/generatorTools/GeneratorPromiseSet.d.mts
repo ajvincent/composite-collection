@@ -15,6 +15,7 @@ export declare class GeneratorPromiseSet extends BuildPromiseSet {
     has(targetName: string): boolean;
     /** @type {BuildPromise} @constant */
     get generatorsTarget(): BuildPromise;
+    getTemporaryPath(targetPath: string): string;
     requireKeyHasher(): void;
     requireWeakKeyComposer(): void;
     runMain(): Promise<void>;

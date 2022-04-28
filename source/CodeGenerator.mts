@@ -95,7 +95,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
   #generatedCode = "";
 
   /** @type {Set<string>?} @constant */
-  #internalFlagSet: InternalFlags = new Set;
+  #internalFlagSet: InternalFlags | undefined;
 
   /** @type {CodeGenerator | null} */
   #oneToOneSubGenerator: CodeGenerator | null = null;
@@ -241,7 +241,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
       gpSet.requireWeakKeyComposer();
 
     if (!this.#internalFlagSet?.has("prevent export"))
-      await this.#writeSource();
+      await this.#writeSource(gpSet);
 
     this.#status = "completed";
     return this.#configurationData.className;
@@ -512,9 +512,14 @@ export default class CodeGenerator extends CodeGeneratorBase {
     return startTemplate;
   }
 
-  async #writeSource() : Promise<void> {
+  /**
+   * @param {GeneratorPromiseSet} gpSet The current promise set.
+   * @returns {Promise<void>}
+   */
+  async #writeSource(gpSet: GeneratorPromiseSet) : Promise<void> {
+    const targetPath = gpSet.getTemporaryPath(this.#targetPath);
     return fs.writeFile(
-      this.#targetPath,
+      targetPath,
       this.#generatedCode,
       { encoding: "utf-8" }
     );
