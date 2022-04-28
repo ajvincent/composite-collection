@@ -1,10 +1,8 @@
 import CollectionConfiguration from "#source/CollectionConfiguration.mjs";
-import CodeGenerator from "#source/CodeGenerator.mjs";
 import CompileTimeOptions from "#source/CompileTimeOptions.mjs";
+import InMemoryDriver from "#source/InMemoryDriver.mjs";
 
 import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";
-
-import { PromiseAllSequence } from "#source/utilities/PromiseTypes.mjs";
 
 import fs from "fs/promises";
 import path from "path";
@@ -131,24 +129,18 @@ async function createCollectionFiles(dirName, extraKeyCount, disableKeyOptimizat
     });
   });
 
-  await PromiseAllSequence(configSequence, async arg => {
+  const driver = new InMemoryDriver(
+    generatedDir,
+    new CompileTimeOptions({ disableKeyOptimization })
+  );
+
+  configSequence.forEach((arg) => {
     const [className, config] = arg;
     const leafName = className + ".mjs";
-
-    try {
-      const generator = new CodeGenerator(
-        config,
-        path.join(generatedDir, leafName),
-        new CompileTimeOptions({ disableKeyOptimization })
-      );
-
-      await generator.run();
-    }
-    catch (ex) {
-      console.error("Failed in generating collection: spec/_02_single-keytype-optimizations/" + dirName + "/generated/" + leafName);
-      throw ex;
-    }
+    driver.addConfiguration(config, leafName);
   });
+
+  await driver.run();
 }
 
 /**
