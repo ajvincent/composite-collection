@@ -1,4 +1,4 @@
-## This is a directory for testing the CodeGenerator's output files.
+# This is a directory for testing the CodeGenerator's output files
 
 The configurations live in ../fixtures.
 The generated code lives in ../generated.

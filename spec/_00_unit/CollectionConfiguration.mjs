@@ -127,7 +127,6 @@ describe("CollectionConfiguration", () => {
     });
   });
 
-
   describe(".addMapKey()", () => {
     let config, options, type1Args;
     beforeEach(() => {

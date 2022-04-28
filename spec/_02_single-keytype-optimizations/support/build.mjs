@@ -38,9 +38,6 @@ const setValidators = [
   }
 ];
 
-void mapValidators;
-void setValidators;
-
 /**
  * Define a configuration with a given key sequence.
  *
