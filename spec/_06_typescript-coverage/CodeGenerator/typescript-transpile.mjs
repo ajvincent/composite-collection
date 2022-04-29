@@ -12,7 +12,7 @@ const projectRoot = url.fileURLToPath(new URL("../../..", import.meta.url));
 
 const ENCODING = { encoding: "utf-8"};
 
-xit("TypeScript transpiles generated modules cleanly (except for noImplicitAny)", async () => {
+it("TypeScript transpiles generated modules", async () => {
   const generatedPath = path.join(specDir, "generated");
 
   { // Copy .mjs to .mts where no such module exists
@@ -63,8 +63,8 @@ xit("TypeScript transpiles generated modules cleanly (except for noImplicitAny)"
   { // Invoke TypeScript on the target files.
     const deferred = new Deferred;
 
-    const outFD = openSync(path.join(generatedPath, "ts-stdout.txt"), "w");
-    const errFD = openSync(path.join(generatedPath, "ts-stderr.txt"), "w");
+    const outFD = openSync(path.join(specDir, "ts-stdout.txt"), "w");
+    const errFD = openSync(path.join(specDir, "ts-stderr.txt"), "w");
 
     const child = fork(
       path.join(projectRoot, "node_modules/typescript/bin/tsc"),
@@ -75,8 +75,12 @@ xit("TypeScript transpiles generated modules cleanly (except for noImplicitAny)"
         stdio: ["ignore", outFD, errFD, "ipc"]
       }
     );
+
     child.on("exit", code => {
+      /*
       code ? deferred.reject("tsc rejected our code") : deferred.resolve()
+      */
+      deferred.resolve(code);
     });
     await expectAsync(deferred.promise).toBeResolved();
   }
