@@ -112,7 +112,7 @@ await iterateOverSpecDirs(
       // do nothing
     }
     if (stats?.isFile()) {
-      console.log("Found support/build.mjs file");
+      console.log(`Found ${specDir}/support/build.mjs file`);
       await invokeSpecBuildModule(buildModulePath);
     }
   }
