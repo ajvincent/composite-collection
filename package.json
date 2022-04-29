@@ -42,7 +42,7 @@
     "acorn": "^8.7.1",
     "argparse": "^2.0.1",
     "get-all-files": "^4.1.0",
-    "js-beautify": "^1.14.0"
+    "js-beautify": "^1.14.3"
   },
   "exports": {
     "./KeyHasher": "./exports/keys/Hasher.mjs",
