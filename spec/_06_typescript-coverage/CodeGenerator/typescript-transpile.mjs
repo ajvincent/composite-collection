@@ -52,14 +52,6 @@ it("TypeScript transpiles generated modules", async () => {
     );
   }
 
-  { // Remove .d.mts, .mjs.map files.
-    let files = await fs.readdir(generatedPath, ENCODING);
-    files = files.filter(
-      f => f.endsWith(".d.mts") || f.endsWith(".mjs.map")
-    );
-    await PromiseAllParallel(files, f => fs.rm(path.join(generatedPath, f)));
-  }
-
   { // Invoke TypeScript on the target files.
     const deferred = new Deferred;
 
