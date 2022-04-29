@@ -31,9 +31,9 @@
   "homepage": "https://github.com/ajvincent/composite-collection#readme",
   "devDependencies": {
     "acorn-stage3": "^4.0.0",
-    "eslint": "^8.5.0",
+    "eslint": "^8.14.0",
     "eslint-plugin-jasmine": "^4.1.3",
-    "eslint-plugin-jsdoc": "^37.5.1",
+    "eslint-plugin-jsdoc": "^39.2.9",
     "jasmine": "^4.1.0",
     "recursive-copy": "^2.0.13",
     "which": "^2.0.2"
