@@ -19,6 +19,7 @@ const PREDEFINED_TYPES = new Map([
 /**
  * @typedef CollectionTypeOptions
  * @property {string?}   jsDocType      A JSDoc-printable type for the argument.
+ * @property {string?}   tsType         A TypeScript type for the argument.
  * @property {Function?} argumentValidator A method to use for testing the argument.
  */
 class CollectionTypeOptions {

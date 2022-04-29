@@ -7,17 +7,18 @@
 import type { MapOrSetType } from "./generatorTools/CollectionType.mjs";
 declare type outerType = MapOrSetType | "OneToOne";
 declare type innerType = "Set" | null;
-declare type ArgumentValidator = (arg: unknown) => unknown;
+declare type ArgumentValidator<T> = (arg: T) => false | void;
 declare type OneToOneBaseString = "WeakMap" | "composite-collection/WeakStrongMap" | "composite-collection/WeakWeakMap";
 /**
  * @typedef CollectionTypeOptions
  * @property {string?}   jsDocType      A JSDoc-printable type for the argument.
+ * @property {string?}   tsType         A TypeScript type for the argument.
  * @property {Function?} argumentValidator A method to use for testing the argument.
  */
 declare class CollectionTypeOptions {
     jsDocType: string;
     tsType: string;
-    argumentValidator: ArgumentValidator;
+    argumentValidator: ArgumentValidator<unknown>;
 }
 /**
  * @typedef {object} oneToOneOptions
