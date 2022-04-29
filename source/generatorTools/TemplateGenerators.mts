@@ -1,7 +1,9 @@
+import JSDocGenerator from "./JSDocGenerator.mjs";
+import TypeScriptDefines from "../typescript-migration/TypeScriptDefines.mjs";
 import { PromiseAllParallel } from "../utilities/PromiseTypes.mjs";
 
-import JSDocGenerator from "./JSDocGenerator.mjs";
-import { ReadonlyDefines } from "./PreprocessorDefines.mjs";
+import type { ReadonlyDefines } from "../typescript-migration/TypeScriptDefines.mjs"
+
 export type TemplateFunction = (defines: ReadonlyDefines, ...docGenerators: JSDocGenerator[]) => string;
 
 /**
@@ -23,10 +25,11 @@ await PromiseAllParallel(allFiles, async (fullPath: string) => {
     return;
 
   const generator = (await import(fullPath)).default;
-  if (typeof generator === "function")
-    TemplateGenerators.set(baseName.replace(/\.in\.mjs$/, ""), generator);
-  else
+  if (typeof generator !== "function")
     throw new Error("generator isn't a function?");
+
+  TemplateGenerators.set(baseName.replace(/\.in\.mjs$/, ""), generator);
+  TypeScriptDefines.registerGenerator(generator, false);
 });
 
 export default TemplateGenerators;

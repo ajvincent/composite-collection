@@ -1,5 +1,5 @@
 import JSDocGenerator from "./JSDocGenerator.mjs";
-import { ReadonlyDefines } from "./PreprocessorDefines.mjs";
+import type { ReadonlyDefines } from "../typescript-migration/TypeScriptDefines.mjs";
 export declare type TemplateFunction = (defines: ReadonlyDefines, ...docGenerators: JSDocGenerator[]) => string;
 /**
  * @type {Map<string, Function>}

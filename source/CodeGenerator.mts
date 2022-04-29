@@ -10,7 +10,7 @@ import CompileTimeOptions from "./CompileTimeOptions.mjs";
 import CollectionType from "./generatorTools/CollectionType.mjs";
 import ConfigurationData from "./generatorTools/ConfigurationData.mjs";
 import JSDocGenerator from "./generatorTools/JSDocGenerator.mjs";
-import PreprocessorDefines from "./generatorTools/PreprocessorDefines.mjs";
+import TypeScriptDefines from "./typescript-migration/TypeScriptDefines.mjs";
 import TemplateGenerators, { TemplateFunction } from "./generatorTools/TemplateGenerators.mjs";
 import {
   GeneratorPromiseSet,
@@ -86,7 +86,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
   #status = "not started yet";
 
   /** @type {Map<string, *>} @constant */
-  #defines: PreprocessorDefines = new PreprocessorDefines();
+  #defines: TypeScriptDefines = new TypeScriptDefines();
 
   /** @type {JSDocGenerator[]} */
   #docGenerators: JSDocGenerator[] = [];
