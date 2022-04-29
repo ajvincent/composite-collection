@@ -15,8 +15,9 @@ declare type OneToOneBaseString = "WeakMap" | "composite-collection/WeakStrongMa
  * @property {Function?} argumentValidator A method to use for testing the argument.
  */
 declare class CollectionTypeOptions {
-    argumentType?: string;
-    argumentValidator?: ArgumentValidator;
+    jsDocType: string;
+    tsType: string;
+    argumentValidator: ArgumentValidator;
 }
 /**
  * @typedef {object} oneToOneOptions
@@ -67,7 +68,7 @@ export default class CollectionConfiguration {
      * @param {CollectionTypeOptions?} options      Options for configuring generated code.
      * @returns {void}
      */
-    addMapKey(argumentName: string, description: string, holdWeak: boolean, options?: CollectionTypeOptions): void;
+    addMapKey(argumentName: string, description: string, holdWeak: boolean, options?: Partial<CollectionTypeOptions>): void;
     /**
      * Define a set key.
      *
@@ -77,16 +78,15 @@ export default class CollectionConfiguration {
      * @param {CollectionTypeOptions?} options      Options for configuring generated code.
      * @returns {void}
      */
-    addSetKey(argumentName: string, description: string, holdWeak: boolean, options?: CollectionTypeOptions): void;
+    addSetKey(argumentName: string, description: string, holdWeak: boolean, options?: Partial<CollectionTypeOptions>): void;
     /**
      * Define the value type for .set(), .add() calls.
      *
-     * @param {string}    type        The value type.
      * @param {string}    description The description of the value.
-     * @param {Function?} validator   A function to validate the value.
+     * @param {CollectionTypeOptions?} options      Options for configuring generated code.
      * @returns {void}
      */
-    setValueType(type: string, description: string, validator?: ArgumentValidator): void;
+    setValueType(description: string, options?: Partial<CollectionTypeOptions>): void;
     /**
      * Configure this one-to-one map definition.
      *

@@ -20,10 +20,14 @@ SoloStrongMapConfig.addMapKey("key", "The key", false, {
   },
 });
 
-SoloStrongMapConfig.setValueType("MockImportable", "The value", function(value) {
-  if (!(value instanceof MockImportable))
-    return false;
+SoloStrongMapConfig.setValueType("The value", {
+  jsDocType: "MockImportable",
+  argumentValidator: function(value) {
+    if (!(value instanceof MockImportable))
+      return false;
+  }
 });
+
 SoloStrongMapConfig.lock();
 
 export default SoloStrongMapConfig;

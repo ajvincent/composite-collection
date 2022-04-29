@@ -4,7 +4,7 @@ const WeakFunctionMultiMap = new CollectionConfiguration("WeakFunctionMultiMap",
 
 WeakFunctionMultiMap.addMapKey("key", "The map key.", true);
 WeakFunctionMultiMap.addSetKey("mapFunction", "The function.", false, {
-  argumentType: "Function",
+  jsDocType: "Function",
   argumentValidator: function(mapFunction) {
     if (typeof mapFunction !== "function")
       return false;

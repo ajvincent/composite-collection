@@ -21,9 +21,12 @@ StrongStrongMapImportable.addMapKey("key2", "The second key.", false, {
   },
 });
 
-StrongStrongMapImportable.setValueType("MockImportable", "The value", function(value) {
-  if (!(value instanceof MockImportable))
-    return false;
+StrongStrongMapImportable.setValueType("The value", {
+  jsDocType: "MockImportable",
+  argumentValidator: function(value) {
+    if (!(value instanceof MockImportable))
+      return false;
+  }
 });
 
 StrongStrongMapImportable.lock();

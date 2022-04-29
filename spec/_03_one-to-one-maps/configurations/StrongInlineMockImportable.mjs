@@ -17,9 +17,12 @@ WeakStrongMapImportable.addMapKey("publicKey", "The public key.", false, {
   },
 });
 
-WeakStrongMapImportable.setValueType("MockImportable", "The value", function(value) {
-  if (!(value instanceof MockImportable))
-    return false;
+WeakStrongMapImportable.setValueType("The value", {
+  jsDocType: "MockImportable",
+  argumentValidator: function(value) {
+    if (!(value instanceof MockImportable))
+      return false;
+  }
 });
 
 WeakStrongMapImportable.lock();

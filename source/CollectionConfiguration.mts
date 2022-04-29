@@ -32,8 +32,9 @@ type OneToOneBaseString = "WeakMap" | "composite-collection/WeakStrongMap" | "co
  * @property {Function?} argumentValidator A method to use for testing the argument.
  */
 class CollectionTypeOptions {
-  argumentType?: string;
-  argumentValidator?: ArgumentValidator;
+  jsDocType= "";
+  tsType = "";
+  argumentValidator: ArgumentValidator = (arg) => void(arg);
 }
 
 /**
@@ -257,7 +258,7 @@ export default class CollectionConfiguration {
     argumentName: string,
     description: string,
     holdWeak: boolean,
-    options: CollectionTypeOptions = {}
+    options: Partial<CollectionTypeOptions> = {}
   ) : void
   {
     return this.#stateMachine.catchErrorState(() => {
@@ -267,11 +268,11 @@ export default class CollectionConfiguration {
       }
 
       const {
-        argumentType = holdWeak ? "object" : "*",
+        jsDocType = holdWeak ? "object" : "*",
         argumentValidator = null,
       } = options;
 
-      this.#validateKey(argumentName, holdWeak, argumentType, description, argumentValidator);
+      this.#validateKey(argumentName, holdWeak, jsDocType, description, argumentValidator);
       if (holdWeak && !this.#configurationData.collectionTemplate.startsWith("Weak/Map"))
         throw new Error("Strong maps cannot have weak map keys!");
 
@@ -287,7 +288,7 @@ export default class CollectionConfiguration {
       const collectionType = new CollectionType(
         argumentName,
         holdWeak ? "WeakMap" : "Map",
-        argumentType,
+        jsDocType,
         description,
         validatorSource
       );
@@ -308,7 +309,7 @@ export default class CollectionConfiguration {
     argumentName: string,
     description: string,
     holdWeak: boolean,
-    options: CollectionTypeOptions = {}
+    options: Partial<CollectionTypeOptions> = {}
   ) : void
   {
     return this.#stateMachine.catchErrorState(() => {
@@ -318,11 +319,11 @@ export default class CollectionConfiguration {
       }
 
       const {
-        argumentType = holdWeak ? "object" : "*",
+        jsDocType = holdWeak ? "object" : "*",
         argumentValidator = null,
       } = options;
 
-      this.#validateKey(argumentName, holdWeak, argumentType, description, argumentValidator);
+      this.#validateKey(argumentName, holdWeak, jsDocType, description, argumentValidator);
       if (holdWeak && !/Weak\/?Set/.test(this.#configurationData.collectionTemplate))
         throw new Error("Strong sets cannot have weak set keys!");
 
@@ -338,7 +339,7 @@ export default class CollectionConfiguration {
       const collectionType = new CollectionType(
         argumentName,
         holdWeak ? "WeakSet" : "Set",
-        argumentType,
+        jsDocType,
         description,
         validatorSource
       );
@@ -380,15 +381,13 @@ export default class CollectionConfiguration {
   /**
    * Define the value type for .set(), .add() calls.
    *
-   * @param {string}    type        The value type.
    * @param {string}    description The description of the value.
-   * @param {Function?} validator   A function to validate the value.
+   * @param {CollectionTypeOptions?} options      Options for configuring generated code.
    * @returns {void}
    */
   setValueType(
-    type: string,
     description: string,
-    validator?: ArgumentValidator
+    options: Partial<CollectionTypeOptions> = {}
   ) : void
   {
     return this.#stateMachine.catchErrorState(() => {
@@ -400,15 +399,21 @@ export default class CollectionConfiguration {
         throw new Error("You can only call .setValueType() directly after calling .addMapKey()!");
       }
 
-      CollectionConfiguration.#stringArg("type", type);
+      const {
+        jsDocType = "*",
+        argumentValidator = null,
+      } = options;
+
+      CollectionConfiguration.#stringArg("type", jsDocType);
       CollectionConfiguration.#stringArg("description", description);
+
       let validatorSource = null;
-      if (validator) {
-        validatorSource = CollectionConfiguration.#validatorArg("validator", validator, "value", true);
+      if (argumentValidator) {
+        validatorSource = CollectionConfiguration.#validatorArg("validator", argumentValidator, "value", true);
       }
 
       this.#configurationData.valueType = new CollectionType(
-        "value", "Map", type, description, validatorSource
+        "value", "Map", jsDocType, description, validatorSource
       );
     });
   }

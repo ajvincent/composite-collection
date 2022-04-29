@@ -13,9 +13,12 @@ SoloWeakMapConfig.addMapKey("key", "The key.", true, {
   },
 });
 
-SoloWeakMapConfig.setValueType("MockImportable", "The value", function(value) {
-  if (!(value instanceof MockImportable))
-    return false;
+SoloWeakMapConfig.setValueType("The value", {
+  jsDocType: "MockImportable",
+  argumentValidator: function(value) {
+    if (!(value instanceof MockImportable))
+      return false;
+  }
 });
 
 SoloWeakMapConfig.lock();

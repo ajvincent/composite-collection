@@ -132,7 +132,7 @@ describe("CollectionConfiguration", () => {
     beforeEach(() => {
       config = new CollectionConfiguration("FooMap", "WeakMap");
       options = {
-        argumentType: "Cat",
+        jsDocType: "Cat",
       }
 
       type1Args = [
@@ -165,7 +165,7 @@ describe("CollectionConfiguration", () => {
 
         expect(firstType.argumentName).toBe(type1Args[0]);
         expect(firstType.mapOrSetType).toBe("WeakMap");
-        expect(firstType.argumentType).toBe(options.argumentType);
+        expect(firstType.argumentType).toBe(options.jsDocType);
         expect(firstType.description).toBe(type1Args[1]);
         expect(firstType.argumentValidator).toBe(null);
       }
@@ -191,14 +191,14 @@ describe("CollectionConfiguration", () => {
 
         expect(firstType.argumentName).toBe(type1Args[0]);
         expect(firstType.mapOrSetType).toBe("WeakMap");
-        expect(firstType.argumentType).toBe(options.argumentType);
+        expect(firstType.argumentType).toBe(options.jsDocType);
         expect(firstType.description).toBe(type1Args[1]);
         expect(typeof firstType.argumentValidator).toBe("string");
       }
     });
 
     it("defaults to an argument type of 'object' when the argumentType is not specified and holdWeak is true", () => {
-      delete options.argumentType;
+      delete options.jsDocType;
       config.addMapKey(...type1Args);
 
       const typeData = ConfigurationData.cloneData(config);
@@ -224,7 +224,7 @@ describe("CollectionConfiguration", () => {
     });
 
     it("defaults to an argument type of '*' when the argumentType is not specified and holdWeak is false", () => {
-      delete options.argumentType;
+      delete options.jsDocType;
       const args = type1Args.slice();
       args.splice(2, 1, false);
       config.addMapKey(...args);
@@ -283,7 +283,7 @@ describe("CollectionConfiguration", () => {
 
         expect(t.argumentName).toBe(argRow[0]);
         expect(t.mapOrSetType).toBe("WeakMap");
-        expect(t.argumentType).toBe(options.argumentType);
+        expect(t.argumentType).toBe(options.jsDocType);
         expect(t.description).toBe(argRow[1]);
         expect(typeof t.argumentValidator).toBe("string");
       });
@@ -334,7 +334,7 @@ describe("CollectionConfiguration", () => {
       });
 
       it("a non-string argument type", () => {
-        options.argumentType = Symbol("foo");
+        options.jsDocType = Symbol("foo");
         expect(
           () => config.addMapKey(...args)
         ).toThrowError(`argumentType must be a non-empty string!`);
@@ -448,7 +448,7 @@ describe("CollectionConfiguration", () => {
     beforeEach(() => {
       config = new CollectionConfiguration("FooSet", "WeakSet");
       options = {
-        argumentType: "Cat",
+        jsDocType: "Cat",
       }
 
       type1Args = [
@@ -481,7 +481,7 @@ describe("CollectionConfiguration", () => {
 
         expect(firstType.argumentName).toBe(type1Args[0]);
         expect(firstType.mapOrSetType).toBe("WeakSet");
-        expect(firstType.argumentType).toBe(options.argumentType);
+        expect(firstType.argumentType).toBe(options.jsDocType);
         expect(firstType.description).toBe(type1Args[1]);
         expect(firstType.argumentValidator).toBe(null);
       }
@@ -507,7 +507,7 @@ describe("CollectionConfiguration", () => {
 
         expect(firstType.argumentName).toBe(type1Args[0]);
         expect(firstType.mapOrSetType).toBe("WeakSet");
-        expect(firstType.argumentType).toBe(options.argumentType);
+        expect(firstType.argumentType).toBe(options.jsDocType);
         expect(firstType.description).toBe(type1Args[1]);
         expect(typeof firstType.argumentValidator).toBe("string");
       }
@@ -520,7 +520,7 @@ describe("CollectionConfiguration", () => {
     });
 
     it("defaults to a argument type of 'object' when the argumentType is not specified and holdWeak is true", () => {
-      delete options.argumentType;
+      delete options.jsDocType;
 
       config.addSetKey(...type1Args);
 
@@ -547,7 +547,7 @@ describe("CollectionConfiguration", () => {
     });
 
     it("defaults to a argument type of '*' when the argumentType is not specified and holdWeak is false", () => {
-      delete options.argumentType;
+      delete options.jsDocType;
       const args = type1Args.slice();
       args.splice(2, 1, false);
 
@@ -607,7 +607,7 @@ describe("CollectionConfiguration", () => {
 
         expect(t.argumentName).toBe(argRow[0]);
         expect(t.mapOrSetType).toBe("WeakSet");
-        expect(t.argumentType).toBe(options.argumentType);
+        expect(t.argumentType).toBe(options.jsDocType);
         expect(t.description).toBe(argRow[1]);
         expect(typeof t.argumentValidator).toBe("string");
       });
@@ -651,7 +651,7 @@ describe("CollectionConfiguration", () => {
       });
 
       it("a non-string argument type", () => {
-        options.argumentType = Symbol("foo");
+        options.jsDocType = Symbol("foo");
         expect(
           () => config.addSetKey(...args)
         ).toThrowError(`argumentType must be a non-empty string!`);
@@ -759,7 +759,10 @@ describe("CollectionConfiguration", () => {
 
     it("accepts a function for the value filter with a jsdoc argument", () => {
       config.addMapKey("mother", "The mother.", true);
-      expect(() => config.setValueType("Car", "The car.", valueFilter)).not.toThrow();
+      expect(() => config.setValueType("The car.", {
+        jsDocType: "Car",
+        argumentValidator: valueFilter
+      })).not.toThrow();
       expect(wasCalled).toBe(false);
 
       const data = ConfigurationData.cloneData(config);
@@ -774,36 +777,56 @@ describe("CollectionConfiguration", () => {
     describe("throws for", () => {
       it("invoking without having a map key first", () => {
         expect(
-          () => config.setValueType("Car", "The car.", function() { return false })
+          () => config.setValueType("The car.", {
+            jsDocType: "Car",
+            argumentValidator: function() { return false }
+          })
         ).toThrowError("You can only call .setValueType() directly after calling .addMapKey()!");
       });
 
       it("setting a non-string jsdoc type", () => {
         config.addMapKey("mother", "The mother.", true);
         expect(
-          () => config.setValueType(Symbol("Car"), "The car.", valueFilter, {})
+          () => config.setValueType("The car.", {
+            jsDocType: Symbol("Car"),
+            argumentValidator: valueFilter
+          })
         ).toThrowError(`type must be a non-empty string!`);
       });
 
       it("setting a non-string jsdoc description", () => {
         config.addMapKey("mother", "The mother.", true);
         expect(
-          () => config.setValueType("Car", Symbol("The car."), valueFilter, {})
+          () => config.setValueType(Symbol("The car."), {
+            jsDocType: "Car",
+            argumentValidator: valueFilter
+          })
         ).toThrowError(`description must be a non-empty string!`);
       });
 
       it("setting a non-function validator", () => {
         config.addMapKey("mother", "The mother.", true);
         expect(
-          () => config.setValueType("Car", "The car.", {})
+          () => config.setValueType("The car.", {
+            jsDocType: "Car",
+            argumentValidator: {}
+          })
         ).toThrowError(`validator must be a function or omitted!`);
       });
 
       it("calling after a successful .setValueType() application", () => {
         config.addMapKey("mother", "The mother.", true);
-        config.setValueType("Car", "The car.", value => { void(value); return false; });
+
+        config.setValueType("The car.", {
+          jsDocType: "Car",
+          argumentValidator: value => { void(value); return false; }
+        });
+
         expect(
-          () => config.setValueType("Car", "The car.", value => { void(value); return false; } )
+          () => config.setValueType("The car.", {
+            jsDocType: "Car",
+            argumentValidator: value => { void(value); return false; }
+          })
         ).toThrowError("You can only set the value type once!");
       });
     });
