@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "lib": ["es2021"],
+    "module": "es2022",
+    "target": "es2022",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "declaration": true,
+    "noEmit": true,
+    "noImplicitAny": false
+  },
+
+  "extends": "@tsconfig/node16/tsconfig.json"
+}
