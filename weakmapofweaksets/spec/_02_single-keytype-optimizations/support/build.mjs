@@ -66,7 +66,7 @@ function defineCollection(className, mapKeyCount, useWeakMapKeys, setKeyCount, u
       key,
       key + " description",
       useWeakMapKeys,
-      { argumentType: "MockImportable", argumentValidator: mapValidators[i] }
+      { jsDocType: "MockImportable", argumentValidator: mapValidators[i] }
     );
   }
 
@@ -76,7 +76,7 @@ function defineCollection(className, mapKeyCount, useWeakMapKeys, setKeyCount, u
       key,
       key + " description",
       useWeakSetKeys,
-      { argumentType: "MockImportable", argumentValidator: setValidators[i] }
+      { jsDocType: "MockImportable", argumentValidator: setValidators[i] }
     );
   }
 

@@ -18,7 +18,7 @@ const PREDEFINED_TYPES = new Map([
 ]);
 /**
  * @typedef CollectionTypeOptions
- * @property {string?}   argumentType      A JSDoc-printable type for the argument.
+ * @property {string?}   jsDocType      A JSDoc-printable type for the argument.
  * @property {Function?} argumentValidator A method to use for testing the argument.
  */
 class CollectionTypeOptions {
@@ -247,9 +247,9 @@ export default class CollectionConfiguration {
             this.#configurationData.defineArgument(collectionType);
         });
     }
-    #validateKey(argumentName, holdWeak, argumentType, description, argumentValidator) {
+    #validateKey(argumentName, holdWeak, jsDocType, description, argumentValidator) {
         CollectionConfiguration.#identifierArg("argumentName", argumentName);
-        CollectionConfiguration.#jsdocField("argumentType", argumentType);
+        CollectionConfiguration.#jsdocField("jsDocType", jsDocType);
         CollectionConfiguration.#jsdocField("description", description);
         if (argumentValidator !== null) {
             CollectionConfiguration.#validatorArg("argumentValidator", argumentValidator, argumentName, true);

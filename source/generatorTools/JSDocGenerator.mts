@@ -234,7 +234,7 @@ export default class JSDocGenerator {
   addParameter(parameter: CollectionType) : void {
     this.#params.add(parameter);
     if (parameter.argumentName === "value") {
-      this.#valueType = parameter.argumentType;
+      this.#valueType = parameter.jsDocType;
       this.#valueDesc = parameter.description;
     }
   }
@@ -366,7 +366,7 @@ export default class JSDocGenerator {
         if (!valueParam)
           throw new Error("value parameter is required!");
         paramBlock.add(
-          valueParam.argumentType || "*",
+          valueParam.jsDocType || "*",
           valueParam.argumentName,
           valueParam.description || ""
         );
@@ -384,7 +384,7 @@ export default class JSDocGenerator {
               return;
           }
           paramBlock.add(
-            param.argumentType || "*",
+            param.jsDocType || "*",
             param.argumentName,
             param.description || ""
           );

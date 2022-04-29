@@ -10,7 +10,7 @@ WeakStrongMapImportable.importLines(
 WeakStrongMapImportable.addMapKey("privateKey", "The private key.", true);
 
 WeakStrongMapImportable.addMapKey("publicKey", "The public key.", false, {
-  argumentType: "MockImportable",
+  jsDocType: "MockImportable",
   argumentValidator: function(publicKey) {
     if (!(publicKey instanceof MockImportable))
       return false;

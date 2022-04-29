@@ -11,7 +11,7 @@ declare type ArgumentValidator = (arg: unknown) => unknown;
 declare type OneToOneBaseString = "WeakMap" | "composite-collection/WeakStrongMap" | "composite-collection/WeakWeakMap";
 /**
  * @typedef CollectionTypeOptions
- * @property {string?}   argumentType      A JSDoc-printable type for the argument.
+ * @property {string?}   jsDocType      A JSDoc-printable type for the argument.
  * @property {Function?} argumentValidator A method to use for testing the argument.
  */
 declare class CollectionTypeOptions {

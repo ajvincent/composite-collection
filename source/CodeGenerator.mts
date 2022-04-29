@@ -320,12 +320,12 @@ export default class CodeGenerator extends CodeGeneratorBase {
 
     if (mapKeys.length) {
       const collection = data.parameterToTypeMap.get(mapKeys[0]) as CollectionType
-      this.#defines.mapArgument0Type = collection.argumentType;
+      this.#defines.mapArgument0Type = collection.jsDocType;
     }
 
     if (setKeys.length) {
       const collection = data.parameterToTypeMap.get(setKeys[0]) as CollectionType;
-      this.#defines.setArgument0Type = collection.argumentType;
+      this.#defines.setArgument0Type = collection.jsDocType;
     }
 
     if (data.valueType) {
@@ -333,7 +333,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
       if (filter)
         this.#defines.validateValue = filter + "\n    ";
 
-      this.#defines.valueType = data.valueType.argumentType;
+      this.#defines.valueType = data.valueType.jsDocType;
     }
   }
 
@@ -435,7 +435,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
       generator.addParameter(new CollectionType(
         typeData.argumentName + typeSuffix,
         typeData.mapOrSetType,
-        typeData.argumentType,
+        typeData.jsDocType,
         typeData.description,
         typeData.argumentValidator
       ));
@@ -445,13 +445,13 @@ export default class CodeGenerator extends CodeGeneratorBase {
       let {
         argumentName = "value",
         mapOrSetType = "Map",
-        argumentType = "*",
+        jsDocType = "*",
         description = "The value.",
         argumentValidator = ""
       } = baseData.valueType || {};
       argumentName += typeSuffix;
       generator.addParameter(new CollectionType(
-        argumentName, mapOrSetType, argumentType, description, argumentValidator
+        argumentName, mapOrSetType, jsDocType, description, argumentValidator
       ));
     }
   }

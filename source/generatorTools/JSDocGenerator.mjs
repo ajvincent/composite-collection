@@ -179,7 +179,7 @@ export default class JSDocGenerator {
     addParameter(parameter) {
         this.#params.add(parameter);
         if (parameter.argumentName === "value") {
-            this.#valueType = parameter.argumentType;
+            this.#valueType = parameter.jsDocType;
             this.#valueDesc = parameter.description;
         }
     }
@@ -286,7 +286,7 @@ export default class JSDocGenerator {
                 const valueParam = Array.from(this.#params.values()).find(param => param.argumentName === "value");
                 if (!valueParam)
                     throw new Error("value parameter is required!");
-                paramBlock.add(valueParam.argumentType || "*", valueParam.argumentName, valueParam.description || "");
+                paramBlock.add(valueParam.jsDocType || "*", valueParam.argumentName, valueParam.description || "");
             }
             else if (template.includeArgs !== "none") {
                 let valueFound = false;
@@ -300,7 +300,7 @@ export default class JSDocGenerator {
                         if ((template.includeArgs === "excludeValue"))
                             return;
                     }
-                    paramBlock.add(param.argumentType || "*", param.argumentName, param.description || "");
+                    paramBlock.add(param.jsDocType || "*", param.argumentName, param.description || "");
                 });
                 if (!valueFound && !this.#isSet && (template.includeArgs === "all"))
                     paramBlock.add("*", "value", "The value.");

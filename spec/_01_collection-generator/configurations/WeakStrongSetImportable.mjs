@@ -6,7 +6,7 @@ WeakStrongSetImportable.importLines(
   `import MockImportable from "../fixtures/MockImportable.mjs";`
 );
 WeakStrongSetImportable.addSetKey("key1", "The first key.", true, {
-  argumentType: "MockImportable",
+  jsDocType: "MockImportable",
   argumentValidator: function(key1) {
     if (!(key1 instanceof MockImportable))
       return false;
@@ -14,7 +14,7 @@ WeakStrongSetImportable.addSetKey("key1", "The first key.", true, {
 });
 
 WeakStrongSetImportable.addSetKey("key2", "The second key.", false, {
-  argumentType: "MockImportable",
+  jsDocType: "MockImportable",
   argumentValidator: function(key2) {
     if (!(key2 instanceof MockImportable))
       return false;

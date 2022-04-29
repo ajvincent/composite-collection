@@ -6,7 +6,7 @@ SoloWeakMapConfig.importLines(
   `import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";`
 );
 SoloWeakMapConfig.addMapKey("key", "The key.", true, {
-  argumentType: "MockImportable",
+  jsDocType: "MockImportable",
   argumentValidator: function(key) {
     if (!(key instanceof MockImportable))
       return false;

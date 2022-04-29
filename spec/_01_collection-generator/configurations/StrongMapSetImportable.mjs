@@ -6,7 +6,7 @@ StrongMapSetImportable.importLines(
   `import MockImportable from "../fixtures/MockImportable.mjs";`
 );
 StrongMapSetImportable.addMapKey("mapKey", "The map key.", false, {
-  argumentType: "MockImportable",
+  jsDocType: "MockImportable",
   argumentValidator: function(mapKey) {
     if (!(mapKey instanceof MockImportable))
       return false;
@@ -14,7 +14,7 @@ StrongMapSetImportable.addMapKey("mapKey", "The map key.", false, {
 });
 
 StrongMapSetImportable.addSetKey("setKey", "The set key.", false, {
-  argumentType: "MockImportable",
+  jsDocType: "MockImportable",
   argumentValidator: function(setKey) {
     if (!(setKey instanceof MockImportable))
       return false;

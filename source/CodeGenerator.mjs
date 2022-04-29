@@ -241,17 +241,17 @@ export default class CodeGenerator extends CodeGeneratorBase {
         this.#defineValidatorCode(paramsData, "validateSetArguments", pd => setKeys.includes(pd.argumentName));
         if (mapKeys.length) {
             const collection = data.parameterToTypeMap.get(mapKeys[0]);
-            this.#defines.mapArgument0Type = collection.argumentType;
+            this.#defines.mapArgument0Type = collection.jsDocType;
         }
         if (setKeys.length) {
             const collection = data.parameterToTypeMap.get(setKeys[0]);
-            this.#defines.setArgument0Type = collection.argumentType;
+            this.#defines.setArgument0Type = collection.jsDocType;
         }
         if (data.valueType) {
             let filter = (data.valueType.argumentValidator || "").trim();
             if (filter)
                 this.#defines.validateValue = filter + "\n    ";
-            this.#defines.valueType = data.valueType.argumentType;
+            this.#defines.valueType = data.valueType.jsDocType;
         }
     }
     #defineValidatorCode(paramsData, defineName, filter) {
@@ -313,12 +313,12 @@ export default class CodeGenerator extends CodeGeneratorBase {
         const baseData = ConfigurationData.cloneData(base);
         baseData.parameterToTypeMap.delete(this.#configurationData.oneToOneKeyName);
         baseData.parameterToTypeMap.forEach(typeData => {
-            generator.addParameter(new CollectionType(typeData.argumentName + typeSuffix, typeData.mapOrSetType, typeData.argumentType, typeData.description, typeData.argumentValidator));
+            generator.addParameter(new CollectionType(typeData.argumentName + typeSuffix, typeData.mapOrSetType, typeData.jsDocType, typeData.description, typeData.argumentValidator));
         });
         if (addValue) {
-            let { argumentName = "value", mapOrSetType = "Map", argumentType = "*", description = "The value.", argumentValidator = "" } = baseData.valueType || {};
+            let { argumentName = "value", mapOrSetType = "Map", jsDocType = "*", description = "The value.", argumentValidator = "" } = baseData.valueType || {};
             argumentName += typeSuffix;
-            generator.addParameter(new CollectionType(argumentName, mapOrSetType, argumentType, description, argumentValidator));
+            generator.addParameter(new CollectionType(argumentName, mapOrSetType, jsDocType, description, argumentValidator));
         }
     }
     #generateSource() {

@@ -158,14 +158,14 @@ describe("CollectionConfiguration", () => {
         expect(Reflect.ownKeys(firstType)).toEqual([
           "argumentName",
           "mapOrSetType",
-          "argumentType",
+          "jsDocType",
           "description",
           "argumentValidator",
         ]);
 
         expect(firstType.argumentName).toBe(type1Args[0]);
         expect(firstType.mapOrSetType).toBe("WeakMap");
-        expect(firstType.argumentType).toBe(options.jsDocType);
+        expect(firstType.jsDocType).toBe(options.jsDocType);
         expect(firstType.description).toBe(type1Args[1]);
         expect(firstType.argumentValidator).toBe(null);
       }
@@ -184,20 +184,20 @@ describe("CollectionConfiguration", () => {
         expect(Reflect.ownKeys(firstType)).toEqual([
           "argumentName",
           "mapOrSetType",
-          "argumentType",
+          "jsDocType",
           "description",
           "argumentValidator",
         ]);
 
         expect(firstType.argumentName).toBe(type1Args[0]);
         expect(firstType.mapOrSetType).toBe("WeakMap");
-        expect(firstType.argumentType).toBe(options.jsDocType);
+        expect(firstType.jsDocType).toBe(options.jsDocType);
         expect(firstType.description).toBe(type1Args[1]);
         expect(typeof firstType.argumentValidator).toBe("string");
       }
     });
 
-    it("defaults to an argument type of 'object' when the argumentType is not specified and holdWeak is true", () => {
+    it("defaults to an argument type of 'object' when the jsDocType is not specified and holdWeak is true", () => {
       delete options.jsDocType;
       config.addMapKey(...type1Args);
 
@@ -210,20 +210,20 @@ describe("CollectionConfiguration", () => {
         expect(Reflect.ownKeys(firstType)).toEqual([
           "argumentName",
           "mapOrSetType",
-          "argumentType",
+          "jsDocType",
           "description",
           "argumentValidator",
         ]);
 
         expect(firstType.argumentName).toBe(type1Args[0]);
         expect(firstType.mapOrSetType).toBe("WeakMap");
-        expect(firstType.argumentType).toBe("object");
+        expect(firstType.jsDocType).toBe("object");
         expect(firstType.description).toBe(type1Args[1]);
         expect(firstType.argumentValidator).toBe(null);
       }
     });
 
-    it("defaults to an argument type of '*' when the argumentType is not specified and holdWeak is false", () => {
+    it("defaults to an argument type of '*' when the jsDocType is not specified and holdWeak is false", () => {
       delete options.jsDocType;
       const args = type1Args.slice();
       args.splice(2, 1, false);
@@ -238,14 +238,14 @@ describe("CollectionConfiguration", () => {
         expect(Reflect.ownKeys(firstType)).toEqual([
           "argumentName",
           "mapOrSetType",
-          "argumentType",
+          "jsDocType",
           "description",
           "argumentValidator",
         ]);
 
         expect(firstType.argumentName).toBe(type1Args[0]);
         expect(firstType.mapOrSetType).toBe("Map");
-        expect(firstType.argumentType).toBe("*");
+        expect(firstType.jsDocType).toBe("*");
         expect(firstType.description).toBe(type1Args[1]);
         expect(firstType.argumentValidator).toBe(null);
       }
@@ -275,7 +275,7 @@ describe("CollectionConfiguration", () => {
         expect(Reflect.ownKeys(t)).toEqual([
           "argumentName",
           "mapOrSetType",
-          "argumentType",
+          "jsDocType",
           "description",
           "argumentValidator",
         ]);
@@ -283,7 +283,7 @@ describe("CollectionConfiguration", () => {
 
         expect(t.argumentName).toBe(argRow[0]);
         expect(t.mapOrSetType).toBe("WeakMap");
-        expect(t.argumentType).toBe(options.jsDocType);
+        expect(t.jsDocType).toBe(options.jsDocType);
         expect(t.description).toBe(argRow[1]);
         expect(typeof t.argumentValidator).toBe("string");
       });
@@ -337,7 +337,7 @@ describe("CollectionConfiguration", () => {
         options.jsDocType = Symbol("foo");
         expect(
           () => config.addMapKey(...args)
-        ).toThrowError(`argumentType must be a non-empty string!`);
+        ).toThrowError(`jsDocType must be a non-empty string!`);
       });
 
       it("a non-string description", () => {
@@ -474,14 +474,14 @@ describe("CollectionConfiguration", () => {
         expect(Reflect.ownKeys(firstType)).toEqual([
           "argumentName",
           "mapOrSetType",
-          "argumentType",
+          "jsDocType",
           "description",
           "argumentValidator",
         ]);
 
         expect(firstType.argumentName).toBe(type1Args[0]);
         expect(firstType.mapOrSetType).toBe("WeakSet");
-        expect(firstType.argumentType).toBe(options.jsDocType);
+        expect(firstType.jsDocType).toBe(options.jsDocType);
         expect(firstType.description).toBe(type1Args[1]);
         expect(firstType.argumentValidator).toBe(null);
       }
@@ -500,14 +500,14 @@ describe("CollectionConfiguration", () => {
         expect(Reflect.ownKeys(firstType)).toEqual([
           "argumentName",
           "mapOrSetType",
-          "argumentType",
+          "jsDocType",
           "description",
           "argumentValidator",
         ]);
 
         expect(firstType.argumentName).toBe(type1Args[0]);
         expect(firstType.mapOrSetType).toBe("WeakSet");
-        expect(firstType.argumentType).toBe(options.jsDocType);
+        expect(firstType.jsDocType).toBe(options.jsDocType);
         expect(firstType.description).toBe(type1Args[1]);
         expect(typeof firstType.argumentValidator).toBe("string");
       }
@@ -519,7 +519,7 @@ describe("CollectionConfiguration", () => {
       ).not.toThrow();
     });
 
-    it("defaults to a argument type of 'object' when the argumentType is not specified and holdWeak is true", () => {
+    it("defaults to a argument type of 'object' when the jsDocType is not specified and holdWeak is true", () => {
       delete options.jsDocType;
 
       config.addSetKey(...type1Args);
@@ -533,20 +533,20 @@ describe("CollectionConfiguration", () => {
         expect(Reflect.ownKeys(firstType)).toEqual([
           "argumentName",
           "mapOrSetType",
-          "argumentType",
+          "jsDocType",
           "description",
           "argumentValidator",
         ]);
 
         expect(firstType.argumentName).toBe(type1Args[0]);
         expect(firstType.mapOrSetType).toBe("WeakSet");
-        expect(firstType.argumentType).toBe("object");
+        expect(firstType.jsDocType).toBe("object");
         expect(firstType.description).toBe(type1Args[1]);
         expect(firstType.argumentValidator).toBe(null);
       }
     });
 
-    it("defaults to a argument type of '*' when the argumentType is not specified and holdWeak is false", () => {
+    it("defaults to a argument type of '*' when the jsDocType is not specified and holdWeak is false", () => {
       delete options.jsDocType;
       const args = type1Args.slice();
       args.splice(2, 1, false);
@@ -562,14 +562,14 @@ describe("CollectionConfiguration", () => {
         expect(Reflect.ownKeys(firstType)).toEqual([
           "argumentName",
           "mapOrSetType",
-          "argumentType",
+          "jsDocType",
           "description",
           "argumentValidator",
         ]);
 
         expect(firstType.argumentName).toBe(type1Args[0]);
         expect(firstType.mapOrSetType).toBe("Set");
-        expect(firstType.argumentType).toBe("*");
+        expect(firstType.jsDocType).toBe("*");
         expect(firstType.description).toBe(type1Args[1]);
         expect(firstType.argumentValidator).toBe(null);
       }
@@ -599,7 +599,7 @@ describe("CollectionConfiguration", () => {
         expect(Reflect.ownKeys(t)).toEqual([
           "argumentName",
           "mapOrSetType",
-          "argumentType",
+          "jsDocType",
           "description",
           "argumentValidator",
         ]);
@@ -607,7 +607,7 @@ describe("CollectionConfiguration", () => {
 
         expect(t.argumentName).toBe(argRow[0]);
         expect(t.mapOrSetType).toBe("WeakSet");
-        expect(t.argumentType).toBe(options.jsDocType);
+        expect(t.jsDocType).toBe(options.jsDocType);
         expect(t.description).toBe(argRow[1]);
         expect(typeof t.argumentValidator).toBe("string");
       });
@@ -654,7 +654,7 @@ describe("CollectionConfiguration", () => {
         options.jsDocType = Symbol("foo");
         expect(
           () => config.addSetKey(...args)
-        ).toThrowError(`argumentType must be a non-empty string!`);
+        ).toThrowError(`jsDocType must be a non-empty string!`);
       });
 
       it("a non-string description", () => {
@@ -769,7 +769,7 @@ describe("CollectionConfiguration", () => {
       expect(data.valueType).not.toBe(null);
       expect(data.valueType.mapOrSetType).toBe("Map");
       expect(data.valueType.argumentName).toBe("value");
-      expect(data.valueType.argumentType).toBe("Car");
+      expect(data.valueType.jsDocType).toBe("Car");
       expect(data.valueType.description).toBe("The car.");
       expect(data.valueType.argumentValidator).toBe("{ void(value); wasCalled = true; }");
     });
@@ -844,7 +844,7 @@ describe("CollectionConfiguration", () => {
       it("map", () => {
         config = new CollectionConfiguration("FooMap", "WeakMap");
         options = {
-          argumentType: "Cat",
+          jsDocType: "Cat",
           description: "The other cat",
         }
 
@@ -866,7 +866,7 @@ describe("CollectionConfiguration", () => {
       it("set", () => {
         config = new CollectionConfiguration("FooSet", "WeakSet");
         options = {
-          argumentType: "Cat",
+          jsDocType: "Cat",
           description: "The other cat",
         }
 
@@ -888,7 +888,7 @@ describe("CollectionConfiguration", () => {
       it("map of sets", () => {
         config = new CollectionConfiguration("FooMap", "WeakMap", "Set");
         options = {
-          argumentType: "Cat",
+          jsDocType: "Cat",
           description: "The other cat",
         }
   
@@ -912,7 +912,7 @@ describe("CollectionConfiguration", () => {
     it("throws for a weak map key group missing any weak keys", () => {
       config = new CollectionConfiguration("FooMap", "WeakMap");
       options = {
-        argumentType: "Cat",
+        jsDocType: "Cat",
         description: "The other cat",
       }
 
@@ -930,7 +930,7 @@ describe("CollectionConfiguration", () => {
     it("throws for a weak set key group missing any weak keys", () => {
       config = new CollectionConfiguration("FooSet", "WeakSet");
       options = {
-        argumentType: "Cat",
+        jsDocType: "Cat",
         description: "The other cat",
       }
 

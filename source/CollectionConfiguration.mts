@@ -28,7 +28,7 @@ type OneToOneBaseString = "WeakMap" | "composite-collection/WeakStrongMap" | "co
 
 /**
  * @typedef CollectionTypeOptions
- * @property {string?}   argumentType      A JSDoc-printable type for the argument.
+ * @property {string?}   jsDocType      A JSDoc-printable type for the argument.
  * @property {Function?} argumentValidator A method to use for testing the argument.
  */
 class CollectionTypeOptions {
@@ -350,13 +350,13 @@ export default class CollectionConfiguration {
   #validateKey(
     argumentName: string,
     holdWeak: boolean,
-    argumentType: string,
+    jsDocType: string,
     description: string,
     argumentValidator: ArgumentValidator | null
   ) : void
   {
     CollectionConfiguration.#identifierArg("argumentName", argumentName);
-    CollectionConfiguration.#jsdocField("argumentType", argumentType);
+    CollectionConfiguration.#jsdocField("jsDocType", jsDocType);
     CollectionConfiguration.#jsdocField("description", description);
 
     if (argumentValidator !== null) {

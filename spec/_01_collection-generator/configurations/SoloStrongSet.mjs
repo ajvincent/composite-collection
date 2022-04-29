@@ -6,7 +6,7 @@ SoloStrongSetConfig.importLines(
   `import MockImportable from "../fixtures/MockImportable.mjs";`
 );
 SoloStrongSetConfig.addSetKey("key", "The key.", false, {
-  argumentType: "MockImportable",
+  jsDocType: "MockImportable",
   argumentValidator: function(key) {
     // eslint-disable-next-line no-undef
     if (!(key instanceof MockImportable))

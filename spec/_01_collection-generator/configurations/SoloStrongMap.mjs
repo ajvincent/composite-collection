@@ -13,7 +13,7 @@ SoloStrongMapConfig.importLines(
   `import MockImportable from "../fixtures/MockImportable.mjs";`
 );
 SoloStrongMapConfig.addMapKey("key", "The key", false, {
-  argumentType: "MockImportable",
+  jsDocType: "MockImportable",
   argumentValidator: function(key) {
     if (!(key instanceof MockImportable))
       return false;

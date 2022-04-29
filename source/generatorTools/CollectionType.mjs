@@ -2,7 +2,7 @@
 export default class CollectionType {
     argumentName;
     mapOrSetType;
-    argumentType;
+    jsDocType;
     description;
     argumentValidator;
     /**
@@ -10,14 +10,14 @@ export default class CollectionType {
      *
      * @param {string}        argumentName   The name of the argument.
      * @param {string}        mapOrSetType   "Map", "Set", "WeakMap", "WeakSet".
-     * @param {string}        argumentType   A JSDoc-printable type for the argument.
+     * @param {string}        jsDocType   A JSDoc-printable type for the argument.
      * @param {string}        description    A JSDoc-printable description.
      * @param {string | null} argumentValidator A method to use for testing the argument.
      */
-    constructor(argumentName, mapOrSetType, argumentType, description, argumentValidator) {
+    constructor(argumentName, mapOrSetType, jsDocType, description, argumentValidator) {
         this.argumentName = argumentName.trim();
         this.mapOrSetType = mapOrSetType;
-        this.argumentType = argumentType.trim();
+        this.jsDocType = jsDocType.trim();
         this.description = description.trim();
         this.argumentValidator = argumentValidator ? argumentValidator.trim() : null;
         Object.freeze(this);
