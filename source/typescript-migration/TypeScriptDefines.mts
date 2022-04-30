@@ -2,6 +2,7 @@ import type { TemplateFunction } from "../generatorTools/TemplateGenerators.mjs"
 import PreprocessorDefines from "../generatorTools/PreprocessorDefines.mjs";
 
 export default class TypeScriptDefines extends PreprocessorDefines {
+  //#region static utility methods
   static #generators: WeakMap<TemplateFunction, boolean> = new WeakMap;
   static #count = 0;
 
@@ -21,8 +22,36 @@ export default class TypeScriptDefines extends PreprocessorDefines {
   static moduleReadyForCoverage(generator: TemplateFunction) : boolean {
     return TypeScriptDefines.#generators.get(generator) || false;
   }
+  //#endregion static utility methods
+
+  //#region public properties
+
+  // TypeScript support
+  // `key1: __WM1__`
+  tsMapKeys:  string[] = [];
+
+  // `key1: __WS1__`
+  tsSetKeys : string[] = [];
+
+  // value: __V__
+  tsValueKey = "";
+
+  /* GenericClass `<
+    key1: __WM1__ extends object,
+    key2: __WM2__ extends unknown,
+    value: __V__ extends unknown
+  >` */
+  tsGenericTypes : string = "";
+
+  /* Questions:
+  (1) CodeGenerator has to ask TypeScript.moduleReadyForCoverage() to write a .mts file.  How?
+  (2) How will we invoke tsc as part of the GeneratorPromiseSet build?
+  */
+
+  //#endregion
 }
 
+//#region readonly boilerplate
 // Shamelessly copied from https://github.com/Microsoft/TypeScript/issues/13923
 type primitive = string | number | boolean | undefined | null;
 type DeepReadonly<T> =
@@ -38,3 +67,4 @@ type DeepReadonlyObject<T> = {
 }
 
 export type ReadonlyDefines = DeepReadonly<TypeScriptDefines>;
+//#endregion readonly boilerplate
