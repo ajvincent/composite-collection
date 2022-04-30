@@ -1,5 +1,5 @@
 import { Deferred } from "./PromiseTypes.mjs";
-import { DefaultMap } from "../exports/keys/DefaultMap.mjs";
+import { DefaultMap } from "./DefaultMap.mjs";
 
 import type { PromiseResolver } from "./PromiseTypes.mjs";
 
@@ -205,7 +205,7 @@ export class BuildPromiseSet {
       this.#status = value;
     };
     this.#writeToConsole = writeToConsole;
-    this.main = new BuildPromise(this, this.#setStatusCallback, "main", this.#writeToConsole);
+    this.main = this.#createPromise("main");
   }
 
   /**
@@ -215,8 +215,12 @@ export class BuildPromiseSet {
   get(targetName: string) : BuildPromise {
     return this.#map.getDefault(
       targetName,
-      () => new BuildPromise(this, this.#setStatusCallback, targetName, this.#writeToConsole)
+      () => this.#createPromise(targetName)
     );
+  }
+
+  #createPromise(targetName: string) : BuildPromise {
+    return new BuildPromise(this, this.#setStatusCallback, targetName, this.#writeToConsole)
   }
 }
 

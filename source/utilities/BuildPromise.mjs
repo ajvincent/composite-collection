@@ -1,5 +1,5 @@
 import { Deferred } from "./PromiseTypes.mjs";
-import { DefaultMap } from "../exports/keys/DefaultMap.mjs";
+import { DefaultMap } from "./DefaultMap.mjs";
 export class BuildPromise {
     #ownerSet;
     /** @type {string[]} @constant */
@@ -157,14 +157,17 @@ export class BuildPromiseSet {
             this.#status = value;
         };
         this.#writeToConsole = writeToConsole;
-        this.main = new BuildPromise(this, this.#setStatusCallback, "main", this.#writeToConsole);
+        this.main = this.#createPromise("main");
     }
     /**
      * @param {string} targetName The target name.
      * @returns {BuildPromise} The build promise.
      */
     get(targetName) {
-        return this.#map.getDefault(targetName, () => new BuildPromise(this, this.#setStatusCallback, targetName, this.#writeToConsole));
+        return this.#map.getDefault(targetName, () => this.#createPromise(targetName));
+    }
+    #createPromise(targetName) {
+        return new BuildPromise(this, this.#setStatusCallback, targetName, this.#writeToConsole);
     }
 }
 Object.freeze(BuildPromiseSet.prototype);
