@@ -211,14 +211,14 @@ export default class CollectionConfiguration {
                 this.#throwIfLocked();
                 throw new Error("You must define map keys before calling .addSetElement(), .setValueType() or .lock()!");
             }
-            const { jsDocType = holdWeak ? "object" : "*", argumentValidator = null, } = options;
+            const { jsDocType = holdWeak ? "object" : "*", tsType = holdWeak ? "object" : "unknown", argumentValidator = null, } = options;
             this.#validateKey(argumentName, holdWeak, jsDocType, description, argumentValidator);
             if (holdWeak && !this.#configurationData.collectionTemplate.startsWith("Weak/Map"))
                 throw new Error("Strong maps cannot have weak map keys!");
             const validatorSource = (argumentValidator !== null) ?
                 CollectionConfiguration.#validatorArg("argumentValidator", argumentValidator, argumentName, true) :
                 null;
-            const collectionType = new CollectionType(argumentName, holdWeak ? "WeakMap" : "Map", jsDocType, description, validatorSource);
+            const collectionType = new CollectionType(argumentName, holdWeak ? "WeakMap" : "Map", jsDocType, tsType, description, validatorSource);
             this.#configurationData.defineArgument(collectionType);
         });
     }
@@ -237,14 +237,14 @@ export default class CollectionConfiguration {
                 this.#throwIfLocked();
                 throw new Error("You must define set keys before calling .setValueType() or .lock()!");
             }
-            const { jsDocType = holdWeak ? "object" : "*", argumentValidator = null, } = options;
+            const { jsDocType = holdWeak ? "object" : "*", tsType = holdWeak ? "object" : "unknown", argumentValidator = null, } = options;
             this.#validateKey(argumentName, holdWeak, jsDocType, description, argumentValidator);
             if (holdWeak && !/Weak\/?Set/.test(this.#configurationData.collectionTemplate))
                 throw new Error("Strong sets cannot have weak set keys!");
             const validatorSource = (argumentValidator !== null) ?
                 CollectionConfiguration.#validatorArg("argumentValidator", argumentValidator, argumentName, true) :
                 null;
-            const collectionType = new CollectionType(argumentName, holdWeak ? "WeakSet" : "Set", jsDocType, description, validatorSource);
+            const collectionType = new CollectionType(argumentName, holdWeak ? "WeakSet" : "Set", jsDocType, tsType, description, validatorSource);
             this.#configurationData.defineArgument(collectionType);
         });
     }
@@ -277,14 +277,14 @@ export default class CollectionConfiguration {
                     throw new Error("You can only set the value type once!");
                 throw new Error("You can only call .setValueType() directly after calling .addMapKey()!");
             }
-            const { jsDocType = "*", argumentValidator = null, } = options;
+            const { jsDocType = "*", tsType = "unknown", argumentValidator = null, } = options;
             CollectionConfiguration.#stringArg("type", jsDocType);
             CollectionConfiguration.#stringArg("description", description);
             let validatorSource = null;
             if (argumentValidator) {
                 validatorSource = CollectionConfiguration.#validatorArg("validator", argumentValidator, "value", true);
             }
-            this.#configurationData.valueType = new CollectionType("value", "Map", jsDocType, description, validatorSource);
+            this.#configurationData.valueType = new CollectionType("value", "Map", jsDocType, tsType, description, validatorSource);
         });
     }
     // #endregion The actual CollectionConfiguration public API.

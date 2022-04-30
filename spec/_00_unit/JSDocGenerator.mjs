@@ -49,6 +49,7 @@ describe("JSDocGenerator validation: ", () => {
     "name",
     "Map",
     "string",
+    "object",
     "The customer's name.",
     ""
   );
@@ -57,6 +58,7 @@ describe("JSDocGenerator validation: ", () => {
     "atTime",
     "WeakMap",
     "number",
+    "object",
     "The delivery time.",
     ""
   );
@@ -65,6 +67,7 @@ describe("JSDocGenerator validation: ", () => {
     "foods",
     "WeakMap",
     "string[]",
+    "object",
     "The foods the customer ordered.",
     ""
   );
@@ -273,6 +276,7 @@ describe("JSDocGenerator validation: ", () => {
       "vendor",
       "WeakMap",
       "string",
+      "object",
       "The company selling the foods.",
       ""
     ));
@@ -289,6 +293,7 @@ describe("JSDocGenerator validation: ", () => {
       "vendor",
       "WeakMap",
       "string",
+      "object",
       "The company selling the foods.",
       ""
     ));
@@ -308,6 +313,7 @@ describe("JSDocGenerator validation: ", () => {
       "foods",
       "WeakMap",
       "Color",
+      "object",
       "The foods the customer ordered.",
       ""
     ));
@@ -325,15 +331,15 @@ describe("JSDocGenerator for maps", () => {
   it("doesn't throw for invoking addParameter() with a CollectionType", () => {
     generator = new JSDocGenerator("SoloStrongMap", false);
     expect(
-      () => generator.addParameter(new CollectionType("car", "Map", "Car", "The car."))
+      () => generator.addParameter(new CollectionType("car", "Map", "Car", "object", "The car."))
     ).not.toThrow();
   });
 
   describe(".buildBlock() with two arguments and no value type builds a valid comment block for the template name", () => {
     beforeEach(() => {
       generator = new JSDocGenerator("SoloStrongMap", false);
-      generator.addParameter(new CollectionType("car", "Map", "Car", "The car."));
-      generator.addParameter(new CollectionType("driver", "Map", "Person", "The driver of the car."));
+      generator.addParameter(new CollectionType("car", "Map", "Car", "object", "The car."));
+      generator.addParameter(new CollectionType("driver", "Map", "Person", "object", "The driver of the car."));
     });
 
     it("rootContainerMap", () => {
@@ -526,8 +532,8 @@ describe("JSDocGenerator for maps", () => {
   describe(".buildBlock() with two arguments and no value type throws for the template name", () => {
     beforeEach(() => {
       generator = new JSDocGenerator("SoloStrongMap", false);
-      generator.addParameter(new CollectionType("car", "Map", "Car", "The car."));
-      generator.addParameter(new CollectionType("driver", "Map", "Person", "The driver of the car."));
+      generator.addParameter(new CollectionType("car", "Map", "Car", "object", "The car."));
+      generator.addParameter(new CollectionType("driver", "Map", "Person", "object", "The driver of the car."));
     });
 
 
@@ -547,9 +553,9 @@ describe("JSDocGenerator for maps", () => {
   describe(".buildBlock() with two arguments and a value type builds a valid comment block for the template name", () => {
     beforeEach(() => {
       generator = new JSDocGenerator("SoloStrongMap", false);
-      generator.addParameter(new CollectionType("car", "Map", "Car", "The car."));
-      generator.addParameter(new CollectionType("driver", "Map", "Person", "The driver of the car."));
-      generator.addParameter(new CollectionType("value", "Map", "State", "The state of registration."));
+      generator.addParameter(new CollectionType("car", "Map", "Car", "object", "The car."));
+      generator.addParameter(new CollectionType("driver", "Map", "Person", "object", "The driver of the car."));
+      generator.addParameter(new CollectionType("value", "Map", "State", "object", "The state of registration."));
     });
 
     it("rootContainerMap", () => {
@@ -756,8 +762,8 @@ describe("JSDocGenerator for maps", () => {
 
   it("indents based on the baseIndent passed in", () => {
     generator = new JSDocGenerator("SoloStrongMap", false);
-    generator.addParameter(new CollectionType("car", "Map", "Car", "The car."));
-    generator.addParameter(new CollectionType("driver", "Map", "Person", "The driver of the car."));
+    generator.addParameter(new CollectionType("car", "Map", "Car", "object", "The car."));
+    generator.addParameter(new CollectionType("driver", "Map", "Person", "object", "The driver of the car."));
 
     const generated = generator.buildBlock("rootContainerMap", 4);
     expect(generated).toEqual(`    /**
@@ -777,14 +783,14 @@ describe("JSDocGenerator for sets", () => {
 
   it("doesn't throw for invoking addParameter() with a CollectionType", () => {
     expect(
-      () => generator.addParameter(new CollectionType("car", "Set", "Car", "The car."))
+      () => generator.addParameter(new CollectionType("car", "Set", "Car", "object", "The car."))
     ).not.toThrow();
   });
 
   describe(".buildBlock() with two arguments and no value type builds a valid comment block for the template name", () => {
     beforeEach(() => {
-      generator.addParameter(new CollectionType("car", "Set", "Car", "The car."));
-      generator.addParameter(new CollectionType("driver", "Set", "Person", "The driver of the car."));
+      generator.addParameter(new CollectionType("car", "Set", "Car", "object", "The car."));
+      generator.addParameter(new CollectionType("driver", "Set", "Person", "object", "The driver of the car."));
     });
 
     it("rootContainerSet", () => {
@@ -932,9 +938,9 @@ describe("JSDocGenerator for sets", () => {
 
   describe(".buildBlock() with three arguments including a value type builds a valid comment block for the template name", () => {
     beforeEach(() => {
-      generator.addParameter(new CollectionType("car", "Set", "Car", "The car."));
-      generator.addParameter(new CollectionType("driver", "Set", "Person", "The driver of the car."));
-      generator.addParameter(new CollectionType("value", "Set", "State", "The state of registration."));
+      generator.addParameter(new CollectionType("car", "Set", "Car", "object", "The car."));
+      generator.addParameter(new CollectionType("driver", "Set", "Person", "object","The driver of the car."));
+      generator.addParameter(new CollectionType("value", "Set", "State", "object","The state of registration."));
     });
 
     it("rootContainerSet", () => {
@@ -1098,7 +1104,7 @@ describe("JSDocGenerator for sets", () => {
   });
 
   it(".buildBlock() with no arguments and a value type builds a valid comment block for the template name forEachCallbackSet", () => {
-    generator.addParameter(new CollectionType("value", "Set", "State", "The state of registration."));
+    generator.addParameter(new CollectionType("value", "Set", "State", "object", "The state of registration."));
 
     const generated = generator.buildBlock("forEachCallbackSet", 2);
     expect(generated).toEqual(`  /**
@@ -1111,8 +1117,8 @@ describe("JSDocGenerator for sets", () => {
   });
 
   it("indents based on the baseIndent passed in", () => {
-    generator.addParameter(new CollectionType("car", "Set", "Car", "The car."));
-    generator.addParameter(new CollectionType("driver", "Set", "Person", "The driver of the car."));
+    generator.addParameter(new CollectionType("car", "Set", "Car", "object", "The car."));
+    generator.addParameter(new CollectionType("driver", "Set", "Person", "object", "The driver of the car."));
 
     const generated = generator.buildBlock("rootContainerMap", 4);
     expect(generated).toEqual(`    /**
@@ -1128,8 +1134,8 @@ describe("JSDocGenerator for maps of sets", () => {
   let generator;
   beforeEach(() => {
     generator = new JSDocGenerator("WeakMapOfStrongSets", false);
-    generator.addParameter(new CollectionType("car", "WeakMap", "Car", "The car."));
-    generator.addParameter(new CollectionType("driver", "Set", "Person", "The driver of the car."));
+    generator.addParameter(new CollectionType("car", "WeakMap", "Car", "object", "The car."));
+    generator.addParameter(new CollectionType("driver", "Set", "Person", "object", "The driver of the car."));
   });
   afterEach(() => generator = null);
 

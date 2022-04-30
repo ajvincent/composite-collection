@@ -270,6 +270,7 @@ export default class CollectionConfiguration {
 
       const {
         jsDocType = holdWeak ? "object" : "*",
+        tsType = holdWeak ? "object" : "unknown",
         argumentValidator = null,
       } = options;
 
@@ -290,6 +291,7 @@ export default class CollectionConfiguration {
         argumentName,
         holdWeak ? "WeakMap" : "Map",
         jsDocType,
+        tsType,
         description,
         validatorSource
       );
@@ -321,6 +323,7 @@ export default class CollectionConfiguration {
 
       const {
         jsDocType = holdWeak ? "object" : "*",
+        tsType = holdWeak ? "object" : "unknown",
         argumentValidator = null,
       } = options;
 
@@ -341,6 +344,7 @@ export default class CollectionConfiguration {
         argumentName,
         holdWeak ? "WeakSet" : "Set",
         jsDocType,
+        tsType,
         description,
         validatorSource
       );
@@ -402,6 +406,7 @@ export default class CollectionConfiguration {
 
       const {
         jsDocType = "*",
+        tsType = "unknown",
         argumentValidator = null,
       } = options;
 
@@ -414,7 +419,7 @@ export default class CollectionConfiguration {
       }
 
       this.#configurationData.valueType = new CollectionType(
-        "value", "Map", jsDocType, description, validatorSource
+        "value", "Map", jsDocType, tsType, description, validatorSource
       );
     });
   }

@@ -159,6 +159,7 @@ describe("CollectionConfiguration", () => {
           "argumentName",
           "mapOrSetType",
           "jsDocType",
+          "tsType",
           "description",
           "argumentValidator",
         ]);
@@ -185,6 +186,7 @@ describe("CollectionConfiguration", () => {
           "argumentName",
           "mapOrSetType",
           "jsDocType",
+          "tsType",
           "description",
           "argumentValidator",
         ]);
@@ -211,6 +213,7 @@ describe("CollectionConfiguration", () => {
           "argumentName",
           "mapOrSetType",
           "jsDocType",
+          "tsType",
           "description",
           "argumentValidator",
         ]);
@@ -239,6 +242,7 @@ describe("CollectionConfiguration", () => {
           "argumentName",
           "mapOrSetType",
           "jsDocType",
+          "tsType",
           "description",
           "argumentValidator",
         ]);
@@ -276,6 +280,7 @@ describe("CollectionConfiguration", () => {
           "argumentName",
           "mapOrSetType",
           "jsDocType",
+          "tsType",
           "description",
           "argumentValidator",
         ]);
@@ -475,6 +480,7 @@ describe("CollectionConfiguration", () => {
           "argumentName",
           "mapOrSetType",
           "jsDocType",
+          "tsType",
           "description",
           "argumentValidator",
         ]);
@@ -501,6 +507,7 @@ describe("CollectionConfiguration", () => {
           "argumentName",
           "mapOrSetType",
           "jsDocType",
+          "tsType",
           "description",
           "argumentValidator",
         ]);
@@ -534,6 +541,7 @@ describe("CollectionConfiguration", () => {
           "argumentName",
           "mapOrSetType",
           "jsDocType",
+          "tsType",
           "description",
           "argumentValidator",
         ]);
@@ -563,6 +571,7 @@ describe("CollectionConfiguration", () => {
           "argumentName",
           "mapOrSetType",
           "jsDocType",
+          "tsType",
           "description",
           "argumentValidator",
         ]);
@@ -600,6 +609,7 @@ describe("CollectionConfiguration", () => {
           "argumentName",
           "mapOrSetType",
           "jsDocType",
+          "tsType",
           "description",
           "argumentValidator",
         ]);

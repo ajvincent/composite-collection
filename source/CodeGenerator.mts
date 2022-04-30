@@ -400,7 +400,10 @@ export default class CodeGenerator extends CodeGeneratorBase {
 
     // For the solo doc generator, the value argument comes first.
     let generator = await this.#createOneToOneGenerator("oneToOneSoloArg");
-    generator.addParameter(baseData.valueType || new CollectionType("value", "Map", "*", "The value.", ""));
+    generator.addParameter(
+      baseData.valueType ||
+      new CollectionType("value", "Map", "*", "unknown", "The value.", "")
+    );
     this.#appendTypesToDocGenerator(base, generator, "", false);
 
     // For the duo doc generator, there are two of each argument, and two values.
@@ -436,6 +439,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
         typeData.argumentName + typeSuffix,
         typeData.mapOrSetType,
         typeData.jsDocType,
+        typeData.tsType,
         typeData.description,
         typeData.argumentValidator
       ));
@@ -446,12 +450,20 @@ export default class CodeGenerator extends CodeGeneratorBase {
         argumentName = "value",
         mapOrSetType = "Map",
         jsDocType = "*",
+        tsType = "unknown",
         description = "The value.",
         argumentValidator = ""
       } = baseData.valueType || {};
+
       argumentName += typeSuffix;
+
       generator.addParameter(new CollectionType(
-        argumentName, mapOrSetType, jsDocType, description, argumentValidator
+        argumentName,
+        mapOrSetType,
+        jsDocType,
+        tsType,
+        description,
+        argumentValidator
       ));
     }
   }

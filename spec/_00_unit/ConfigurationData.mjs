@@ -95,6 +95,7 @@ describe("ConfigurationData", () => {
         "weakArg1",
         "WeakMap",
         "Shape",
+        "object",
         "The shape of the object"
       );
       data.defineArgument(value);
@@ -110,6 +111,7 @@ describe("ConfigurationData", () => {
         "strongArg1",
         "Map",
         "Shape",
+        "object",
         "The shape of the object"
       );
       data.defineArgument(value);
@@ -125,6 +127,7 @@ describe("ConfigurationData", () => {
         "weakArg2",
         "WeakSet",
         "Shape",
+        "object",
         "The shape of the object"
       );
       data.defineArgument(value);
@@ -140,6 +143,7 @@ describe("ConfigurationData", () => {
         "strongArg2",
         "Set",
         "Shape",
+        "object",
         "The shape of the object"
       );
       data.defineArgument(value);
@@ -156,6 +160,7 @@ describe("ConfigurationData", () => {
       "value",
       "WeakMap",
       "Shape",
+      "object",
       "The shape of the object"
     );
 
@@ -223,6 +228,7 @@ describe("ConfigurationData", () => {
           "weakArg1",
           "WeakMap",
           "Shape",
+          "object",
           "The shape of the object"
         );
         data.defineArgument(value);
@@ -240,6 +246,7 @@ describe("ConfigurationData", () => {
           "strongArg1",
           "Map",
           "Shape",
+          "object",
           "The shape of the object"
         );
         data.defineArgument(value);
@@ -257,6 +264,7 @@ describe("ConfigurationData", () => {
           "weakArg2",
           "WeakSet",
           "Shape",
+          "object",
           "The shape of the object"
         );
         data.defineArgument(value);
@@ -274,6 +282,7 @@ describe("ConfigurationData", () => {
           "strongArg2",
           "Set",
           "Shape",
+          "object",
           "The shape of the object"
         );
         data.defineArgument(value);
@@ -292,6 +301,7 @@ describe("ConfigurationData", () => {
         "value",
         "WeakMap",
         "Shape",
+        "object",
         "The shape of the object"
       );
   

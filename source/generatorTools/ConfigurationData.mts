@@ -49,7 +49,7 @@ export default class ConfigurationData {
       if (!data) {
         data = new ConfigurationData("WeakMap", "")
         data.defineArgument(new CollectionType(
-          "key", "WeakMap", "object", "The key.", ""
+          "key", "WeakMap", "object", "object", "The key.", ""
         ));
         this.#weakMapMockConfigurationData = data;
       }

@@ -31,7 +31,7 @@ export default class ConfigurationData {
             let data = this.#weakMapMockConfigurationData;
             if (!data) {
                 data = new ConfigurationData("WeakMap", "");
-                data.defineArgument(new CollectionType("key", "WeakMap", "object", "The key.", ""));
+                data.defineArgument(new CollectionType("key", "WeakMap", "object", "object", "The key.", ""));
                 this.#weakMapMockConfigurationData = data;
             }
             return data.cloneData();
