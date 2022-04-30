@@ -1,4 +1,5 @@
 import CollectionConfiguration from "#source/CollectionConfiguration.mjs";
+import CollectionType from "#source/generatorTools/CollectionType.mjs";
 import ConfigurationData from "#source/generatorTools/ConfigurationData.mjs";
 
 describe("CollectionConfiguration", () => {
@@ -133,7 +134,8 @@ describe("CollectionConfiguration", () => {
       config = new CollectionConfiguration("FooMap", "WeakMap");
       options = {
         jsDocType: "Cat",
-      }
+        tsType: "CatTS",
+      };
 
       type1Args = [
         "mother",
@@ -154,21 +156,14 @@ describe("CollectionConfiguration", () => {
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
       if (firstType) {
-        expect(Object.isFrozen(firstType)).toBe(true);
-        expect(Reflect.ownKeys(firstType)).toEqual([
-          "argumentName",
-          "mapOrSetType",
-          "jsDocType",
-          "tsType",
-          "description",
-          "argumentValidator",
-        ]);
-
-        expect(firstType.argumentName).toBe(type1Args[0]);
-        expect(firstType.mapOrSetType).toBe("WeakMap");
-        expect(firstType.jsDocType).toBe(options.jsDocType);
-        expect(firstType.description).toBe(type1Args[1]);
-        expect(firstType.argumentValidator).toBe(null);
+        expect(firstType).toEqual(new CollectionType(
+          type1Args[0],
+          "WeakMap",
+          options.jsDocType,
+          options.tsType,
+          type1Args[1],
+          null
+        ));
       }
     });
 
@@ -181,21 +176,14 @@ describe("CollectionConfiguration", () => {
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
       if (firstType) {
-        expect(Object.isFrozen(firstType)).toBe(true);
-        expect(Reflect.ownKeys(firstType)).toEqual([
-          "argumentName",
-          "mapOrSetType",
-          "jsDocType",
-          "tsType",
-          "description",
-          "argumentValidator",
-        ]);
-
-        expect(firstType.argumentName).toBe(type1Args[0]);
-        expect(firstType.mapOrSetType).toBe("WeakMap");
-        expect(firstType.jsDocType).toBe(options.jsDocType);
-        expect(firstType.description).toBe(type1Args[1]);
-        expect(typeof firstType.argumentValidator).toBe("string");
+        expect(firstType).toEqual(new CollectionType(
+          type1Args[0],
+          "WeakMap",
+          options.jsDocType,
+          options.tsType,
+          type1Args[1],
+          "void(mother)"
+        ));
       }
     });
 
@@ -208,21 +196,14 @@ describe("CollectionConfiguration", () => {
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
       if (firstType) {
-        expect(Object.isFrozen(firstType)).toBe(true);
-        expect(Reflect.ownKeys(firstType)).toEqual([
-          "argumentName",
-          "mapOrSetType",
-          "jsDocType",
-          "tsType",
-          "description",
-          "argumentValidator",
-        ]);
-
-        expect(firstType.argumentName).toBe(type1Args[0]);
-        expect(firstType.mapOrSetType).toBe("WeakMap");
-        expect(firstType.jsDocType).toBe("object");
-        expect(firstType.description).toBe(type1Args[1]);
-        expect(firstType.argumentValidator).toBe(null);
+        expect(firstType).toEqual(new CollectionType(
+          type1Args[0],
+          "WeakMap",
+          "object",
+          options.tsType,
+          type1Args[1],
+          null
+        ));
       }
     });
 
@@ -237,21 +218,14 @@ describe("CollectionConfiguration", () => {
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
       if (firstType) {
-        expect(Object.isFrozen(firstType)).toBe(true);
-        expect(Reflect.ownKeys(firstType)).toEqual([
-          "argumentName",
-          "mapOrSetType",
-          "jsDocType",
-          "tsType",
-          "description",
-          "argumentValidator",
-        ]);
-
-        expect(firstType.argumentName).toBe(type1Args[0]);
-        expect(firstType.mapOrSetType).toBe("Map");
-        expect(firstType.jsDocType).toBe("*");
-        expect(firstType.description).toBe(type1Args[1]);
-        expect(firstType.argumentValidator).toBe(null);
+        expect(firstType).toEqual(new CollectionType(
+          type1Args[0],
+          "Map",
+          "*",
+          options.tsType,
+          type1Args[1],
+          null
+        ));
       }
     });
 
@@ -261,12 +235,23 @@ describe("CollectionConfiguration", () => {
     */
     it("can be called more than once", () => {
       const argMatrix = [];
-      const argCount = 1;
+      const argCount = 20;
+      const refTypes = [];
+
       for (let i = 0; i < argCount; i++) {
         const args = type1Args.slice();
         args[0] += "_" + i;
         argMatrix.push(args);
         options.argumentValidator = eval(`${args[0]} => void(${args[0]})`);
+
+        refTypes.push(new CollectionType(
+          args[0],
+          "WeakMap",
+          options.jsDocType,
+          options.tsType,
+          args[1],
+          `void(mother_${i})`
+        ));
 
         config.addMapKey(...args);
       }
@@ -275,22 +260,8 @@ describe("CollectionConfiguration", () => {
       expect(typeData.parameterToTypeMap.size).toBe(argCount);
 
       Array.from(typeData.parameterToTypeMap.values()).forEach((t, index) => {
+        expect(t).toEqual(refTypes[index]);
         expect(Object.isFrozen(t)).toBe(true);
-        expect(Reflect.ownKeys(t)).toEqual([
-          "argumentName",
-          "mapOrSetType",
-          "jsDocType",
-          "tsType",
-          "description",
-          "argumentValidator",
-        ]);
-        const argRow = argMatrix[index];
-
-        expect(t.argumentName).toBe(argRow[0]);
-        expect(t.mapOrSetType).toBe("WeakMap");
-        expect(t.jsDocType).toBe(options.jsDocType);
-        expect(t.description).toBe(argRow[1]);
-        expect(typeof t.argumentValidator).toBe("string");
       });
     });
 
@@ -454,7 +425,8 @@ describe("CollectionConfiguration", () => {
       config = new CollectionConfiguration("FooSet", "WeakSet");
       options = {
         jsDocType: "Cat",
-      }
+        tsType: "CatTS",
+      };
 
       type1Args = [
         "mother",
@@ -475,21 +447,14 @@ describe("CollectionConfiguration", () => {
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
       if (firstType) {
-        expect(Object.isFrozen(firstType)).toBe(true);
-        expect(Reflect.ownKeys(firstType)).toEqual([
-          "argumentName",
-          "mapOrSetType",
-          "jsDocType",
-          "tsType",
-          "description",
-          "argumentValidator",
-        ]);
-
-        expect(firstType.argumentName).toBe(type1Args[0]);
-        expect(firstType.mapOrSetType).toBe("WeakSet");
-        expect(firstType.jsDocType).toBe(options.jsDocType);
-        expect(firstType.description).toBe(type1Args[1]);
-        expect(firstType.argumentValidator).toBe(null);
+        expect(firstType).toEqual(new CollectionType(
+          type1Args[0],
+          "WeakSet",
+          options.jsDocType,
+          options.tsType,
+          type1Args[1],
+          null
+        ));
       }
     });
 
@@ -502,21 +467,14 @@ describe("CollectionConfiguration", () => {
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
       if (firstType) {
-        expect(Object.isFrozen(firstType)).toBe(true);
-        expect(Reflect.ownKeys(firstType)).toEqual([
-          "argumentName",
-          "mapOrSetType",
-          "jsDocType",
-          "tsType",
-          "description",
-          "argumentValidator",
-        ]);
-
-        expect(firstType.argumentName).toBe(type1Args[0]);
-        expect(firstType.mapOrSetType).toBe("WeakSet");
-        expect(firstType.jsDocType).toBe(options.jsDocType);
-        expect(firstType.description).toBe(type1Args[1]);
-        expect(typeof firstType.argumentValidator).toBe("string");
+        expect(firstType).toEqual(new CollectionType(
+          type1Args[0],
+          "WeakSet",
+          options.jsDocType,
+          options.tsType,
+          type1Args[1],
+          "void(mother)"
+        ));
       }
     });
 
@@ -536,21 +494,14 @@ describe("CollectionConfiguration", () => {
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
       if (firstType) {
-        expect(Object.isFrozen(firstType)).toBe(true);
-        expect(Reflect.ownKeys(firstType)).toEqual([
-          "argumentName",
-          "mapOrSetType",
-          "jsDocType",
-          "tsType",
-          "description",
-          "argumentValidator",
-        ]);
-
-        expect(firstType.argumentName).toBe(type1Args[0]);
-        expect(firstType.mapOrSetType).toBe("WeakSet");
-        expect(firstType.jsDocType).toBe("object");
-        expect(firstType.description).toBe(type1Args[1]);
-        expect(firstType.argumentValidator).toBe(null);
+        expect(firstType).toEqual(new CollectionType(
+          type1Args[0],
+          "WeakSet",
+          "object",
+          options.tsType,
+          type1Args[1],
+          null
+        ));
       }
     });
 
@@ -566,22 +517,14 @@ describe("CollectionConfiguration", () => {
       const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
       expect(typeof firstType).toBe("object");
       if (firstType) {
-        expect(Object.isFrozen(firstType)).toBe(true);
-        expect(Reflect.ownKeys(firstType)).toEqual([
-          "argumentName",
-          "mapOrSetType",
-          "jsDocType",
-          "tsType",
-          "description",
-          "argumentValidator",
-        ]);
-
-        expect(firstType.argumentName).toBe(type1Args[0]);
-        expect(firstType.mapOrSetType).toBe("Set");
-        expect(firstType.jsDocType).toBe("*");
-        expect(firstType.description).toBe(type1Args[1]);
-        expect(firstType.argumentValidator).toBe(null);
-      }
+        expect(firstType).toEqual(new CollectionType(
+          type1Args[0],
+          "Set",
+          "*",
+          options.tsType,
+          type1Args[1],
+          null
+        ));      }
     });
 
     /* This is an extreme case.  Don't do this in production.
@@ -590,7 +533,10 @@ describe("CollectionConfiguration", () => {
     */
     it("can be called more than once", () => {
       const argMatrix = [];
-      const argCount = 1;
+      const argCount = 20;
+
+      const refTypes = [];
+
       for (let i = 0; i < argCount; i++) {
         const args = type1Args.slice();
         args[0] += "_" + i;
@@ -598,28 +544,23 @@ describe("CollectionConfiguration", () => {
         options.argumentValidator = eval(`${args[0]} => void(${args[0]})`);
 
         config.addSetKey(...args);
+
+        refTypes.push(new CollectionType(
+          args[0],
+          "WeakSet",
+          options.jsDocType,
+          options.tsType,
+          args[1],
+          `void(mother_${i})`
+        ));
       }
 
       const typeData = ConfigurationData.cloneData(config);
       expect(typeData.parameterToTypeMap.size).toBe(argCount);
 
       Array.from(typeData.parameterToTypeMap.values()).forEach((t, index) => {
+        expect(t).toEqual(refTypes[index]);
         expect(Object.isFrozen(t)).toBe(true);
-        expect(Reflect.ownKeys(t)).toEqual([
-          "argumentName",
-          "mapOrSetType",
-          "jsDocType",
-          "tsType",
-          "description",
-          "argumentValidator",
-        ]);
-        const argRow = argMatrix[index];
-
-        expect(t.argumentName).toBe(argRow[0]);
-        expect(t.mapOrSetType).toBe("WeakSet");
-        expect(t.jsDocType).toBe(options.jsDocType);
-        expect(t.description).toBe(argRow[1]);
-        expect(typeof t.argumentValidator).toBe("string");
       });
     });
 
@@ -771,17 +712,20 @@ describe("CollectionConfiguration", () => {
       config.addMapKey("mother", "The mother.", true);
       expect(() => config.setValueType("The car.", {
         jsDocType: "Car",
+        tsType: "CarTS",
         argumentValidator: valueFilter
       })).not.toThrow();
       expect(wasCalled).toBe(false);
 
       const data = ConfigurationData.cloneData(config);
-      expect(data.valueType).not.toBe(null);
-      expect(data.valueType.mapOrSetType).toBe("Map");
-      expect(data.valueType.argumentName).toBe("value");
-      expect(data.valueType.jsDocType).toBe("Car");
-      expect(data.valueType.description).toBe("The car.");
-      expect(data.valueType.argumentValidator).toBe("{ void(value); wasCalled = true; }");
+      expect(data.valueType).toEqual(new CollectionType(
+        "value",
+        "Map",
+        "Car",
+        "CarTS",
+        "The car.",
+        "{ void(value); wasCalled = true; }"
+      ));
     });
 
     describe("throws for", () => {
