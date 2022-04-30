@@ -187,7 +187,7 @@ describe("CollectionConfiguration", () => {
       }
     });
 
-    it("defaults to an argument type of 'object' when the jsDocType is not specified and holdWeak is true", () => {
+    it("defaults to a JSDoc type of 'object' when the jsDocType is not specified and holdWeak is true", () => {
       delete options.jsDocType;
       config.addMapKey(...type1Args);
 
@@ -207,7 +207,7 @@ describe("CollectionConfiguration", () => {
       }
     });
 
-    it("defaults to an argument type of '*' when the jsDocType is not specified and holdWeak is false", () => {
+    it("defaults to a JSDoc type of '*' when the jsDocType is not specified and holdWeak is false", () => {
       delete options.jsDocType;
       const args = type1Args.slice();
       args.splice(2, 1, false);
@@ -223,6 +223,48 @@ describe("CollectionConfiguration", () => {
           "Map",
           "*",
           options.tsType,
+          type1Args[1],
+          null
+        ));
+      }
+    });
+
+    it("defaults to a TypeScript type of 'object' when the tsType is not specified and holdWeak is true", () => {
+      delete options.tsType;
+      config.addMapKey(...type1Args);
+
+      const typeData = ConfigurationData.cloneData(config);
+      expect(typeData.parameterToTypeMap.size).toBe(1);
+      const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
+      expect(typeof firstType).toBe("object");
+      if (firstType) {
+        expect(firstType).toEqual(new CollectionType(
+          type1Args[0],
+          "WeakMap",
+          "Cat",
+          "object",
+          type1Args[1],
+          null
+        ));
+      }
+    });
+
+    it("defaults to a TypeScript type of 'unknown' when the tsType is not specified and holdWeak is false", () => {
+      delete options.tsType;
+      const args = type1Args.slice();
+      args.splice(2, 1, false);
+      config.addMapKey(...args);
+
+      const typeData = ConfigurationData.cloneData(config);
+      expect(typeData.parameterToTypeMap.size).toBe(1);
+      const firstType = typeData.parameterToTypeMap.get(type1Args[0]);
+      expect(typeof firstType).toBe("object");
+      if (firstType) {
+        expect(firstType).toEqual(new CollectionType(
+          type1Args[0],
+          "Map",
+          "Cat",
+          "unknown",
           type1Args[1],
           null
         ));
