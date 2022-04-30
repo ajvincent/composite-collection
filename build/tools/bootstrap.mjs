@@ -57,6 +57,8 @@ const cleanupAll = {};
 
   cleanupAll.resolve = () => resolveSequence.forEach(res => res());
   cleanupAll.promise = Promise.all(promiseSequence);
+
+  cleanupAll.aborted = false;
 }
 
 console.time("stage");
@@ -107,8 +109,25 @@ try {
   const stage3Hash = await hashAllFiles(stageDirs[2]);
 
   if (stage3Hash !== stage2Hash) {
+    const stage2Lines = new Set(stage2Hash.split("\n"));
+    const stage3Lines = new Set(stage3Hash.split("\n"));
+
+    const diffs = new Set;
+
+    stage2Lines.forEach(l => {
+      if (!stage3Lines.has(l))
+        diffs.add("stage2 file: " + l);
+    });
+    stage3Lines.forEach(l => {
+      if (!stage2Lines.has(l))
+        diffs.add("stage3 file: " + l);
+    })
+
+    console.debug(Array.from(diffs));
+
     console.error("stage 2: " + stageDirs[1]);
     console.error("stage 3: " + stageDirs[2]);
+    cleanupAll.aborted = true;
     throw new Error("Bootstrap: staged directories are different!");
   }
 
@@ -126,8 +145,10 @@ catch (ex) {
   throw ex;
 }
 finally {
-  cleanupAll.resolve();
-  await cleanupAll.promise;
+  if (!cleanupAll.aborted) {
+    cleanupAll.resolve();
+    await cleanupAll.promise;
+  }
 
   console.timeEnd("stage");
 }

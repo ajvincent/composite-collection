@@ -38,12 +38,15 @@ export async function getHashFileList(root) {
     "spec/_01_collection-generator/generated",
     "spec/_02_one-to-one-maps/generated",
     "spec/_04_exports/generated",
+
+    // We have to exclude the whole directory because it drops some generated text and Markdown files directly below.
+    "spec/_06_typescript-coverage",
     "."
   ];
 
   return (await readDirsDeep(root, dir => {
     dir = dir.replace(root, "");
-    return ignoredDirs.some(ignorable => dir.startsWith(ignorable));
+    return ignoredDirs.some(ignorable => dir.includes(ignorable));
   })).files;
 }
 
@@ -66,8 +69,11 @@ export async function hashAllFiles(root) {
 
   {
     const contents = fileHashes.join("\n");
+    /*
     const hash = crypto.createHash('sha512');
     hash.update(contents);
     return hash.digest('hex');
+    */
+   return contents;
   }
 }
