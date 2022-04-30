@@ -12,5 +12,8 @@ export default class TypeScriptDefines extends PreprocessorDefines {
     static get nonTypeScriptCount() {
         return this.#count;
     }
+    static moduleReadyForCoverage(generator) {
+        return TypeScriptDefines.#generators.get(generator) || false;
+    }
 }
 //# sourceMappingURL=TypeScriptDefines.mjs.map

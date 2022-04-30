@@ -4,6 +4,7 @@ export default class TypeScriptDefines extends PreprocessorDefines {
     #private;
     static registerGenerator(generator: TemplateFunction, supportsTypeScript: boolean): void;
     static get nonTypeScriptCount(): number;
+    static moduleReadyForCoverage(generator: TemplateFunction): boolean;
 }
 declare type primitive = string | number | boolean | undefined | null;
 declare type DeepReadonly<T> = T extends primitive ? T : T extends Array<infer U> ? DeepReadonlyArray<U> : DeepReadonlyObject<T>;

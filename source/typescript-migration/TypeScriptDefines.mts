@@ -17,6 +17,10 @@ export default class TypeScriptDefines extends PreprocessorDefines {
   static get nonTypeScriptCount() : number {
     return this.#count;
   }
+
+  static moduleReadyForCoverage(generator: TemplateFunction) : boolean {
+    return TypeScriptDefines.#generators.get(generator) || false;
+  }
 }
 
 // Shamelessly copied from https://github.com/Microsoft/TypeScript/issues/13923
