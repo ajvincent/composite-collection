@@ -274,7 +274,7 @@ export default class CollectionConfiguration {
         argumentValidator = null,
       } = options;
 
-      this.#validateKey(argumentName, holdWeak, jsDocType, description, argumentValidator);
+      this.#validateKey(argumentName, holdWeak, jsDocType, tsType, description, argumentValidator);
       if (holdWeak && !this.#configurationData.collectionTemplate.startsWith("Weak/Map"))
         throw new Error("Strong maps cannot have weak map keys!");
 
@@ -327,7 +327,7 @@ export default class CollectionConfiguration {
         argumentValidator = null,
       } = options;
 
-      this.#validateKey(argumentName, holdWeak, jsDocType, description, argumentValidator);
+      this.#validateKey(argumentName, holdWeak, jsDocType, tsType, description, argumentValidator);
       if (holdWeak && !/Weak\/?Set/.test(this.#configurationData.collectionTemplate))
         throw new Error("Strong sets cannot have weak set keys!");
 
@@ -356,12 +356,14 @@ export default class CollectionConfiguration {
     argumentName: string,
     holdWeak: boolean,
     jsDocType: string,
+    tsType: string,
     description: string,
     argumentValidator: ArgumentValidator<unknown> | null
   ) : void
   {
     CollectionConfiguration.#identifierArg("argumentName", argumentName);
     CollectionConfiguration.#jsdocField("jsDocType", jsDocType);
+    CollectionConfiguration.#identifierArg("tsType", tsType);
     CollectionConfiguration.#jsdocField("description", description);
 
     if (argumentValidator !== null) {
@@ -412,6 +414,7 @@ export default class CollectionConfiguration {
 
       CollectionConfiguration.#stringArg("type", jsDocType);
       CollectionConfiguration.#stringArg("description", description);
+      CollectionConfiguration.#identifierArg("tsType", tsType);
 
       let validatorSource = null;
       if (argumentValidator) {

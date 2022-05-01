@@ -212,7 +212,7 @@ export default class CollectionConfiguration {
                 throw new Error("You must define map keys before calling .addSetElement(), .setValueType() or .lock()!");
             }
             const { jsDocType = holdWeak ? "object" : "*", tsType = holdWeak ? "object" : "unknown", argumentValidator = null, } = options;
-            this.#validateKey(argumentName, holdWeak, jsDocType, description, argumentValidator);
+            this.#validateKey(argumentName, holdWeak, jsDocType, tsType, description, argumentValidator);
             if (holdWeak && !this.#configurationData.collectionTemplate.startsWith("Weak/Map"))
                 throw new Error("Strong maps cannot have weak map keys!");
             const validatorSource = (argumentValidator !== null) ?
@@ -238,7 +238,7 @@ export default class CollectionConfiguration {
                 throw new Error("You must define set keys before calling .setValueType() or .lock()!");
             }
             const { jsDocType = holdWeak ? "object" : "*", tsType = holdWeak ? "object" : "unknown", argumentValidator = null, } = options;
-            this.#validateKey(argumentName, holdWeak, jsDocType, description, argumentValidator);
+            this.#validateKey(argumentName, holdWeak, jsDocType, tsType, description, argumentValidator);
             if (holdWeak && !/Weak\/?Set/.test(this.#configurationData.collectionTemplate))
                 throw new Error("Strong sets cannot have weak set keys!");
             const validatorSource = (argumentValidator !== null) ?
@@ -248,9 +248,10 @@ export default class CollectionConfiguration {
             this.#configurationData.defineArgument(collectionType);
         });
     }
-    #validateKey(argumentName, holdWeak, jsDocType, description, argumentValidator) {
+    #validateKey(argumentName, holdWeak, jsDocType, tsType, description, argumentValidator) {
         CollectionConfiguration.#identifierArg("argumentName", argumentName);
         CollectionConfiguration.#jsdocField("jsDocType", jsDocType);
+        CollectionConfiguration.#identifierArg("tsType", tsType);
         CollectionConfiguration.#jsdocField("description", description);
         if (argumentValidator !== null) {
             CollectionConfiguration.#validatorArg("argumentValidator", argumentValidator, argumentName, true);
@@ -280,6 +281,7 @@ export default class CollectionConfiguration {
             const { jsDocType = "*", tsType = "unknown", argumentValidator = null, } = options;
             CollectionConfiguration.#stringArg("type", jsDocType);
             CollectionConfiguration.#stringArg("description", description);
+            CollectionConfiguration.#identifierArg("tsType", tsType);
             let validatorSource = null;
             if (argumentValidator) {
                 validatorSource = CollectionConfiguration.#validatorArg("validator", argumentValidator, "value", true);

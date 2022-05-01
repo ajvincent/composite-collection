@@ -351,12 +351,27 @@ describe("CollectionConfiguration", () => {
         ).toThrowError("holdWeak must be true or false!");
       });
 
-      it("a non-string argument type", () => {
+      it("a non-string jsdoc type", () => {
         options.jsDocType = Symbol("foo");
         expect(
           () => config.addMapKey(...args)
         ).toThrowError(`jsDocType must be a non-empty string!`);
       });
+
+      it("a non-string tsType", () => {
+        options.tsType = Symbol("foo");
+        expect(
+          () => config.addMapKey(...args)
+        ).toThrowError(`tsType must be a non-empty string!`);
+      });
+
+      it("a tsType starting and ending with two underscores", () => {
+        options.tsType = "__foo__";
+        expect(
+          () => config.addMapKey(...args)
+        ).toThrowError(`This module reserves variable names starting and ending with a double underscore for itself.`);
+      });
+
 
       it("a non-string description", () => {
         args[1] = {};
