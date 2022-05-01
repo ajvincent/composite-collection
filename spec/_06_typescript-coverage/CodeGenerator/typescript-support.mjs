@@ -3,19 +3,17 @@ import path from "path";
 import fs from "fs/promises";
 
 import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
-import { Deferred, PromiseAllParallel } from "#source/utilities/PromiseTypes.mjs";
+import { PromiseAllParallel } from "#source/utilities/PromiseTypes.mjs";
 
 const specDir = url.fileURLToPath(new URL("..", import.meta.url));
 const projectRoot = url.fileURLToPath(new URL("../../..", import.meta.url));
-
-import { openSync } from "fs";
-import { fork } from "child_process";
 
 const ENCODING = { encoding: "utf-8"};
 
 import StrongMapOfStrongSets from "../generated/StrongMapOfStrongSets.mjs";
 import TypeScriptDefines from "../../../source/typescript-migration/TypeScriptDefines.mjs";
 import TemplateGenerators from "../../../source/generatorTools/TemplateGenerators.mjs";
+import InvokeTSC from "../../../source/utilities/InvokeTSC.mjs"
 
 describe("TypeScript support: ", () => {
   class TemplateSet extends StrongMapOfStrongSets {
@@ -44,18 +42,18 @@ describe("TypeScript support: ", () => {
   }
 
   let templatesWithoutModules = [];
-  const generatedPath = path.join(specDir, "generated");
+  const generatedPath = path.resolve(specDir, "generated");
 
   let existingMTS;
-  const tsSupported = path.join(generatedPath, "tsconfig.json");
-  const tsUnsupported = path.join(generatedPath, "tsconfig-unsupported.json");
+  const tsSupported = path.resolve(generatedPath, "tsconfig.json");
+  const tsUnsupported = path.resolve(generatedPath, "tsconfig-unsupported.json");
 
-  let unsupportedCount = 0, supportedCount = 0;
+  const unsupportedFiles = [], supportedFiles = [];
 
   beforeAll(async () => {
     { // Get the list of all templates we know about.
       let { files } = await readDirsDeep(
-        path.join(projectRoot, "templates")
+        path.resolve(projectRoot, "templates")
       );
       files = files.filter(f => f.endsWith(".in.mts"));
 
@@ -66,7 +64,7 @@ describe("TypeScript support: ", () => {
 
     { // Scan the generated modules for template references.
       let files = await fs.readdir(generatedPath);
-      files = files.filter(f => f.endsWith(".mjs")).map(f => path.join(generatedPath, f));
+      files = files.filter(f => f.endsWith(".mjs")).map(f => path.resolve(generatedPath, f));
 
       await PromiseAllParallel(files, async pathToFile => {
         const contents = await fs.readFile(pathToFile, { encoding: "utf-8" });
@@ -78,7 +76,7 @@ describe("TypeScript support: ", () => {
     }
 
     await fs.writeFile(
-      path.join(specDir, "template-collections.md"),
+      path.resolve(specDir, "template-collections.md"),
       `# Templates\n\n` + TemplateSet.service.markDown() + "\n",
       { encoding: "utf-8" }
     );
@@ -103,60 +101,26 @@ describe("TypeScript support: ", () => {
       existingMTS = files.filter(f => /(?<!\.d)\.mts$/.test(f));
     }
 
-    { // Write tsconfig.json and tsconfig-unsupported.json
-      const rawJSON = await fs.readFile(
-        path.join(specDir, "support/tsconfig.json.in"),
-        ENCODING
-      );
-
-      const unsupportedConfig = JSON.parse(rawJSON);
-      unsupportedConfig.files = [];
-
-      const supportedConfig = JSON.parse(rawJSON);
-      supportedConfig.files = [];
-      delete supportedConfig.compilerOptions.noEmit;
-      delete supportedConfig.compilerOptions.noImplicitAny;
-
+    { // Sort the modules into supported and unsupported arrays.
       TemplateSet.service.forEach((template, relativePath) => {
         const generator = TemplateGenerators.get(template);
         const shouldSupport = TypeScriptDefines.moduleReadyForCoverage(generator);
-        const fileList = shouldSupport ? supportedConfig.files : unsupportedConfig.files;
+        const fileList = shouldSupport ? supportedFiles : unsupportedFiles;
         fileList.push(relativePath.replace(".mjs", ".mts"));
-        if (shouldSupport)
-          supportedCount++;
-        else
-          unsupportedCount++;
       });
-
-      await fs.writeFile(
-        tsUnsupported,
-        JSON.stringify(unsupportedConfig, null, 2) + "\n",
-        ENCODING
-      );
-
-      await fs.writeFile(
-        tsSupported,
-        JSON.stringify(supportedConfig, null, 2) + "\n",
-        ENCODING
-      );
     }
 
-    if (unsupportedCount) { // Invoke TypeScript on the unsupported files.
-      const deferred = new Deferred;
-      const outFD = openSync(path.join(specDir, "ts-unsupported-stdout.txt"), "w");
-
-      const child = fork(
-        path.join(projectRoot, "node_modules/typescript/bin/tsc"),
-        [
-          "--project", tsUnsupported,
-        ],
-        {
-          stdio: ["ignore", outFD, "ignore", "ipc"]
-        }
-      );
-
-      child.on("exit", deferred.resolve);
-      await deferred.promise;
+    if (unsupportedFiles.length) { // Invoke TypeScript on the unsupported files.
+      await InvokeTSC.withCustomConfiguration(
+        tsUnsupported,
+        false,
+        (config) => {
+          config.files = unsupportedFiles;
+          config.compilerOptions.noEmit = true;
+          config.compilerOptions.noImplicitAny = false;
+        },
+        "spec/_06_typescript-coverage/ts-unsupported-stdout.txt"
+      ).catch(reason => void(reason));
     }
   }, 1000 * 60);
 
@@ -165,26 +129,16 @@ describe("TypeScript support: ", () => {
   });
 
   it("TypeScript transpiles generated modules cleanly", async () => {
-    if (supportedCount === 0)
+    if (supportedFiles.length === 0)
       return;
 
-    const deferred = new Deferred;
-    const outFD = openSync(path.join(specDir, "ts-supported-stdout.txt"), "w");
-
-    const child = fork(
-      path.join(projectRoot, "node_modules/typescript/bin/tsc"),
-      [
-        "--project", tsSupported,
-      ],
-      {
-        stdio: ["ignore", outFD, "ignore", "ipc"]
-      }
-    );
-
-    child.on("exit", code => {
-      code ? deferred.reject("Failed with code " + code) : deferred.resolve()
-    });
-
-    await expectAsync(deferred.promise).toBeResolved();
+    await expectAsync(InvokeTSC.withCustomConfiguration(
+      tsSupported,
+      false,
+      (config) => {
+        config.files = supportedFiles;
+      },
+      "spec/_06_typescript-coverage/ts-supported-stdout.txt"
+    )).toBeResolved();
   }, 1000 * 60);
 });

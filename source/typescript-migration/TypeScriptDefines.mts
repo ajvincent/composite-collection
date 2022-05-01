@@ -41,7 +41,7 @@ export default class TypeScriptDefines extends PreprocessorDefines {
     key2: __WM2__ extends unknown,
     value: __V__ extends unknown
   >` */
-  tsGenericTypes : string = "";
+  tsGenericTypes = "";
 
   /* Questions:
   (1) CodeGenerator has to ask TypeScript.moduleReadyForCoverage() to write a .mts file.  How?
