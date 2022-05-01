@@ -17,6 +17,7 @@ export declare class GeneratorPromiseSet extends BuildPromiseSet {
     has(targetName: string): boolean;
     runMain(): Promise<void>;
     getTemporaryPath(targetPath: string): Promise<string>;
+    scheduleTSC(targetModule: string): void;
     requireKeyHasher(): void;
     requireWeakKeyComposer(): void;
 }

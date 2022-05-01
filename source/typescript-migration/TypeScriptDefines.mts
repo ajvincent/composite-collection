@@ -20,7 +20,7 @@ export default class TypeScriptDefines extends PreprocessorDefines {
   }
 
   static moduleReadyForCoverage(generator: TemplateFunction) : boolean {
-    return TypeScriptDefines.#generators.get(generator) || false;
+    return TypeScriptDefines.#generators.get(generator) ?? false;
   }
   //#endregion static utility methods
 

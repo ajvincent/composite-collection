@@ -14,7 +14,7 @@ export default class TypeScriptDefines extends PreprocessorDefines {
         return this.#count;
     }
     static moduleReadyForCoverage(generator) {
-        return TypeScriptDefines.#generators.get(generator) || false;
+        return TypeScriptDefines.#generators.get(generator) ?? false;
     }
     //#endregion static utility methods
     //#region public properties

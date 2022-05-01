@@ -7,6 +7,7 @@ import url from "url";
 import fs from "fs/promises";
 import path from "path";
 import recursiveCopy from "recursive-copy";
+import InvokeTSC from "../utilities/InvokeTSC.mjs";
 
 const projectRoot = url.fileURLToPath(new URL("../..", import.meta.url));
 
@@ -18,6 +19,8 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
 
   #owner: object;
   #targetDir: string;
+
+  #TypeScriptModules: string[] = [];
 
   #requireKeyHasher = false;
   #requireWeakKeyComposer = false;
@@ -45,6 +48,9 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
 
     const exportKeysTarget = this.get("(export keys)");
     exportKeysTarget.addTask(() => this.#exportKeyFiles());
+
+    const invokeTSCTarget = this.get("(invoke TypeScript compiler)");
+    invokeTSCTarget.addTask(() => this.#invokeTSC());
 
     const copyToTargetDir  = this.get("(move to target directory)");
     copyToTargetDir.addTask(() => this.#copyToTargetDirectory());
@@ -77,6 +83,7 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
 
     this.main.addSubtarget("(generators)");
     this.main.addSubtarget("(export keys)");
+    this.main.addSubtarget("(invoke TypeScript compiler)");
     this.main.addSubtarget("(move to target directory)");
 
     try {
@@ -92,6 +99,23 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
   async getTemporaryPath(targetPath: string) : Promise<string> {
     const { tempDir } = await this.#tempDirPromise;
     return targetPath.replace(this.#targetDir, tempDir);
+  }
+
+  scheduleTSC(targetModule: string) : void {
+    this.#TypeScriptModules.push(targetModule);
+  }
+
+  async #invokeTSC() : Promise<number> {
+    if (!this.#TypeScriptModules.length)
+      return 0; // success: there's nothing to do.
+
+    return await InvokeTSC.withCustomConfiguration(
+      path.resolve(this.#targetDir, "tsconfig.json"),
+      false,
+      (config) => {
+        config.files = this.#TypeScriptModules;
+      }
+    );
   }
 
   requireKeyHasher() : void {
@@ -111,17 +135,17 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     if (!this.#requireKeyHasher)
       return;
 
-    let fileList = await fs.readdir(path.join(projectRoot, "source/exports/keys"));
+    let fileList = await fs.readdir(path.resolve(projectRoot, "source/exports/keys"));
     if (!this.#requireWeakKeyComposer) {
       fileList = fileList.filter(f => !f.startsWith("Composite."));
     }
 
     const targetDir = await this.getTemporaryPath(this.#targetDir);
-    await fs.mkdir(path.join(targetDir, "keys"), { recursive: true });
+    await fs.mkdir(path.resolve(targetDir, "keys"), { recursive: true });
 
     await PromiseAllParallel(fileList, async (leaf: string) => fs.copyFile(
-      path.join(projectRoot, "source/exports/keys", leaf),
-      path.join(targetDir, "keys", leaf)
+      path.resolve(projectRoot, "source/exports/keys", leaf),
+      path.resolve(targetDir, "keys", leaf)
     ));
   }
 

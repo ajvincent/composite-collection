@@ -64,6 +64,8 @@ export default class CodeGenerator extends CodeGeneratorBase {
     #defines = new TypeScriptDefines();
     /** @type {JSDocGenerator[]} */
     #docGenerators = [];
+    /** @type {boolean} */
+    #saveAsTypeScript = false;
     /** @type {string} */
     #generatedCode = "";
     /** @type {Set<string>?} @constant */
@@ -325,6 +327,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
     #generateSource() {
         this.#configurationData.collectionTemplate = this.#chooseCollectionTemplate();
         const generator = TemplateGenerators.get(this.#configurationData.collectionTemplate);
+        this.#saveAsTypeScript = TypeScriptDefines.moduleReadyForCoverage(generator);
         let codeSegments = [
             this.#generatedCode,
             generator(this.#defines, ...this.#docGenerators),
@@ -367,8 +370,12 @@ export default class CodeGenerator extends CodeGeneratorBase {
      * @returns {Promise<void>}
      */
     async #writeSource(gpSet) {
-        const targetPath = await gpSet.getTemporaryPath(this.#targetPath);
-        return fs.writeFile(targetPath, this.#generatedCode, { encoding: "utf-8" });
+        let targetPath = await gpSet.getTemporaryPath(this.#targetPath);
+        if (this.#saveAsTypeScript) {
+            targetPath = targetPath.replace(/\.mjs$/, ".mts");
+            gpSet.scheduleTSC(targetPath);
+        }
+        await fs.writeFile(targetPath, this.#generatedCode, { encoding: "utf-8" });
     }
     async #buildOneToOneBase(base) {
         const baseData = ConfigurationData.cloneData(base);

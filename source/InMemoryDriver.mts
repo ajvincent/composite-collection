@@ -78,6 +78,7 @@ export default class InMemoryDriver {
     await PromiseAllParallel(Array.from(this.#configs.keys()), async (config: CollectionConfiguration) => {
       const relativePath = this.#configs.get(config) as string;
       try {
+        // XXX ajvincent This path.join call could be problematic.  Why?
         const targetPath = path.normalize(path.join(
           this.#targetsPath, relativePath
         ));

@@ -91,6 +91,9 @@ export default class CodeGenerator extends CodeGeneratorBase {
   /** @type {JSDocGenerator[]} */
   #docGenerators: JSDocGenerator[] = [];
 
+  /** @type {boolean} */
+  #saveAsTypeScript = false;
+
   /** @type {string} */
   #generatedCode = "";
 
@@ -472,6 +475,8 @@ export default class CodeGenerator extends CodeGeneratorBase {
     this.#configurationData.collectionTemplate = this.#chooseCollectionTemplate();
     const generator = TemplateGenerators.get(this.#configurationData.collectionTemplate) as TemplateFunction;
 
+    this.#saveAsTypeScript = TypeScriptDefines.moduleReadyForCoverage(generator)
+
     let codeSegments = [
       this.#generatedCode,
       generator(this.#defines, ...this.#docGenerators),
@@ -531,8 +536,12 @@ export default class CodeGenerator extends CodeGeneratorBase {
    * @returns {Promise<void>}
    */
   async #writeSource(gpSet: GeneratorPromiseSet) : Promise<void> {
-    const targetPath = await gpSet.getTemporaryPath(this.#targetPath);
-    return fs.writeFile(
+    let targetPath = await gpSet.getTemporaryPath(this.#targetPath);
+    if (this.#saveAsTypeScript) {
+      targetPath = targetPath.replace(/\.mjs$/, ".mts");
+      gpSet.scheduleTSC(targetPath);
+    }
+    await fs.writeFile(
       targetPath,
       this.#generatedCode,
       { encoding: "utf-8" }
