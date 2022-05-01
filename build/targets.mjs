@@ -155,6 +155,43 @@ const BPSet = new BuildPromiseSet(true);
     }
   );
 }
+
+
+{ // typescript:eslint
+  /*
+  const jsTarget = BPSet.get("eslint");
+  jsTarget.addSubtarget("typescript:eslint");
+  */
+
+  const target = BPSet.get("typescript:eslint");
+  // general linting
+  target.addTask(
+    async () => {
+      console.log("typescript linting post-build");
+      const targets = [
+        "spec",
+      ];
+
+      const buildModulePath = path.join(process.cwd(), "exports/keys/Hasher.mts");
+      let stats;
+      try {
+        stats = await fs.stat(buildModulePath);
+      }
+      catch (ex) {
+        // do nothing
+      }
+      if (stats?.isFile()) {
+        targets.push("exports");
+      }
+
+      await runModule("./node_modules/eslint/bin/eslint.js", [
+        "-c", "./.eslintrc-typescript.json",
+        "--max-warnings=0",
+        ...targets,
+      ]);
+    }
+  );
+}
 // #endregion typescript targets
 
 BPSet.markReady();
