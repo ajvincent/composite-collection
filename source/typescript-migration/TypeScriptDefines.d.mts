@@ -8,7 +8,8 @@ export default class TypeScriptDefines extends PreprocessorDefines {
     tsMapKeys: string[];
     tsSetKeys: string[];
     tsValueKey: string;
-    tsGenericTypes: string;
+    tsGenericShortClass: string;
+    tsGenericFullClass: string;
 }
 declare type primitive = string | number | boolean | undefined | null;
 declare type DeepReadonly<T> = T extends primitive ? T : T extends Array<infer U> ? DeepReadonlyArray<U> : DeepReadonlyObject<T>;

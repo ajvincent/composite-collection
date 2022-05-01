@@ -19,18 +19,20 @@ export default class TypeScriptDefines extends PreprocessorDefines {
     //#endregion static utility methods
     //#region public properties
     // TypeScript support
-    // `key1: __WM1__`
+    // `key1: __MK1__`
     tsMapKeys = [];
-    // `key1: __WS1__`
+    // `key1: __SK1__`
     tsSetKeys = [];
-    // value: __V__
+    // "value: __V__"
     tsValueKey = "";
-    /* GenericClass `<
-      key1: __WM1__ extends object,
-      key2: __WM2__ extends unknown,
-      value: __V__ extends unknown
+    /* `GenericClass<__MK1__, __SK1__, __V__> */
+    tsGenericShortClass = "";
+    /* `GenericClass<
+      __MK1__ extends object,
+      __SK1__ extends unknown,
+      __V__ extends unknown
     >` */
-    tsGenericTypes = "";
+    tsGenericFullClass = "";
 }
 //#endregion readonly boilerplate
 //# sourceMappingURL=TypeScriptDefines.mjs.map

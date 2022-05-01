@@ -25,8 +25,19 @@ import type { PromiseResolver } from "./utilities/PromiseTypes.mjs";
 import fs from "fs/promises";
 import path from "path";
 import beautify from "js-beautify";
+import { RequiredMap } from "./utilities/RequiredMap.mjs";
 
 type InternalFlags = Set<string>;
+
+class TypeScriptDefs {
+  typeConstraint: string;
+  extendsConstraint: string;
+
+  constructor(typeConstraint: string, extendsConstraint: string) {
+    this.typeConstraint = typeConstraint;
+    this.extendsConstraint = extendsConstraint;
+  }
+}
 
 /** @package */
 export default class CodeGenerator extends CodeGeneratorBase {
@@ -233,6 +244,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
     }
     else {
       this.#buildDefines();
+      this.#buildTypeScriptDefines();
       this.#buildDocGenerator();
     }
 
@@ -337,6 +349,76 @@ export default class CodeGenerator extends CodeGeneratorBase {
         this.#defines.validateValue = filter + "\n    ";
 
       this.#defines.valueType = data.valueType.jsDocType;
+    }
+  }
+
+  #buildTypeScriptDefines() : void {
+    const defines = this.#defines;
+    const data = this.#configurationData;
+    if (data.collectionTemplate === "OneToOne/Map") {
+      throw new Error("Not yet implemented!");
+    }
+    else {
+      const typeDefs: RequiredMap<string, TypeScriptDefs> = new RequiredMap;
+      defines.mapKeys.forEach(
+        (key, index) => {
+          const typeMap = data.parameterToTypeMap.get(key);
+          if (!typeMap)
+            throw new Error("assertion failure: typeMap");
+          typeDefs.set(key, new TypeScriptDefs(
+            `__MK${index}__`,
+            typeMap.tsType
+          ));
+        }
+      );
+
+      defines.setKeys.forEach(
+        (key, index) => {
+          const typeMap = data.parameterToTypeMap.get(key);
+          if (!typeMap)
+            throw new Error("assertion failure: typeMap");
+          typeDefs.set(key, new TypeScriptDefs(
+            `__SK${index}__`,
+            typeMap.tsType
+          ));
+        }
+      );
+
+      if (data.valueType) {
+        typeDefs.set("value", new TypeScriptDefs(
+          "__V__",
+          data.valueType.tsType
+        ));
+        defines.tsValueKey = "value: __V__";
+      }
+
+      const readDefs: RequiredMap<string, TypeScriptDefs> = typeDefs;
+
+      defines.tsMapKeys = defines.mapKeys.map((key: string):
+        string => key + ": " + readDefs.getRequired(key).typeConstraint
+      );
+
+      defines.tsSetKeys = defines.setKeys.map((key: string):
+        string => key + ": " + readDefs.getRequired(key).typeConstraint
+      );
+
+      defines.tsGenericShortClass = `${
+        defines.className
+      }<${
+        Array.from(readDefs.values())
+             .map(def => def.typeConstraint)
+             .join(", ")
+      }>`;
+
+      defines.tsGenericFullClass = `${
+        defines.className
+      }<\n  ${
+        Array.from(
+          readDefs.values()
+        ).map(
+          def => `${def.typeConstraint} extends ${def.extendsConstraint}`
+        ).join(",\n  ")
+      }\n>`;
     }
   }
 
