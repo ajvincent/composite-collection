@@ -27,24 +27,27 @@ export default class TypeScriptDefines extends PreprocessorDefines {
   //#region public properties
 
   // TypeScript support
+  // '__MK1__'
+  tsMapTypes: string[] = [];
+
+  // `__SK1__`
+  tsSetTypes : string[] = [];
+
   // `key1: __MK1__`
   tsMapKeys:  string[] = [];
 
   // `key1: __SK1__`
   tsSetKeys : string[] = [];
 
-  // "value: __V__"
-  tsValueKey = "";
+  tsValueType = "__V__";
+  tsValueKey = "value: __V__";
 
-  /* `GenericClass<__MK1__, __SK1__, __V__> */
-  tsGenericShortClass = "";
-
-  /* `GenericClass<
+  /* `<
     __MK1__ extends object,
     __SK1__ extends unknown,
     __V__ extends unknown
   >` */
-  tsGenericFullClass = "";
+  tsGenericFull = "";
 
   //#endregion
 }

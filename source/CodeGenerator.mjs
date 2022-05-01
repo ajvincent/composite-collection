@@ -225,45 +225,44 @@ export default class CodeGenerator extends CodeGeneratorBase {
     }
     #buildDefines() {
         const data = this.#configurationData;
-        this.#defines.className = data.className;
+        const defines = this.#defines;
+        defines.className = data.className;
         const mapKeys = data.weakMapKeys.concat(data.strongMapKeys);
         const setKeys = data.weakSetElements.concat(data.strongSetElements);
-        this.#defines.importLines = data.importLines;
+        defines.importLines = data.importLines;
         {
             const keys = Array.from(data.parameterToTypeMap.keys());
-            this.#defines.argList = keys.join(", ");
-            this.#defines.argNameList = CodeGenerator.buildArgNameList(keys);
+            defines.argList = keys.join(", ");
+            defines.argNameList = CodeGenerator.buildArgNameList(keys);
         }
         const paramsData = Array.from(data.parameterToTypeMap.values());
         if (/Solo|Weak\/?Map/.test(data.collectionTemplate)) {
-            this.#defines.weakMapKeys = data.weakMapKeys.slice();
-            this.#defines.strongMapKeys = data.strongMapKeys.slice();
+            defines.weakMapKeys = data.weakMapKeys.slice();
+            defines.strongMapKeys = data.strongMapKeys.slice();
         }
         if (/Solo|Weak\/?Set/.test(data.collectionTemplate)) {
-            this.#defines.weakSetElements = data.weakSetElements.slice();
-            this.#defines.strongSetElements = data.strongSetElements.slice();
+            defines.weakSetElements = data.weakSetElements.slice();
+            defines.strongSetElements = data.strongSetElements.slice();
         }
-        if (data.collectionTemplate.includes("MapOf")) {
-            this.#defines.mapKeys = mapKeys;
-            this.#defines.setKeys = setKeys;
-        }
+        defines.mapKeys = mapKeys;
+        defines.setKeys = setKeys;
         if (this.#defineValidatorCode(paramsData, "validateArguments", () => true))
-            this.#defines.invokeValidate = true;
+            defines.invokeValidate = true;
         this.#defineValidatorCode(paramsData, "validateMapArguments", pd => mapKeys.includes(pd.argumentName));
         this.#defineValidatorCode(paramsData, "validateSetArguments", pd => setKeys.includes(pd.argumentName));
         if (mapKeys.length) {
             const collection = data.parameterToTypeMap.get(mapKeys[0]);
-            this.#defines.mapArgument0Type = collection.jsDocType;
+            defines.mapArgument0Type = collection.jsDocType;
         }
         if (setKeys.length) {
             const collection = data.parameterToTypeMap.get(setKeys[0]);
-            this.#defines.setArgument0Type = collection.jsDocType;
+            defines.setArgument0Type = collection.jsDocType;
         }
         if (data.valueType) {
             let filter = (data.valueType.argumentValidator || "").trim();
             if (filter)
-                this.#defines.validateValue = filter + "\n    ";
-            this.#defines.valueType = data.valueType.jsDocType;
+                defines.validateValue = filter + "\n    ";
+            defines.valueType = data.valueType.jsDocType;
         }
     }
     #buildTypeScriptDefines() {
@@ -278,25 +277,24 @@ export default class CodeGenerator extends CodeGeneratorBase {
                 const typeMap = data.parameterToTypeMap.get(key);
                 if (!typeMap)
                     throw new Error("assertion failure: typeMap");
-                typeDefs.set(key, new TypeScriptDefs(`__MK${index}__`, typeMap.tsType));
+                const def = `__MK${index}__`;
+                defines.tsMapTypes.push(def);
+                typeDefs.set(key, new TypeScriptDefs(def, typeMap.tsType));
             });
             defines.setKeys.forEach((key, index) => {
                 const typeMap = data.parameterToTypeMap.get(key);
                 if (!typeMap)
                     throw new Error("assertion failure: typeMap");
-                typeDefs.set(key, new TypeScriptDefs(`__SK${index}__`, typeMap.tsType));
+                const def = `__SK${index}__`;
+                defines.tsSetTypes.push(def);
+                typeDefs.set(key, new TypeScriptDefs(def, typeMap.tsType));
             });
-            if (data.valueType) {
-                typeDefs.set("value", new TypeScriptDefs("__V__", data.valueType.tsType));
-                defines.tsValueKey = "value: __V__";
-            }
+            typeDefs.set("value", new TypeScriptDefs("__V__", data.valueType?.tsType || "unknown"));
+            defines.tsValueKey = "value: __V__";
             const readDefs = typeDefs;
             defines.tsMapKeys = defines.mapKeys.map((key) => key + ": " + readDefs.getRequired(key).typeConstraint);
             defines.tsSetKeys = defines.setKeys.map((key) => key + ": " + readDefs.getRequired(key).typeConstraint);
-            defines.tsGenericShortClass = `${defines.className}<${Array.from(readDefs.values())
-                .map(def => def.typeConstraint)
-                .join(", ")}>`;
-            defines.tsGenericFullClass = `${defines.className}<\n  ${Array.from(readDefs.values()).map(def => `${def.typeConstraint} extends ${def.extendsConstraint}`).join(",\n  ")}\n>`;
+            defines.tsGenericFull = `<\n  ${Array.from(readDefs.values()).map(def => `${def.typeConstraint} extends ${def.extendsConstraint}`).join(",\n  ")}\n>`.trim();
         }
     }
     #defineValidatorCode(paramsData, defineName, filter) {
@@ -382,12 +380,14 @@ export default class CodeGenerator extends CodeGeneratorBase {
                 `export default ${this.#configurationData.className};`
             ];
         }
-        this.#generatedCode = codeSegments.flat(Infinity).filter(Boolean).join("\n\n");
-        this.#generatedCode = beautify(this.#generatedCode, {
-            "indent_size": 2,
-            "indent_char": " ",
-            "end_with_newline": true,
-        });
+        this.#generatedCode = codeSegments.flat(Infinity).filter(Boolean).join("\n\n") + "\n";
+        if (!this.#saveAsTypeScript) {
+            this.#generatedCode = beautify(this.#generatedCode, {
+                "indent_size": 2,
+                "indent_char": " ",
+                "end_with_newline": true,
+            });
+        }
         this.#generatedCode = this.#generatedCode.replace(/\n{3,}/g, "\n\n");
     }
     #chooseCollectionTemplate() {
@@ -413,7 +413,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
      * @returns {Promise<void>}
      */
     async #writeSource(gpSet) {
-        let targetPath = await gpSet.getTemporaryPath(this.#targetPath);
+        let targetPath = this.#targetPath;
         if (this.#saveAsTypeScript) {
             targetPath = targetPath.replace(/\.mjs$/, ".mts");
             gpSet.scheduleTSC(targetPath);

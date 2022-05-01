@@ -1,11 +1,9 @@
 import { BuildPromise, BuildPromiseSet } from "../utilities/BuildPromise.mjs";
 import { PromiseAllParallel } from "../utilities/PromiseTypes.mjs";
-import tempDirWithCleanup from "../utilities/tempDirWithCleanup.mjs";
 import { TemporaryDirWithPromise } from "../utilities/tempDirWithCleanup.mjs";
 import url from "url";
 import fs from "fs/promises";
 import path from "path";
-import recursiveCopy from "recursive-copy";
 import InvokeTSC from "../utilities/InvokeTSC.mjs";
 const projectRoot = url.fileURLToPath(new URL("../..", import.meta.url));
 void (BuildPromise); // necessary for type checking in eslint on the generated module
@@ -19,14 +17,11 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     #requireWeakKeyComposer = false;
     /** @type {BuildPromise} @constant */
     generatorsTarget;
-    /** @type {Promise<TemporaryDirWithPromise>} */
-    #tempDirPromise;
     constructor(owner, targetDir) {
         super();
         this.#owner = owner;
         this.#knownTargets.add(this.main.target);
         this.#targetDir = targetDir;
-        this.#tempDirPromise = tempDirWithCleanup();
         this.generatorsTarget = this.get("(generators)");
         Reflect.defineProperty(this, "generatorsTarget", {
             writable: false,
@@ -37,8 +32,6 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
         exportKeysTarget.addTask(() => this.#exportKeyFiles());
         const invokeTSCTarget = this.get("(invoke TypeScript compiler)");
         invokeTSCTarget.addTask(() => this.#invokeTSC());
-        const copyToTargetDir = this.get("(move to target directory)");
-        copyToTargetDir.addTask(() => this.#copyToTargetDirectory());
     }
     get owner() {
         return this.#owner;
@@ -64,21 +57,10 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
         this.main.addSubtarget("(generators)");
         this.main.addSubtarget("(export keys)");
         this.main.addSubtarget("(invoke TypeScript compiler)");
-        this.main.addSubtarget("(move to target directory)");
-        try {
-            await this.main.run();
-        }
-        finally {
-            const { promise, resolve } = await this.#tempDirPromise;
-            resolve(undefined);
-            await promise;
-        }
-    }
-    async getTemporaryPath(targetPath) {
-        const { tempDir } = await this.#tempDirPromise;
-        return targetPath.replace(this.#targetDir, tempDir);
+        await this.main.run();
     }
     scheduleTSC(targetModule) {
+        targetModule = targetModule.replace(this.#targetDir + "/", "");
         this.#TypeScriptModules.push(targetModule);
     }
     async #invokeTSC() {
@@ -106,15 +88,8 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
         if (!this.#requireWeakKeyComposer) {
             fileList = fileList.filter(f => !f.startsWith("Composite."));
         }
-        const targetDir = await this.getTemporaryPath(this.#targetDir);
-        await fs.mkdir(path.resolve(targetDir, "keys"), { recursive: true });
-        await PromiseAllParallel(fileList, async (leaf) => fs.copyFile(path.resolve(projectRoot, "source/exports/keys", leaf), path.resolve(targetDir, "keys", leaf)));
-    }
-    async #copyToTargetDirectory() {
-        const { tempDir } = await this.#tempDirPromise;
-        await recursiveCopy(tempDir, this.#targetDir, {
-            overwrite: true,
-        });
+        await fs.mkdir(path.resolve(this.#targetDir, "keys"), { recursive: true });
+        await PromiseAllParallel(fileList, async (leaf) => fs.copyFile(path.resolve(projectRoot, "source/exports/keys", leaf), path.resolve(this.#targetDir, "keys", leaf)));
     }
 }
 // This is here so the TypeScript generator can derive from it.

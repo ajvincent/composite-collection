@@ -9,7 +9,7 @@ const TSC = path.resolve(projectRoot, "node_modules/typescript/bin/tsc");
 export default class InvokeTSC {
     static async withConfigurationFile(pathToConfig, pathToStdOut = "") {
         pathToConfig = path.resolve(projectRoot, pathToConfig);
-        let stdout = "ignore";
+        let stdout = "pipe";
         if (pathToStdOut) {
             stdout = openSync(path.resolve(projectRoot, pathToStdOut), "w");
         }
@@ -17,11 +17,13 @@ export default class InvokeTSC {
         const child = fork(TSC, [
             "--project", pathToConfig
         ], {
-            stdio: ["ignore", stdout, "ignore", "ipc"]
+            stdio: ["ignore", stdout, "pipe", "ipc"]
         });
         child.on("exit", (code) => {
-            if (code)
+            if (code) {
+                console.error("Failed on " + pathToConfig);
                 deferred.reject(code);
+            }
             else
                 deferred.resolve(code);
         });
@@ -47,11 +49,9 @@ export default class InvokeTSC {
                 "lib": ["es2021"],
                 "module": "es2022",
                 "target": "es2022",
-                "moduleResolution": "node",
                 "sourceMap": true,
                 "declaration": true,
             },
-            "extends": "@tsconfig/node16/tsconfig.json"
         };
     }
 }

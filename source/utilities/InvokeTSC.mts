@@ -17,7 +17,7 @@ export default class InvokeTSC {
   {
     pathToConfig = path.resolve(projectRoot, pathToConfig);
 
-    let stdout: "ignore" | number = "ignore";
+    let stdout: "pipe" | number = "pipe";
     if (pathToStdOut) {
       stdout = openSync(path.resolve(projectRoot, pathToStdOut), "w");
     }
@@ -30,13 +30,15 @@ export default class InvokeTSC {
         "--project", pathToConfig
       ],
       {
-        stdio: ["ignore", stdout, "ignore", "ipc"]
+        stdio: ["ignore", stdout, "pipe", "ipc"]
       }
     );
 
     child.on("exit", (code: number) => {
-      if (code)
+      if (code) {
+        console.error("Failed on " + pathToConfig);
         deferred.reject(code);
+      }
       else
         deferred.resolve(code);
     });
@@ -78,12 +80,9 @@ export default class InvokeTSC {
         "lib": ["es2021"],
         "module": "es2022",
         "target": "es2022",
-        "moduleResolution": "node",
         "sourceMap": true,
         "declaration": true,
       },
-
-      "extends": "@tsconfig/node16/tsconfig.json"
     }
   }
 }

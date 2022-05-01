@@ -1,4 +1,5 @@
 import type { ReadonlyDefines, JSDocGenerator, TemplateFunction } from "../sharedTypes.mjs";
+import TypeScriptDefines from "../../source/typescript-migration/TypeScriptDefines.mjs"
 
 /**
  * @param {Map}            defines The preprocessor macros.
@@ -15,17 +16,30 @@ const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefine
 ${defines.importLines}
 import KeyHasher from "./keys/Hasher.mjs";
 
-class ${defines.className} {
-  ${docs.buildBlock("valueAndKeySet", 4)}
+${docs.buildBlock("forEachCallbackMap", 0)}
+type __${defines.className}_forEachCallbackMap__${defines.tsGenericFull} = (
+  value: ${defines.tsValueType},
+  ${defines.tsMapKeys.join(",\n  ")},
+  __map__: ${defines.className}<${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}>
+) => void;
 
-  ${docs.buildBlock("rootContainerMap", 4)}
-  #root = new Map;
+${docs.buildBlock("valueAndKeySet", 0)}
+type __${defines.className}_valueAndKeySet__${defines.tsGenericFull} = {
+  value: ${defines.tsValueType},
+  keySet: [${defines.tsMapTypes.join(", ")}]
+};
+
+class ${defines.className}${defines.tsGenericFull} {
+${docs.buildBlock("rootContainerMap", 2)}
+  #root: Map<string, __${defines.className}_valueAndKeySet__<${
+    defines.tsMapTypes.join(", ") + ", " + defines.tsValueType
+  }>> = new Map;
 
   /**
    * @type {KeyHasher}
    * @constant
    */
-  #hasher = new KeyHasher();
+  #hasher: KeyHasher = new KeyHasher();
 
   constructor() {
     if (arguments.length > 0) {
@@ -37,40 +51,59 @@ class ${defines.className} {
   }
 
 ${docs.buildBlock("getSize", 2)}
-  get size() {
+  get size() : number {
     return this.#root.size;
   }
 
 ${docs.buildBlock("clear", 2)}
-  clear() {
+  clear() : void {
     this.#root.clear();
   }
 
 ${docs.buildBlock("delete", 2)}
-  delete(${defines.argList}) {${invokeValidate}
+  delete(${defines.tsMapKeys}) : boolean {
+    ${invokeValidate}
     const __hash__ = this.#hasher.getHashIfExists(${defines.argList});
     return __hash__ ? this.#root.delete(__hash__) : false;
   }
 
 ${docs.buildBlock("entries", 2)}
-  * entries() {
-    for (let valueAndKeySet of this.#root.values())
-      yield valueAndKeySet.keySet.concat(valueAndKeySet.value);
+  * entries() : Iterator<[${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}]> {
+    for (let valueAndKeySet of this.#root.values()) {
+      yield [
+        ...valueAndKeySet.keySet,
+        valueAndKeySet.value
+      ];
+    }
   }
 
 ${docs.buildBlock("forEachMap", 2)}
-  forEach(callback, thisArg) {
+  forEach(
+    callback: __${
+      defines.className
+    }_forEachCallbackMap__<${
+      defines.tsMapTypes.join(", ") + ", " + defines.tsValueType
+    }>,
+    thisArg: unknown
+  ) : void
+  {
     this.#root.forEach((valueAndKeySet) => {
-      const args = valueAndKeySet.keySet.concat(this);
-      args.unshift(valueAndKeySet.value);
-      callback.apply(thisArg, [...args]);
+      const args: [${
+        defines.tsValueType
+      }, ${
+        defines.tsMapTypes.join(", ")
+      }, this] = [
+        valueAndKeySet.value,
+        ...valueAndKeySet.keySet,
+        this
+      ];
+      callback.apply(thisArg, args);
     });
   }
 
-${docs.buildBlock("forEachCallbackMap", 2)}
-
 ${docs.buildBlock("get", 2)}
-  get(${defines.argList}) {${invokeValidate}
+  get(${defines.tsMapKeys}) : __V__ | undefined {
+    ${invokeValidate}
     const __hash__ = this.#hasher.getHashIfExists(${defines.argList});
     if (!__hash__)
       return undefined;
@@ -80,21 +113,22 @@ ${docs.buildBlock("get", 2)}
   }
 
 ${docs.buildBlock("has", 2)}
-  has(${defines.argList}) {${invokeValidate}
+  has(${defines.tsMapKeys}) : boolean {
+    ${invokeValidate}
     const __hash__ = this.#hasher.getHashIfExists(${defines.argList});
     return __hash__ ? this.#root.has(__hash__) : false;
   }
 
 ${defines.validateArguments ? `
 ${docs.buildBlock("isValidKeyPublic", 2)}
-  isValidKey(${defines.argList}) {
+  isValidKey(${defines.tsMapKeys}) : boolean {
     return this.#isValidKey(${defines.argList});
   }
 
 ${
   defines.validateValue ? `
 ${docs.buildBlock("isValidValuePublic", 2)}
-  isValidValue(value) {
+  isValidValue(value: __V__) : boolean {
     return this.#isValidValue(value);
   }
   ` : ``
@@ -103,13 +137,15 @@ ${docs.buildBlock("isValidValuePublic", 2)}
 ` : ``}
 
 ${docs.buildBlock("keys", 2)}
-  * keys() {
-    for (let valueAndKeySet of this.#root.values())
-      yield valueAndKeySet.keySet.slice();
+  * keys() : Iterator<[${defines.tsMapTypes.join(", ")}]> {
+    for (let valueAndKeySet of this.#root.values()) {
+      const [${defines.mapKeys.join(", ")}] : [${defines.tsMapTypes.join(", ")}] = valueAndKeySet.keySet;
+      yield [${defines.mapKeys.join(", ")}];
+    }
   }
 
 ${docs.buildBlock("set", 2)}
-  set(${defines.argList}, value) {${
+  set(${defines.tsMapKeys}, ${defines.tsValueKey}) : this {${
     invokeValidate
   }
 ${
@@ -119,7 +155,7 @@ ${
 ` : ``
 }
     const __hash__ = this.#hasher.getHash(${defines.argList});
-    const __keySet__ = [${defines.argList}];
+    const __keySet__: [${defines.tsMapTypes.join(", ")}] = [${defines.argList}];
     Object.freeze(__keySet__);
     this.#root.set(__hash__, {value, keySet: __keySet__});
 
@@ -127,32 +163,32 @@ ${
   }
 
 ${docs.buildBlock("values", 2)}
-  * values() {
+  * values() : Iterator<${defines.tsValueType}> {
     for (let valueAndKeySet of this.#root.values())
       yield valueAndKeySet.value;
   }
 ${defines.validateArguments ? `
 ${docs.buildBlock("requireValidKey", 2)}
-  #requireValidKey(${defines.argList}) {
+  #requireValidKey(${defines.tsMapKeys}) : void {
     if (!this.#isValidKey(${defines.argList}))
       throw new Error("The ordered key set is not valid!");
   }
 
 ${docs.buildBlock("isValidKeyPrivate", 2)}
-  #isValidKey(${defines.argList}) {
+  #isValidKey(${defines.tsMapKeys}) : boolean {
 ${defines.validateArguments}
     return true;
   }
 ` : ``}
 ${defines.validateValue ? `
 ${docs.buildBlock("isValidValuePrivate", 2)}
-  #isValidValue(value) {
+  #isValidValue(${defines.tsValueKey}) : boolean {
     ${defines.validateValue}
     return true;
   }
   ` : ``}
 
-  [Symbol.iterator]() {
+  [Symbol.iterator]() : Iterator<[${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}]> {
     return this.entries();
   }
 
@@ -164,3 +200,4 @@ Object.freeze(${defines.className}.prototype);
 `}
 
 export default preprocess;
+TypeScriptDefines.registerGenerator(preprocess, true);

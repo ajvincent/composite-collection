@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "es2021"
+    ],
+    "module": "es2022",
+    "target": "es2022",
+    "sourceMap": true,
+    "declaration": true
+  },
+  "files": [
+    "StrongStrongMap.mts"
+  ]
+}

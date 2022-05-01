@@ -2,6 +2,7 @@ node_modules
 spec/*/generated/**/*.mjs
 spec/*/generated/**/*.mjs.map
 spec/*/generated/**/*.mts
+spec/**/generated/tsconfig.json
 typescript/**/*.d.ts
 typescript/**/*.mjs
 typescript/**/*.map
