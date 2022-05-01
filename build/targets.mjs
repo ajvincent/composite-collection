@@ -129,7 +129,7 @@ const BPSet = new BuildPromiseSet(true);
   // general linting
   target.addTask(
     async () => {
-      console.log("typescript linting");
+      console.log("typescript linting pre-build");
       const targets = [
         "source",
         "templates",
