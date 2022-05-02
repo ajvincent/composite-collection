@@ -296,7 +296,9 @@ export default class CodeGenerator extends CodeGeneratorBase {
             const readDefs = typeDefs;
             defines.tsMapKeys = defines.mapKeys.map((key) => key + ": " + readDefs.getRequired(key).typeConstraint);
             defines.tsSetKeys = defines.setKeys.map((key) => key + ": " + readDefs.getRequired(key).typeConstraint);
-            defines.tsGenericFull = `<\n  ${Array.from(readDefs.values()).map(def => `${def.typeConstraint} extends ${def.extendsConstraint}`).join(",\n  ")}\n>`.trim();
+            defines.tsGenericFull = `<\n  ${Array.from(readDefs.values()).map(def => `${def.typeConstraint}${def.extendsConstraint === "unknown" || def.typeConstraint === "any" ?
+                "" :
+                " extends " + def.extendsConstraint}`).join(",\n  ")}\n>`.trim();
         }
     }
     #defineValidatorCode(paramsData, defineName, filter) {

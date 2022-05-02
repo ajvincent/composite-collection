@@ -23,16 +23,16 @@ import KeyHasher from "./keys/Hasher.mjs";
  * @property {*[]} keySet The set of keys we hashed.
  */
 type __StrongStrongSet_valueSet__<
-  __SK0__ extends unknown,
-  __SK1__ extends unknown
+  __SK0__,
+  __SK1__
 > = [
   __SK0__,
   __SK1__
 ];
 
 class StrongStrongSet<
-  __SK0__ extends unknown,
-  __SK1__ extends unknown
+  __SK0__,
+  __SK1__
 >
 {
   /** @typedef {string} hash */

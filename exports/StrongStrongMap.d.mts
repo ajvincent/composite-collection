@@ -1,4 +1,4 @@
-declare class StrongStrongMap<__MK0__ extends unknown, __MK1__ extends unknown, __V__ extends unknown> {
+declare class StrongStrongMap<__MK0__, __MK1__, __V__> {
     #private;
     constructor();
     /**

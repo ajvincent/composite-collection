@@ -408,7 +408,11 @@ export default class CodeGenerator extends CodeGeneratorBase {
         Array.from(
           readDefs.values()
         ).map(
-          def => `${def.typeConstraint} extends ${def.extendsConstraint}`
+          def => `${def.typeConstraint}${
+            def.extendsConstraint === "unknown" || def.typeConstraint === "any" ?
+            "" :
+            " extends " + def.extendsConstraint
+          }`
         ).join(",\n  ")
       }\n>`.trim();
     }

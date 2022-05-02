@@ -1,4 +1,4 @@
-declare class StrongStrongSet<__SK0__ extends unknown, __SK1__ extends unknown> {
+declare class StrongStrongSet<__SK0__, __SK1__> {
     #private;
     constructor();
     /**

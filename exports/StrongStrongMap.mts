@@ -23,18 +23,18 @@ import KeyHasher from "./keys/Hasher.mjs";
  * @property {*[]} keySet The set of keys we hashed.
  */
 type __StrongStrongMap_valueAndKeySet__<
-  __MK0__ extends unknown,
-  __MK1__ extends unknown,
-  __V__ extends unknown
+  __MK0__,
+  __MK1__,
+  __V__
 > = {
   value: __V__,
   keySet: [__MK0__, __MK1__]
 };
 
 class StrongStrongMap<
-  __MK0__ extends unknown,
-  __MK1__ extends unknown,
-  __V__ extends unknown
+  __MK0__,
+  __MK1__,
+  __V__
 > {
   /**
    * The root map holding keys and values.
