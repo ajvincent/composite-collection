@@ -50,10 +50,12 @@ class StrongStrongMap<
    */
   #hasher: KeyHasher = new KeyHasher();
 
-  constructor() {
-    if (arguments.length > 0) {
-      const iterable = arguments[0];
-      for (let [key1, key2, value] of iterable) {
+  constructor(
+    iterable?: [__MK0__,__MK1__, __V__][]
+  )
+  {
+    if (iterable) {
+      for (const [key1, key2, value] of iterable) {
         this.set(key1, key2, value);
       }
     }

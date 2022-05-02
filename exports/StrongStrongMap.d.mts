@@ -1,6 +1,6 @@
 declare class StrongStrongMap<__MK0__, __MK1__, __V__> {
     #private;
-    constructor();
+    constructor(iterable?: [__MK0__, __MK1__, __V__][]);
     /**
      * The number of elements in this collection.
      *

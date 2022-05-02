@@ -25,10 +25,9 @@ class StringStateMachine {
     #root = new Map;
     /** @type {KeyHasher} @constant */
     #hasher = new KeyHasher();
-    constructor() {
-        if (arguments.length > 0) {
-            const iterable = arguments[0];
-            for (let [currentState, nextState] of iterable) {
+    constructor(iterable) {
+        if (iterable) {
+            for (const [currentState, nextState] of iterable) {
                 this.add(currentState, nextState);
             }
         }

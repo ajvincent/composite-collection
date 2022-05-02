@@ -25,10 +25,9 @@ class StrongStrongSet {
     #root = new Map;
     /** @type {KeyHasher} @constant */
     #hasher = new KeyHasher();
-    constructor() {
-        if (arguments.length > 0) {
-            const iterable = arguments[0];
-            for (let [key1, key2] of iterable) {
+    constructor(iterable) {
+        if (iterable) {
+            for (const [key1, key2] of iterable) {
                 this.add(key1, key2);
             }
         }

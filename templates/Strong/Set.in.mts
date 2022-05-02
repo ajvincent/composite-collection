@@ -33,10 +33,12 @@ ${docs.buildBlock("rootContainerSet", 2)}
   /** @type {KeyHasher} @constant */
   #hasher: KeyHasher = new KeyHasher();
 
-  constructor() {
-    if (arguments.length > 0) {
-      const iterable = arguments[0];
-      for (let [${defines.argList}] of iterable) {
+  constructor(
+    iterable?: [${defines.tsSetTypes}][]
+  )
+  {
+    if (iterable) {
+      for (const [${defines.argList}] of iterable) {
         this.add(${defines.argList});
       }
     }

@@ -1,6 +1,6 @@
 declare class StrongStrongSet<__SK0__, __SK1__> {
     #private;
-    constructor();
+    constructor(iterable?: [__SK0__, __SK1__][]);
     /**
      * The number of elements in this collection.
      *

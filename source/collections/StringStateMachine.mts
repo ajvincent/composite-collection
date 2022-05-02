@@ -48,10 +48,12 @@ class StringStateMachine<
   /** @type {KeyHasher} @constant */
   #hasher: KeyHasher = new KeyHasher();
 
-  constructor() {
-    if (arguments.length > 0) {
-      const iterable = arguments[0];
-      for (let [currentState, nextState] of iterable) {
+  constructor(
+    iterable?: [__SK0__,__SK1__][]
+  )
+  {
+    if (iterable) {
+      for (const [currentState, nextState] of iterable) {
         this.add(currentState, nextState);
       }
     }

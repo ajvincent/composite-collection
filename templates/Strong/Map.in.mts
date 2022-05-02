@@ -34,10 +34,12 @@ ${docs.buildBlock("rootContainerMap", 2)}
    */
   #hasher: KeyHasher = new KeyHasher();
 
-  constructor() {
-    if (arguments.length > 0) {
-      const iterable = arguments[0];
-      for (let [${defines.argList}, value] of iterable) {
+  constructor(
+    iterable?: [${defines.tsMapTypes}, ${defines.tsValueType}][]
+  )
+  {
+    if (iterable) {
+      for (const [${defines.argList}, value] of iterable) {
         this.set(${defines.argList}, value);
       }
     }
