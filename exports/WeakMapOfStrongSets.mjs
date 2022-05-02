@@ -130,9 +130,9 @@ class WeakMapOfStrongSets {
   /**
    * Iterate over the keys under a map in this collection.
    *
-   * @param {object}                              mapKey       The map key.
-   * @param {WeakMapOfStrongSets~ForEachCallback} __callback__ A function to invoke for each iteration.
-   * @param {object}                              __thisArg__  Value to use as this when executing callback.
+   * @param {object}                                  mapKey       The map key.
+   * @param {__WeakMapOfStrongSets_ForEachCallback__} __callback__ A function to invoke for each iteration.
+   * @param {object}                                  __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEachSet(mapKey, __callback__, __thisArg__) {
@@ -149,7 +149,7 @@ class WeakMapOfStrongSets {
   /**
    * An user-provided callback to .forEach().
    *
-   * @callback WeakMapOfStrongSets~ForEachCallback
+   * @callback __WeakMapOfStrongSets_ForEachCallback__
    * @param {object}              mapKey         The map key.
    * @param {*}                   setKey         The set key.
    * @param {WeakMapOfStrongSets} __collection__ This collection.

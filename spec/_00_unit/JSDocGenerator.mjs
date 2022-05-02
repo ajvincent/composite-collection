@@ -418,8 +418,8 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * Iterate over the keys and values.
    *
-   * @param {SoloStrongMap~ForEachCallback} callback A function to invoke for each iteration.
-   * @param {object}                        thisArg  Value to use as this when executing callback.
+   * @param {__SoloStrongMap_ForEachCallback__} __callback__ A function to invoke for each iteration.
+   * @param {object}                            __thisArg__  Value to use as this when executing callback.
    * @public
    */`);
     });
@@ -429,7 +429,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * An user-provided callback to .forEach().
    *
-   * @callback SoloStrongMap~ForEachCallback
+   * @callback __SoloStrongMap_ForEachCallback__
    * @param {*}             value          The value.
    * @param {Car}           car            The car.
    * @param {Person}        driver         The driver of the car.
@@ -624,8 +624,8 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * Iterate over the keys and values.
    *
-   * @param {SoloStrongMap~ForEachCallback} callback A function to invoke for each iteration.
-   * @param {object}                        thisArg  Value to use as this when executing callback.
+   * @param {__SoloStrongMap_ForEachCallback__} __callback__ A function to invoke for each iteration.
+   * @param {object}                            __thisArg__  Value to use as this when executing callback.
    * @public
    */`);
     });
@@ -635,7 +635,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * An user-provided callback to .forEach().
    *
-   * @callback SoloStrongMap~ForEachCallback
+   * @callback __SoloStrongMap_ForEachCallback__
    * @param {State}         value          The state of registration.
    * @param {Car}           car            The car.
    * @param {Person}        driver         The driver of the car.
@@ -754,7 +754,7 @@ describe("JSDocGenerator for maps", () => {
     expect(generated).toEqual(`  /**
    * An user-provided callback to .forEach().
    *
-   * @callback SoloStrongMap~ForEachCallback
+   * @callback __SoloStrongMap_ForEachCallback__
    * @param {*}             value          The value.
    * @param {SoloStrongMap} __collection__ This collection.
    */`);
@@ -849,8 +849,8 @@ describe("JSDocGenerator for sets", () => {
       expect(generated).toEqual(`  /**
    * Iterate over the keys.
    *
-   * @param {SoloStrongSet~ForEachCallback} __callback__ A function to invoke for each iteration.
-   * @param {object}                        __thisArg__  Value to use as this when executing callback.
+   * @param {__SoloStrongSet_ForEachCallback__} __callback__ A function to invoke for each iteration.
+   * @param {object}                            __thisArg__  Value to use as this when executing callback.
    * @public
    */`);
     });
@@ -860,7 +860,7 @@ describe("JSDocGenerator for sets", () => {
       expect(generated).toEqual(`  /**
    * An user-provided callback to .forEach().
    *
-   * @callback SoloStrongSet~ForEachCallback
+   * @callback __SoloStrongSet_ForEachCallback__
    * @param {Car}           car            The car.
    * @param {Person}        driver         The driver of the car.
    * @param {SoloStrongSet} __collection__ This collection.
@@ -1010,8 +1010,8 @@ describe("JSDocGenerator for sets", () => {
       expect(generated).toEqual(`  /**
    * Iterate over the keys.
    *
-   * @param {SoloStrongSet~ForEachCallback} __callback__ A function to invoke for each iteration.
-   * @param {object}                        __thisArg__  Value to use as this when executing callback.
+   * @param {__SoloStrongSet_ForEachCallback__} __callback__ A function to invoke for each iteration.
+   * @param {object}                            __thisArg__  Value to use as this when executing callback.
    * @public
    */`);
     });
@@ -1021,7 +1021,7 @@ describe("JSDocGenerator for sets", () => {
       expect(generated).toEqual(`  /**
    * An user-provided callback to .forEach().
    *
-   * @callback SoloStrongSet~ForEachCallback
+   * @callback __SoloStrongSet_ForEachCallback__
    * @param {Car}           car            The car.
    * @param {Person}        driver         The driver of the car.
    * @param {State}         value          The state of registration.
@@ -1110,7 +1110,7 @@ describe("JSDocGenerator for sets", () => {
     expect(generated).toEqual(`  /**
    * An user-provided callback to .forEach().
    *
-   * @callback SoloStrongSet~ForEachCallback
+   * @callback __SoloStrongSet_ForEachCallback__
    * @param {State}         value          The state of registration.
    * @param {SoloStrongSet} __collection__ This collection.
    */`);

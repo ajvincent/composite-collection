@@ -18,26 +18,6 @@
 import KeyHasher from "./keys/Hasher.mjs";
 
 /**
- * An user-provided callback to .forEach().
- *
- * @callback StrongStrongMap~ForEachCallback
- * @param {*}               value          The value.
- * @param {*}               key1           The first key.
- * @param {*}               key2           The second key.
- * @param {StrongStrongMap} __collection__ This collection.
- */
-type __StrongStrongMap_forEachCallbackMap__<
-  __MK0__ extends unknown,
-  __MK1__ extends unknown,
-  __V__ extends unknown
-> = (
-  value: __V__,
-  key1: __MK0__,
-  key2: __MK1__,
-  __map__: StrongStrongMap<__MK0__, __MK1__, __V__>
-) => void;
-
-/**
  * @typedef StrongStrongMap~valueAndKeySet
  * @property {*}   value  The actual value we store.
  * @property {*[]} keySet The set of keys we hashed.
@@ -129,24 +109,39 @@ class StrongStrongMap<
   }
 
   /**
+   * An user-provided callback to .forEach().
+   *
+   * @callback __StrongStrongMap_ForEachCallback__
+   * @param {*}               value          The value.
+   * @param {*}               key1           The first key.
+   * @param {*}               key2           The second key.
+   * @param {StrongStrongMap} __collection__ This collection.
+   */
+
+  /**
    * Iterate over the keys and values.
    *
-   * @param {StrongStrongMap~ForEachCallback} callback A function to invoke for each iteration.
-   * @param {object}                          thisArg  Value to use as this when executing callback.
+   * @param {__StrongStrongMap_ForEachCallback__} __callback__ A function to invoke for each iteration.
+   * @param {object}                              __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEach(
-    callback: __StrongStrongMap_forEachCallbackMap__<__MK0__, __MK1__, __V__>,
-    thisArg: unknown
+    __callback__: (
+      value: __V__,
+      key1: __MK0__,
+      key2: __MK1__,
+      __collection__: StrongStrongMap<__MK0__, __MK1__, __V__>
+    ) => void,
+    __thisArg__: unknown
   ) : void
   {
-    this.#root.forEach((valueAndKeySet) => {
-      const args: [__V__, __MK0__, __MK1__, this] = [
-        valueAndKeySet.value,
-        ...valueAndKeySet.keySet,
+    this.#root.forEach((__valueAndKeySet__) => {
+      const __args__: [__V__, __MK0__, __MK1__, this] = [
+        __valueAndKeySet__.value,
+        ...__valueAndKeySet__.keySet,
         this
       ];
-      callback.apply(thisArg, args);
+      __callback__.apply(__thisArg__, __args__);
     });
   }
 
@@ -158,7 +153,7 @@ class StrongStrongMap<
    * @returns {*?} The value.  Undefined if it isn't in the collection.
    * @public
    */
-  get(key1: __MK0__,key2: __MK1__) : __V__ | undefined {
+  get(key1: __MK0__, key2: __MK1__) : __V__ | undefined {
     
     const __hash__ = this.#hasher.getHashIfExists(key1, key2);
     if (!__hash__)
@@ -176,7 +171,7 @@ class StrongStrongMap<
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
-  has(key1: __MK0__,key2: __MK1__) : boolean {
+  has(key1: __MK0__, key2: __MK1__) : boolean {
     
     const __hash__ = this.#hasher.getHashIfExists(key1, key2);
     return __hash__ ? this.#root.has(__hash__) : false;

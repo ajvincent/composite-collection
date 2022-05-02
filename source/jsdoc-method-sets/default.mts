@@ -118,8 +118,8 @@ export default function defaultMethods(): stringAndTemplate[] {
       returnVoid: true,
       description: "Iterate over the keys and values.",
       paramFooters: [
-        ["__className__~ForEachCallback", "callback", "A function to invoke for each iteration."],
-        ["object", "thisArg", "Value to use as this when executing callback."],
+        ["____className___ForEachCallback__", "__callback__", "A function to invoke for each iteration."],
+        ["object", "__thisArg__", "Value to use as this when executing callback."],
       ],
       includeArgs: "none",
       footers: ["@public"],
@@ -129,7 +129,7 @@ export default function defaultMethods(): stringAndTemplate[] {
       returnVoid: true,
       description: "Iterate over the keys.",
       paramFooters: [
-        ["__className__~ForEachCallback", "__callback__", "A function to invoke for each iteration."],
+        ["____className___ForEachCallback__", "__callback__", "A function to invoke for each iteration."],
         ["object", "__thisArg__", "Value to use as this when executing callback."],
       ],
       includeArgs: "none",
@@ -140,7 +140,7 @@ export default function defaultMethods(): stringAndTemplate[] {
       returnVoid: true,
       description: "Iterate over the keys under a map in this collection.",
       paramFooters: [
-        ["__className__~ForEachCallback", "__callback__", "A function to invoke for each iteration."],
+        ["____className___ForEachCallback__", "__callback__", "A function to invoke for each iteration."],
         ["object", "__thisArg__", "Value to use as this when executing callback."],
       ],
       includeArgs: "mapArguments",
@@ -158,7 +158,7 @@ export default function defaultMethods(): stringAndTemplate[] {
         ["__className__", "__collection__", "This collection."]
       ],
       headers: [
-        "@callback __className__~ForEachCallback"
+        "@callback ____className___ForEachCallback__"
       ]
     }],
 
@@ -170,7 +170,7 @@ export default function defaultMethods(): stringAndTemplate[] {
         ["__className__", "__collection__", "This collection."]
       ],
       headers: [
-        "@callback __className__~ForEachCallback",
+        "@callback ____className___ForEachCallback__",
       ],
     }],
 

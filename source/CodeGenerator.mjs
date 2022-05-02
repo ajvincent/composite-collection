@@ -289,8 +289,10 @@ export default class CodeGenerator extends CodeGeneratorBase {
                 defines.tsSetTypes.push(def);
                 typeDefs.set(key, new TypeScriptDefs(def, typeMap.tsType));
             });
-            typeDefs.set("value", new TypeScriptDefs("__V__", data.valueType?.tsType || "unknown"));
-            defines.tsValueKey = "value: __V__";
+            if (data.collectionTemplate.endsWith("Map")) {
+                typeDefs.set("value", new TypeScriptDefs("__V__", data.valueType?.tsType || "unknown"));
+                defines.tsValueKey = "value: __V__";
+            }
             const readDefs = typeDefs;
             defines.tsMapKeys = defines.mapKeys.map((key) => key + ": " + readDefs.getRequired(key).typeConstraint);
             defines.tsSetKeys = defines.setKeys.map((key) => key + ": " + readDefs.getRequired(key).typeConstraint);

@@ -16,13 +16,6 @@ const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefine
 ${defines.importLines}
 import KeyHasher from "./keys/Hasher.mjs";
 
-${docs.buildBlock("forEachCallbackMap", 0)}
-type __${defines.className}_forEachCallbackMap__${defines.tsGenericFull} = (
-  value: ${defines.tsValueType},
-  ${defines.tsMapKeys.join(",\n  ")},
-  __map__: ${defines.className}<${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}>
-) => void;
-
 ${docs.buildBlock("valueAndKeySet", 0)}
 type __${defines.className}_valueAndKeySet__${defines.tsGenericFull} = {
   value: ${defines.tsValueType},
@@ -77,32 +70,38 @@ ${docs.buildBlock("entries", 2)}
     }
   }
 
+${docs.buildBlock("forEachCallbackMap", 2)}
+
 ${docs.buildBlock("forEachMap", 2)}
   forEach(
-    callback: __${
-      defines.className
-    }_forEachCallbackMap__<${
-      defines.tsMapTypes.join(", ") + ", " + defines.tsValueType
-    }>,
-    thisArg: unknown
+    __callback__: (
+      ${defines.tsValueKey},
+      ${defines.tsMapKeys.join(",\n      ")},
+      __collection__: ${defines.className}<${
+        defines.tsMapTypes.join(", ")
+      }, ${
+        defines.tsValueType
+      }>
+    ) => void,
+    __thisArg__: unknown
   ) : void
   {
-    this.#root.forEach((valueAndKeySet) => {
-      const args: [${
+    this.#root.forEach((__valueAndKeySet__) => {
+      const __args__: [${
         defines.tsValueType
       }, ${
         defines.tsMapTypes.join(", ")
       }, this] = [
-        valueAndKeySet.value,
-        ...valueAndKeySet.keySet,
+        __valueAndKeySet__.value,
+        ...__valueAndKeySet__.keySet,
         this
       ];
-      callback.apply(thisArg, args);
+      __callback__.apply(__thisArg__, __args__);
     });
   }
 
 ${docs.buildBlock("get", 2)}
-  get(${defines.tsMapKeys}) : __V__ | undefined {
+  get(${defines.tsMapKeys.join(", ")}) : __V__ | undefined {
     ${invokeValidate}
     const __hash__ = this.#hasher.getHashIfExists(${defines.argList});
     if (!__hash__)
@@ -113,7 +112,7 @@ ${docs.buildBlock("get", 2)}
   }
 
 ${docs.buildBlock("has", 2)}
-  has(${defines.tsMapKeys}) : boolean {
+  has(${defines.tsMapKeys.join(", ")}) : boolean {
     ${invokeValidate}
     const __hash__ = this.#hasher.getHashIfExists(${defines.argList});
     return __hash__ ? this.#root.has(__hash__) : false;
@@ -121,7 +120,7 @@ ${docs.buildBlock("has", 2)}
 
 ${defines.validateArguments ? `
 ${docs.buildBlock("isValidKeyPublic", 2)}
-  isValidKey(${defines.tsMapKeys}) : boolean {
+  isValidKey(${defines.tsMapKeys.join(", ")}) : boolean {
     return this.#isValidKey(${defines.argList});
   }
 

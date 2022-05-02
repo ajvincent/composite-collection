@@ -191,8 +191,8 @@ class StrongMapOfStrongSets {
   /**
    * Iterate over the keys.
    *
-   * @param {StrongMapOfStrongSets~ForEachCallback} __callback__ A function to invoke for each iteration.
-   * @param {object}                                __thisArg__  Value to use as this when executing callback.
+   * @param {__StrongMapOfStrongSets_ForEachCallback__} __callback__ A function to invoke for each iteration.
+   * @param {object}                                    __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEach(__callback__, __thisArg__) {
@@ -206,9 +206,9 @@ class StrongMapOfStrongSets {
   /**
    * Iterate over the keys under a map in this collection.
    *
-   * @param {*}                                     mapKey       The map key.
-   * @param {StrongMapOfStrongSets~ForEachCallback} __callback__ A function to invoke for each iteration.
-   * @param {object}                                __thisArg__  Value to use as this when executing callback.
+   * @param {*}                                         mapKey       The map key.
+   * @param {__StrongMapOfStrongSets_ForEachCallback__} __callback__ A function to invoke for each iteration.
+   * @param {object}                                    __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEachSet(mapKey, __callback__, __thisArg__) {
@@ -224,7 +224,7 @@ class StrongMapOfStrongSets {
   /**
    * An user-provided callback to .forEach().
    *
-   * @callback StrongMapOfStrongSets~ForEachCallback
+   * @callback __StrongMapOfStrongSets_ForEachCallback__
    * @param {*}                     mapKey         The map key.
    * @param {*}                     setKey         The set key.
    * @param {StrongMapOfStrongSets} __collection__ This collection.

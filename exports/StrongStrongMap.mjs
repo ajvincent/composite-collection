@@ -80,20 +80,29 @@ class StrongStrongMap {
         }
     }
     /**
+     * An user-provided callback to .forEach().
+     *
+     * @callback __StrongStrongMap_ForEachCallback__
+     * @param {*}               value          The value.
+     * @param {*}               key1           The first key.
+     * @param {*}               key2           The second key.
+     * @param {StrongStrongMap} __collection__ This collection.
+     */
+    /**
      * Iterate over the keys and values.
      *
-     * @param {StrongStrongMap~ForEachCallback} callback A function to invoke for each iteration.
-     * @param {object}                          thisArg  Value to use as this when executing callback.
+     * @param {__StrongStrongMap_ForEachCallback__} __callback__ A function to invoke for each iteration.
+     * @param {object}                              __thisArg__  Value to use as this when executing callback.
      * @public
      */
-    forEach(callback, thisArg) {
-        this.#root.forEach((valueAndKeySet) => {
-            const args = [
-                valueAndKeySet.value,
-                ...valueAndKeySet.keySet,
+    forEach(__callback__, __thisArg__) {
+        this.#root.forEach((__valueAndKeySet__) => {
+            const __args__ = [
+                __valueAndKeySet__.value,
+                ...__valueAndKeySet__.keySet,
                 this
             ];
-            callback.apply(thisArg, args);
+            __callback__.apply(__thisArg__, __args__);
         });
     }
     /**

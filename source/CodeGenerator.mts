@@ -386,11 +386,13 @@ export default class CodeGenerator extends CodeGeneratorBase {
         }
       );
 
-      typeDefs.set("value", new TypeScriptDefs(
-        "__V__",
-        data.valueType?.tsType || "unknown"
-      ));
-      defines.tsValueKey = "value: __V__";
+      if (data.collectionTemplate.endsWith("Map")) {
+        typeDefs.set("value", new TypeScriptDefs(
+          "__V__",
+          data.valueType?.tsType || "unknown"
+        ));
+        defines.tsValueKey = "value: __V__";
+      }
 
       const readDefs: RequiredMap<string, TypeScriptDefs> = typeDefs;
 

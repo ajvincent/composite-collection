@@ -130,9 +130,9 @@ class WeakFunctionMultiMap {
   /**
    * Iterate over the keys under a map in this collection.
    *
-   * @param {object}                               key          The map key.
-   * @param {WeakFunctionMultiMap~ForEachCallback} __callback__ A function to invoke for each iteration.
-   * @param {object}                               __thisArg__  Value to use as this when executing callback.
+   * @param {object}                                   key          The map key.
+   * @param {__WeakFunctionMultiMap_ForEachCallback__} __callback__ A function to invoke for each iteration.
+   * @param {object}                                   __thisArg__  Value to use as this when executing callback.
    * @public
    */
   forEachSet(key, __callback__, __thisArg__) {
@@ -149,7 +149,7 @@ class WeakFunctionMultiMap {
   /**
    * An user-provided callback to .forEach().
    *
-   * @callback WeakFunctionMultiMap~ForEachCallback
+   * @callback __WeakFunctionMultiMap_ForEachCallback__
    * @param {object}               key            The map key.
    * @param {Function}             mapFunction    The function.
    * @param {WeakFunctionMultiMap} __collection__ This collection.

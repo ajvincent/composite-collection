@@ -9,7 +9,6 @@
     "declaration": true
   },
   "files": [
-    "StrongStrongMap.mts",
-    "StrongStrongSet.mts"
+    "StringStateMachine.mts"
   ]
 }
