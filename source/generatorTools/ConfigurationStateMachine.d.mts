@@ -1,4 +1,4 @@
-import type { valueTuple } from "./LocalStringStateMachine.mjs";
+declare type valueTuple = [string, string];
 declare class ConfigurationStateMachine {
     #private;
     constructor(__iterable__: valueTuple[]);

@@ -1,16 +1,16 @@
-//import StringStateMachine from "../collections/StringStateMachine.mjs";
-import LocalStringStateMachine from "./LocalStringStateMachine.mjs";
-import type { valueTuple } from "./LocalStringStateMachine.mjs";
+import StringStateMachine from "../collections/StringStateMachine.mjs";
+
+type valueTuple = [string, string];
 
 class ConfigurationStateMachine {
-  /** @type {LocalStringStateMachine} @constant @readonly */
-  #stringStates: LocalStringStateMachine;
+  /** @type {StringStateMachine} @constant @readonly */
+  #stringStates: StringStateMachine<string, string>;
 
   /** @type {string} */
   #currentState = "start";
 
   constructor(__iterable__: valueTuple[]) {
-    this.#stringStates = new LocalStringStateMachine(__iterable__);
+    this.#stringStates = new StringStateMachine(__iterable__);
     Object.freeze(this);
   }
 
