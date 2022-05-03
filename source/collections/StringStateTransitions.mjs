@@ -171,4 +171,4 @@ class StringStateMachine {
 Object.freeze(StringStateMachine);
 Object.freeze(StringStateMachine.prototype);
 export default StringStateMachine;
-//# sourceMappingURL=StringStateMachine.mjs.map
+//# sourceMappingURL=StringStateTransitions.mjs.map

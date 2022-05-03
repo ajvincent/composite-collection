@@ -9,6 +9,6 @@
     "declaration": true
   },
   "files": [
-    "StringStateMachine.mts"
+    "StringStateTransitions.mts"
   ]
 }

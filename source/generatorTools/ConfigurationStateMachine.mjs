@@ -1,11 +1,11 @@
-import StringStateMachine from "../collections/StringStateMachine.mjs";
+import StringStateTransitions from "../collections/StringStateTransitions.mjs";
 class ConfigurationStateMachine {
-    /** @type {StringStateMachine} @constant @readonly */
+    /** @type {StringStateTransitions} @constant @readonly */
     #stringStates;
     /** @type {string} */
     #currentState = "start";
     constructor(__iterable__) {
-        this.#stringStates = new StringStateMachine(__iterable__);
+        this.#stringStates = new StringStateTransitions(__iterable__);
         Object.freeze(this);
     }
     /** @type {string} */

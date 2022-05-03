@@ -1,16 +1,16 @@
-import StringStateMachine from "../collections/StringStateMachine.mjs";
+import StringStateTransitions from "../collections/StringStateTransitions.mjs";
 
 type valueTuple = [string, string];
 
 class ConfigurationStateMachine {
-  /** @type {StringStateMachine} @constant @readonly */
-  #stringStates: StringStateMachine<string, string>;
+  /** @type {StringStateTransitions} @constant @readonly */
+  #stringStates: StringStateTransitions<string, string>;
 
   /** @type {string} */
   #currentState = "start";
 
   constructor(__iterable__: valueTuple[]) {
-    this.#stringStates = new StringStateMachine(__iterable__);
+    this.#stringStates = new StringStateTransitions(__iterable__);
     Object.freeze(this);
   }
 
