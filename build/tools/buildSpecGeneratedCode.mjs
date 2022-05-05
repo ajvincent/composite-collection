@@ -6,6 +6,7 @@ import runDriver from "./runDriver.mjs";
 import {
   PromiseAllSequence,
   PromiseAllParallel,
+  TimeoutPromise
 } from "#source/utilities/PromiseTypes.mjs";
 
 import readDirsDeep from "#source/utilities/readDirsDeep.mjs";
@@ -113,7 +114,10 @@ await iterateOverSpecDirs(
     }
     if (stats?.isFile()) {
       console.log(`Found ${specDir}/support/build.mjs file`);
-      await invokeSpecBuildModule(buildModulePath);
+      await Promise.race([
+        invokeSpecBuildModule(buildModulePath),
+        (new TimeoutPromise(5000)).promise
+      ]);
     }
   }
 );

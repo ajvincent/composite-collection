@@ -28,6 +28,13 @@ export class Deferred<T> {
   }
 }
 
+export class TimeoutPromise<T> extends Deferred<T> {
+  constructor(limit = 5000) {
+    super();
+    setTimeout(() => this.reject("Time limit expired"), limit);
+  }
+}
+
 /**
  * Evaluate a callback asynchronously for every element of an array, sequentially.
  *

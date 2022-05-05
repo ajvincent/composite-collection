@@ -6,6 +6,9 @@ export declare class Deferred<T> {
     promise: Promise<T>;
     constructor();
 }
+export declare class TimeoutPromise<T> extends Deferred<T> {
+    constructor(limit?: number);
+}
 /**
  * Evaluate a callback asynchronously for every element of an array, sequentially.
  *
