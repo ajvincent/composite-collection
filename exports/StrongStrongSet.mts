@@ -162,7 +162,7 @@ class StrongStrongSet<
    * @yields {*} The value.
    * @public
    */
-  * values() : Iterator<[key1: __SK0__, key2: __SK1__]>
+  * values() : Iterator<[__SK0__, __SK1__]>
   {
     for (let __value__ of this.#root.values()) {
       yield __value__;

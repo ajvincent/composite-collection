@@ -176,7 +176,7 @@ class StringStateMachine<
    * @yields {*} The value.
    * @public
    */
-  * values() : Iterator<[currentState: __SK0__, nextState: __SK1__]>
+  * values() : Iterator<[__SK0__, __SK1__]>
   {
     for (let __value__ of this.#root.values()) {
       yield __value__;

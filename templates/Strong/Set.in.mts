@@ -108,7 +108,7 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
 ` : ``}
 
 ${docs.buildBlock("values", 2)}
-  * values() : Iterator<[${defines.tsSetKeys.join(", ")}]>
+  * values() : Iterator<[${defines.tsSetTypes.join(", ")}]>
   {
     for (let __value__ of this.#root.values()) {
       yield __value__;

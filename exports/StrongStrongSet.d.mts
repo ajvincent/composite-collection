@@ -64,7 +64,7 @@ declare class StrongStrongSet<__SK0__, __SK1__> {
      * @yields {*} The value.
      * @public
      */
-    values(): Iterator<[key1: __SK0__, key2: __SK1__]>;
+    values(): Iterator<[__SK0__, __SK1__]>;
     [Symbol.iterator](): Iterator<[__SK0__, __SK1__]>;
     [Symbol.toStringTag]: string;
 }
