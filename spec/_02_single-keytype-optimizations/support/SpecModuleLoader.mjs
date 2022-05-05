@@ -16,7 +16,7 @@ await PromiseAllSequence(directories, async dir => {
   const generatedDir = path.join(fileURLToPath(import.meta.url), "../..", dir, "generated");
   let entries = (await fs.readdir(generatedDir, { withFileTypes: true }));
   entries = entries.filter(entry => entry.isFile());
-  const moduleLeafs = entries.map(entry => entry.name);
+  const moduleLeafs = entries.map(entry => entry.name).filter(name => name.endsWith(".mjs"))
 
   let moduleMap = {};
   await PromiseAllSequence(moduleLeafs, async moduleName => {
