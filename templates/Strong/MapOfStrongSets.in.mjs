@@ -88,7 +88,7 @@ ${docs.buildBlock("add", 2)}
   }
 
 ${docs.buildBlock("addSets", 2)}
-  addSets(${mapKeys}, __sets__: [${tsSetTypes}][]) : this
+  addSets(${tsMapKeys}, __sets__: [${tsSetTypes}][]) : this
   {
     ${invokeMapValidate}
     ${invokeValidate ? `__sets__.forEach(([${setKeys}]) => this.#requireValidKey(${allKeys}))` : ""}
@@ -220,7 +220,7 @@ ${docs.buildBlock("hasSet", 2)}
   hasSets(${tsMapKeys}) : boolean
   {
     ${invokeMapValidate}
-    const [__innerMap__] = this.#getInnerMap(${defines.mapKeys.join(", ")});
+    const [__innerMap__] = this.#getInnerMap(${mapKeys});
     return Boolean(__innerMap__);
   }
 
@@ -233,7 +233,8 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
 
   ` : ``}
 ${docs.buildBlock("values", 2)}
-  * values() {
+  * values() : Iterator<[${tsAllTypes}]>
+  {
     const __outerIter__ = this.#outerMap.values();
 
     for (let __innerMap__ of __outerIter__) {
@@ -243,8 +244,10 @@ ${docs.buildBlock("values", 2)}
   }
 
 ${docs.buildBlock("valuesSet", 2)}
-  * valuesSet(${defines.mapKeys.join(", ")}) {${invokeMapValidate}
-    const [__innerMap__] = this.#getInnerMap(${defines.mapKeys.join(", ")});
+  * valuesSet(${tsMapKeys}) : Iterator<[${tsAllTypes}]>
+  {
+    ${invokeMapValidate}
+    const [__innerMap__] = this.#getInnerMap(${mapKeys});
     if (!__innerMap__)
       return;
 
@@ -268,7 +271,8 @@ ${docs.buildBlock("requireValidKey", 2)}
 ${docs.buildBlock("isValidKeyPrivate", 2)}
     #isValidKey(${tsAllKeys}) : boolean
     {
-      ${defines.mapKeys.map(key => `void(${key});`).join("\n    ")}${defines.setKeys.map(key => `void(${key});`).join("\n    ")}
+      ${defines.mapKeys.map(key => `void(${key});`).join("\n      ")}
+      ${defines.setKeys.map(key => `void(${key});`).join("\n      ")}
 
       ${defines.validateArguments}
       return true;
@@ -295,7 +299,7 @@ ${docs.buildBlock("isValidMapKeyPrivate", 2)}
 
   ` : ``}
 
-  [Symbol.iterator]() {
+  [Symbol.iterator]() : Iterator<[${tsAllTypes}]> {
     return this.values();
   }
 
