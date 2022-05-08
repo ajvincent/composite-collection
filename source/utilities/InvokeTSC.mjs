@@ -9,20 +9,22 @@ const TSC = path.resolve(projectRoot, "node_modules/typescript/bin/tsc");
 export default class InvokeTSC {
     static async withConfigurationFile(pathToConfig, pathToStdOut = "") {
         pathToConfig = path.resolve(projectRoot, pathToConfig);
-        let stdout = "pipe";
+        let stdout = "inherit";
         if (pathToStdOut) {
             stdout = openSync(path.resolve(projectRoot, pathToStdOut), "w");
         }
         const deferred = new Deferred();
-        const child = fork(TSC, [
+        const args = [
             "--project", pathToConfig
-        ], {
-            stdio: ["ignore", stdout, "pipe", "ipc"]
+        ];
+        const child = fork(TSC, args, {
+            stdio: ["ignore", stdout, "inherit", "ipc"]
         });
+        const err = new Error(`Failed on "${TSC} ${args.join(" ")}"`);
         child.on("exit", (code) => {
             if (code) {
-                console.error("Failed on " + pathToConfig);
-                deferred.reject(code);
+                err.message += " with code " + code;
+                deferred.reject(err);
             }
             else
                 deferred.resolve(code);

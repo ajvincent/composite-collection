@@ -17,27 +17,30 @@ export default class InvokeTSC {
   {
     pathToConfig = path.resolve(projectRoot, pathToConfig);
 
-    let stdout: "pipe" | number = "pipe";
+    let stdout: "inherit" | number = "inherit";
     if (pathToStdOut) {
       stdout = openSync(path.resolve(projectRoot, pathToStdOut), "w");
     }
 
     const deferred = new Deferred<number>();
 
+    const args = [
+      "--project", pathToConfig
+    ]
+
     const child = fork(
       TSC,
-      [
-        "--project", pathToConfig
-      ],
+      args,
       {
-        stdio: ["ignore", stdout, "pipe", "ipc"]
+        stdio: ["ignore", stdout, "inherit", "ipc"]
       }
     );
 
+    const err = new Error(`Failed on "${TSC} ${args.join(" ")}"`);
     child.on("exit", (code: number) => {
       if (code) {
-        console.error("Failed on " + pathToConfig);
-        deferred.reject(code);
+        err.message += " with code " + code;
+        deferred.reject(err);
       }
       else
         deferred.resolve(code);
