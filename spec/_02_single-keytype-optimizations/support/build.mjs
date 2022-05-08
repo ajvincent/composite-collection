@@ -54,7 +54,7 @@ function defineCollection(className, mapKeyCount, useWeakMapKeys, setKeyCount, u
   );
 
   config.importLines(
-    `import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";`
+    `import MockImportable from "../../../_01_collection-generator/fixtures/MockImportable.mjs";`
   );
 
   for (let i = 0; i < mapKeyCount; i++) {

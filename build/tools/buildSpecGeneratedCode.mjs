@@ -116,7 +116,7 @@ await iterateOverSpecDirs(
       console.log(`Found ${specDir}/support/build.mjs file`);
       await Promise.race([
         invokeSpecBuildModule(buildModulePath),
-        (new TimeoutPromise(5000)).promise
+        (new TimeoutPromise(15000)).promise
       ]);
     }
   }
