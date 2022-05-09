@@ -1,5 +1,5 @@
 import type { ReadonlyDefines, JSDocGenerator, TemplateFunction } from "../sharedTypes.mjs";
-import TypeScriptDefines from "../../source/typescript-migration/TypeScriptDefines.mjs"
+import TypeScriptDefines from "../../source/typescript-migration/TypeScriptDefines.mjs";
 
 /**
  * @param {Map}            defines The preprocessor macros.
