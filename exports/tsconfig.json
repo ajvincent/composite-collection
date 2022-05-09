@@ -9,6 +9,7 @@
     "declaration": true
   },
   "files": [
+    "StrongMapOfStrongSets.mts",
     "StrongStrongMap.mts",
     "StrongStrongSet.mts"
   ]

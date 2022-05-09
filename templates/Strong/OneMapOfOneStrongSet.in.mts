@@ -1,4 +1,5 @@
 import type { ReadonlyDefines, JSDocGenerator, TemplateFunction } from "../sharedTypes.mjs";
+import TypeScriptDefines from "../../source/typescript-migration/TypeScriptDefines.mjs"
 
 /**
  * @param {Map}            defines The preprocessor macros.
@@ -14,50 +15,68 @@ const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefine
     invokeMapValidate = `\n    this.#requireValidMapKey(${defines.mapKeys[0]});\n`;
   }
 
+  const tsAllTypes = `${defines.tsMapTypes[0]}, ${defines.tsSetTypes[0]}`;
+  const tsAllKeys = `${defines.tsMapKeys[0]}, ${defines.tsSetKeys[0]}`;
+  const tsMapTypes = defines.tsMapTypes[0];
+  const tsSetTypes = defines.tsSetTypes[0];
+  const tsMapKeys = defines.tsMapKeys[0];
+  const tsSetKeys = defines.tsSetKeys[0];
+  const allKeys = `${defines.mapKeys[0]}, ${defines.setKeys[0]}`;
+  const mapKeys = defines.mapKeys[0];
+  const setKeys = defines.setKeys[0];
+
   return `
 ${defines.importLines}
 
-class ${defines.className} {
+class ${defines.className}${defines.tsGenericFull}
+{
   /** @type {Map<${defines.mapArgument0Type}, Set<${defines.setArgument0Type}>>} @constant */
-  #outerMap = new Map();
+  #outerMap: Map<${tsMapTypes}, Set<${tsSetTypes}>> = new Map();
 
   /** @type {number} */
   #sizeOfAll = 0;
 
-  constructor() {
-    if (arguments.length > 0) {
-      const iterable = arguments[0];
-      for (let [${defines.mapKeys[0]}, ${defines.setKeys[0]}] of iterable) {
-        this.add(${defines.mapKeys[0]}, ${defines.setKeys[0]});
+  constructor(iterable?: [${tsAllTypes}][]) {
+    if (iterable) {
+      for (let [${allKeys}] of iterable) {
+        this.add(${allKeys});
       }
     }
   }
 
 ${docs.buildBlock("getSize", 2)}
-  get size() {
+  get size() : number
+  {
     return this.#sizeOfAll;
   }
 
 ${docs.buildBlock("getSizeOfSet", 2)}
-  getSizeOfSet(${defines.mapKeys[0]}) {${invokeMapValidate}
-    const __innerSet__ = this.#outerMap.get(${defines.mapKeys[0]})
+  getSizeOfSet(${tsMapKeys}) : number
+  {
+    ${invokeMapValidate}
+    const __innerSet__ = this.#outerMap.get(${mapKeys})
     return __innerSet__?.size || 0;
   }
 
 ${docs.buildBlock("mapSize", 2)}
-  get mapSize() {
+  get mapSize() : number
+  {
     return this.#outerMap.size;
   }
 
 ${docs.buildBlock("add", 2)}
-  add(${defines.mapKeys[0]}, ${defines.setKeys[0]}) {${invokeValidate}
-    if (!this.#outerMap.has(${defines.mapKeys[0]}))
-      this.#outerMap.set(${defines.mapKeys[0]}, new Set);
+  add(${tsAllKeys}) : this
+  {
+    ${invokeValidate}
+    if (!this.#outerMap.has(${mapKeys}))
+      this.#outerMap.set(${mapKeys}, new Set);
 
-    const __innerSet__ = this.#outerMap.get(${defines.mapKeys[0]});
+    const __innerSet__ = this.#outerMap.get(${mapKeys});
+    if (!__innerSet__)
+      throw new Error("assertion failure: unreachable");
 
-    if (!__innerSet__.has(${defines.setKeys[0]})) {
-      __innerSet__.add(${defines.setKeys[0]});
+    if (!__innerSet__.has(${setKeys})) {
+      __innerSet__.add(${setKeys});
       this.#sizeOfAll++;
     }
 
@@ -65,27 +84,21 @@ ${docs.buildBlock("add", 2)}
   }
 
 ${docs.buildBlock("addSets", 2)}
-  addSets(${defines.mapKeys[0]}, __sets__) {${invokeMapValidate}
-    const __array__ = Array.from(__sets__).map((__set__, __index__) => {
-      __set__ = Array.from(__set__);
-      if (__set__.length !== ${defines.setKeys.length}) {
-        throw new Error(\`Set at index \${__index__} doesn't have exactly ${defines.setKeys.length} argument${
-          defines.setKeys.length > 1 ? "s" : ""
-        }!\`);
-      }
-      ${defines.invokeValidate ? `this.#requireValidKey(${defines.mapKeys[0]}, ...__set__);` : ""}
+  addSets(${tsMapKeys}, __sets__: [${tsSetTypes}][]) : this
+  {
+    ${invokeMapValidate}
+    ${invokeValidate ? `__sets__.forEach(([${setKeys}]) => this.#requireValidKey(${allKeys}))` : ""}
 
-      return __set__;
-    });
+    if (!this.#outerMap.has(${mapKeys}))
+      this.#outerMap.set(${mapKeys}, new Set);
 
-    if (!this.#outerMap.has(${defines.mapKeys[0]}))
-      this.#outerMap.set(${defines.mapKeys[0]}, new Set);
+    const __innerSet__ = this.#outerMap.get(${mapKeys});
+    if (!__innerSet__)
+      throw new Error("assertion failure: unreachable");
 
-    const __innerSet__ = this.#outerMap.get(${defines.mapKeys[0]});
-
-    __array__.forEach(__set__ => {
-      if (!__innerSet__.has(__set__[0])) {
-        __innerSet__.add(__set__[0]);
+    __sets__.forEach(([${setKeys}]) =>  {
+      if (!__innerSet__.has(${setKeys})) {
+        __innerSet__.add(${setKeys});
         this.#sizeOfAll++;
       }
     });
@@ -94,14 +107,17 @@ ${docs.buildBlock("addSets", 2)}
   }
 
 ${docs.buildBlock("clear", 2)}
-  clear() {
+  clear() : void
+  {
     this.#outerMap.clear();
     this.#sizeOfAll = 0;
   }
 
 ${docs.buildBlock("clearSets", 2)}
-  clearSets(${defines.mapKeys[0]}) {${invokeMapValidate}
-    const __innerSet__ = this.#outerMap.get(${defines.mapKeys[0]})
+  clearSets(${tsMapKeys}) : void
+  {
+    ${invokeMapValidate}
+    const __innerSet__ = this.#outerMap.get(${mapKeys})
     if (!__innerSet__)
       return;
 
@@ -110,133 +126,169 @@ ${docs.buildBlock("clearSets", 2)}
   }
 
 ${docs.buildBlock("delete", 2)}
-  delete(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}) {${invokeValidate}
-    const __innerSet__ = this.#outerMap.get(${defines.mapKeys[0]})
+  delete(${tsAllKeys}) : boolean
+  {
+    ${invokeValidate}
+    const __innerSet__ = this.#outerMap.get(${mapKeys})
     if (!__innerSet__)
       return false;
 
-    if (!__innerSet__.has(${defines.setKeys[0]}))
+    if (!__innerSet__.has(${setKeys}))
       return false;
 
-    __innerSet__.delete(${defines.setKeys[0]});
+    __innerSet__.delete(${setKeys});
     this.#sizeOfAll--;
 
     if (__innerSet__.size === 0) {
-      this.#outerMap.delete(${defines.mapKeys[0]});
+      this.#outerMap.delete(${mapKeys});
     }
 
     return true;
   }
 
 ${docs.buildBlock("deleteSets", 2)}
-  deleteSets(${defines.mapKeys[0]}) {${invokeMapValidate}
-    const __innerSet__ = this.#outerMap.get(${defines.mapKeys[0]})
+  deleteSets(${tsMapKeys}) : boolean
+  {
+    ${invokeMapValidate}
+    const __innerSet__ = this.#outerMap.get(${mapKeys})
     if (!__innerSet__)
       return false;
 
-    this.#outerMap.delete(${defines.mapKeys[0]});
+    this.#outerMap.delete(${mapKeys});
     this.#sizeOfAll -= __innerSet__.size;
     return true;
   }
 
 ${docs.buildBlock("forEachSet", 2)}
-  forEach(__callback__, __thisArg__) {
+  forEach(
+    __callback__: (
+      ${tsMapKeys},
+      ${tsSetKeys},
+      __collection__: ${defines.className}<${tsAllTypes}>
+    ) => void,
+    __thisArg__: unknown
+  ) : void
+  {
     this.#outerMap.forEach(
-      (__innerSet__, ${defines.mapKeys[0]}) => __innerSet__.forEach(
-        ${defines.setKeys[0]} => __callback__.apply(__thisArg__, [${defines.mapKeys[0]}, ${defines.setKeys[0]}, this])
+      (__innerSet__, ${mapKeys}) => __innerSet__.forEach(
+        ${setKeys} => __callback__.apply(__thisArg__, [${allKeys}, this])
       )
     );
   }
 
 ${docs.buildBlock("forEachMapSet", 2)}
-  forEachSet(${defines.mapKeys[0]}, __callback__, __thisArg__) {${invokeMapValidate}
-    const __innerSet__ = this.#outerMap.get(${defines.mapKeys[0]})
+  forEachSet(
+    ${tsMapKeys},
+    __callback__: (
+      ${tsMapKeys},
+      ${tsSetKeys},
+      __collection__: ${defines.className}<${tsAllTypes}>
+    ) => void,
+    __thisArg__: unknown
+  ): void
+  {
+    ${invokeMapValidate}
+    const __innerSet__ = this.#outerMap.get(${mapKeys})
     if (!__innerSet__)
       return;
 
     __innerSet__.forEach(
-      ${defines.setKeys[0]} => __callback__.apply(__thisArg__, [${defines.mapKeys[0]}, ${defines.setKeys[0]}, this])
+      ${setKeys} => __callback__.apply(__thisArg__, [${allKeys}, this])
     );
   }
 
 ${docs.buildBlock("forEachCallbackSet", 2)}
 
 ${docs.buildBlock("has", 2)}
-  has(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}) {${invokeValidate}
-    const __innerSet__ = this.#outerMap.get(${defines.mapKeys[0]})
+  has(${tsAllKeys}) : boolean
+  {
+    ${invokeValidate}
+    const __innerSet__ = this.#outerMap.get(${mapKeys})
     if (!__innerSet__)
       return false;
 
-    return __innerSet__.has(${defines.setKeys[0]});
+    return __innerSet__.has(${setKeys});
   }
 
 ${docs.buildBlock("hasSet", 2)}
-  hasSets(${defines.mapKeys[0]}) {${invokeMapValidate}
-    const __innerSet__ = this.#outerMap.get(${defines.mapKeys[0]})
+  hasSets(${tsMapKeys}) : boolean
+  {
+    ${invokeMapValidate}
+    const __innerSet__ = this.#outerMap.get(${mapKeys})
     return Boolean(__innerSet__);
   }
 
 ${defines.validateArguments ? `
 ${docs.buildBlock("isValidKeyPublic", 2)}
-  isValidKey(${defines.argList}) {
-    return this.#isValidKey(${defines.argList});
+  isValidKey(${tsAllKeys}) : boolean
+  {
+    return this.#isValidKey(${allKeys});
   }
 
   ` : ``}
 ${docs.buildBlock("values", 2)}
-  * values() {
+  * values() : Iterator<[${tsAllTypes}]>
+  {
     const __outerIter__ = this.#outerMap.entries();
 
-    for (let [${defines.mapKeys[0]}, __innerSet__] of __outerIter__) {
-      for (let ${defines.setKeys[0]} of __innerSet__.values())
-        yield [${defines.mapKeys[0]}, ${defines.setKeys[0]}];
+    for (let [${mapKeys}, __innerSet__] of __outerIter__) {
+      for (let ${setKeys} of __innerSet__.values())
+        yield [${allKeys}];
     }
   }
 
 ${docs.buildBlock("valuesSet", 2)}
-  * valuesSet(${defines.mapKeys[0]}) {${invokeMapValidate}
-    const __innerSet__ = this.#outerMap.get(${defines.mapKeys[0]})
+  * valuesSet(${tsMapKeys}) : Iterator<[${tsAllTypes}]>
+  {
+    ${invokeMapValidate}
+    const __innerSet__ = this.#outerMap.get(${mapKeys})
     if (!__innerSet__)
       return;
 
-    for (let ${defines.setKeys[0]} of __innerSet__.values())
-      yield [${defines.mapKeys[0]}, ${defines.setKeys[0]}];
+    for (let ${setKeys} of __innerSet__.values())
+      yield [${allKeys}];
   }
 
 ${defines.validateArguments ? `
 ${docs.buildBlock("requireValidKey", 2)}
-    #requireValidKey(${defines.argList}) {
-      if (!this.#isValidKey(${defines.argList}))
-        throw new Error("The ordered key set is not valid!");
-    }
+  #requireValidKey(${tsAllKeys}) : void
+  {
+    if (!this.#isValidKey(${defines.argList}))
+      throw new Error("The ordered key set is not valid!");
+  }
 
 ${docs.buildBlock("isValidKeyPrivate", 2)}
-    #isValidKey(${defines.argList}) {
-      void(${defines.argList});
+  #isValidKey(${tsAllKeys}) : boolean
+  {
+    void(${mapKeys});
+    void(${setKeys});
 
-      ${defines.validateArguments}
-      return true;
-    }
+    ${defines.validateArguments}
+    return true;
+  }
 
   ` : ``}
 
 ${defines.validateMapArguments ? `
 ${docs.buildBlock("requireValidMapKey", 2)}
-  #requireValidMapKey(${defines.mapKeys[0]}) {
-    if (!this.#isValidMapKey(${defines.mapKeys[0]}))
+  #requireValidMapKey(${tsMapKeys}) : void
+  {
+    if (!this.#isValidMapKey(${mapKeys}))
       throw new Error("The ordered map key set is not valid!");
   }
 
 ${docs.buildBlock("isValidMapKeyPrivate", 2)}
-  #isValidMapKey(${defines.mapKeys[0]}) {
-    void(${defines.mapKeys[0]});
+  #isValidMapKey(${tsMapKeys}) : boolean
+  {
+    void(${mapKeys});
 
     ${defines.validateMapArguments || ""}
     return true;
   }
   ` : ``}
 
-  [Symbol.iterator]() {
+  [Symbol.iterator]() : Iterator<[${tsAllTypes}]>
+  {
     return this.values();
   }
 
@@ -249,3 +301,4 @@ Object.freeze(${defines.className}.prototype);
 `}
 
 export default preprocess;
+TypeScriptDefines.registerGenerator(preprocess, true);
