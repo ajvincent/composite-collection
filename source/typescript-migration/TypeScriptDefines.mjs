@@ -29,6 +29,8 @@ export default class TypeScriptDefines extends PreprocessorDefines {
     tsSetKeys = [];
     tsValueType = "__V__";
     tsValueKey = "value: __V__";
+    // The one-to-one key type (__MK0__, for example)
+    tsOneToOneKeyType = "";
     /* `<
       __MK1__ extends object,
       __SK1__ extends unknown,

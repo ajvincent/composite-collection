@@ -9,7 +9,13 @@ import url from "url";
 export default async function verifyGeneratedModules(allFiles) {
   const allFilesPromise = await Promise.allSettled(allFiles.map(async targetFile => {
     const targetFileURL = url.pathToFileURL(targetFile);
-    const t = (await import(targetFileURL));
+    let t;
+    try {
+      t = (await import(targetFileURL));
+    }
+    catch (ex) {
+      throw targetFile;
+    }
 
     if (targetFile.endsWith("/keys/DefaultMap.mjs")) {
       if (typeof t.DefaultMap !== "function") {

@@ -1,3 +1,4 @@
+import TypeScriptDefines from "../../source/typescript-migration/TypeScriptDefines.mjs";
 /**
  * @param {Map}            defines The preprocessor macros.
  * @param {JSDocGenerator} docs    The primary documentation generator.
@@ -11,30 +12,39 @@ const preprocess = function preprocess(defines, docs) {
     return `
 ${defines.importLines}
 
-class ${defines.className} extends ${defines.weakMapKeys.length ? "Weak" : ""}Map {
+class ${defines.className}${defines.tsGenericFull} extends ${defines.weakMapKeys.length ? "Weak" : ""}Map${"<" + defines.tsMapTypes.join(", ") + ", __V__>"}
+{
 ${defines.invokeValidate ? `
-  delete(${defines.argList}) {${invokeValidate}
+  delete(${defines.tsMapKeys.join(", ")}) : boolean
+  {
+    ${invokeValidate}
     return super.delete(${defines.argList});
   }
 
-  get(${defines.argList}) {${invokeValidate}
+  get(${defines.tsMapKeys.join(", ")}) : __V__ | undefined
+  {
+    ${invokeValidate}
     return super.get(${defines.argList});
   }
 
-  has(${defines.argList}) {${invokeValidate}
+  has(${defines.tsMapKeys.join(", ")}) : boolean
+  {
+    ${invokeValidate}
     return super.has(${defines.argList});
   }
 ` : ``}
 
 ${defines.validateArguments ? `
 ${docs.buildBlock("isValidKeyPublic", 2)}
-  isValidKey(${defines.argList}) {
+  isValidKey(${defines.tsMapKeys.join(", ")}) : boolean
+  {
     return this.#isValidKey(${defines.argList});
   }
 
 ${defines.validateValue ? `
 ${docs.buildBlock("isValidValuePublic", 2)}
-  isValidValue(value) {
+  isValidValue(value: __V__) : boolean
+  {
     return this.#isValidValue(value);
   }
   ` : ``}
@@ -43,7 +53,9 @@ ${docs.buildBlock("isValidValuePublic", 2)}
 
 ${defines.invokeValidate ? `
 ${docs.buildBlock("set", 2)}
-  set(${defines.argList}, value) {${invokeValidate}
+  set(${defines.tsMapKeys.join(", ")}, value: __V__) : this
+  {
+    ${invokeValidate}
   ${defines.validateValue ? `
     if (!this.#isValidValue(value))
       throw new Error("The value is not valid!");
@@ -54,21 +66,24 @@ ${docs.buildBlock("set", 2)}
 
 ${defines.validateArguments ? `
 ${docs.buildBlock("requireValidKey", 2)}
-  #requireValidKey(${defines.argList}) {
+  #requireValidKey(${defines.tsMapKeys.join(", ")}) : void
+  {
     if (!this.#isValidKey(${defines.argList}))
       throw new Error("The ordered key set is not valid!");
   }
 
 ${docs.buildBlock("isValidKeyPrivate", 2)}
-  #isValidKey(${defines.argList}) {
-${defines.validateArguments}
+  #isValidKey(${defines.argList.replace(/, /g, ": any, ")}) : boolean
+  {
+    ${defines.validateArguments}
     return true;
   }
 ` : ``}
 ${defines.validateValue ? `
 ${docs.buildBlock("isValidValuePrivate", 2)}
-  #isValidValue(value) {
-    ${defines.validateValue}
+  #isValidValue(value: any) : boolean
+  {
+  ${defines.validateValue}
     return true;
   }
   ` : ``}
@@ -81,4 +96,5 @@ Object.freeze(${defines.className}.prototype);
 `;
 };
 export default preprocess;
+TypeScriptDefines.registerGenerator(preprocess, true);
 //# sourceMappingURL=Map.in.mjs.map

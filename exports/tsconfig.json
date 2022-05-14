@@ -9,8 +9,13 @@
     "declaration": true
   },
   "files": [
+    "OneToOneSimpleMap.mts",
+    "OneToOneStrongMap.mts",
+    "OneToOneWeakMap.mts",
     "StrongMapOfStrongSets.mts",
     "StrongStrongMap.mts",
-    "StrongStrongSet.mts"
+    "StrongStrongSet.mts",
+    "WeakStrongMap.mts",
+    "WeakWeakMap.mts"
   ]
 }

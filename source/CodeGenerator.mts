@@ -40,7 +40,8 @@ class TypeScriptDefs {
 }
 
 /** @package */
-export default class CodeGenerator extends CodeGeneratorBase {
+export default class CodeGenerator extends CodeGeneratorBase
+{
   // #region static private fields
   /**
    * Stringify a list of keys into an argument name list suitable for macros.
@@ -244,9 +245,10 @@ export default class CodeGenerator extends CodeGeneratorBase {
     }
     else {
       this.#buildDefines();
-      this.#buildTypeScriptDefines();
       this.#buildDocGenerator();
     }
+
+    this.#buildTypeScriptDefines();
 
     this.#generateSource();
     const gpSet = generatorToPromiseSet.get(this) as GeneratorPromiseSet;
@@ -353,69 +355,73 @@ export default class CodeGenerator extends CodeGeneratorBase {
 
   #buildTypeScriptDefines() : void {
     const defines = this.#defines;
-    const data = this.#configurationData;
+    let data = this.#configurationData;
+    let baseData = data;
+
     if (data.collectionTemplate === "OneToOne/Map") {
-      throw new Error("Not yet implemented!");
+      const base = data.oneToOneBase;
+      if (base)
+        baseData = ConfigurationData.cloneData(base) || data;
+      if (baseData === data)
+        throw new Error("How'd we get here?");
     }
-    else {
-      const typeDefs: RequiredMap<string, TypeScriptDefs> = new RequiredMap;
 
-      defines.mapKeys.forEach(
-        (key, index) => {
-          const typeMap = data.parameterToTypeMap.get(key);
-          if (!typeMap)
-            throw new Error("assertion failure: typeMap");
+    const typeDefs: RequiredMap<string, TypeScriptDefs> = new RequiredMap;
 
-          const def = `__MK${index}__`;
-          defines.tsMapTypes.push(def);
-          typeDefs.set(key, new TypeScriptDefs(def, typeMap.tsType));
-        }
-      );
-
-      defines.setKeys.forEach(
-        (key, index) => {
-          const typeMap = data.parameterToTypeMap.get(key);
-          if (!typeMap)
-            throw new Error("assertion failure: typeMap");
-          const def = `__SK${index}__`;
-          defines.tsSetTypes.push(def);
-          typeDefs.set(key, new TypeScriptDefs(
-            def,
-            typeMap.tsType
-          ));
-        }
-      );
-
-      if (data.collectionTemplate.endsWith("Map")) {
-        typeDefs.set("value", new TypeScriptDefs(
-          "__V__",
-          data.valueType?.tsType || "unknown"
-        ));
-        defines.tsValueKey = "value: __V__";
+    let mapCount = 0, setCount = 0;
+    baseData.parameterToTypeMap.forEach((typeMap, arg) => {
+      let def, typeArray, keyArray;
+      if (typeMap.mapOrSetType.endsWith("Map")) {
+        def = `__MK${mapCount++}__`;
+        typeArray = defines.tsMapTypes;
+        keyArray = defines.tsMapKeys;
+      }
+      else {
+        def = `__SK${setCount++}__`;
+        typeArray = defines.tsSetTypes;
+        keyArray = defines.tsSetKeys;
       }
 
-      const readDefs: RequiredMap<string, TypeScriptDefs> = typeDefs;
+      typeArray.push(def);
+      keyArray.push(`${arg}: ${def}`)
+      typeDefs.set(arg, new TypeScriptDefs(def, typeMap.tsType));
+    });
 
-      defines.tsMapKeys = defines.mapKeys.map((key: string):
-        string => key + ": " + readDefs.getRequired(key).typeConstraint
-      );
+    if (data.collectionTemplate === "OneToOne/Map") {
+      const oneToOneKeyDefs = typeDefs.get(data.oneToOneKeyName);
+      if (oneToOneKeyDefs) {
+        defines.tsOneToOneKeyType = oneToOneKeyDefs.typeConstraint;
+        typeDefs.delete(data.oneToOneKeyName);
+      }
 
-      defines.tsSetKeys = defines.setKeys.map((key: string):
-        string => key + ": " + readDefs.getRequired(key).typeConstraint
-      );
-
-      defines.tsGenericFull = `<\n  ${
-        Array.from(
-          readDefs.values()
-        ).map(
-          def => `${def.typeConstraint}${
-            def.extendsConstraint === "unknown" || def.typeConstraint === "any" ?
-            "" :
-            " extends " + def.extendsConstraint
-          }`
-        ).join(",\n  ")
-      }\n>`.trim();
+      typeDefs.set("value", new TypeScriptDefs(
+        "__V__",
+        data.valueType?.tsType || "object"
+      ));
+      defines.tsValueKey = "value: __V__";
     }
+
+    else if (data.collectionTemplate.endsWith("Map")) {
+      typeDefs.set("value", new TypeScriptDefs(
+        "__V__",
+        data.valueType?.tsType || "unknown"
+      ));
+      defines.tsValueKey = "value: __V__";
+    }
+
+    const readDefs: RequiredMap<string, TypeScriptDefs> = typeDefs;
+
+    defines.tsGenericFull = `<\n  ${
+      Array.from(
+        readDefs.values()
+      ).map(
+        def => `${def.typeConstraint}${
+          def.extendsConstraint === "unknown" || def.typeConstraint === "any" ?
+          "" :
+          " extends " + def.extendsConstraint
+        }`
+      ).join(",\n  ")
+    }\n>`.trim();
   }
 
   #defineValidatorCode(
@@ -437,26 +443,29 @@ export default class CodeGenerator extends CodeGeneratorBase {
   #buildOneToOneDefines(base: CollectionConfiguration | symbol) : void {
     const data = this.#configurationData;
     const baseData = ConfigurationData.cloneData(base) as ConfigurationData;
-    this.#defines.className = data.className;
-    this.#defines.baseClassName = baseData.className;
-    this.#defines.configureOptions = data.oneToOneOptions;
+    const defines = this.#defines;
+
+    defines.className = data.className;
+    defines.baseClassName = baseData.className;
+    defines.configureOptions = data.oneToOneOptions;
+    defines.importLines = data.importLines;
 
     const weakKeyName = data.oneToOneKeyName;
-    this.#defines.weakKeyName = weakKeyName;
+    defines.weakKeyName = weakKeyName;
 
     // bindOneToOne arguments
     let keys = Array.from(baseData.parameterToTypeMap.keys());
-    this.#defines.baseArgList = keys.slice();
+    defines.baseArgList = keys.slice();
 
     keys.splice(keys.indexOf(weakKeyName), 1);
-    this.#defines.bindArgList = keys;
+    defines.bindArgList = keys;
 
     const wrapBaseClass = baseData.weakMapKeys.length + baseData.strongMapKeys.length >= 2;
-    this.#defines.wrapBaseClass = wrapBaseClass;
+    defines.wrapBaseClass = wrapBaseClass;
 
     const parameters = Array.from(baseData.parameterToTypeMap.values());
-    this.#defines.baseClassValidatesKey = parameters.some(param => param.argumentValidator);
-    this.#defines.baseClassValidatesValue = Boolean(baseData.valueType?.argumentValidator);
+    defines.baseClassValidatesKey = parameters.some(param => param.argumentValidator);
+    defines.baseClassValidatesValue = Boolean(baseData.valueType?.argumentValidator);
   }
 
   #buildDocGenerator() : void {
@@ -636,7 +645,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
       throw new Error("assertion: unreachable");
 
     if (this.#configurationData.oneToOneOptions?.pathToBaseModule) {
-      this.#generatedCode += `import ${baseData.className} from "${this.#configurationData.oneToOneOptions.pathToBaseModule}";`;
+      this.#generatedCode += `import ${baseData.className} from "${this.#configurationData.oneToOneOptions.pathToBaseModule}"\n\n`;
       this.#generatedCode += baseData.importLines;
       this.#generatedCode += "\n";
       return;

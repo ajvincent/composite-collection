@@ -45,7 +45,7 @@ export default class InMemoryDriver {
 
     let deferred = new Deferred;
     this.#pendingStart = deferred.resolve;
-    this.#runPromise = deferred.promise.then(() => this.#run());
+    this.#runPromise = deferred.promise.then(async () => await this.#run());
   }
 
   /**

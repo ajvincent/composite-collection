@@ -119,6 +119,9 @@ class ConfigurationStateMachine {
     static OneToOne() {
         return new ConfigurationStateMachine([
             ["start", "startOneToOne"],
+            ["startOneToOne", "importLines"],
+            ["importLines", "fileOverview"],
+            ["importLines", "configureOneToOne"],
             ["startOneToOne", "fileOverview"],
             ["startOneToOne", "configureOneToOne"],
             ["fileOverview", "configureOneToOne"],

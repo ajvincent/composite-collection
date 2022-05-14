@@ -1,4 +1,5 @@
 import type { ReadonlyDefines, JSDocGenerator, TemplateFunction } from "../sharedTypes.mjs";
+import TypeScriptDefines from "../../source/typescript-migration/TypeScriptDefines.mjs";
 
 /**
  * @param {Map}            defines The preprocessor macros.
@@ -9,8 +10,10 @@ const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefine
   return `
 ${defines.importLines}
 import WeakKeyComposer from "./keys/Composite.mjs";
+declare abstract class WeakKey {}
 
-class ${defines.className} {
+class ${defines.className}${defines.tsGenericFull}
+{
   // eslint-disable-next-line jsdoc/require-property
   /** @typedef {object} WeakKey */
 
@@ -21,21 +24,21 @@ class ${defines.className} {
     JSON.stringify(defines.strongMapKeys)
   });
 
-  ${docs.buildBlock("rootContainerWeakMap", 4)}
-  #root = new WeakMap;
+${docs.buildBlock("rootContainerWeakMap", 2)}
+  #root: WeakMap<WeakKey, __V__> = new WeakMap;
 
-  constructor() {
-    if (arguments.length > 0) {
-      const iterable = arguments[0];
+  constructor(iterable?: [${defines.tsMapTypes}, ${defines.tsValueType}][])
+  {
+    if (iterable) {
       for (let [${defines.argList}, value] of iterable) {
         this.set(${defines.argList}, value);
       }
     }
   }
 
-
 ${docs.buildBlock("delete", 2)}
-  delete(${defines.argList}) {
+  delete(${defines.tsMapKeys.join(", ")}) : boolean
+  {
     this.#requireValidKey(${defines.argList});
     const __key__ = this.#keyComposer.getKeyIfExists([${
       defines.weakMapKeys.join(", ")
@@ -54,7 +57,8 @@ ${docs.buildBlock("delete", 2)}
   }
 
 ${docs.buildBlock("get", 2)}
-  get(${defines.argList}) {
+  get(${defines.tsMapKeys.join(", ")}) : __V__ | undefined
+  {
     this.#requireValidKey(${defines.argList});
     const __key__ = this.#keyComposer.getKeyIfExists([${
       defines.weakMapKeys.join(", ")
@@ -65,7 +69,8 @@ ${docs.buildBlock("get", 2)}
   }
 
 ${docs.buildBlock("has", 2)}
-  has(${defines.argList}) {
+  has(${defines.tsMapKeys.join(", ")}) : boolean
+  {
     this.#requireValidKey(${defines.argList});
 
     const __key__ = this.#keyComposer.getKeyIfExists([${
@@ -76,23 +81,25 @@ ${docs.buildBlock("has", 2)}
     return __key__ ? this.#root.has(__key__) : false;
   }
 
-
 ${docs.buildBlock("isValidKeyPublic", 2)}
-  isValidKey(${defines.argList}) {
+  isValidKey(${defines.tsMapKeys.join(", ")}) : boolean
+  {
     return this.#isValidKey(${defines.argList});
   }
 
 ${
   defines.validateValue ? `
 ${docs.buildBlock("isValidValuePublic", 2)}
-  isValidValue(value) {
+  isValidValue(value: __V__) : boolean
+  {
     return this.#isValidValue(value);
   }
   ` : ``
 }
 
 ${docs.buildBlock("set", 2)}
-  set(${defines.argList}, value) {
+  set(${defines.tsMapKeys.join(", ")}, value: __V__) : this
+  {
     this.#requireValidKey(${defines.argList});
     ${
       defines.validateValue ? `
@@ -111,13 +118,15 @@ ${docs.buildBlock("set", 2)}
   }
 
 ${docs.buildBlock("requireValidKey", 2)}
-  #requireValidKey(${defines.argList}) {
+  #requireValidKey(${defines.tsMapKeys.join(", ")}) : void
+  {
     if (!this.#isValidKey(${defines.argList}))
       throw new Error("The ordered key set is not valid!");
   }
 
 ${docs.buildBlock("isValidKeyPrivate", 2)}
-  #isValidKey(${defines.argList}) {
+  #isValidKey(${defines.tsMapKeys.join(", ")}) : boolean
+  {
     if (!this.#keyComposer.isValidForKey([${
       defines.weakMapKeys.join(", ")
     }], [${
@@ -131,7 +140,8 @@ ${defines.validateArguments || ""}
 
 ${defines.validateValue ? `
 ${docs.buildBlock("isValidValuePrivate", 2)}
-  #isValidValue(value) {
+  #isValidValue(value: __V__) : boolean
+  {
     ${defines.validateValue}
     return true;
   }
@@ -146,3 +156,4 @@ Object.freeze(${defines.className}.prototype);
 }
 
 export default preprocess;
+TypeScriptDefines.registerGenerator(preprocess, true);

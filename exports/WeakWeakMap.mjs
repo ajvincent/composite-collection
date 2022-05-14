@@ -1,9 +1,8 @@
 /*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- */
-
+  * This Source Code Form is subject to the terms of the Mozilla Public
+  * License, v. 2.0. If a copy of the MPL was not distributed with this
+  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  */
 /**
  * @file
  * This is generated code.  Do not edit.
@@ -14,139 +13,120 @@
  * @author Alexander J. Vincent <ajvincent@gmail.com>
  * @copyright © 2021-2022 Alexander J. Vincent
  */
-
 import WeakKeyComposer from "./keys/Composite.mjs";
-
 class WeakWeakMap {
-  // eslint-disable-next-line jsdoc/require-property
-  /** @typedef {object} WeakKey */
-
-  /** @type {WeakKeyComposer} @constant */
-  #keyComposer = new WeakKeyComposer(["key1", "key2"], []);
-
-  /**
-   * The root map holding weak composite keys and values.
-   *
-   * @type {WeakMap<WeakKey, *>}
-   * @constant
-   */
-  #root = new WeakMap;
-
-  constructor() {
-    if (arguments.length > 0) {
-      const iterable = arguments[0];
-      for (let [key1, key2, value] of iterable) {
-        this.set(key1, key2, value);
-      }
+    // eslint-disable-next-line jsdoc/require-property
+    /** @typedef {object} WeakKey */
+    /** @type {WeakKeyComposer} @constant */
+    #keyComposer = new WeakKeyComposer(["key1", "key2"], []);
+    /**
+     * The root map holding weak composite keys and values.
+     *
+     * @type {WeakMap<WeakKey, *>}
+     * @constant
+     */
+    #root = new WeakMap;
+    constructor(iterable) {
+        if (iterable) {
+            for (let [key1, key2, value] of iterable) {
+                this.set(key1, key2, value);
+            }
+        }
     }
-  }
-
-  /**
-   * Delete an element from the collection by the given key sequence.
-   *
-   * @param {object} key1 The first key.
-   * @param {object} key2 The second key.
-   * @returns {boolean} True if we found the value and deleted it.
-   * @public
-   */
-  delete(key1, key2) {
-    this.#requireValidKey(key1, key2);
-    const __key__ = this.#keyComposer.getKeyIfExists([key1, key2], []);
-    if (!__key__)
-      return false;
-
-    this.#keyComposer.deleteKey([key1, key2], []);
-    return this.#root.delete(__key__);
-  }
-
-  /**
-   * Get a value for a key set.
-   *
-   * @param {object} key1 The first key.
-   * @param {object} key2 The second key.
-   * @returns {*?} The value.  Undefined if it isn't in the collection.
-   * @public
-   */
-  get(key1, key2) {
-    this.#requireValidKey(key1, key2);
-    const __key__ = this.#keyComposer.getKeyIfExists([key1, key2], []);
-    return __key__ ? this.#root.get(__key__) : undefined;
-  }
-
-  /**
-   * Report if the collection has a value for a key set.
-   *
-   * @param {object} key1 The first key.
-   * @param {object} key2 The second key.
-   * @returns {boolean} True if the key set refers to a value in the collection.
-   * @public
-   */
-  has(key1, key2) {
-    this.#requireValidKey(key1, key2);
-
-    const __key__ = this.#keyComposer.getKeyIfExists([key1, key2], []);
-    return __key__ ? this.#root.has(__key__) : false;
-  }
-
-  /**
-   * Determine if a set of keys is valid.
-   *
-   * @param {object} key1 The first key.
-   * @param {object} key2 The second key.
-   * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @public
-   */
-  isValidKey(key1, key2) {
-    return this.#isValidKey(key1, key2);
-  }
-
-  /**
-   * Set a value for a key set.
-   *
-   * @param {object} key1  The first key.
-   * @param {object} key2  The second key.
-   * @param {*}      value The value.
-   * @returns {WeakWeakMap} This collection.
-   * @public
-   */
-  set(key1, key2, value) {
-    this.#requireValidKey(key1, key2);
-
-    const __key__ = this.#keyComposer.getKey([key1, key2], []);
-    this.#root.set(__key__, value);
-    return this;
-  }
-
-  /**
-   * Throw if the key set is not valid.
-   *
-   * @param {object} key1 The first key.
-   * @param {object} key2 The second key.
-   * @throws for an invalid key set.
-   */
-  #requireValidKey(key1, key2) {
-    if (!this.#isValidKey(key1, key2))
-      throw new Error("The ordered key set is not valid!");
-  }
-
-  /**
-   * Determine if a set of keys is valid.
-   *
-   * @param {object} key1 The first key.
-   * @param {object} key2 The second key.
-   * @returns {boolean} True if the validation passes, false if it doesn't.
-   */
-  #isValidKey(key1, key2) {
-    if (!this.#keyComposer.isValidForKey([key1, key2], []))
-      return false;
-
-    return true;
-  }
-
-  [Symbol.toStringTag] = "WeakWeakMap";
+    /**
+     * Delete an element from the collection by the given key sequence.
+     *
+     * @param {object} key1 The first key.
+     * @param {object} key2 The second key.
+     * @returns {boolean} True if we found the value and deleted it.
+     * @public
+     */
+    delete(key1, key2) {
+        this.#requireValidKey(key1, key2);
+        const __key__ = this.#keyComposer.getKeyIfExists([key1, key2], []);
+        if (!__key__)
+            return false;
+        this.#keyComposer.deleteKey([key1, key2], []);
+        return this.#root.delete(__key__);
+    }
+    /**
+     * Get a value for a key set.
+     *
+     * @param {object} key1 The first key.
+     * @param {object} key2 The second key.
+     * @returns {*?} The value.  Undefined if it isn't in the collection.
+     * @public
+     */
+    get(key1, key2) {
+        this.#requireValidKey(key1, key2);
+        const __key__ = this.#keyComposer.getKeyIfExists([key1, key2], []);
+        return __key__ ? this.#root.get(__key__) : undefined;
+    }
+    /**
+     * Report if the collection has a value for a key set.
+     *
+     * @param {object} key1 The first key.
+     * @param {object} key2 The second key.
+     * @returns {boolean} True if the key set refers to a value in the collection.
+     * @public
+     */
+    has(key1, key2) {
+        this.#requireValidKey(key1, key2);
+        const __key__ = this.#keyComposer.getKeyIfExists([key1, key2], []);
+        return __key__ ? this.#root.has(__key__) : false;
+    }
+    /**
+     * Determine if a set of keys is valid.
+     *
+     * @param {object} key1 The first key.
+     * @param {object} key2 The second key.
+     * @returns {boolean} True if the validation passes, false if it doesn't.
+     * @public
+     */
+    isValidKey(key1, key2) {
+        return this.#isValidKey(key1, key2);
+    }
+    /**
+     * Set a value for a key set.
+     *
+     * @param {object} key1  The first key.
+     * @param {object} key2  The second key.
+     * @param {*}      value The value.
+     * @returns {WeakWeakMap} This collection.
+     * @public
+     */
+    set(key1, key2, value) {
+        this.#requireValidKey(key1, key2);
+        const __key__ = this.#keyComposer.getKey([key1, key2], []);
+        this.#root.set(__key__, value);
+        return this;
+    }
+    /**
+     * Throw if the key set is not valid.
+     *
+     * @param {object} key1 The first key.
+     * @param {object} key2 The second key.
+     * @throws for an invalid key set.
+     */
+    #requireValidKey(key1, key2) {
+        if (!this.#isValidKey(key1, key2))
+            throw new Error("The ordered key set is not valid!");
+    }
+    /**
+     * Determine if a set of keys is valid.
+     *
+     * @param {object} key1 The first key.
+     * @param {object} key2 The second key.
+     * @returns {boolean} True if the validation passes, false if it doesn't.
+     */
+    #isValidKey(key1, key2) {
+        if (!this.#keyComposer.isValidForKey([key1, key2], []))
+            return false;
+        return true;
+    }
+    [Symbol.toStringTag] = "WeakWeakMap";
 }
-
 Object.freeze(WeakWeakMap);
 Object.freeze(WeakWeakMap.prototype);
-
 export default WeakWeakMap;
+//# sourceMappingURL=WeakWeakMap.mjs.map

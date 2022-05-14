@@ -3,7 +3,7 @@ import MockImportable from "../fixtures/MockImportable.mjs";
 
 const SoloWeakMapConfig = new CollectionConfiguration("SoloWeakMap", "WeakMap");
 SoloWeakMapConfig.importLines(
-  `import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";`
+  `import MockImportable from "../../_01_collection-generator/fixtures/MockImportable.mjs";`
 );
 SoloWeakMapConfig.addMapKey("key", "The key.", true, {
   jsDocType: "MockImportable",

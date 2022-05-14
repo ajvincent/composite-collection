@@ -11,6 +11,7 @@ export default class TypeScriptDefines extends PreprocessorDefines {
     tsSetKeys: string[];
     tsValueType: string;
     tsValueKey: string;
+    tsOneToOneKeyType: string;
     tsGenericFull: string;
 }
 declare type primitive = string | number | boolean | undefined | null;

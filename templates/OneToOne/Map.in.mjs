@@ -1,3 +1,4 @@
+import TypeScriptDefines from "../../source/typescript-migration/TypeScriptDefines.mjs";
 /**
  * Serialize keys.
  *
@@ -19,6 +20,25 @@ function buildNumberedArgs(args, suffix, weakKeyName) {
     return args.map(arg => arg + ((arg === weakKeyName) ? "" : suffix));
 }
 /**
+ * Build an arguments list based on a suffix and a map of types.
+ *
+ * @param {string[]}   args        The list of argument names.
+ * @param {string}     suffix      The suffix to append.
+ * @param {string[]}   tsMapKeys   The map keys.
+ * @returns {string}               The resulting argument types.
+ */
+function buildNumberedTypes(args, suffix, tsMapKeys) {
+    const map = new Map(tsMapKeys.map(argAndType => {
+        const [key, type] = argAndType.split(": ");
+        return [key, type];
+    }));
+    const keys = [];
+    args.forEach(arg => {
+        keys.push(arg + suffix + ": " + map.get(arg));
+    });
+    return keys.join(", ");
+}
+/**
  * @param {Map}            defines  The preprocessor macros.
  * @param {JSDocGenerator} soloDocs Provides documentation for single key-value methods.
  * @param {JSDocGenerator} duoDocs  Provides documentation for .bindOneToOne().
@@ -35,27 +55,34 @@ const preprocess = function (defines, soloDocs, duoDocs) {
     if (typeof weakKeyName !== "string")
         throw new Error("assertion: weakKeyName must be a string!");
     const bindOneToOneArgList1 = buildNumberedArgs(bindArgList, "_1", weakKeyName), bindOneToOneArgList2 = buildNumberedArgs(bindArgList, "_2", weakKeyName);
+    const bindOneToOneTypeList1 = buildNumberedTypes(bindArgList, "_1", defines.tsMapKeys);
+    const bindOneToOneTypeList2 = buildNumberedTypes(bindArgList, "_2", defines.tsMapKeys);
     const baseMapArgList1 = buildNumberedArgs(baseArgList, "_1", weakKeyName), baseMapArgList2 = buildNumberedArgs(baseArgList, "_2", weakKeyName);
     const baseMapArgs = buildArgNameList(baseArgList), baseMapArgs1 = buildArgNameList(baseMapArgList1), baseMapArgs2 = buildArgNameList(baseMapArgList2);
-    const bindMapArgsWithValue = buildArgNameList(["value", ...bindArgList]);
     const bindMapArgs = buildArgNameList(bindArgList);
+    const bindMapArgsWithTypes = buildNumberedTypes(bindArgList, "", defines.tsMapKeys);
+    let tsMapTypes = defines.tsMapTypes.join(", ").replace(defines.tsOneToOneKeyType, "object");
+    let baseClass = defines.baseClassName + "<" + tsMapTypes + ", __V__>";
     let classDefinition = "";
     if (defines.wrapBaseClass) {
         classDefinition = `
-class ${defines.className} {
+${defines.importLines}
+class ${defines.className}${defines.tsGenericFull}
+{
   /** @constant */
-  #baseMap = new ${defines.baseClassName};
+  #baseMap = new ${baseClass}();
 
   /** @type {WeakMap<object, object>} @constant */
-  #weakValueToInternalKeyMap = new WeakMap;
+  #weakValueToInternalKeyMap: WeakMap<__V__, object> = new WeakMap;
 
 ${duoDocs.buildBlock("bindOneToOne", 2)}
   bindOneToOne(${buildArgNameList([
-            ...bindOneToOneArgList1,
-            "value_1",
-            ...bindOneToOneArgList2,
-            "value_2"
-        ])}) {${bindArgList.length ? `
+            bindOneToOneTypeList1,
+            "value_1: __V__",
+            bindOneToOneTypeList2,
+            "value_2: __V__"
+        ])}) : void
+  {${bindArgList.length ? `
     this.#requireValidKey("(${bindOneToOneArgList1})", ${bindOneToOneArgList1});
     this.#requireValidValue("value_1", value_1);
     this.#requireValidKey("(${bindOneToOneArgList2})", ${bindOneToOneArgList2});
@@ -158,8 +185,9 @@ ${duoDocs.buildBlock("bindOneToOne", 2)}
 }
 
 ${soloDocs.buildBlock("delete", 2)}
-  delete(${bindMapArgsWithValue}) {
-    const ${weakKeyName} = this.#weakValueToInternalKeyMap.has(value);
+  delete(value: __V__, ${bindMapArgsWithTypes}) : boolean
+  {
+    const ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value);
     if (!${weakKeyName})
       return false;
 
@@ -167,6 +195,8 @@ ${soloDocs.buildBlock("delete", 2)}
       return false;
 
     const __target__ = this.#baseMap.get(${baseMapArgs});
+    if (!__target__) // this should never happen
+      return false;
 
     const __returnValue__ = this.#baseMap.delete(${baseMapArgs});
     if (__returnValue__)
@@ -175,41 +205,48 @@ ${soloDocs.buildBlock("delete", 2)}
   }
 
 ${soloDocs.buildBlock("get", 2)}
-  get(${bindMapArgsWithValue}) {
+  get(value: __V__, ${bindMapArgsWithTypes}) : __V__ | undefined
+  {
     const ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value);
     return ${weakKeyName} ? this.#baseMap.get(${baseMapArgs}) : undefined;
   }
 
 ${soloDocs.buildBlock("has", 2)}
-  has(${bindMapArgsWithValue}) {
-    const ${weakKeyName} = this.#weakValueToInternalKeyMap.has(value);
+  has(value: __V__, ${bindMapArgsWithTypes}) : boolean
+  {
+    const ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value);
     return ${weakKeyName} ? this.#baseMap.has(${baseMapArgs}) : false;
   }
 
 ${soloDocs.buildBlock("isValidKey", 2)}
-  isValidKey(${bindMapArgs}) {
+  isValidKey(${bindMapArgsWithTypes}) : boolean
+  {
     return this.#isValidKey(${bindMapArgs});
   }
 
-  #isValidKey(${bindMapArgs}) {
+  #isValidKey(${bindMapArgsWithTypes}) : boolean
+  {
     const ${weakKeyName} = {};
     return this.#baseMap.isValidKey(${baseMapArgs});
   }
 
 ${soloDocs.buildBlock("isValidValue", 2)}
-  isValidValue(value) {
+  isValidValue(value: __V__) : boolean
+  {
     return ${defines.baseClassValidatesValue ?
             "(Object(value) === value) && this.#baseMap.isValidValue(value)" :
             "Object(value) === value"};
   }
 
 ${bindArgList.length ? `
-  #requireValidKey(__argNames__, ${bindMapArgs}) {
+  #requireValidKey(__argNames__: string, ${bindMapArgsWithTypes}) : void
+  {
     if (!this.#isValidKey(${bindMapArgs}))
       throw new Error("Invalid key tuple: " + __argNames__);
   }
 ` : ``}
-  #requireValidValue(argName, value) {
+  #requireValidValue(argName: string, value: __V__) : void
+  {
     if (!this.isValidValue(value))
       throw new Error(argName + " is not a valid value!");
   }
@@ -220,9 +257,12 @@ ${bindArgList.length ? `
     }
     else {
         classDefinition = `
-class ${defines.className} extends ${defines.baseClassName} {
+${defines.importLines}
+class ${defines.className}${defines.tsGenericFull} extends ${defines.baseClassName}<${defines.tsValueType}, ${defines.tsValueType}>
+{
 ${duoDocs.buildBlock("bindOneToOneSimple", 2)}
-  bindOneToOne(value_1, value_2) {${defines.baseClassValidatesKey ? `
+  bindOneToOne(value_1: ${defines.tsValueType}, value_2: ${defines.tsValueType}) : void
+  {${defines.baseClassValidatesKey ? `
     if (!this.isValidKey(value_1))
       throw new Error("value_1 mismatch!");
     if (!this.isValidKey(value_2))
@@ -255,13 +295,15 @@ ${duoDocs.buildBlock("bindOneToOneSimple", 2)}
    * @see the base map class for further constraints.` : ""}
    * @public
    */
-  isValidValue(value) {
+  isValidValue(value: ${defines.tsValueType}) : boolean
+  {
     return ${defines.baseClassValidatesValue ?
             "(Object(value) === value) && super.isValidValue(value)" :
             "Object(value) === value"};
   }
 
-  set(key, value) {
+  set(key: ${defines.tsValueType}, value: ${defines.tsValueType}) : never
+  {
     void(key);
     void(value);
     throw new Error("Not implemented, use .bindOneToOne(value_1, value_2);");
@@ -277,4 +319,5 @@ Object.freeze(${defines.className}.prototype);
 `;
 };
 export default preprocess;
+TypeScriptDefines.registerGenerator(preprocess, true);
 //# sourceMappingURL=Map.in.mjs.map

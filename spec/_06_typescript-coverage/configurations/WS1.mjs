@@ -1,11 +1,11 @@
 import CollectionConfiguration from "composite-collection/Configuration";
 import MockImportable from "../fixtures/MockImportable.mjs";
 
-const SoloStrongSetConfig = new CollectionConfiguration("SoloStrongSet", "Set");
-SoloStrongSetConfig.importLines(
+const SoloWeakSetConfig = new CollectionConfiguration("SoloWeakSet", "WeakSet");
+SoloWeakSetConfig.importLines(
   `import MockImportable from "../fixtures/MockImportable.mjs";`
 );
-SoloStrongSetConfig.addSetKey("key", "The key.", false, {
+SoloWeakSetConfig.addSetKey("key", "The key.", true, {
   jsDocType: "MockImportable",
   tsType: "MockImportable",
   argumentValidator: function(key) {
@@ -15,6 +15,6 @@ SoloStrongSetConfig.addSetKey("key", "The key.", false, {
   },
 });
 
-SoloStrongSetConfig.lock();
+SoloWeakSetConfig.lock();
 
-export default SoloStrongSetConfig;
+export default SoloWeakSetConfig;

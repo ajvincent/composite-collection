@@ -1,10 +1,10 @@
 // WeakWeakMap, MockImportable
 import CollectionConfiguration from "composite-collection/Configuration";
-import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";
+import MockImportable from "../../_01_collection-generator/fixtures/MockImportable.mjs";
 
 const WeakStrongMapImportable = new CollectionConfiguration("WeakStrongMapImportable", "WeakMap");
 WeakStrongMapImportable.importLines(
-  `import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";`
+  `import MockImportable from "../../_01_collection-generator/fixtures/MockImportable.mjs";`
 );
 
 WeakStrongMapImportable.addMapKey("privateKey", "The private key.", true);

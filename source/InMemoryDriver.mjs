@@ -27,7 +27,7 @@ export default class InMemoryDriver {
         this.#generatorPromiseSet = new GeneratorPromiseSet(this, targetDir);
         let deferred = new Deferred;
         this.#pendingStart = deferred.resolve;
-        this.#runPromise = deferred.promise.then(() => this.#run());
+        this.#runPromise = deferred.promise.then(async () => await this.#run());
     }
     /**
      * @param {CollectionConfiguration} configuration The configuration to add.

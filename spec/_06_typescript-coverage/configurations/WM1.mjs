@@ -1,18 +1,18 @@
 import CollectionConfiguration from "composite-collection/Configuration";
 import MockImportable from "../fixtures/MockImportable.mjs";
 
-const SoloStrongMapConfig = new CollectionConfiguration("SoloStrongMap", "Map");
+const SoloWeakMapConfig = new CollectionConfiguration("SoloWeakMap", "WeakMap");
 
-SoloStrongMapConfig.setFileOverview(`
+SoloWeakMapConfig.setFileOverview(`
 I generated this file for testing purposes.
 
 This is only a test.
 `.trim());
 
-SoloStrongMapConfig.importLines(
+SoloWeakMapConfig.importLines(
   `import MockImportable from "../fixtures/MockImportable.mjs";`
 );
-SoloStrongMapConfig.addMapKey("key", "The key", false, {
+SoloWeakMapConfig.addMapKey("key", "The key", true, {
   jsDocType: "MockImportable",
   tsType: "MockImportable",
   argumentValidator: function(key) {
@@ -21,7 +21,7 @@ SoloStrongMapConfig.addMapKey("key", "The key", false, {
   },
 });
 
-SoloStrongMapConfig.setValueType("The value", {
+SoloWeakMapConfig.setValueType("The value", {
   jsDocType: "MockImportable",
   tsType: "MockImportable",
   argumentValidator: function(value) {
@@ -29,6 +29,6 @@ SoloStrongMapConfig.setValueType("The value", {
       return false;
   }
 });
-SoloStrongMapConfig.lock();
+SoloWeakMapConfig.lock();
 
-export default SoloStrongMapConfig;
+export default SoloWeakMapConfig;

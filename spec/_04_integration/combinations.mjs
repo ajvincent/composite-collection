@@ -48,7 +48,7 @@ describe("Combinations of auto-generated configurations:", () => {
 
       await fs.rm(outFilePath);
     }
-  });
+  }, 15000);
 
   it("3 part keys of sets", async () => {
     for (let i = 0; i < 8; i++) {
@@ -76,7 +76,7 @@ describe("Combinations of auto-generated configurations:", () => {
 
       await fs.rm(outFilePath);
     }
-  });
+  }, 15000);
 
   it("2 part map keys followed by 2 part set keys", async () => {
     let generatedCount = 0;
@@ -202,5 +202,5 @@ describe("Combinations of auto-generated configurations:", () => {
        Weak map of weak sets:     0
      */
     expect(generatedCount).toBe(4);
-  });
+  }, 15000);
 });
