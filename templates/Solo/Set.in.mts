@@ -1,4 +1,5 @@
 import type { ReadonlyDefines, JSDocGenerator, TemplateFunction } from "../sharedTypes.mjs";
+import TypeScriptDefines from "../../source/typescript-migration/TypeScriptDefines.mjs";
 
 /**
  * @param {Map}            defines The preprocessor macros.
@@ -11,20 +12,27 @@ const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefine
     invokeValidate = `\n    this.#requireValidKey(${defines.argList});\n`;
   }
 
+  const tsKey = defines.tsSetKeys[0];
+  const tsType = defines.tsSetTypes[0];
+
   return `
 ${defines.importLines}
 
-class ${defines.className} extends ${defines.weakSetElements.length ? "Weak" : ""}Set {
+class ${defines.className}${defines.tsGenericFull} extends ${defines.weakSetElements.length ? "Weak" : ""}Set<${tsType}>
+{
 ${defines.invokeValidate ? `
 ${docs.buildBlock("add", 2)}
-  add(${defines.argList}) {${invokeValidate}
+  add(${tsKey}) : this
+  {
+    ${invokeValidate}
     return super.add(${defines.argList});
   }
 ` : ``}
 
 ${defines.validateArguments ? `
 ${docs.buildBlock("isValidKeyPublic", 2)}
-  isValidKey(${defines.argList}) {
+  isValidKey(${tsKey}) : boolean
+  {
     return this.#isValidKey(${defines.argList});
   }
 ` : ``}
@@ -32,14 +40,16 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
 ${defines.invokeValidate ?
   `
 ${docs.buildBlock("requireValidKey", 2)}
-  #requireValidKey(${defines.argList}) {
+  #requireValidKey(${tsKey}) : void
+  {
     if (!this.#isValidKey(${defines.argList}))
       throw new Error("The ordered key set is not valid!");
   }
 
 ${docs.buildBlock("isValidKeyPrivate", 2)}
-  #isValidKey(${defines.argList}) {
-${defines.validateArguments}
+  #isValidKey(${tsKey}) : boolean
+  {
+  ${defines.validateArguments}
     return true;
   }
 
@@ -54,3 +64,4 @@ Object.freeze(${defines.className}.prototype);
 }
 
 export default preprocess;
+TypeScriptDefines.registerGenerator(preprocess, true);
