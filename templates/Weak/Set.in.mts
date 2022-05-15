@@ -44,8 +44,6 @@ ${docs.buildBlock("add", 2)}
     }], [${
       defines.strongSetElements.join(", ")
     }]);
-    if (!__key__)
-      return null;
 
     this.#weakKeySet.add(__key__);
     return this;

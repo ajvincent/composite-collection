@@ -34,8 +34,6 @@ ${docs.buildBlock("add", 2)}
     this.#requireValidKey(${defines.argList});
 
     const __key__ = this.#keyComposer.getKey([${defines.weakSetElements.join(", ")}], [${defines.strongSetElements.join(", ")}]);
-    if (!__key__)
-      return null;
 
     this.#weakKeySet.add(__key__);
     return this;

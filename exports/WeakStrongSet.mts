@@ -52,8 +52,6 @@ class WeakStrongSet<
     this.#requireValidKey(weakKey, strongKey);
 
     const __key__ = this.#keyComposer.getKey([weakKey], [strongKey]);
-    if (!__key__)
-      return null;
 
     this.#weakKeySet.add(__key__);
     return this;
