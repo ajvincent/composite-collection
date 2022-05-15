@@ -150,7 +150,7 @@ export default class CodeGenerator extends CodeGeneratorBase
 
     let deferred = new Deferred;
     this.#pendingStart = deferred.resolve;
-    this.#runPromise = deferred.promise.then(() => this.#run());
+    this.#runPromise = deferred.promise.then(async () => await this.#run());
 
     Object.seal(this);
   }
@@ -312,6 +312,16 @@ export default class CodeGenerator extends CodeGeneratorBase
       const keys = Array.from(data.parameterToTypeMap.keys());
       defines.argList = keys.join(", ");
       defines.argNameList = CodeGenerator.buildArgNameList(keys);
+    }
+
+    {
+      const mapArgs: string[] = [], setArgs: string[] = [];
+      for (let [key, typeMap] of data.parameterToTypeMap) {
+        (typeMap.mapOrSetType.endsWith("Map") ? mapArgs : setArgs).push(key);
+      }
+
+      defines.mapArgList = mapArgs.join(", ");
+      defines.setArgList = setArgs.join(", ");
     }
 
     const paramsData = Array.from(data.parameterToTypeMap.values());

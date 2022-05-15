@@ -3,6 +3,8 @@ export default class PreprocessorDefines {
     importLines = "";
     argList = "";
     argNameList = "";
+    mapArgList = "";
+    setArgList = "";
     weakMapKeys = [];
     strongMapKeys = [];
     weakSetElements = [];

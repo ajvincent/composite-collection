@@ -82,7 +82,7 @@ describe("Combinations of auto-generated configurations:", () => {
     let generatedCount = 0;
     for (let i = 0; i < 16; i++) {
       let config = null;
-      let leafName = "combo_" + i.toString(2);
+      let leafName = "combo_" + i.toString(2).padStart(4, "0");
 
       const key8Weak = Boolean(i & 8),
             key4Weak = Boolean(i & 4),

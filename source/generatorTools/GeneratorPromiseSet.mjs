@@ -66,6 +66,7 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     async #invokeTSC() {
         if (!this.#TypeScriptModules.length)
             return 0; // success: there's nothing to do.
+        this.#TypeScriptModules.sort();
         return await InvokeTSC.withCustomConfiguration(path.resolve(this.#targetDir, "tsconfig.json"), false, (config) => {
             config.files = this.#TypeScriptModules;
         });

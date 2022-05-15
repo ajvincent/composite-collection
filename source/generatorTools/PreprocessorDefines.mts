@@ -6,6 +6,9 @@ export default class PreprocessorDefines {
   argList = "";
   argNameList = "";
 
+  mapArgList = "";
+  setArgList = "";
+
   weakMapKeys: string[] = [];
   strongMapKeys: string[] = [];
   weakSetElements: string[] = [];

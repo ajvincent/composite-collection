@@ -12,7 +12,8 @@ const projectRoot = url.fileURLToPath(new URL("../..", import.meta.url));
 void(BuildPromise); // necessary for type checking in eslint on the generated module
 void(TemporaryDirWithPromise);
 
-export class GeneratorPromiseSet extends BuildPromiseSet {
+export class GeneratorPromiseSet extends BuildPromiseSet
+{
   #knownTargets: Set<string> = new Set;
 
   #owner: object;
@@ -26,7 +27,8 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
   /** @type {BuildPromise} @constant */
   generatorsTarget: BuildPromise;
 
-  constructor(owner: object, targetDir: string) {
+  constructor(owner: object, targetDir: string)
+  {
     super();
     this.#owner = owner;
     this.#knownTargets.add(this.main.target);
@@ -47,7 +49,8 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     invokeTSCTarget.addTask(() => this.#invokeTSC());
   }
 
-  get owner() : object {
+  get owner() : object
+  {
     return this.#owner;
   }
 
@@ -55,7 +58,8 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
    * @param {string} targetName The target name.
    * @returns {BuildPromise} The build promise.
    */
-  get(targetName: string) : BuildPromise {
+  get(targetName: string) : BuildPromise
+  {
     const rv = super.get(targetName);
     this.#knownTargets.add(targetName);
     return rv;
@@ -65,11 +69,13 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
    * @param {string} targetName The target name.
    * @returns {boolean} True if this is a known target.
    */
-  has(targetName: string) : boolean {
+  has(targetName: string) : boolean
+  {
     return this.#knownTargets.has(targetName);
   }
 
-  async runMain() : Promise<void> {
+  async runMain() : Promise<void>
+  {
     this.markReady();
 
     this.main.addSubtarget("(generators)");
@@ -79,14 +85,18 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     await this.main.run();
   }
 
-  scheduleTSC(targetModule: string) : void {
+  scheduleTSC(targetModule: string) : void
+  {
     targetModule = targetModule.replace(this.#targetDir + "/", "");
     this.#TypeScriptModules.push(targetModule);
   }
 
-  async #invokeTSC() : Promise<number> {
+  async #invokeTSC() : Promise<number>
+  {
     if (!this.#TypeScriptModules.length)
       return 0; // success: there's nothing to do.
+
+    this.#TypeScriptModules.sort();
 
     return await InvokeTSC.withCustomConfiguration(
       path.resolve(this.#targetDir, "tsconfig.json"),
@@ -97,20 +107,23 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     );
   }
 
-  requireKeyHasher() : void {
+  requireKeyHasher() : void
+  {
     if (this.#requireKeyHasher)
       return;
     this.#requireKeyHasher = true;
   }
 
-  requireWeakKeyComposer() : void {
+  requireWeakKeyComposer() : void
+  {
     if (this.#requireWeakKeyComposer)
       return;
     this.#requireWeakKeyComposer = true;
     this.#requireKeyHasher = true;
   }
 
-  async #exportKeyFiles() : Promise<void> {
+  async #exportKeyFiles() : Promise<void>
+  {
     if (!this.#requireKeyHasher)
       return;
 

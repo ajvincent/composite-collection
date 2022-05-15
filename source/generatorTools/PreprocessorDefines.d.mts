@@ -4,6 +4,8 @@ export default class PreprocessorDefines {
     importLines: string;
     argList: string;
     argNameList: string;
+    mapArgList: string;
+    setArgList: string;
     weakMapKeys: string[];
     strongMapKeys: string[];
     weakSetElements: string[];
