@@ -14,7 +14,8 @@
  * @copyright © 2021-2022 Alexander J. Vincent
  */
 class StrongMapOfStrongSets {
-    /** @type {Map<*, Set<*>>} @constant */
+    /** @typedef {Set<*>} __StrongMapOfStrongSets__InnerMap__ */
+    /** @type {Map<*, __StrongMapOfStrongSets__InnerMap__>} @constant */
     #outerMap = new Map();
     /** @type {number} */
     #sizeOfAll = 0;

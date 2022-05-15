@@ -20,8 +20,10 @@ class WeakMapOfStrongSets<
   __SK0__
 >
 {
+  /** @typedef {Set<*>} __WeakMapOfStrongSets_InnerMap__ */
+
   /**
-   * @type {WeakMap<object, Set<*>>}
+   * @type {WeakMap<object, __WeakMapOfStrongSets_InnerMap__>}
    * @constant
    * This is two levels. The first level is the map key.
    * The second level is the strong set.
@@ -247,7 +249,7 @@ class WeakMapOfStrongSets<
    * Require an inner collection exist for the given map keys.
    *
    * @param {object} mapKey The map key.
-   * @returns {WeakMapOfStrongSets~InnerMap} The inner collection.
+   * @returns {__WeakMapOfStrongSets_InnerMap__} The inner collection.
    */
   #requireInnerSet(mapKey: __MK0__) : Set<__SK0__>
   {

@@ -16,7 +16,6 @@ const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefine
 ${defines.importLines}
 import KeyHasher from "./keys/Hasher.mjs";
 
-${docs.buildBlock("valueAndKeySet", 0)}
 type __${defines.className}_valueSet__${defines.tsGenericFull} = [
   ${defines.tsSetTypes.join(",\n  ")}
 ];
@@ -24,6 +23,8 @@ type __${defines.className}_valueSet__${defines.tsGenericFull} = [
 class ${defines.className}${defines.tsGenericFull}
 {
   /** @typedef {string} hash */
+
+${docs.buildBlock("valueAndKeySet", 2)}
 
 ${docs.buildBlock("rootContainerSet", 2)}
   #root: Map<string, __${defines.className}_valueSet__<${

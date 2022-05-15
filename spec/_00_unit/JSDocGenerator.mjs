@@ -347,7 +347,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * The root map holding keys and values.
    *
-   * @type {Map<string, SoloStrongMap~valueAndKeySet>}
+   * @type {Map<string, __SoloStrongMap_valueAndKeySet__>}
    * @constant
    */`);
     });
@@ -365,7 +365,7 @@ describe("JSDocGenerator for maps", () => {
     it("valueAndKeySet", () => {
       const generated = generator.buildBlock("valueAndKeySet", 2);
       expect("\n" + generated + "\n").toEqual(`\n  /**
-   * @typedef SoloStrongMap~valueAndKeySet
+   * @typedef __SoloStrongMap_valueAndKeySet__
    * @property {*}   value  The actual value we store.
    * @property {*[]} keySet The set of keys we hashed.
    */\n`);
@@ -563,7 +563,7 @@ describe("JSDocGenerator for maps", () => {
       expect(generated).toEqual(`  /**
    * The root map holding keys and values.
    *
-   * @type {Map<string, SoloStrongMap~valueAndKeySet>}
+   * @type {Map<string, __SoloStrongMap_valueAndKeySet__>}
    * @constant
    */`);
     });
@@ -571,7 +571,7 @@ describe("JSDocGenerator for maps", () => {
     it("valueAndKeySet", () => {
       const generated = generator.buildBlock("valueAndKeySet", 2);
       expect(generated).toEqual(`  /**
-   * @typedef SoloStrongMap~valueAndKeySet
+   * @typedef __SoloStrongMap_valueAndKeySet__
    * @property {*}   value  The actual value we store.
    * @property {*[]} keySet The set of keys we hashed.
    */`);
@@ -769,7 +769,7 @@ describe("JSDocGenerator for maps", () => {
     expect(generated).toEqual(`    /**
      * The root map holding keys and values.
      *
-     * @type {Map<string, SoloStrongMap~valueAndKeySet>}
+     * @type {Map<string, __SoloStrongMap_valueAndKeySet__>}
      * @constant
      */`);
   });
@@ -806,7 +806,7 @@ describe("JSDocGenerator for sets", () => {
     it("valueAndKeySet", () => {
       const generated = generator.buildBlock("valueAndKeySet", 2);
       expect(generated).toEqual(`  /**
-   * @typedef SoloStrongSet~valueAndKeySet
+   * @typedef __SoloStrongSet_valueAndKeySet__
    * @property {*}   value  The actual value we store.
    * @property {*[]} keySet The set of keys we hashed.
    */`);
@@ -956,7 +956,7 @@ describe("JSDocGenerator for sets", () => {
     it("valueAndKeySet", () => {
       const generated = generator.buildBlock("valueAndKeySet", 2);
       expect("\n" + generated + "\n").toEqual(`\n  /**
-   * @typedef SoloStrongSet~valueAndKeySet
+   * @typedef __SoloStrongSet_valueAndKeySet__
    * @property {*}   value  The actual value we store.
    * @property {*[]} keySet The set of keys we hashed.
    */\n`);
@@ -1124,7 +1124,7 @@ describe("JSDocGenerator for sets", () => {
     expect(generated).toEqual(`    /**
      * The root map holding keys and values.
      *
-     * @type {Map<string, SoloStrongSet~valueAndKeySet>}
+     * @type {Map<string, __SoloStrongSet_valueAndKeySet__>}
      * @constant
      */`);
   });
@@ -1155,7 +1155,7 @@ describe("JSDocGenerator for maps of sets", () => {
    * Require an inner collection exist for the given map keys.
    *
    * @param {Car} car The car.
-   * @returns {WeakMapOfStrongSets~InnerMap} The inner collection.
+   * @returns {__WeakMapOfStrongSets_InnerMap__} The inner collection.
    */`);
   });
 
@@ -1165,7 +1165,7 @@ describe("JSDocGenerator for maps of sets", () => {
    * Get an existing inner collection for the given map keys.
    *
    * @param {Car} car The car.
-   * @returns {WeakMapOfStrongSets~InnerMap?} The inner collection.
+   * @returns {__WeakMapOfStrongSets_InnerMap__?} The inner collection.
    */`);
   });
 

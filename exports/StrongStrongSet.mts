@@ -17,11 +17,6 @@
 
 import KeyHasher from "./keys/Hasher.mjs";
 
-/**
- * @typedef StrongStrongSet~valueAndKeySet
- * @property {*}   value  The actual value we store.
- * @property {*[]} keySet The set of keys we hashed.
- */
 type __StrongStrongSet_valueSet__<
   __SK0__,
   __SK1__
@@ -36,6 +31,12 @@ class StrongStrongSet<
 >
 {
   /** @typedef {string} hash */
+
+  /**
+   * @typedef __StrongStrongSet_valueAndKeySet__
+   * @property {*}   value  The actual value we store.
+   * @property {*[]} keySet The set of keys we hashed.
+   */
 
   /**
    * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.

@@ -17,11 +17,6 @@
 
 import KeyHasher from "./keys/Hasher.mjs";
 
-/**
- * @typedef StrongStrongMap~valueAndKeySet
- * @property {*}   value  The actual value we store.
- * @property {*[]} keySet The set of keys we hashed.
- */
 type __StrongStrongMap_valueAndKeySet__<
   __MK0__,
   __MK1__,
@@ -37,9 +32,15 @@ class StrongStrongMap<
   __V__
 > {
   /**
+   * @typedef __StrongStrongMap_valueAndKeySet__
+   * @property {*}   value  The actual value we store.
+   * @property {*[]} keySet The set of keys we hashed.
+   */
+
+  /**
    * The root map holding keys and values.
    *
-   * @type {Map<string, StrongStrongMap~valueAndKeySet>}
+   * @type {Map<string, __StrongStrongMap_valueAndKeySet__>}
    * @constant
    */
   #root: Map<string, __StrongStrongMap_valueAndKeySet__<__MK0__, __MK1__, __V__>> = new Map;

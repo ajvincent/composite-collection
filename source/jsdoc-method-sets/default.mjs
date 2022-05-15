@@ -10,7 +10,7 @@ export default function defaultMethods() {
                 description: "The root map holding keys and values.",
                 includeArgs: "none",
                 headers: [
-                    "@type {Map<string, __className__~valueAndKeySet>}",
+                    "@type {Map<string, ____className___valueAndKeySet__>}",
                 ],
                 footers: ["@constant"],
             }],
@@ -37,7 +37,7 @@ export default function defaultMethods() {
                 includeArgs: "none",
                 description: "",
                 headers: [
-                    "@typedef __className__~valueAndKeySet",
+                    "@typedef ____className___valueAndKeySet__",
                     "@property {*}   value  The actual value we store.",
                     "@property {*[]} keySet The set of keys we hashed.",
                 ],
@@ -245,13 +245,13 @@ export default function defaultMethods() {
         ["requireInnerCollectionPrivate", {
                 description: "Require an inner collection exist for the given map keys.",
                 includeArgs: "mapArguments",
-                returnType: "__className__~InnerMap",
+                returnType: "____className___InnerMap__",
                 returnDescription: "The inner collection."
             }],
         ["getExistingInnerCollectionPrivate", {
                 description: "Get an existing inner collection for the given map keys.",
                 includeArgs: "mapArguments",
-                returnType: "__className__~InnerMap?",
+                returnType: "____className___InnerMap__?",
                 returnDescription: "The inner collection."
             }],
         ["requireValidMapKey", {

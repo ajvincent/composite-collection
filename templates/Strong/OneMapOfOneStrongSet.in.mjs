@@ -26,7 +26,9 @@ ${defines.importLines}
 
 class ${defines.className}${defines.tsGenericFull}
 {
-  /** @type {Map<${defines.mapArgument0Type}, Set<${defines.setArgument0Type}>>} @constant */
+  /** @typedef {Set<${defines.setArgument0Type}>} __${defines.className}__InnerMap__ */
+
+  /** @type {Map<${defines.mapArgument0Type}, __${defines.className}__InnerMap__>} @constant */
   #outerMap: Map<${tsMapTypes}, Set<${tsSetTypes}>> = new Map();
 
   /** @type {number} */

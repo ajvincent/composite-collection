@@ -20,7 +20,9 @@ class StrongMapOfStrongSets<
   __SK0__
 >
 {
-  /** @type {Map<*, Set<*>>} @constant */
+  /** @typedef {Set<*>} __StrongMapOfStrongSets__InnerMap__ */
+
+  /** @type {Map<*, __StrongMapOfStrongSets__InnerMap__>} @constant */
   #outerMap: Map<__MK0__, Set<__SK0__>> = new Map();
 
   /** @type {number} */

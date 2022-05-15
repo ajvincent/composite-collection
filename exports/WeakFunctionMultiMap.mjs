@@ -14,8 +14,9 @@
  * @copyright © 2021-2022 Alexander J. Vincent
  */
 class WeakFunctionMultiMap {
+    /** @typedef {Set<Function>} __WeakFunctionMultiMap_InnerMap__ */
     /**
-     * @type {WeakMap<object, Set<Function>>}
+     * @type {WeakMap<object, __WeakFunctionMultiMap_InnerMap__>}
      * @constant
      * This is two levels. The first level is the map key.
      * The second level is the strong set.
@@ -195,7 +196,7 @@ class WeakFunctionMultiMap {
      * Require an inner collection exist for the given map keys.
      *
      * @param {object} key The map key.
-     * @returns {WeakFunctionMultiMap~InnerMap} The inner collection.
+     * @returns {__WeakFunctionMultiMap_InnerMap__} The inner collection.
      */
     #requireInnerSet(key) {
         let __rv__ = this.#root.get(key);

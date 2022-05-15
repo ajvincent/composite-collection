@@ -17,11 +17,6 @@
 
 import KeyHasher from "./keys/Hasher.mjs";
 
-/**
- * @typedef StringStateMachine~valueAndKeySet
- * @property {*}   value  The actual value we store.
- * @property {*[]} keySet The set of keys we hashed.
- */
 type __StringStateMachine_valueSet__<
   __SK0__ extends string,
   __SK1__ extends string
@@ -36,6 +31,12 @@ class StringStateMachine<
 >
 {
   /** @typedef {string} hash */
+
+  /**
+   * @typedef __StringStateMachine_valueAndKeySet__
+   * @property {*}   value  The actual value we store.
+   * @property {*[]} keySet The set of keys we hashed.
+   */
 
   /**
    * Storage of the Set's contents for quick iteration in .values().  The values are always frozen arrays.

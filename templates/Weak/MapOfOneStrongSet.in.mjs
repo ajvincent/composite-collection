@@ -22,13 +22,15 @@ class ${defines.className}${defines.tsGenericFull}
   // eslint-disable-next-line jsdoc/require-property
   /** @typedef {object} WeakKey */
 
+  /** @typedef {Set<${defines.setArgument0Type}>} __${defines.className}_InnerMap__ */
+
   /**
-   * @type {WeakMap<WeakKey, Set<${defines.setArgument0Type}>>}
+   * @type {WeakMap<WeakKey, __${defines.className}_InnerMap__>}
    * @constant
    * This is two levels. The first level is the WeakKey.
    * The second level is the strong set.
    */
-  #root = new WeakMap();
+  #root: WeakMap<object, Set<${tsSetTypes}>> = new WeakMap();
 
   /** @type {WeakKeyComposer} @constant */
   #mapKeyComposer = new WeakKeyComposer(

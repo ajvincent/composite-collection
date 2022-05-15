@@ -18,8 +18,10 @@ const preprocess = function preprocess(defines, docs) {
 ${defines.importLines}
 class ${defines.className}${defines.tsGenericFull}
 {
+  /** @typedef {Set<${defines.setArgument0Type}>} __${defines.className}_InnerMap__ */
+
   /**
-   * @type {WeakMap<${defines.mapArgument0Type}, Set<${defines.setArgument0Type}>>}
+   * @type {WeakMap<${defines.mapArgument0Type}, __${defines.className}_InnerMap__>}
    * @constant
    * This is two levels. The first level is the map key.
    * The second level is the strong set.

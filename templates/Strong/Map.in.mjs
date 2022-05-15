@@ -13,13 +13,14 @@ const preprocess = function preprocess(defines, docs) {
 ${defines.importLines}
 import KeyHasher from "./keys/Hasher.mjs";
 
-${docs.buildBlock("valueAndKeySet", 0)}
 type __${defines.className}_valueAndKeySet__${defines.tsGenericFull} = {
   value: ${defines.tsValueType},
   keySet: [${defines.tsMapTypes.join(", ")}]
 };
 
 class ${defines.className}${defines.tsGenericFull} {
+${docs.buildBlock("valueAndKeySet", 2)}
+
 ${docs.buildBlock("rootContainerMap", 2)}
   #root: Map<string, __${defines.className}_valueAndKeySet__<${defines.tsMapTypes.join(", ") + ", " + defines.tsValueType}>> = new Map;
 
