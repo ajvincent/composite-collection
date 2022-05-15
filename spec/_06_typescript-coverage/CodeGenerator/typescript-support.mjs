@@ -129,9 +129,6 @@ describe("TypeScript support: ", () => {
   });
 
   it("TypeScript transpiles generated modules cleanly", async () => {
-    if (supportedFiles.length === 0)
-      return;
-
     await expectAsync(InvokeTSC.withCustomConfiguration(
       tsSupported,
       false,
