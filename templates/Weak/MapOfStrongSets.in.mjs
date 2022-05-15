@@ -42,7 +42,7 @@ class ${defines.className}${defines.tsGenericFull} {
   /** @type {KeyHasher} @constant */
   #setHasher = new KeyHasher();
 
-  constructor(iterable: [${tsAllTypes}][])
+  constructor(iterable? : [${tsAllTypes}][])
   {
     if (iterable) {
       for (let [${allKeys}] of iterable) {
@@ -191,7 +191,7 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
   }
 
 ${docs.buildBlock("valuesSet", 2)}
-  * valuesSet(${tsMapKeys})
+  * valuesSet(${tsMapKeys}) : Iterator<[${tsAllTypes}]>
   {
     this.#requireValidMapKey(${mapKeys});
 
