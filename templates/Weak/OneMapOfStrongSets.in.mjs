@@ -1,71 +1,79 @@
+import TypeScriptDefines from "../../source/typescript-migration/TypeScriptDefines.mjs";
 /**
  * @param {Map}            defines The preprocessor macros.
  * @param {JSDocGenerator} docs    The primary documentation generator.
  * @returns {string}               The generated source code.
  */
 const preprocess = function preprocess(defines, docs) {
+    const tsAllTypes = [...defines.tsMapTypes, ...defines.tsSetTypes].join(", ");
+    const tsAllKeys = [...defines.tsMapKeys, ...defines.tsSetKeys].join(", ");
+    const tsMapTypes = defines.tsMapTypes.join(", ");
+    const tsSetTypes = defines.tsSetTypes.join(", ");
+    const tsMapKeys = defines.tsMapKeys.join(", ");
+    const tsSetKeys = defines.tsSetKeys.join(", ");
+    const allKeys = defines.mapArgList + ", " + defines.setArgList;
+    const mapKeys = defines.mapArgList;
+    const setKeys = defines.setArgList;
     return `
 ${defines.importLines}
 import KeyHasher from "./keys/Hasher.mjs";
 
-/** @typedef {Map<hash, *[]>} ${defines.className}~InnerMap */
+/** @typedef {Map<hash, *[]>} __${defines.className}_InnerMap__ */
 
-class ${defines.className} {
+class ${defines.className}${defines.tsGenericFull}
+{
   /** @typedef {string} hash */
 
   /**
-   * @type {WeakMap<${defines.mapArgument0Type}, ${defines.className}~InnerMap>}
+   * @type {WeakMap<${defines.mapArgument0Type}, __${defines.className}_InnerMap__>}
    * @constant
    * This is two levels. The first level is the map key.
    * The second level is the strong set.
    */
-  #root = new WeakMap();
+  #root: WeakMap<${tsMapTypes}, Map<string, [${tsSetTypes}]>> = new WeakMap();
 
   /** @type {KeyHasher} @constant */
   #setHasher = new KeyHasher();
 
-  constructor() {
-    if (arguments.length > 0) {
-      const iterable = arguments[0];
-      for (let entry of iterable) {
-        this.add(...entry);
+  constructor(iterable? : [${tsAllTypes}][])
+  {
+    if (iterable) {
+      for (let [${allKeys}] of iterable) {
+        this.add(${allKeys});
       }
     }
   }
 
 ${docs.buildBlock("add", 2)}
-  add(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}) {
-    this.#requireValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")});
-    const __innerMap__ = this.#requireInnerMap(${defines.mapKeys[0]});
+  add(${tsAllKeys}) : this
+  {
+    this.#requireValidKey(${allKeys});
+    const __innerMap__ = this.#requireInnerMap(${mapKeys});
 
     // level 2: inner map to set
-    const __setKeyHash__ = this.#setHasher.getHash(${defines.setKeys.join(", ")});
+    const __setKeyHash__ = this.#setHasher.getHash(${setKeys});
     if (!__innerMap__.has(__setKeyHash__)) {
-      __innerMap__.set(__setKeyHash__, [${defines.setKeys.join(", ")}]);
+      __innerMap__.set(__setKeyHash__, [${setKeys}]);
     }
 
     return this;
   }
 
 ${docs.buildBlock("addSets", 2)}
-  addSets(${defines.mapKeys[0]}, __sets__) {
-    this.#requireValidMapKey(${defines.mapKeys[0]});
-    const __array__ = Array.from(__sets__).map((__set__, __index__) => {
-      __set__ = Array.from(__set__);
-      if (__set__.length !== ${defines.setKeys.length}) {
-        throw new Error(\`Set at index \${__index__} doesn't have exactly ${defines.setKeys.length} set argument${defines.setKeys.length > 1 ? "s" : ""}!\`);
-      }
-      this.#requireValidKey(${defines.mapKeys[0]}, ...__set__);
-      return __set__;
+  addSets(${tsMapKeys}, __sets__: [${tsSetTypes}][]) : this
+  {
+    this.#requireValidMapKey(${mapKeys});
+    __sets__.forEach(([${setKeys}]) => {
+      this.#requireValidKey(${allKeys});
     });
 
-    const __innerMap__ = this.#requireInnerMap(${defines.mapKeys[0]});
+    const __innerMap__ = this.#requireInnerMap(${mapKeys});
 
     // level 2: inner map to set
-    __array__.forEach(__set__ => {
-      const __setKeyHash__ = this.#setHasher.getHash(...__set__);
+    __sets__.forEach(([${setKeys}]) => {
+      const __setKeyHash__ = this.#setHasher.getHash(${setKeys});
       if (!__innerMap__.has(__setKeyHash__)) {
-        __innerMap__.set(__setKeyHash__, __set__);
+        __innerMap__.set(__setKeyHash__, [${setKeys}]);
       }
     });
 
@@ -73,131 +81,154 @@ ${docs.buildBlock("addSets", 2)}
   }
 
 ${docs.buildBlock("clearSets", 2)}
-  clearSets(${defines.mapKeys[0]}) {
-    this.#requireValidMapKey(${defines.mapKeys[0]});
-    const __innerMap__ = this.#root.get(${defines.mapKeys[0]});
+  clearSets(${tsMapKeys}) : void
+  {
+    this.#requireValidMapKey(${mapKeys});
+    const __innerMap__ = this.#root.get(${mapKeys});
     __innerMap__?.clear();
   }
 
 ${docs.buildBlock("delete", 2)}
-  delete(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}) {
-    this.#requireValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")});
-    const __innerMap__ = this.#root.get(${defines.mapKeys[0]});
+  delete(${tsAllKeys}) : boolean
+  {
+    this.#requireValidKey(${allKeys});
+    const __innerMap__ = this.#root.get(${mapKeys});
     if (!__innerMap__)
       return false;
 
     // level 2: inner map to set
-    const __setKeyHash__ = this.#setHasher.getHashIfExists(${defines.setKeys.join(", ")});
+    const __setKeyHash__ = this.#setHasher.getHashIfExists(${setKeys});
     if (!__setKeyHash__)
       return false;
     const __returnValue__ = __innerMap__.delete(__setKeyHash__);
 
     if (__innerMap__.size === 0) {
-      this.deleteSets(${defines.mapKeys[0]});
+      this.deleteSets(${mapKeys});
     }
 
     return __returnValue__;
   }
 
 ${docs.buildBlock("deleteSets", 2)}
-  deleteSets(${defines.mapKeys[0]}) {
-    this.#requireValidMapKey(${defines.mapKeys[0]});
-    return this.#root.delete(${defines.mapKeys[0]});
+  deleteSets(${tsMapKeys}) : boolean
+  {
+    this.#requireValidMapKey(${mapKeys});
+    return this.#root.delete(${mapKeys});
   }
 
 ${docs.buildBlock("forEachMapSet", 2)}
-  forEachSet(${defines.mapKeys[0]}, __callback__, __thisArg__) {
-    this.#requireValidMapKey(${defines.mapKeys[0]});
-    const __innerMap__ = this.#root.get(${defines.mapKeys[0]});
+  forEachSet(
+    ${tsMapKeys},
+    __callback__: (
+      ${defines.tsMapTypes.join(",\n      ")},
+      ${defines.tsSetTypes.join(",\n      ")},
+      __collection__: ${defines.className}<${tsAllTypes}>
+    ) => void,
+    __thisArg__: unknown
+  ) : void
+  {
+    this.#requireValidMapKey(${mapKeys});
+    const __innerMap__ = this.#root.get(${mapKeys});
     if (!__innerMap__)
       return;
 
     __innerMap__.forEach(
-      __keySet__ => __callback__.apply(__thisArg__, [${defines.mapKeys[0]}, ...__keySet__, this])
+      ([${setKeys}]) => __callback__.apply(__thisArg__, [${allKeys}, this])
     );
   }
 
 ${docs.buildBlock("forEachCallbackSet", 2)}
 
 ${docs.buildBlock("getSizeOfSet", 2)}
-  getSizeOfSet(${defines.mapKeys[0]}) {
-    this.#requireValidMapKey(${defines.mapKeys[0]});
-    const __innerMap__ = this.#root.get(${defines.mapKeys[0]});
+  getSizeOfSet(${tsMapKeys}) : number
+  {
+    this.#requireValidMapKey(${mapKeys});
+    const __innerMap__ = this.#root.get(${mapKeys});
     return __innerMap__?.size || 0;
   }
 
 ${docs.buildBlock("has", 2)}
-  has(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}) {
-    this.#requireValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")});
-    const __innerMap__ = this.#root.get(${defines.mapKeys[0]});
+  has(${tsAllKeys}) : boolean
+  {
+    this.#requireValidKey(${allKeys});
+    const __innerMap__ = this.#root.get(${mapKeys});
     if (!__innerMap__)
       return false;
 
     // level 2: inner map to set
-    const __setKeyHash__ = this.#setHasher.getHashIfExists(${defines.setKeys.join(", ")});
+    const __setKeyHash__ = this.#setHasher.getHashIfExists(${setKeys});
     return __setKeyHash__ ? __innerMap__.has(__setKeyHash__) : false;
   }
 
 ${docs.buildBlock("hasSet", 2)}
-  hasSets(${defines.mapKeys[0]}) {
-    this.#requireValidMapKey(${defines.mapKeys[0]});
-    return this.#root.has(${defines.mapKeys[0]});
+  hasSets(${tsMapKeys}) : boolean
+  {
+    this.#requireValidMapKey(${mapKeys});
+    return this.#root.has(${mapKeys});
   }
 
 ${docs.buildBlock("isValidKeyPublic", 2)}
-  isValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}) {
-    return this.#isValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")});
+  isValidKey(${tsAllKeys}) : boolean
+  {
+    return this.#isValidKey(${allKeys});
   }
 
 ${docs.buildBlock("valuesSet", 2)}
-  * valuesSet(${defines.mapKeys[0]}) {
-    this.#requireValidMapKey(${defines.mapKeys[0]});
+  * valuesSet(${tsMapKeys}) : Iterator<[${tsAllTypes}]>
+  {
+    this.#requireValidMapKey(${mapKeys});
 
-    const __innerMap__ = this.#root.get(${defines.mapKeys[0]});
+    const __innerMap__ = this.#root.get(${mapKeys});
     if (!__innerMap__)
       return;
 
     const __outerIter__ = __innerMap__.values();
-    for (let __value__ of __outerIter__)
-      yield [${defines.mapKeys[0]}, ...__value__];
+    for (let [${setKeys}] of __outerIter__)
+      yield [${allKeys}];
   }
 
 ${docs.buildBlock("requireInnerCollectionPrivate", 2)}
-  #requireInnerMap(${defines.mapKeys[0]}) {
-    if (!this.#root.has(${defines.mapKeys[0]})) {
-      this.#root.set(${defines.mapKeys[0]}, new Map);
+  #requireInnerMap(${tsMapKeys}) : Map<string, [${tsSetTypes}]>
+  {
+    if (!this.#root.has(${mapKeys})) {
+      this.#root.set(${mapKeys}, new Map);
     }
-    return this.#root.get(${defines.mapKeys[0]});
+    return this.#root.get(${mapKeys});
   }
 
 ${docs.buildBlock("requireValidKey", 2)}
-  #requireValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}) {
-    if (!this.#isValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}))
+  #requireValidKey(${tsAllKeys}) : void
+  {
+    if (!this.#isValidKey(${allKeys}))
       throw new Error("The ordered key set is not valid!");
   }
 
 ${docs.buildBlock("isValidKeyPrivate", 2)}
-  #isValidKey(${defines.mapKeys[0]}, ${defines.setKeys.join(", ")}) {
-    return this.#isValidMapKey(${defines.mapKeys[0]}) && this.#isValidSetKey(${defines.setKeys.join(", ")});
+  #isValidKey(${tsAllKeys}) : boolean
+  {
+    return this.#isValidMapKey(${mapKeys}) && this.#isValidSetKey(${setKeys});
   }
 
 ${docs.buildBlock("requireValidMapKey", 2)}
-  #requireValidMapKey(${defines.mapKeys[0]}) {
-    if (!this.#isValidMapKey(${defines.mapKeys[0]}))
+  #requireValidMapKey(${tsMapKeys}) : void
+  {
+    if (!this.#isValidMapKey(${mapKeys}))
       throw new Error("The ordered map key set is not valid!");
   }
 
 ${docs.buildBlock("isValidMapKeyPrivate", 2)}
-  #isValidMapKey(${defines.mapKeys[0]}) {
-    if (Object(${defines.mapKeys[0]}) !== ${defines.mapKeys[0]})
+  #isValidMapKey(${tsMapKeys}) : boolean
+  {
+    if (Object(${mapKeys}) !== ${mapKeys})
       return false;
     ${defines.validateMapArguments || ""}
     return true;
   }
 
 ${docs.buildBlock("isValidSetKeyPrivate", 2)}
-  #isValidSetKey(${defines.setKeys.join(", ")}) {
-    void(${defines.setKeys.join(", ")});
+  #isValidSetKey(${tsSetKeys}) : boolean
+  {
+    ${defines.setKeys.map(key => `void(${key})\n`).join("\n    ")}
 
     ${defines.validateSetArguments || ""}
     return true;
@@ -211,4 +242,5 @@ Object.freeze(${defines.className}.prototype);
 `;
 };
 export default preprocess;
+TypeScriptDefines.registerGenerator(preprocess, true);
 //# sourceMappingURL=OneMapOfStrongSets.in.mjs.map

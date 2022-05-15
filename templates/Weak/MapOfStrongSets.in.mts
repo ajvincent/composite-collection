@@ -8,7 +8,6 @@ import TypeScriptDefines from "../../source/typescript-migration/TypeScriptDefin
  */
 const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefines, docs: JSDocGenerator)
 {
-
   const tsAllTypes = [...defines.tsMapTypes, ...defines.tsSetTypes].join(", ");
   const tsAllKeys = [...defines.tsMapKeys, ...defines.tsSetKeys].join(", ");
   const tsSetTypes = defines.tsSetTypes.join(", ");
