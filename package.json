@@ -23,7 +23,8 @@
     "weakmap",
     "weakset",
     "map",
-    "set"
+    "set",
+    "typescript"
   ],
   "author": "Alexander J. Vincent",
   "license": "MPL-2.0",
