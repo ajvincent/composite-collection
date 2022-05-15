@@ -120,7 +120,7 @@ ${docs.buildBlock("forEachMapSet", 2)}
 ${docs.buildBlock("forEachCallbackSet", 2)}
 
 ${docs.buildBlock("getSizeOfSet", 2)}
-  getSizeOfSet(${tsMapKeys})
+  getSizeOfSet(${tsMapKeys}) : number
   {
     this.#requireValidMapKey(${mapKeys});
     const __innerSet__ = this.#root.get(${mapKeys});

@@ -81,7 +81,7 @@ ${docs.buildBlock("isValidKeyPrivate", 2)}
 ` : ``}
 ${defines.validateValue ? `
 ${docs.buildBlock("isValidValuePrivate", 2)}
-  #isValidValue(value: any) : boolean
+  #isValidValue(value: unknown) : boolean
   {
   ${defines.validateValue}
     return true;

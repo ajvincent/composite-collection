@@ -85,22 +85,11 @@ const BPSet = new BuildPromiseSet(true);
     async () => {
       const targets = [
         "build",
+        "exports",
         "source",
         "spec",
         "templates"
       ];
-
-      const buildModulePath = path.join(process.cwd(), "exports/keys/Hasher.mjs");
-      let stats;
-      try {
-        stats = await fs.stat(buildModulePath);
-      }
-      catch (ex) {
-        // do nothing
-      }
-      if (stats?.isFile()) {
-        targets.push("exports");
-      }
 
       return runModule("./node_modules/eslint/bin/eslint.js", [
         ...targets,
@@ -158,31 +147,19 @@ const BPSet = new BuildPromiseSet(true);
 
 
 { // typescript:eslint
-  /*
   const jsTarget = BPSet.get("eslint");
-  jsTarget.addSubtarget("typescript:eslint");
-  */
+  jsTarget.addSubtarget("typescript:eslint-postbuild");
 
-  const target = BPSet.get("typescript:eslint");
+  const target = BPSet.get("typescript:eslint-postbuild");
   // general linting
   target.addTask(
     async () => {
-      console.log("typescript linting post-build");
       const targets = [
+        "exports",
+        "source",
         "spec",
+        "templates",
       ];
-
-      const buildModulePath = path.join(process.cwd(), "exports/keys/Hasher.mts");
-      let stats;
-      try {
-        stats = await fs.stat(buildModulePath);
-      }
-      catch (ex) {
-        // do nothing
-      }
-      if (stats?.isFile()) {
-        targets.push("exports");
-      }
 
       await runModule("./node_modules/eslint/bin/eslint.js", [
         "-c", "./.eslintrc-typescript.json",

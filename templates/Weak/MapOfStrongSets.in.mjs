@@ -120,7 +120,8 @@ ${docs.buildBlock("delete", 2)}
   }
 
 ${docs.buildBlock("deleteSets", 2)}
-  deleteSets(${tsMapKeys}) {
+  deleteSets(${tsMapKeys}) : boolean
+  {
     this.#requireValidMapKey(${mapKeys});
 
     const __mapKey__ = this.#mapKeyComposer.getKeyIfExists(

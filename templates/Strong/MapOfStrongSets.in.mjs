@@ -263,22 +263,22 @@ ${docs.buildBlock("valuesSet", 2)}
 
 ${defines.validateArguments ? `
 ${docs.buildBlock("requireValidKey", 2)}
-    #requireValidKey(${defines.argList}) {
-      if (!this.#isValidKey(${defines.argList}))
-        throw new Error("The ordered key set is not valid!");
-    }
+  #requireValidKey(${tsAllKeys}) : void
+  {
+    if (!this.#isValidKey(${allKeys}))
+      throw new Error("The ordered key set is not valid!");
+  }
 
 ${docs.buildBlock("isValidKeyPrivate", 2)}
-    #isValidKey(${tsAllKeys}) : boolean
-    {
-      ${defines.mapKeys.map(key => `void(${key});`).join("\n      ")}
-      ${defines.setKeys.map(key => `void(${key});`).join("\n      ")}
+  #isValidKey(${tsAllKeys}) : boolean
+  {
+    ${defines.mapKeys.map(key => `void(${key});`).join("\n      ")}
+    ${defines.setKeys.map(key => `void(${key});`).join("\n      ")}
 
-      ${defines.validateArguments}
-      return true;
-    }
-
-  ` : ``}
+    ${defines.validateArguments}
+    return true;
+  }
+` : ``}
 
 ${defines.validateMapArguments ? `
 ${docs.buildBlock("requireValidMapKey", 2)}

@@ -174,7 +174,7 @@ class WeakMapOfStrongSets<
    * @returns {number} The set size.
    * @public
    */
-  getSizeOfSet(mapKey: __MK0__)
+  getSizeOfSet(mapKey: __MK0__) : number
   {
     this.#requireValidMapKey(mapKey);
     const __innerSet__ = this.#root.get(mapKey);

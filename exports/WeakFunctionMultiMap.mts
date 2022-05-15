@@ -174,7 +174,7 @@ class WeakFunctionMultiMap<
    * @returns {number} The set size.
    * @public
    */
-  getSizeOfSet(key: __MK0__)
+  getSizeOfSet(key: __MK0__) : number
   {
     this.#requireValidMapKey(key);
     const __innerSet__ = this.#root.get(key);

@@ -1,7 +1,7 @@
 export default class MockImportable {
-  data: any;
+  data: unknown;
 
-  constructor(data: any) {
+  constructor(data: unknown) {
     this.data = data;
     Object.freeze(this);
   }
