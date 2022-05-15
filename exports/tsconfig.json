@@ -16,6 +16,8 @@
     "StrongStrongMap.mts",
     "StrongStrongSet.mts",
     "WeakStrongMap.mts",
-    "WeakWeakMap.mts"
+    "WeakStrongSet.mts",
+    "WeakWeakMap.mts",
+    "WeakWeakSet.mts"
   ]
 }
