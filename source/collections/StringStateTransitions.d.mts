@@ -59,15 +59,6 @@ declare class StringStateMachine<__SK0__ extends string, __SK1__ extends string>
      */
     has(currentState: __SK0__, nextState: __SK1__): boolean;
     /**
-     * Determine if a set of keys is valid.
-     *
-     * @param {string} currentState The current state.
-     * @param {string} nextState    An allowable next state.
-     * @returns {boolean} True if the validation passes, false if it doesn't.
-     * @public
-     */
-    isValidKey(currentState: __SK0__, nextState: __SK1__): boolean;
-    /**
      * Yield the values of the collection.
      *
      * @yields {*} The value.

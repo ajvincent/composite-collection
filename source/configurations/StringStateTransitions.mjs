@@ -4,18 +4,10 @@ const StateMachineConfig = new CollectionConfiguration("StringStateMachine", "Se
 StateMachineConfig.addSetKey("currentState", "The current state.", false, {
   jsDocType: "string",
   tsType: "string",
-  argumentValidator: function(currentState) {
-    if (typeof currentState !== "string")
-      return false;
-  }
 });
 StateMachineConfig.addSetKey("nextState", "An allowable next state.", false, {
   jsDocType: "string",
   tsType: "string",
-  argumentValidator: function(nextState) {
-    if (typeof nextState !== "string")
-      return false;
-  }
 });
 StateMachineConfig.lock();
 

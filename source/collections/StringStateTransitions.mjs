@@ -56,7 +56,6 @@ class StringStateMachine {
      * @public
      */
     add(currentState, nextState) {
-        this.#requireValidKey(currentState, nextState);
         const __hash__ = this.#hasher.getHash(currentState, nextState);
         this.#root.set(__hash__, [currentState, nextState]);
         return this;
@@ -118,17 +117,6 @@ class StringStateMachine {
         return __hash__ ? this.#root.has(__hash__) : false;
     }
     /**
-     * Determine if a set of keys is valid.
-     *
-     * @param {string} currentState The current state.
-     * @param {string} nextState    An allowable next state.
-     * @returns {boolean} True if the validation passes, false if it doesn't.
-     * @public
-     */
-    isValidKey(currentState, nextState) {
-        return this.#isValidKey(currentState, nextState);
-    }
-    /**
      * Yield the values of the collection.
      *
      * @yields {*} The value.
@@ -138,35 +126,6 @@ class StringStateMachine {
         for (let __value__ of this.#root.values()) {
             yield __value__;
         }
-    }
-    /**
-     * Throw if the key set is not valid.
-     *
-     * @param {string} currentState The current state.
-     * @param {string} nextState    An allowable next state.
-     * @throws for an invalid key set.
-     */
-    #requireValidKey(currentState, nextState) {
-        if (!this.#isValidKey(currentState, nextState))
-            throw new Error("The ordered key set is not valid!");
-    }
-    /**
-     * Determine if a set of keys is valid.
-     *
-     * @param {string} currentState The current state.
-     * @param {string} nextState    An allowable next state.
-     * @returns {boolean} True if the validation passes, false if it doesn't.
-     */
-    #isValidKey(currentState, nextState) {
-        {
-            if (typeof currentState !== "string")
-                return false;
-        }
-        {
-            if (typeof nextState !== "string")
-                return false;
-        }
-        return true;
     }
     [Symbol.iterator]() {
         return this.values();

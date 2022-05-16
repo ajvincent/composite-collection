@@ -82,8 +82,6 @@ class StringStateMachine<
   add(currentState: __SK0__, nextState: __SK1__) : this
   {
     
-    this.#requireValidKey(currentState, nextState);
-
     const __hash__ = this.#hasher.getHash(currentState, nextState);
     this.#root.set(__hash__, [currentState, nextState]);
     return this;
@@ -160,18 +158,6 @@ class StringStateMachine<
   }
 
   /**
-   * Determine if a set of keys is valid.
-   *
-   * @param {string} currentState The current state.
-   * @param {string} nextState    An allowable next state.
-   * @returns {boolean} True if the validation passes, false if it doesn't.
-   * @public
-   */
-  isValidKey(currentState: __SK0__, nextState: __SK1__) : boolean {
-    return this.#isValidKey(currentState, nextState);
-  }
-
-  /**
    * Yield the values of the collection.
    *
    * @yields {*} The value.
@@ -182,39 +168,6 @@ class StringStateMachine<
     for (let __value__ of this.#root.values()) {
       yield __value__;
     }
-  }
-
-  /**
-   * Throw if the key set is not valid.
-   *
-   * @param {string} currentState The current state.
-   * @param {string} nextState    An allowable next state.
-   * @throws for an invalid key set.
-   */
-  #requireValidKey(currentState: __SK0__, nextState: __SK1__) : void {
-    if (!this.#isValidKey(currentState, nextState))
-      throw new Error("The ordered key set is not valid!");
-  }
-
-  /**
-   * Determine if a set of keys is valid.
-   *
-   * @param {string} currentState The current state.
-   * @param {string} nextState    An allowable next state.
-   * @returns {boolean} True if the validation passes, false if it doesn't.
-   */
-  #isValidKey(currentState: __SK0__, nextState: __SK1__) : boolean
-  {
-{
-    if (typeof currentState !== "string")
-      return false;
-  }
-
-{
-    if (typeof nextState !== "string")
-      return false;
-  }
-    return true;
   }
 
   [Symbol.iterator]() : Iterator<[__SK0__, __SK1__]> {
