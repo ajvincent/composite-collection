@@ -10,7 +10,6 @@ import CompileTimeOptions from "./CompileTimeOptions.mjs";
 import CollectionType from "./generatorTools/CollectionType.mjs";
 import ConfigurationData from "./generatorTools/ConfigurationData.mjs";
 import JSDocGenerator from "./generatorTools/JSDocGenerator.mjs";
-import TypeScriptDefines from "./typescript-migration/TypeScriptDefines.mjs";
 import TemplateGenerators, { TemplateFunction } from "./generatorTools/TemplateGenerators.mjs";
 import {
   GeneratorPromiseSet,
@@ -24,7 +23,6 @@ import type { PromiseResolver } from "./utilities/PromiseTypes.mjs";
 
 import fs from "fs/promises";
 import path from "path";
-import beautify from "js-beautify";
 import { RequiredMap } from "./utilities/RequiredMap.mjs";
 import PreprocessorDefines from "./generatorTools/PreprocessorDefines.mjs";
 
@@ -103,9 +101,6 @@ export default class CodeGenerator extends CodeGeneratorBase
 
   /** @type {JSDocGenerator[]} */
   #docGenerators: JSDocGenerator[] = [];
-
-  /** @type {boolean} */
-  #saveAsTypeScript = false;
 
   /** @type {string} */
   #generatedCode = "";
@@ -573,8 +568,6 @@ export default class CodeGenerator extends CodeGeneratorBase
     this.#configurationData.collectionTemplate = this.#chooseCollectionTemplate();
     const generator = TemplateGenerators.get(this.#configurationData.collectionTemplate) as TemplateFunction;
 
-    this.#saveAsTypeScript = TypeScriptDefines.moduleReadyForCoverage(generator)
-
     let codeSegments = [
       this.#generatedCode,
       generator(this.#defines, ...this.#docGenerators),
@@ -590,16 +583,6 @@ export default class CodeGenerator extends CodeGeneratorBase
 
     this.#generatedCode = codeSegments.flat(Infinity).filter(Boolean).join("\n\n") + "\n";
 
-    if (!this.#saveAsTypeScript) {
-      this.#generatedCode = beautify(
-        this.#generatedCode,
-        {
-          "indent_size": 2,
-          "indent_char": " ",
-          "end_with_newline": true,
-        }
-      );
-    }
 
     this.#generatedCode = this.#generatedCode.replace(/\n{3,}/g, "\n\n");
   }
@@ -636,11 +619,9 @@ export default class CodeGenerator extends CodeGeneratorBase
    * @returns {Promise<void>}
    */
   async #writeSource(gpSet: GeneratorPromiseSet) : Promise<void> {
-    let targetPath = this.#targetPath;
-    if (this.#saveAsTypeScript) {
-      targetPath = targetPath.replace(/\.mjs$/, ".mts");
-      gpSet.scheduleTSC(targetPath);
-    }
+    const targetPath = this.#targetPath.replace(/\.mjs$/, ".mts");
+    gpSet.scheduleTSC(targetPath);
+
     await fs.writeFile(
       targetPath,
       this.#generatedCode,

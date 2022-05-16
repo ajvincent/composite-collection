@@ -7,13 +7,11 @@ import CompileTimeOptions from "./CompileTimeOptions.mjs";
 import CollectionType from "./generatorTools/CollectionType.mjs";
 import ConfigurationData from "./generatorTools/ConfigurationData.mjs";
 import JSDocGenerator from "./generatorTools/JSDocGenerator.mjs";
-import TypeScriptDefines from "./typescript-migration/TypeScriptDefines.mjs";
 import TemplateGenerators from "./generatorTools/TemplateGenerators.mjs";
 import { GeneratorPromiseSet, CodeGeneratorBase, generatorToPromiseSet, } from "./generatorTools/GeneratorPromiseSet.mjs";
 import { Deferred } from "./utilities/PromiseTypes.mjs";
 import fs from "fs/promises";
 import path from "path";
-import beautify from "js-beautify";
 import { RequiredMap } from "./utilities/RequiredMap.mjs";
 import PreprocessorDefines from "./generatorTools/PreprocessorDefines.mjs";
 class TypeScriptDefs {
@@ -74,8 +72,6 @@ export default class CodeGenerator extends CodeGeneratorBase {
     #defines = new PreprocessorDefines();
     /** @type {JSDocGenerator[]} */
     #docGenerators = [];
-    /** @type {boolean} */
-    #saveAsTypeScript = false;
     /** @type {string} */
     #generatedCode = "";
     /** @type {Set<string>?} @constant */
@@ -394,7 +390,6 @@ export default class CodeGenerator extends CodeGeneratorBase {
     #generateSource() {
         this.#configurationData.collectionTemplate = this.#chooseCollectionTemplate();
         const generator = TemplateGenerators.get(this.#configurationData.collectionTemplate);
-        this.#saveAsTypeScript = TypeScriptDefines.moduleReadyForCoverage(generator);
         let codeSegments = [
             this.#generatedCode,
             generator(this.#defines, ...this.#docGenerators),
@@ -407,13 +402,6 @@ export default class CodeGenerator extends CodeGeneratorBase {
             ];
         }
         this.#generatedCode = codeSegments.flat(Infinity).filter(Boolean).join("\n\n") + "\n";
-        if (!this.#saveAsTypeScript) {
-            this.#generatedCode = beautify(this.#generatedCode, {
-                "indent_size": 2,
-                "indent_char": " ",
-                "end_with_newline": true,
-            });
-        }
         this.#generatedCode = this.#generatedCode.replace(/\n{3,}/g, "\n\n");
     }
     #chooseCollectionTemplate() {
@@ -439,11 +427,8 @@ export default class CodeGenerator extends CodeGeneratorBase {
      * @returns {Promise<void>}
      */
     async #writeSource(gpSet) {
-        let targetPath = this.#targetPath;
-        if (this.#saveAsTypeScript) {
-            targetPath = targetPath.replace(/\.mjs$/, ".mts");
-            gpSet.scheduleTSC(targetPath);
-        }
+        const targetPath = this.#targetPath.replace(/\.mjs$/, ".mts");
+        gpSet.scheduleTSC(targetPath);
         await fs.writeFile(targetPath, this.#generatedCode, { encoding: "utf-8" });
     }
     async #buildOneToOneBase(base) {
