@@ -67,6 +67,9 @@ class WeakMapOfStrongSets<
   addSets(mapKey: __MK0__, __sets__: [__SK0__][]) : this
   {
     this.#requireValidMapKey(mapKey);
+
+    if (__sets__.length === 0)
+      return this;
     __sets__.forEach(([setKey]) => {
       this.#requireValidKey(mapKey, setKey);
     });

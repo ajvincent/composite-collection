@@ -89,6 +89,9 @@ ${docs.buildBlock("addSets", 2)}
     ${invokeMapValidate}
     ${invokeValidate ? `__sets__.forEach(([${setKeys}]) => this.#requireValidKey(${allKeys}))` : ""}
 
+    if (__sets__.length === 0)
+      return this;
+
     if (!this.#outerMap.has(${mapKeys}))
       this.#outerMap.set(${mapKeys}, new Map);
 

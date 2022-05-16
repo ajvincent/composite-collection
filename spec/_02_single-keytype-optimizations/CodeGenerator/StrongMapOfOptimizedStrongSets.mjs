@@ -173,6 +173,29 @@ describeForAllThree("StrongMapOfOptimizedStrongSets", (modules, mapMod, setMod) 
     expect(iter.next()).toEqual({value: undefined, done: true});
   });
 
+  it(".addSets(...firstMapKey, []) is a no-op", () => {
+    mapOfSets.addSets(...firstMapKey, []);
+    expect(mapOfSets.size).toBe(0);
+    expect(mapOfSets.mapSize).toBe(0);
+    expect(mapOfSets.hasSets(...firstMapKey)).toBe(false);
+    expect(mapOfSets.deleteSets(...firstMapKey)).toBe(false);
+
+    let spy = jasmine.createSpy(), thisObj = {};
+    mapOfSets.forEach(spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(0);
+    spy.calls.reset();
+
+    mapOfSets.forEachSet(...firstMapKey, spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(0);
+    spy.calls.reset();
+
+    let iter = mapOfSets.values();
+    expect(iter.next()).toEqual({value: undefined, done: true});
+
+    iter = mapOfSets.valuesSet(...firstMapKey);
+    expect(iter.next()).toEqual({value: undefined, done: true});
+  });
+
   it(".addSets(...firstMapKey, [firstSetKey, secondSetKey]) means two sets under one map", () => {
     mapOfSets.addSets(...firstMapKey, [firstSetKey, secondSetKey]);
 

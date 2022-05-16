@@ -113,6 +113,9 @@ class StrongMapOfStrongSets<
     
     
 
+    if (__sets__.length === 0)
+      return this;
+
     if (!this.#outerMap.has(mapKey))
       this.#outerMap.set(mapKey, new Set);
 

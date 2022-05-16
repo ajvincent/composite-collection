@@ -120,6 +120,20 @@ describeForAllThree("WeakMapOfOptimizedStrongSets", (modules, mapMod, setMod) =>
     expect(iter.next()).toEqual({value: undefined, done: true});
   });
 
+  it(".addSets(...firstMapKey, []) is a no-op", () => {
+    mapOfSets.addSets(...firstMapKey, []);
+    expect(mapOfSets.hasSets(...firstMapKey)).toBe(false);
+    expect(mapOfSets.deleteSets(...firstMapKey)).toBe(false);
+
+    let spy = jasmine.createSpy(), thisObj = {};
+    mapOfSets.forEachSet(...firstMapKey, spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(0);
+    spy.calls.reset();
+
+    let iter = mapOfSets.valuesSet(...firstMapKey);
+    expect(iter.next()).toEqual({value: undefined, done: true});
+  });
+
   it(".addSets(...firstMapKey, [firstSetKey, secondSetKey]) means two sets under one map", () => {
     mapOfSets.addSets(...firstMapKey, [firstSetKey, secondSetKey]);
 

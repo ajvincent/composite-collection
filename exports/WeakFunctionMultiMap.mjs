@@ -53,6 +53,8 @@ class WeakFunctionMultiMap {
      */
     addSets(key, __sets__) {
         this.#requireValidMapKey(key);
+        if (__sets__.length === 0)
+            return this;
         __sets__.forEach(([mapFunction]) => {
             this.#requireValidKey(key, mapFunction);
         });

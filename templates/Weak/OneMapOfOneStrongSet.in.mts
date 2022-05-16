@@ -53,6 +53,9 @@ ${docs.buildBlock("addSets", 2)}
   addSets(${tsMapKeys}, __sets__: [${tsSetTypes}][]) : this
   {
     this.#requireValidMapKey(${mapKeys});
+
+    if (__sets__.length === 0)
+      return this;
     __sets__.forEach(([${setKeys}]) => {
       this.#requireValidKey(${allKeys});
     });
