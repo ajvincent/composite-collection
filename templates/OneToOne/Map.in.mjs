@@ -1,4 +1,3 @@
-import TypeScriptDefines from "../../source/typescript-migration/TypeScriptDefines.mjs";
 /**
  * Serialize keys.
  *
@@ -319,5 +318,4 @@ Object.freeze(${defines.className}.prototype);
 `;
 };
 export default preprocess;
-TypeScriptDefines.registerGenerator(preprocess, true);
 //# sourceMappingURL=Map.in.mjs.map

@@ -1,5 +1,4 @@
 import type { ReadonlyDefines, JSDocGenerator, TemplateFunction } from "../sharedTypes.mjs";
-import TypeScriptDefines from "../../source/typescript-migration/TypeScriptDefines.mjs";
 
 /**
  * @param {Map}            defines The preprocessor macros.
@@ -312,4 +311,3 @@ Object.freeze(${defines.className}.prototype);
 `}
 
 export default preprocess;
-TypeScriptDefines.registerGenerator(preprocess, true);

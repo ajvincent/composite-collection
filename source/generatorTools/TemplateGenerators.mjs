@@ -1,4 +1,3 @@
-import TypeScriptDefines from "../typescript-migration/TypeScriptDefines.mjs";
 import { PromiseAllParallel } from "../utilities/PromiseTypes.mjs";
 /**
  * @type {Map<string, Function>}
@@ -17,7 +16,6 @@ await PromiseAllParallel(allFiles, async (fullPath) => {
     if (typeof generator !== "function")
         throw new Error("generator isn't a function?");
     TemplateGenerators.set(baseName.replace(/\.in\.mjs$/, ""), generator);
-    TypeScriptDefines.registerGenerator(generator, false);
 });
 export default TemplateGenerators;
 //# sourceMappingURL=TemplateGenerators.mjs.map

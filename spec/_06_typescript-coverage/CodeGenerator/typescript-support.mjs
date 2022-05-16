@@ -11,8 +11,6 @@ const projectRoot = url.fileURLToPath(new URL("../../..", import.meta.url));
 const ENCODING = { encoding: "utf-8"};
 
 import StrongMapOfStrongSets from "../generated/StrongMapOfStrongSets.mjs";
-import TypeScriptDefines from "../../../source/typescript-migration/TypeScriptDefines.mjs";
-import TemplateGenerators from "../../../source/generatorTools/TemplateGenerators.mjs";
 import InvokeTSC from "../../../source/utilities/InvokeTSC.mjs"
 
 describe("TypeScript support: ", () => {
@@ -46,9 +44,7 @@ describe("TypeScript support: ", () => {
 
   let existingMTS;
   const tsSupported = path.resolve(generatedPath, "tsconfig.json");
-  const tsUnsupported = path.resolve(generatedPath, "tsconfig-unsupported.json");
-
-  const unsupportedFiles = [], supportedFiles = [];
+  const supportedFiles = [];
 
   beforeAll(async () => {
     { // Get the list of all templates we know about.
@@ -103,24 +99,8 @@ describe("TypeScript support: ", () => {
 
     { // Sort the modules into supported and unsupported arrays.
       TemplateSet.service.forEach((template, relativePath) => {
-        const generator = TemplateGenerators.get(template);
-        const shouldSupport = TypeScriptDefines.moduleReadyForCoverage(generator);
-        const fileList = shouldSupport ? supportedFiles : unsupportedFiles;
-        fileList.push(relativePath.replace(".mjs", ".mts"));
+        supportedFiles.push(relativePath.replace(".mjs", ".mts"));
       });
-    }
-
-    if (unsupportedFiles.length) { // Invoke TypeScript on the unsupported files.
-      await InvokeTSC.withCustomConfiguration(
-        tsUnsupported,
-        false,
-        (config) => {
-          config.files = unsupportedFiles;
-          config.compilerOptions.noEmit = true;
-          config.compilerOptions.noImplicitAny = false;
-        },
-        "spec/_06_typescript-coverage/ts-unsupported-stdout.txt"
-      ).catch(reason => void(reason));
     }
   }, 1000 * 60);
 

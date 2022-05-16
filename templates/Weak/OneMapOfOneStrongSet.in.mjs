@@ -1,4 +1,3 @@
-import TypeScriptDefines from "../../source/typescript-migration/TypeScriptDefines.mjs";
 /**
  * @param {Map}            defines The preprocessor macros.
  * @param {JSDocGenerator} docs    The primary documentation generator.
@@ -222,5 +221,4 @@ Object.freeze(${defines.className}.prototype);
 `;
 };
 export default preprocess;
-TypeScriptDefines.registerGenerator(preprocess, true);
 //# sourceMappingURL=OneMapOfOneStrongSet.in.mjs.map
