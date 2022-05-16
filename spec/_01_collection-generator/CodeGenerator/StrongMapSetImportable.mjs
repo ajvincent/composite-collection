@@ -28,7 +28,6 @@ describe("CodeGenerator(StrongMapSetImportable.mjs)", () => {
       "add",
       "addSets",
       "clear",
-      "clearSets",
       "delete",
       "deleteSets",
       "forEach",

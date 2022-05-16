@@ -142,23 +142,6 @@ class StrongMapOfStrongSets<
   }
 
   /**
-   * Clear all sets from the collection for a given map keyset.
-   *
-   * @param {*} mapKey The map key.
-   * @public
-   */
-  clearSets(mapKey: __MK0__) : void
-  {
-    
-    const __innerSet__ = this.#outerMap.get(mapKey)
-    if (!__innerSet__)
-      return;
-
-    this.#sizeOfAll -= __innerSet__.size;
-    __innerSet__.clear();
-  }
-
-  /**
    * Delete an element from the collection by the given key sequence.
    *
    * @param {*} mapKey The map key.

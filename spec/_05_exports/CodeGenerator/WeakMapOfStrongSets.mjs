@@ -25,7 +25,6 @@ describe("CodeGenerator(WeakMapOfStrongSets.mjs)", () => {
       "constructor",
       "add",
       "addSets",
-      "clearSets",
       "delete",
       "deleteSets",
       "forEachSet",
@@ -412,7 +411,7 @@ describe("CodeGenerator(WeakMapOfStrongSets.mjs)", () => {
     refSet.add(key2);
 
     testSet.addSets(key3, setOfSets);
-    testSet.clearSets(key1);
+    testSet.deleteSets(key1);
     expect(testSet.getSizeOfSet(key3)).toBe(2);
     expect(testSet.has(key3, key1)).toBe(refSet.has(key1));
     expect(testSet.has(key3, key2)).toBe(refSet.has(key2));
@@ -420,11 +419,11 @@ describe("CodeGenerator(WeakMapOfStrongSets.mjs)", () => {
 
     refSet.clear();
 
-    testSet.clearSets(key3);
+    testSet.deleteSets(key3);
     expect(testSet.getSizeOfSet(key3)).toBe(0);
     expect(testSet.has(key3, key1)).toBe(refSet.has(key1));
     expect(testSet.has(key3, key2)).toBe(refSet.has(key2));
-    expect(testSet.hasSets(key3)).toBe(true);
+    expect(testSet.hasSets(key3)).toBe(false);
   });
 
   it("constructor initializes with iterator of first argument", () => {

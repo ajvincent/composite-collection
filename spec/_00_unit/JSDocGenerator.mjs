@@ -1139,16 +1139,6 @@ describe("JSDocGenerator for maps of sets", () => {
   });
   afterEach(() => generator = null);
 
-  it("clearSets", () => {
-    const generated = generator.buildBlock("clearSets", 2);
-    expect(generated).toEqual(`  /**
-   * Clear all sets from the collection for a given map keyset.
-   *
-   * @param {Car} car The car.
-   * @public
-   */`);
-  });
-
   it("requireInnerCollectionPrivate", () => {
     const generated = generator.buildBlock("requireInnerCollectionPrivate", 2);
     expect(generated).toEqual(`  /**

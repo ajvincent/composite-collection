@@ -60,13 +60,6 @@ declare class StrongMapOfStrongSets<__MK0__, __SK0__> {
      */
     clear(): void;
     /**
-     * Clear all sets from the collection for a given map keyset.
-     *
-     * @param {*} mapKey The map key.
-     * @public
-     */
-    clearSets(mapKey: __MK0__): void;
-    /**
      * Delete an element from the collection by the given key sequence.
      *
      * @param {*} mapKey The map key.

@@ -30,13 +30,6 @@ declare class WeakMapOfStrongSets<__MK0__ extends object, __SK0__> {
      */
     addSets(mapKey: __MK0__, __sets__: [__SK0__][]): this;
     /**
-     * Clear all sets from the collection for a given map keyset.
-     *
-     * @param {object} mapKey The map key.
-     * @public
-     */
-    clearSets(mapKey: __MK0__): void;
-    /**
      * Delete an element from the collection by the given key sequence.
      *
      * @param {object} mapKey The map key.

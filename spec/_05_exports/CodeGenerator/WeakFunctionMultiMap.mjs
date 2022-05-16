@@ -27,7 +27,6 @@ describe("CodeGenerator(WeakFunctionMultiMap.mjs)", () => {
       "constructor",
       "add",
       "addSets",
-      "clearSets",
       "delete",
       "deleteSets",
       "forEachSet",

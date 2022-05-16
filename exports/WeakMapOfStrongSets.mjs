@@ -61,19 +61,6 @@ class WeakMapOfStrongSets {
         return this;
     }
     /**
-     * Clear all sets from the collection for a given map keyset.
-     *
-     * @param {object} mapKey The map key.
-     * @public
-     */
-    clearSets(mapKey) {
-        this.#requireValidMapKey(mapKey);
-        const __innerSet__ = this.#root.get(mapKey);
-        if (!__innerSet__)
-            return;
-        __innerSet__.clear();
-    }
-    /**
      * Delete an element from the collection by the given key sequence.
      *
      * @param {object} mapKey The map key.

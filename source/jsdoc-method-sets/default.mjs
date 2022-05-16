@@ -71,12 +71,6 @@ export default function defaultMethods() {
                 includeArgs: "none",
                 footers: ["@public"],
             }],
-        ["clearSets", {
-                returnVoid: true,
-                description: "Clear all sets from the collection for a given map keyset.",
-                includeArgs: "mapArguments",
-                footers: ["@public"],
-            }],
         ["delete", {
                 description: "Delete an element from the collection by the given key sequence.",
                 includeArgs: "excludeValue",

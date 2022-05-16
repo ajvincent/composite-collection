@@ -114,18 +114,6 @@ ${docs.buildBlock("clear", 2)}
     this.#sizeOfAll = 0;
   }
 
-${docs.buildBlock("clearSets", 2)}
-  clearSets(${tsMapKeys}) : void
-  {
-    ${invokeMapValidate}
-    const __innerSet__ = this.#outerMap.get(${mapKeys})
-    if (!__innerSet__)
-      return;
-
-    this.#sizeOfAll -= __innerSet__.size;
-    __innerSet__.clear();
-  }
-
 ${docs.buildBlock("delete", 2)}
   delete(${tsAllKeys}) : boolean
   {

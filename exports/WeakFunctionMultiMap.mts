@@ -77,22 +77,6 @@ class WeakFunctionMultiMap<
   }
 
   /**
-   * Clear all sets from the collection for a given map keyset.
-   *
-   * @param {object} key The map key.
-   * @public
-   */
-  clearSets(key: __MK0__) : void
-  {
-    this.#requireValidMapKey(key);
-    const __innerSet__ = this.#root.get(key);
-    if (!__innerSet__)
-      return;
-
-    __innerSet__.clear();
-  }
-
-  /**
    * Delete an element from the collection by the given key sequence.
    *
    * @param {object}   key         The map key.

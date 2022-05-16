@@ -79,14 +79,6 @@ ${docs.buildBlock("addSets", 2)}
     return this;
   }
 
-${docs.buildBlock("clearSets", 2)}
-  clearSets(${tsMapKeys}) : void
-  {
-    this.#requireValidMapKey(${mapKeys});
-    const __innerMap__ = this.#root.get(${mapKeys});
-    __innerMap__?.clear();
-  }
-
 ${docs.buildBlock("delete", 2)}
   delete(${tsAllKeys}) : boolean
   {
