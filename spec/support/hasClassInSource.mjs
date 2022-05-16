@@ -1,6 +1,4 @@
 import {Parser} from 'acorn';
-import stage3 from 'acorn-stage3';
-
 import fs from "fs/promises";
 
 /**
@@ -10,10 +8,10 @@ import fs from "fs/promises";
  */
 export default async function hasClassInSource(pathToModule, className) {
   const source = await fs.readFile(pathToModule);
-  const ast = Parser.extend(stage3).parse(
+  const ast = Parser.parse(
     source,
     {
-      ecmaVersion: 2021,
+      ecmaVersion: 2022,
       sourceType: "module",
     }
   );
