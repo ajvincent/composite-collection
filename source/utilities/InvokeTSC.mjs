@@ -37,7 +37,7 @@ export default class InvokeTSC {
         const config = InvokeTSC.defaultConfiguration();
         modifier(config);
         configLocation = path.resolve(projectRoot, configLocation);
-        await fs.writeFile(configLocation, JSON.stringify(config, null, 2), { "encoding": "utf-8" });
+        await fs.writeFile(configLocation, JSON.stringify(config, null, 2) + "\n", { "encoding": "utf-8" });
         const result = await this.withConfigurationFile(configLocation, pathToStdOut);
         if (removeConfigAfter) {
             await fs.rm(configLocation);

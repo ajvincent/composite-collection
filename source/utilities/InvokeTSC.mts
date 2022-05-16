@@ -61,7 +61,7 @@ export default class InvokeTSC {
     configLocation = path.resolve(projectRoot, configLocation);
     await fs.writeFile(
       configLocation,
-      JSON.stringify(config, null, 2),
+      JSON.stringify(config, null, 2) + "\n",
       { "encoding": "utf-8" }
     );
 

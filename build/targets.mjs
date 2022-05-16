@@ -145,7 +145,6 @@ const BPSet = new BuildPromiseSet(true);
   );
 }
 
-
 { // typescript:eslint
   const jsTarget = BPSet.get("eslint");
   jsTarget.addSubtarget("typescript:eslint-postbuild");

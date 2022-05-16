@@ -46,6 +46,8 @@ describe("TypeScript support: ", () => {
   const tsSupported = path.resolve(generatedPath, "tsconfig.json");
   const supportedFiles = [];
 
+  let compileTestPaths;
+
   beforeAll(async () => {
     { // Get the list of all templates we know about.
       let { files } = await readDirsDeep(
@@ -102,6 +104,12 @@ describe("TypeScript support: ", () => {
         supportedFiles.push(relativePath.replace(".mjs", ".mts"));
       });
     }
+
+    { // Get the list of compile tests.
+      compileTestPaths = (await fs.readdir(
+        path.resolve(specDir, "compileTests")
+      )).filter(leaf => leaf.endsWith(".mts"));
+    }
   }, 1000 * 60);
 
   it("There is code coverage of every template.", () => {
@@ -118,4 +126,16 @@ describe("TypeScript support: ", () => {
       "spec/_06_typescript-coverage/ts-supported-stdout.txt"
     )).toBeResolved();
   }, 1000 * 60);
+
+  it("TypeScript can transpile modules importing our generated modules cleanly", async () => {
+    await expectAsync(InvokeTSC.withCustomConfiguration(
+      path.resolve(specDir, "compileTests/tsconfig.json"),
+      false,
+      (config) => {
+        config.files = compileTestPaths;
+        config.compilerOptions.noEmit = true;
+      },
+      "spec/_06_typescript-coverage/compileTests/ts-stdout.txt"
+    )).toBeResolved();
+  },);
 });
