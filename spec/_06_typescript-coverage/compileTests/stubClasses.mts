@@ -1,2 +1,6 @@
-export class ClassOne {}
-export class ClassTwo {}
+export class ClassOne {
+  type: "classOne";
+}
+export class ClassTwo {
+  type: "classTwo";
+}
