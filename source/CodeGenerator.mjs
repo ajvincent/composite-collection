@@ -15,6 +15,7 @@ import fs from "fs/promises";
 import path from "path";
 import beautify from "js-beautify";
 import { RequiredMap } from "./utilities/RequiredMap.mjs";
+import PreprocessorDefines from "./generatorTools/PreprocessorDefines.mjs";
 class TypeScriptDefs {
     typeConstraint;
     extendsConstraint;
@@ -70,7 +71,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
     /** @type {string} */
     #status = "not started yet";
     /** @type {Map<string, *>} @constant */
-    #defines = new TypeScriptDefines();
+    #defines = new PreprocessorDefines();
     /** @type {JSDocGenerator[]} */
     #docGenerators = [];
     /** @type {boolean} */

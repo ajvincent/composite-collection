@@ -2,7 +2,7 @@ import JSDocGenerator from "./JSDocGenerator.mjs";
 import TypeScriptDefines from "../typescript-migration/TypeScriptDefines.mjs";
 import { PromiseAllParallel } from "../utilities/PromiseTypes.mjs";
 
-import type { ReadonlyDefines } from "../typescript-migration/TypeScriptDefines.mjs"
+import type { ReadonlyDefines } from "./PreprocessorDefines.mjs"
 
 export type TemplateFunction = (defines: ReadonlyDefines, ...docGenerators: JSDocGenerator[]) => string;
 

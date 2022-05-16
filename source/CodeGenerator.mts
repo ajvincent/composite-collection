@@ -26,6 +26,7 @@ import fs from "fs/promises";
 import path from "path";
 import beautify from "js-beautify";
 import { RequiredMap } from "./utilities/RequiredMap.mjs";
+import PreprocessorDefines from "./generatorTools/PreprocessorDefines.mjs";
 
 type InternalFlags = Set<string>;
 
@@ -98,7 +99,7 @@ export default class CodeGenerator extends CodeGeneratorBase
   #status = "not started yet";
 
   /** @type {Map<string, *>} @constant */
-  #defines: TypeScriptDefines = new TypeScriptDefines();
+  #defines: PreprocessorDefines = new PreprocessorDefines();
 
   /** @type {JSDocGenerator[]} */
   #docGenerators: JSDocGenerator[] = [];
