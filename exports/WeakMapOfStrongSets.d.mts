@@ -1,13 +1,3 @@
-/**
- * @file
- * This is generated code.  Do not edit.
- *
- * Generator: https://github.com/ajvincent/composite-collection/
- * Template: Weak/OneMapOfOneStrongSet
- * @license MPL-2.0
- * @author Alexander J. Vincent <ajvincent@gmail.com>
- * @copyright © 2021-2022 Alexander J. Vincent
- */
 declare class WeakMapOfStrongSets<__MK0__ extends object, __SK0__> {
     #private;
     constructor(iterable?: [__MK0__, __SK0__][]);

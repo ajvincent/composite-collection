@@ -19,6 +19,7 @@ const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefine
   return `
 ${defines.importLines}
 import WeakKeyComposer from "./keys/Composite.mjs";
+import { DefaultWeakMap } from "./keys/DefaultMap.mjs";
 
 class ${defines.className}${defines.tsGenericFull}
 {
@@ -33,7 +34,7 @@ class ${defines.className}${defines.tsGenericFull}
    * This is two levels. The first level is the WeakKey.
    * The second level is the strong set.
    */
-  #root: WeakMap<object, Set<${tsSetTypes}>> = new WeakMap();
+  #root: DefaultWeakMap<object, Set<${tsSetTypes}>> = new DefaultWeakMap();
 
   /** @type {WeakKeyComposer} @constant */
   #mapKeyComposer = new WeakKeyComposer(
@@ -183,10 +184,7 @@ ${docs.buildBlock("requireInnerCollectionPrivate", 2)}
     const __mapKey__ = this.#mapKeyComposer.getKey(
       [${defines.weakMapKeys.join(", ")}], [${defines.strongMapKeys.join(", ")}]
     );
-    if (!this.#root.has(__mapKey__)) {
-      this.#root.set(__mapKey__, new Set);
-    }
-    return this.#root.get(__mapKey__);
+    return this.#root.getDefault(__mapKey__, () => new Set);
   }
 
 ${docs.buildBlock("getExistingInnerCollectionPrivate", 2)}

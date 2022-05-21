@@ -15,6 +15,8 @@
  * @copyright © 2021-2022 Alexander J. Vincent
  */
 
+import { DefaultWeakMap } from "./keys/DefaultMap.mjs";
+
 class WeakMapOfStrongSets<
   __MK0__ extends object,
   __SK0__
@@ -28,7 +30,7 @@ class WeakMapOfStrongSets<
    * This is two levels. The first level is the map key.
    * The second level is the strong set.
    */
-  #root: WeakMap<__MK0__, Set<__SK0__>> = new WeakMap();
+  #root: DefaultWeakMap<__MK0__, Set<__SK0__>> = new DefaultWeakMap();
 
   constructor(iterable? : [__MK0__, __SK0__][])
   {
@@ -51,7 +53,7 @@ class WeakMapOfStrongSets<
   {
     this.#requireValidKey(mapKey, setKey);
 
-    const __innerSet__ = this.#requireInnerSet(mapKey);
+    const __innerSet__ = this.#root.getDefault(mapKey, () => new Set);
     __innerSet__.add(setKey);
     return this;
   }
@@ -74,7 +76,7 @@ class WeakMapOfStrongSets<
       this.#requireValidKey(mapKey, setKey);
     });
 
-    const __innerSet__ = this.#requireInnerSet(mapKey);
+    const __innerSet__ = this.#root.getDefault(mapKey, () => new Set);
     __sets__.forEach(([setKey]) => __innerSet__.add(setKey));
     return this;
   }
@@ -230,22 +232,6 @@ class WeakMapOfStrongSets<
     const __outerIter__ = __innerSet__.values();
     for (let setKey of __outerIter__)
       yield [mapKey, setKey];
-  }
-
-  /**
-   * Require an inner collection exist for the given map keys.
-   *
-   * @param {object} mapKey The map key.
-   * @returns {__WeakMapOfStrongSets_InnerMap__} The inner collection.
-   */
-  #requireInnerSet(mapKey: __MK0__) : Set<__SK0__>
-  {
-    let __rv__ = this.#root.get(mapKey);
-    if (!__rv__) {
-      __rv__ = new Set;
-      this.#root.set(mapKey, __rv__);
-    }
-    return __rv__;
   }
 
   /**

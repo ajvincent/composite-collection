@@ -16,6 +16,7 @@ const preprocess = function preprocess(defines, docs) {
 ${defines.importLines}
 import KeyHasher from "./keys/Hasher.mjs";
 import WeakKeyComposer from "./keys/Composite.mjs";
+import { DefaultWeakMap } from "./keys/DefaultMap.mjs";
 
 /** @typedef {Map<hash, *[]>} __${defines.className}_InnerMap__ */
 
@@ -31,7 +32,7 @@ class ${defines.className}${defines.tsGenericFull} {
    * This is two levels. The first level is the WeakKey.
    * The second level is the strong set.
    */
-  #root: WeakMap<object, Map<string, [${tsSetTypes}]>> = new WeakMap();
+  #root: DefaultWeakMap<object, Map<string, [${tsSetTypes}]>> = new DefaultWeakMap();
 
   /** @type {WeakKeyComposer} @constant */
   #mapKeyComposer = new WeakKeyComposer(
@@ -202,10 +203,7 @@ ${docs.buildBlock("requireInnerCollectionPrivate", 2)}
     const __mapKey__ = this.#mapKeyComposer.getKey(
       [${defines.weakMapKeys.join(", ")}], [${defines.strongMapKeys.join(", ")}]
     );
-    if (!this.#root.has(__mapKey__)) {
-      this.#root.set(__mapKey__, new Map);
-    }
-    return this.#root.get(__mapKey__);
+    return this.#root.getDefault(__mapKey__, () => new Map);
   }
 
 ${docs.buildBlock("getExistingInnerCollectionPrivate", 2)}

@@ -14,6 +14,7 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     #owner;
     #targetDir;
     #TypeScriptModules = [];
+    #requireDefaultMap = false;
     #requireKeyHasher = false;
     #requireWeakKeyComposer = false;
     /** @type {BuildPromise} @constant */
@@ -72,24 +73,28 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
             config.files = this.#TypeScriptModules;
         });
     }
+    requireDefaultMap() {
+        this.#requireDefaultMap = true;
+    }
     requireKeyHasher() {
-        if (this.#requireKeyHasher)
-            return;
         this.#requireKeyHasher = true;
+        this.#requireDefaultMap = true;
     }
     requireWeakKeyComposer() {
-        if (this.#requireWeakKeyComposer)
-            return;
         this.#requireWeakKeyComposer = true;
         this.#requireKeyHasher = true;
+        this.#requireDefaultMap = true;
     }
     async #exportKeyFiles() {
-        if (!this.#requireKeyHasher)
-            return;
+        const filenames = new Set();
+        if (this.#requireDefaultMap || this.#requireKeyHasher)
+            filenames.add("DefaultMap");
+        if (this.#requireKeyHasher)
+            filenames.add("Hasher");
+        if (this.#requireWeakKeyComposer)
+            filenames.add("Composite");
         let fileList = await fs.readdir(path.resolve(projectRoot, "source/exports/keys"));
-        if (!this.#requireWeakKeyComposer) {
-            fileList = fileList.filter(f => !f.startsWith("Composite."));
-        }
+        fileList = fileList.filter(f => filenames.has(f.replace(/\..+/g, "")));
         await fs.mkdir(path.resolve(this.#targetDir, "keys"), { recursive: true });
         await PromiseAllParallel(fileList, async (leaf) => fs.copyFile(path.resolve(projectRoot, "source/exports/keys", leaf), path.resolve(this.#targetDir, "keys", leaf)));
     }

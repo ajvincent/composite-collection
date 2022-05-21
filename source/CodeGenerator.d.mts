@@ -30,6 +30,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
      * The generated code at this point.  Used in #buildOneToOneBase() by a parent CodeGenerator.
      */
     get generatedCode(): string;
+    get requiresDefaultMap(): boolean;
     get requiresKeyHasher(): boolean;
     get requiresWeakKeyComposer(): boolean;
     run(): Promise<string>;

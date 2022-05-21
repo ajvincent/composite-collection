@@ -13,6 +13,7 @@
  * @author Alexander J. Vincent <ajvincent@gmail.com>
  * @copyright © 2021-2022 Alexander J. Vincent
  */
+import { DefaultWeakMap } from "./keys/DefaultMap.mjs";
 class WeakMapOfStrongSets {
     /** @typedef {Set<*>} __WeakMapOfStrongSets_InnerMap__ */
     /**
@@ -21,7 +22,7 @@ class WeakMapOfStrongSets {
      * This is two levels. The first level is the map key.
      * The second level is the strong set.
      */
-    #root = new WeakMap();
+    #root = new DefaultWeakMap();
     constructor(iterable) {
         if (iterable) {
             for (let [mapKey, setKey] of iterable) {
@@ -39,7 +40,7 @@ class WeakMapOfStrongSets {
      */
     add(mapKey, setKey) {
         this.#requireValidKey(mapKey, setKey);
-        const __innerSet__ = this.#requireInnerSet(mapKey);
+        const __innerSet__ = this.#root.getDefault(mapKey, () => new Set);
         __innerSet__.add(setKey);
         return this;
     }
@@ -58,7 +59,7 @@ class WeakMapOfStrongSets {
         __sets__.forEach(([setKey]) => {
             this.#requireValidKey(mapKey, setKey);
         });
-        const __innerSet__ = this.#requireInnerSet(mapKey);
+        const __innerSet__ = this.#root.getDefault(mapKey, () => new Set);
         __sets__.forEach(([setKey]) => __innerSet__.add(setKey));
         return this;
     }
@@ -180,20 +181,6 @@ class WeakMapOfStrongSets {
         const __outerIter__ = __innerSet__.values();
         for (let setKey of __outerIter__)
             yield [mapKey, setKey];
-    }
-    /**
-     * Require an inner collection exist for the given map keys.
-     *
-     * @param {object} mapKey The map key.
-     * @returns {__WeakMapOfStrongSets_InnerMap__} The inner collection.
-     */
-    #requireInnerSet(mapKey) {
-        let __rv__ = this.#root.get(mapKey);
-        if (!__rv__) {
-            __rv__ = new Set;
-            this.#root.set(mapKey, __rv__);
-        }
-        return __rv__;
     }
     /**
      * Throw if the key set is not valid.

@@ -22,13 +22,14 @@ const preprocess = function preprocess(defines, docs) {
     return `
 ${defines.importLines}
 import KeyHasher from "./keys/Hasher.mjs";
+import { DefaultMap } from "./keys/DefaultMap.mjs";
 
 class ${defines.className}${defines.tsGenericFull}
 {
   /** @typedef {string} hash */
 
   /** @type {Map<${defines.mapArgument0Type}, Map<hash, *[]>>} @constant */
-  #outerMap: Map<${tsMapTypes}, Map<string, [${tsAllTypes}]>> = new Map();
+  #outerMap: DefaultMap<${tsMapTypes}, Map<string, [${tsAllTypes}]>> = new DefaultMap();
 
   /** @type {KeyHasher} @constant */
   #setHasher = new KeyHasher();
@@ -69,11 +70,7 @@ ${docs.buildBlock("add", 2)}
   add(${tsAllKeys}) : this
   {
     ${invokeValidate}
-    if (!this.#outerMap.has(${mapKeys}))
-      this.#outerMap.set(${mapKeys}, new Map);
-
-    const __innerMap__ = this.#outerMap.get(${mapKeys});
-
+    const __innerMap__ = this.#outerMap.getDefault(${mapKeys}, () => new Map);
     const __setHash__ = this.#setHasher.getHash(${setKeys});
     if (!__innerMap__.has(__setHash__)) {
       __innerMap__.set(__setHash__, [${allKeys}]);
@@ -92,10 +89,7 @@ ${docs.buildBlock("addSets", 2)}
     if (__sets__.length === 0)
       return this;
 
-    if (!this.#outerMap.has(${mapKeys}))
-      this.#outerMap.set(${mapKeys}, new Map);
-
-    const __innerMap__ = this.#outerMap.get(${mapKeys});
+    const __innerMap__ = this.#outerMap.getDefault(${mapKeys}, () => new Map);
     __sets__.forEach(([${setKeys}]) => {
       const __setHash__ = this.#setHasher.getHash(${setKeys});
       if (!__innerMap__.has(__setHash__)) {
@@ -205,8 +199,7 @@ ${docs.buildBlock("hasSet", 2)}
   hasSets(${mapKeys}) : boolean
   {
     ${invokeMapValidate}
-    const __innerMap__ = this.#outerMap.get(${defines.mapKeys[0]})
-    return Boolean(__innerMap__);
+    return this.#outerMap.has(${defines.mapKeys[0]})
   }
 
 ${defines.validateArguments ? `

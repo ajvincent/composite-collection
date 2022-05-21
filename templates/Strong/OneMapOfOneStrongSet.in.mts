@@ -26,13 +26,14 @@ const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefine
 
   return `
 ${defines.importLines}
+import { DefaultMap } from "./keys/DefaultMap.mjs";
 
 class ${defines.className}${defines.tsGenericFull}
 {
   /** @typedef {Set<${defines.setArgument0Type}>} __${defines.className}__InnerMap__ */
 
   /** @type {Map<${defines.mapArgument0Type}, __${defines.className}__InnerMap__>} @constant */
-  #outerMap: Map<${tsMapTypes}, Set<${tsSetTypes}>> = new Map();
+  #outerMap: DefaultMap<${tsMapTypes}, Set<${tsSetTypes}>> = new DefaultMap();
 
   /** @type {number} */
   #sizeOfAll = 0;
@@ -69,13 +70,7 @@ ${docs.buildBlock("add", 2)}
   add(${tsAllKeys}) : this
   {
     ${invokeValidate}
-    if (!this.#outerMap.has(${mapKeys}))
-      this.#outerMap.set(${mapKeys}, new Set);
-
-    const __innerSet__ = this.#outerMap.get(${mapKeys});
-    if (!__innerSet__)
-      throw new Error("assertion failure: unreachable");
-
+    const __innerSet__ = this.#outerMap.getDefault(${mapKeys}, () => new Set);
     if (!__innerSet__.has(${setKeys})) {
       __innerSet__.add(${setKeys});
       this.#sizeOfAll++;
@@ -93,13 +88,7 @@ ${docs.buildBlock("addSets", 2)}
     if (__sets__.length === 0)
       return this;
 
-    if (!this.#outerMap.has(${mapKeys}))
-      this.#outerMap.set(${mapKeys}, new Set);
-
-    const __innerSet__ = this.#outerMap.get(${mapKeys});
-    if (!__innerSet__)
-      throw new Error("assertion failure: unreachable");
-
+    const __innerSet__ = this.#outerMap.getDefault(${mapKeys}, () => new Set);
     __sets__.forEach(([${setKeys}]) =>  {
       if (!__innerSet__.has(${setKeys})) {
         __innerSet__.add(${setKeys});

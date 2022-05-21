@@ -20,6 +20,7 @@ const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefine
   return `
 ${defines.importLines}
 import KeyHasher from "./keys/Hasher.mjs";
+import { DefaultWeakMap } from "./keys/DefaultMap.mjs";
 
 /** @typedef {Map<hash, *[]>} __${defines.className}_InnerMap__ */
 
@@ -33,7 +34,7 @@ class ${defines.className}${defines.tsGenericFull}
    * This is two levels. The first level is the map key.
    * The second level is the strong set.
    */
-  #root: WeakMap<${tsMapTypes}, Map<string, [${tsSetTypes}]>> = new WeakMap();
+  #root: DefaultWeakMap<${tsMapTypes}, Map<string, [${tsSetTypes}]>> = new DefaultWeakMap();
 
   /** @type {KeyHasher} @constant */
   #setHasher = new KeyHasher();
@@ -51,7 +52,7 @@ ${docs.buildBlock("add", 2)}
   add(${tsAllKeys}) : this
   {
     this.#requireValidKey(${allKeys});
-    const __innerMap__ = this.#requireInnerMap(${mapKeys});
+    const __innerMap__ = this.#root.getDefault(${mapKeys}, () => new Map);
 
     // level 2: inner map to set
     const __setKeyHash__ = this.#setHasher.getHash(${setKeys});
@@ -73,7 +74,7 @@ ${docs.buildBlock("addSets", 2)}
       this.#requireValidKey(${allKeys});
     });
 
-    const __innerMap__ = this.#requireInnerMap(${mapKeys});
+    const __innerMap__ = this.#root.getDefault(${mapKeys}, () => new Map);
 
     // level 2: inner map to set
     __sets__.forEach(([${setKeys}]) => {
@@ -183,15 +184,6 @@ ${docs.buildBlock("valuesSet", 2)}
     const __outerIter__ = __innerMap__.values();
     for (let [${setKeys}] of __outerIter__)
       yield [${allKeys}];
-  }
-
-${docs.buildBlock("requireInnerCollectionPrivate", 2)}
-  #requireInnerMap(${tsMapKeys}) : Map<string, [${tsSetTypes}]>
-  {
-    if (!this.#root.has(${mapKeys})) {
-      this.#root.set(${mapKeys}, new Map);
-    }
-    return this.#root.get(${mapKeys});
   }
 
 ${docs.buildBlock("requireValidKey", 2)}

@@ -166,6 +166,11 @@ export default class CodeGenerator extends CodeGeneratorBase
     return this.#generatedCode;
   }
 
+  get requiresDefaultMap() : boolean {
+    return this.#generatedCode?.includes(" new DefaultMap(") ||
+           this.#generatedCode?.includes(" new DefaultWeakMap(");
+  }
+
   get requiresKeyHasher() : boolean {
     return this.#generatedCode?.includes(" new KeyHasher(");
   }
@@ -248,6 +253,8 @@ export default class CodeGenerator extends CodeGeneratorBase
 
     this.#generateSource();
     const gpSet = generatorToPromiseSet.getRequired(this);
+    if (this.requiresDefaultMap)
+      gpSet.requireDefaultMap();
     if (this.requiresKeyHasher)
       gpSet.requireKeyHasher();
     if (this.requiresWeakKeyComposer)

@@ -13,6 +13,7 @@
  * @author Alexander J. Vincent <ajvincent@gmail.com>
  * @copyright © 2021-2022 Alexander J. Vincent
  */
+import { DefaultWeakMap } from "./keys/DefaultMap.mjs";
 class WeakFunctionMultiMap {
     /** @typedef {Set<Function>} __WeakFunctionMultiMap_InnerMap__ */
     /**
@@ -21,7 +22,7 @@ class WeakFunctionMultiMap {
      * This is two levels. The first level is the map key.
      * The second level is the strong set.
      */
-    #root = new WeakMap();
+    #root = new DefaultWeakMap();
     constructor(iterable) {
         if (iterable) {
             for (let [key, mapFunction] of iterable) {
@@ -39,7 +40,7 @@ class WeakFunctionMultiMap {
      */
     add(key, mapFunction) {
         this.#requireValidKey(key, mapFunction);
-        const __innerSet__ = this.#requireInnerSet(key);
+        const __innerSet__ = this.#root.getDefault(key, () => new Set);
         __innerSet__.add(mapFunction);
         return this;
     }
@@ -58,7 +59,7 @@ class WeakFunctionMultiMap {
         __sets__.forEach(([mapFunction]) => {
             this.#requireValidKey(key, mapFunction);
         });
-        const __innerSet__ = this.#requireInnerSet(key);
+        const __innerSet__ = this.#root.getDefault(key, () => new Set);
         __sets__.forEach(([mapFunction]) => __innerSet__.add(mapFunction));
         return this;
     }
@@ -180,20 +181,6 @@ class WeakFunctionMultiMap {
         const __outerIter__ = __innerSet__.values();
         for (let mapFunction of __outerIter__)
             yield [key, mapFunction];
-    }
-    /**
-     * Require an inner collection exist for the given map keys.
-     *
-     * @param {object} key The map key.
-     * @returns {__WeakFunctionMultiMap_InnerMap__} The inner collection.
-     */
-    #requireInnerSet(key) {
-        let __rv__ = this.#root.get(key);
-        if (!__rv__) {
-            __rv__ = new Set;
-            this.#root.set(key, __rv__);
-        }
-        return __rv__;
     }
     /**
      * Throw if the key set is not valid.

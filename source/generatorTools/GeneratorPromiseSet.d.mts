@@ -18,6 +18,7 @@ export declare class GeneratorPromiseSet extends BuildPromiseSet {
     has(targetName: string): boolean;
     runMain(): Promise<void>;
     scheduleTSC(targetModule: string): void;
+    requireDefaultMap(): void;
     requireKeyHasher(): void;
     requireWeakKeyComposer(): void;
 }

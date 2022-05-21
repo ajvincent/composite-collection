@@ -15,6 +15,8 @@
  * @copyright © 2021-2022 Alexander J. Vincent
  */
 
+import { DefaultMap } from "./keys/DefaultMap.mjs";
+
 class StrongMapOfStrongSets<
   __MK0__,
   __SK0__
@@ -23,7 +25,7 @@ class StrongMapOfStrongSets<
   /** @typedef {Set<*>} __StrongMapOfStrongSets__InnerMap__ */
 
   /** @type {Map<*, __StrongMapOfStrongSets__InnerMap__>} @constant */
-  #outerMap: Map<__MK0__, Set<__SK0__>> = new Map();
+  #outerMap: DefaultMap<__MK0__, Set<__SK0__>> = new DefaultMap();
 
   /** @type {number} */
   #sizeOfAll = 0;
@@ -85,13 +87,7 @@ class StrongMapOfStrongSets<
   add(mapKey: __MK0__, setKey: __SK0__) : this
   {
     
-    if (!this.#outerMap.has(mapKey))
-      this.#outerMap.set(mapKey, new Set);
-
-    const __innerSet__ = this.#outerMap.get(mapKey);
-    if (!__innerSet__)
-      throw new Error("assertion failure: unreachable");
-
+    const __innerSet__ = this.#outerMap.getDefault(mapKey, () => new Set);
     if (!__innerSet__.has(setKey)) {
       __innerSet__.add(setKey);
       this.#sizeOfAll++;
@@ -116,13 +112,7 @@ class StrongMapOfStrongSets<
     if (__sets__.length === 0)
       return this;
 
-    if (!this.#outerMap.has(mapKey))
-      this.#outerMap.set(mapKey, new Set);
-
-    const __innerSet__ = this.#outerMap.get(mapKey);
-    if (!__innerSet__)
-      throw new Error("assertion failure: unreachable");
-
+    const __innerSet__ = this.#outerMap.getDefault(mapKey, () => new Set);
     __sets__.forEach(([setKey]) =>  {
       if (!__innerSet__.has(setKey)) {
         __innerSet__.add(setKey);

@@ -25,13 +25,14 @@ const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefine
   return `
 ${defines.importLines}
 import KeyHasher from "./keys/Hasher.mjs";
+import { DefaultMap } from "./keys/DefaultMap.mjs";
 
 class ${defines.className}${defines.tsGenericFull}
 {
   /** @typedef {string} hash */
 
   /** @type {Map<hash, Map<hash, *[]>>} @constant */
-  #outerMap: Map<string, Map<string, [${tsAllTypes}]>> = new Map();
+  #outerMap: DefaultMap<string, Map<string, [${tsAllTypes}]>> = new DefaultMap();
 
   /** @type {KeyHasher} @constant */
   #mapHasher = new KeyHasher();
@@ -76,10 +77,7 @@ ${docs.buildBlock("add", 2)}
   {
     ${invokeValidate}
     const __mapHash__ = this.#mapHasher.getHash(${mapKeys});
-    if (!this.#outerMap.has(__mapHash__))
-      this.#outerMap.set(__mapHash__, new Map);
-
-    const __innerMap__ = this.#outerMap.get(__mapHash__);
+    const __innerMap__ = this.#outerMap.getDefault(__mapHash__, () => new Map);
 
     const __setHash__ = this.#setHasher.getHash(${setKeys});
     if (!__innerMap__.has(__setHash__)) {
@@ -100,10 +98,7 @@ ${docs.buildBlock("addSets", 2)}
       return this;
 
     const __mapHash__ = this.#mapHasher.getHash(${mapKeys});
-    if (!this.#outerMap.has(__mapHash__))
-      this.#outerMap.set(__mapHash__, new Map);
-
-    const __innerMap__ = this.#outerMap.get(__mapHash__);
+    const __innerMap__ = this.#outerMap.getDefault(__mapHash__, () => new Map);
 
     __sets__.forEach(([${setKeys}]) => {
       const __setHash__ = this.#setHasher.getHash(${setKeys});

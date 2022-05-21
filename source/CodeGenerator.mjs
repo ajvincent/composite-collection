@@ -115,6 +115,10 @@ export default class CodeGenerator extends CodeGeneratorBase {
     get generatedCode() {
         return this.#generatedCode;
     }
+    get requiresDefaultMap() {
+        return this.#generatedCode?.includes(" new DefaultMap(") ||
+            this.#generatedCode?.includes(" new DefaultWeakMap(");
+    }
     get requiresKeyHasher() {
         return this.#generatedCode?.includes(" new KeyHasher(");
     }
@@ -181,6 +185,8 @@ export default class CodeGenerator extends CodeGeneratorBase {
         this.#buildTypeScriptDefines();
         this.#generateSource();
         const gpSet = generatorToPromiseSet.getRequired(this);
+        if (this.requiresDefaultMap)
+            gpSet.requireDefaultMap();
         if (this.requiresKeyHasher)
             gpSet.requireKeyHasher();
         if (this.requiresWeakKeyComposer)

@@ -15,6 +15,8 @@ const preprocess = function preprocess(defines, docs) {
     const setKeys = defines.setArgList;
     return `
 ${defines.importLines}
+import { DefaultWeakMap } from "./keys/DefaultMap.mjs";
+
 class ${defines.className}${defines.tsGenericFull}
 {
   /** @typedef {Set<${defines.setArgument0Type}>} __${defines.className}_InnerMap__ */
@@ -25,7 +27,7 @@ class ${defines.className}${defines.tsGenericFull}
    * This is two levels. The first level is the map key.
    * The second level is the strong set.
    */
-  #root: WeakMap<${tsMapTypes}, Set<${tsSetTypes}>> = new WeakMap();
+  #root: DefaultWeakMap<${tsMapTypes}, Set<${tsSetTypes}>> = new DefaultWeakMap();
 
   constructor(iterable? : [${tsAllTypes}][])
   {
@@ -41,7 +43,7 @@ ${docs.buildBlock("add", 2)}
   {
     this.#requireValidKey(${allKeys});
 
-    const __innerSet__ = this.#requireInnerSet(${mapKeys});
+    const __innerSet__ = this.#root.getDefault(${mapKeys}, () => new Set);
     __innerSet__.add(${setKeys});
     return this;
   }
@@ -57,7 +59,7 @@ ${docs.buildBlock("addSets", 2)}
       this.#requireValidKey(${allKeys});
     });
 
-    const __innerSet__ = this.#requireInnerSet(${mapKeys});
+    const __innerSet__ = this.#root.getDefault(${mapKeys}, () => new Set);
     __sets__.forEach(([${setKeys}]) => __innerSet__.add(${setKeys}));
     return this;
   }
@@ -154,17 +156,6 @@ ${docs.buildBlock("valuesSet", 2)}
     const __outerIter__ = __innerSet__.values();
     for (let ${setKeys} of __outerIter__)
       yield [${allKeys}];
-  }
-
-${docs.buildBlock("requireInnerCollectionPrivate", 2)}
-  #requireInnerSet(${tsMapKeys}) : Set<${tsSetTypes}>
-  {
-    let __rv__ = this.#root.get(${mapKeys});
-    if (!__rv__) {
-      __rv__ = new Set;
-      this.#root.set(${mapKeys}, __rv__);
-    }
-    return __rv__;
   }
 
 ${docs.buildBlock("requireValidKey", 2)}
