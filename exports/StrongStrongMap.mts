@@ -69,7 +69,8 @@ class StrongStrongMap<
    * @public
    * @constant
    */
-  get size() : number {
+  get size() : number
+  {
     return this.#root.size;
   }
 
@@ -78,7 +79,8 @@ class StrongStrongMap<
    *
    * @public
    */
-  clear() : void {
+  clear() : void
+  {
     this.#root.clear();
   }
 
@@ -90,7 +92,8 @@ class StrongStrongMap<
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
-  delete(key1: __MK0__,key2: __MK1__) : boolean {
+  delete(key1: __MK0__,key2: __MK1__) : boolean
+  {
     
     const __hash__ = this.#hasher.getHashIfExists(key1, key2);
     return __hash__ ? this.#root.delete(__hash__) : false;
@@ -102,11 +105,12 @@ class StrongStrongMap<
    * @yields {*[]} The keys and values.
    * @public
    */
-  * entries() : Iterator<[__MK0__, __MK1__, __V__]> {
-    for (let valueAndKeySet of this.#root.values()) {
+  * entries() : Iterator<[__MK0__, __MK1__, __V__]>
+  {
+    for (let __valueAndKeySet__ of this.#root.values()) {
       yield [
-        ...valueAndKeySet.keySet,
-        valueAndKeySet.value
+        ...__valueAndKeySet__.keySet,
+        __valueAndKeySet__.value
       ];
     }
   }
@@ -156,14 +160,49 @@ class StrongStrongMap<
    * @returns {*?} The value.  Undefined if it isn't in the collection.
    * @public
    */
-  get(key1: __MK0__, key2: __MK1__) : __V__ | undefined {
+  get(key1: __MK0__, key2: __MK1__) : __V__ | undefined
+  {
     
     const __hash__ = this.#hasher.getHashIfExists(key1, key2);
     if (!__hash__)
       return undefined;
 
-    const valueAndKeySet = this.#root.get(__hash__);
-    return valueAndKeySet?.value;
+    const __valueAndKeySet__ = this.#root.get(__hash__);
+    return __valueAndKeySet__?.value;
+  }
+
+  /**
+   * Provide a default value for .getDefault().
+   *
+   * @callback __StrongStrongMap_GetDefaultCallback__
+   * @returns {*} The value.
+   */
+
+  /**
+   * Guarantee a value for a key set.
+   *
+   * @param {*}                                      key1        The first key.
+   * @param {*}                                      key2        The second key.
+   * @param {__StrongStrongMap_GetDefaultCallback__} __default__ A function to provide a default value if necessary.
+   * @returns {*} The value.
+   * @public
+   */
+  getDefault(key1: __MK0__, key2: __MK1__, __default__: () => __V__) : __V__
+  {
+    
+    const __hash__ = this.#hasher.getHash(key1,key2);
+    {
+      const __valueAndKeySet__ = this.#root.get(__hash__);
+      if (__valueAndKeySet__)
+        return __valueAndKeySet__.value;
+    }
+
+    const __keySet__: [__MK0__,__MK1__] = [key1,key2];
+    Object.freeze(__keySet__);
+    const value = __default__();
+    this.#root.set(__hash__, {value, keySet: __keySet__});
+
+    return value;
   }
 
   /**
@@ -174,7 +213,8 @@ class StrongStrongMap<
    * @returns {boolean} True if the key set refers to a value in the collection.
    * @public
    */
-  has(key1: __MK0__, key2: __MK1__) : boolean {
+  has(key1: __MK0__, key2: __MK1__) : boolean
+  {
     
     const __hash__ = this.#hasher.getHashIfExists(key1, key2);
     return __hash__ ? this.#root.has(__hash__) : false;
@@ -186,9 +226,10 @@ class StrongStrongMap<
    * @yields {*[]} The key sets.
    * @public
    */
-  * keys() : Iterator<[__MK0__, __MK1__]> {
-    for (let valueAndKeySet of this.#root.values()) {
-      const [key1, key2] : [__MK0__, __MK1__] = valueAndKeySet.keySet;
+  * keys() : Iterator<[__MK0__, __MK1__]>
+  {
+    for (let __valueAndKeySet__ of this.#root.values()) {
+      const [key1, key2] : [__MK0__, __MK1__] = __valueAndKeySet__.keySet;
       yield [key1, key2];
     }
   }
@@ -202,7 +243,9 @@ class StrongStrongMap<
    * @returns {StrongStrongMap} This collection.
    * @public
    */
-  set(key1: __MK0__,key2: __MK1__, value: __V__) : this {
+  set(key1: __MK0__,key2: __MK1__, value: __V__) : this
+  {
+    
 
     const __hash__ = this.#hasher.getHash(key1, key2);
     const __keySet__: [__MK0__, __MK1__] = [key1, key2];
@@ -218,12 +261,14 @@ class StrongStrongMap<
    * @yields {*} The value.
    * @public
    */
-  * values() : Iterator<__V__> {
-    for (let valueAndKeySet of this.#root.values())
-      yield valueAndKeySet.value;
+  * values() : Iterator<__V__>
+  {
+    for (let __valueAndKeySet__ of this.#root.values())
+      yield __valueAndKeySet__.value;
   }
 
-  [Symbol.iterator]() : Iterator<[__MK0__, __MK1__, __V__]> {
+  [Symbol.iterator]() : Iterator<[__MK0__, __MK1__, __V__]>
+  {
     return this.entries();
   }
 

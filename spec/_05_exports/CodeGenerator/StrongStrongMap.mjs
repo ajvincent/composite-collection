@@ -4,6 +4,12 @@ import StrongStrongMap from "../generated/StrongStrongMap.mjs";
 
 describe("CodeGenerator(StrongStrongMap.mjs),", () => {
   let testMap, refMap = new Map;
+
+  const defaultValue1 = Symbol("default value one");
+  const defaultGetter1 = () => defaultValue1;
+  const defaultValue2 = Symbol("default value two");
+  const defaultGetter2 = () => defaultValue2;
+
   beforeEach(() => {
     refMap.clear();
     testMap = new StrongStrongMap();
@@ -23,6 +29,7 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
       "entries",
       "forEach",
       "get",
+      "getDefault",
       "has",
       "keys",
       "set",
@@ -41,15 +48,16 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     expect(testMap.toString().includes("StrongStrongMap")).toBe(true);
   });
 
-
   it("setting one value", () => {
     const key1 = {isKey1: true}, key2 = {isKey2: true}, value = "value";
     refMap.set(key1, value);
 
+    // #region set directly
     expect(testMap.set(key1, key2, value)).toBe(testMap);
     expect(testMap.size).toBe(refMap.size);
     expect(testMap.has(key1, key2)).toBe(refMap.has(key1));
     expect(testMap.get(key1, key2)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key1, key2, defaultGetter1)).toBe(refMap.get(key1));
 
     {
       const iterator = testMap.keys();
@@ -74,7 +82,9 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
       expect(testIterator.next()).toEqual(refIterator.next());
       expect(testIterator.next()).toEqual(refIterator.next());
     }
+    // #endregion set directly
 
+    // #region delete, set again, forEach
     expect(testMap.delete(key1, key2)).toBe(true);
     expect(testMap.size).toBe(0);
     expect(testMap.delete(key1, key2)).toBe(false);
@@ -84,13 +94,34 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     expect(testMap.size).toBe(refMap.size);
     expect(testMap.has(key1, key2)).toBe(refMap.has(key1));
     expect(testMap.get(key1, key2)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key1, key2, defaultGetter1)).toBe(refMap.get(key1));
 
     const testSpy = jasmine.createSpy("testMap.forEach");
     testMap.forEach(testSpy);
     expect(testSpy).toHaveBeenCalledOnceWith(value, key1, key2, testMap);
+    // #endregion delete, set again, forEach
+
+    // #region clear
+    testMap.clear();
+    refMap.clear();
+    expect(testMap.size).toBe(refMap.size);
+    expect(testMap.has(key1, key2)).toBe(refMap.has(key1));
+    expect(testMap.get(key1, key2)).toBe(refMap.get(key1));
+    // #endregion clear
+
+    // #region getDefault
+    refMap.set(key1, defaultValue1);
+    expect(testMap.getDefault(key1, key2, defaultGetter1)).toBe(refMap.get(key1));
+
+    expect(testMap.size).toBe(refMap.size);
+    expect(testMap.has(key1, key2)).toBe(refMap.has(key1));
+    expect(testMap.get(key1, key2)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key1, key2, defaultGetter1)).toBe(refMap.get(key1));
+    // #endregion getDefault
   });
 
   it("setting two values with a constant second key", () => {
+    // #region set directly
     const key1 = {isKey1: true}, key3 = {isKey3: true}, value1 = "value1";
     refMap.set(key1, value1);
     const key2 = {isKey2: true}, value2 = "value3";
@@ -99,10 +130,12 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     expect(testMap.set(key1, key3, value1)).toBe(testMap);
     expect(testMap.has(key1, key3)).toBe(refMap.has(key1));
     expect(testMap.get(key1, key3)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key1, key3, defaultGetter1)).toBe(refMap.get(key1));
 
     expect(testMap.set(key2, key3, value2)).toBe(testMap);
     expect(testMap.has(key2, key3)).toBe(refMap.has(key2));
     expect(testMap.get(key2, key3)).toBe(refMap.get(key2));
+    expect(testMap.getDefault(key2, key3, defaultGetter1)).toBe(refMap.get(key2));
     expect(testMap.size).toBe(refMap.size);
 
     {
@@ -130,7 +163,9 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
       refIterator.next();
       expect(testIterator.next()).toEqual(refIterator.next());
     }
+    // #endregion set directly
 
+    // #region delete, set again, forEach
     expect(testMap.delete(key1, key3)).toBe(true);
     expect(testMap.size).toBe(1);
     expect(testMap.delete(key1, key3)).toBe(false);
@@ -143,6 +178,7 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     expect(testMap.size).toBe(refMap.size);
     expect(testMap.has(key1, key3)).toBe(refMap.has(key1));
     expect(testMap.get(key1, key3)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key1, key3)).toBe(refMap.get(key1));
 
     {
       const iterator = testMap.keys();
@@ -175,9 +211,34 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     expect(testSpy).toHaveBeenCalledTimes(2);
     expect(testSpy.calls.argsFor(0)).toEqual([value2, key2, key3, testMap]);
     expect(testSpy.calls.argsFor(1)).toEqual([value1, key1, key3, testMap]);
+    // #endregion delete, set again, forEach
+
+    // #region clear
+    testMap.clear();
+    refMap.clear();
+    expect(testMap.size).toBe(refMap.size);
+    expect(testMap.has(key1, key3)).toBe(refMap.has(key1));
+    expect(testMap.get(key1, key3)).toBe(refMap.get(key1));
+    expect(testMap.has(key2, key3)).toBe(refMap.has(key2));
+    expect(testMap.get(key2, key3)).toBe(refMap.get(key2));
+    // #endregion clear
+
+    // #region getDefault
+    refMap.set(key1, defaultValue1);
+    refMap.set(key2, defaultValue2);
+    expect(testMap.getDefault(key1, key3, defaultGetter1)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key2, key3, defaultGetter2)).toBe(refMap.get(key2));
+
+    expect(testMap.size).toBe(refMap.size);
+    expect(testMap.has(key1, key3)).toBe(refMap.has(key1));
+    expect(testMap.get(key1, key3)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key1, key3, defaultGetter1)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key2, key3, defaultGetter1)).toBe(refMap.get(key2));
+    // #endregion getDefault
   });
 
   it("setting two values with a constant first key", () => {
+    // #region set directly
     const key1 = {isKey1: true}, key3 = {isKey3: true}, value1 = "value1";
     refMap.set(key1, value1);
     const key2 = {isKey2: true}, value2 = "value3";
@@ -186,10 +247,12 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     expect(testMap.set(key3, key1, value1)).toBe(testMap);
     expect(testMap.has(key3, key1)).toBe(refMap.has(key1));
     expect(testMap.get(key3, key1)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key3, key1, defaultGetter1)).toBe(refMap.get(key1));
 
     expect(testMap.set(key3, key2, value2)).toBe(testMap);
     expect(testMap.has(key3, key2)).toBe(refMap.has(key2));
     expect(testMap.get(key3, key2)).toBe(refMap.get(key2));
+    expect(testMap.getDefault(key3, key2, defaultGetter2)).toBe(refMap.get(key2));
     expect(testMap.size).toBe(refMap.size);
 
     {
@@ -217,7 +280,9 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
       refIterator.next();
       expect(testIterator.next()).toEqual(refIterator.next());
     }
+    // #endregion set directly
 
+    // #region delete, set again, forEach
     expect(testMap.delete(key3, key1)).toBe(true);
     expect(testMap.size).toBe(1);
     expect(testMap.delete(key3, key1)).toBe(false);
@@ -262,9 +327,37 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     expect(testSpy).toHaveBeenCalledTimes(2);
     expect(testSpy.calls.argsFor(0)).toEqual([value2, key3, key2, testMap]);
     expect(testSpy.calls.argsFor(1)).toEqual([value1, key3, key1, testMap]);
+
+    // #endregion delete, set again, forEach
+
+    // #region clear
+    testMap.clear();
+    refMap.clear();
+    expect(testMap.size).toBe(refMap.size);
+    expect(testMap.has(key3, key1)).toBe(refMap.has(key1));
+    expect(testMap.get(key3, key1)).toBe(refMap.get(key1));
+    expect(testMap.has(key3, key2)).toBe(refMap.has(key2));
+    expect(testMap.get(key3, key2)).toBe(refMap.get(key2));
+    // #endregion clear
+
+    // #region getDefault
+    refMap.set(key1, defaultValue1);
+    refMap.set(key2, defaultValue2);
+    expect(testMap.getDefault(key3, key1, defaultGetter1)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key3, key2, defaultGetter2)).toBe(refMap.get(key2));
+
+    expect(testMap.size).toBe(refMap.size);
+    expect(testMap.has(key3, key1)).toBe(refMap.has(key1));
+    expect(testMap.get(key3, key1)).toBe(refMap.get(key1));
+    expect(testMap.has(key3, key2)).toBe(refMap.has(key2));
+    expect(testMap.get(key3, key2)).toBe(refMap.get(key2));
+    expect(testMap.getDefault(key3, key1, defaultGetter1)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key3, key2, defaultGetter1)).toBe(refMap.get(key2));
+    // #endregion getDefault
   });
 
   it("setting two values with swapping keys", () => {
+    // #region set directly
     const key1 = {isKey1: true}, value1 = "value1";
     refMap.set(key1, value1);
     const key2 = {isKey2: true}, value2 = "value3";
@@ -273,10 +366,12 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     expect(testMap.set(key1, key2, value1)).toBe(testMap);
     expect(testMap.has(key1, key2)).toBe(refMap.has(key1));
     expect(testMap.get(key1, key2)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key1, key2, defaultGetter1)).toBe(refMap.get(key1));
 
     expect(testMap.set(key2, key1, value2)).toBe(testMap);
     expect(testMap.has(key2, key1)).toBe(refMap.has(key2));
     expect(testMap.get(key2, key1)).toBe(refMap.get(key2));
+    expect(testMap.getDefault(key2, key1, defaultGetter1)).toBe(refMap.get(key2));
     expect(testMap.size).toBe(refMap.size);
 
     {
@@ -304,7 +399,9 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
       refIterator.next();
       expect(testIterator.next()).toEqual(refIterator.next());
     }
+    // #endregion set directly
 
+    // #region delete, set again, forEach
     expect(testMap.delete(key1, key2)).toBe(true);
     expect(testMap.size).toBe(1);
     expect(testMap.delete(key1, key2)).toBe(false);
@@ -349,6 +446,33 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     expect(testSpy).toHaveBeenCalledTimes(2);
     expect(testSpy.calls.argsFor(0)).toEqual([value2, key2, key1, testMap]);
     expect(testSpy.calls.argsFor(1)).toEqual([value1, key1, key2, testMap]);
+
+    // #endregion delete, set again, forEach
+
+    // #region clear
+    testMap.clear();
+    refMap.clear();
+    expect(testMap.size).toBe(refMap.size);
+    expect(testMap.has(key1, key2)).toBe(refMap.has(key1));
+    expect(testMap.get(key1, key2)).toBe(refMap.get(key1));
+    expect(testMap.has(key2, key1)).toBe(refMap.has(key2));
+    expect(testMap.get(key2, key1)).toBe(refMap.get(key2));
+    // #endregion clear
+
+    // #region getDefault
+    refMap.set(key1, defaultValue1);
+    refMap.set(key2, defaultValue2);
+    expect(testMap.getDefault(key1, key2, defaultGetter1)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key2, key1, defaultGetter2)).toBe(refMap.get(key2));
+
+    expect(testMap.size).toBe(refMap.size);
+    expect(testMap.has(key1, key2)).toBe(refMap.has(key1));
+    expect(testMap.get(key1, key2)).toBe(refMap.get(key1));
+    expect(testMap.has(key2, key1)).toBe(refMap.has(key2));
+    expect(testMap.get(key2, key1)).toBe(refMap.get(key2));
+    expect(testMap.getDefault(key1, key2, defaultGetter1)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key2, key1, defaultGetter2)).toBe(refMap.get(key2));
+    // #endregion getDefault
   });
 
   it("constructor initializes with iterator of first argument", () => {

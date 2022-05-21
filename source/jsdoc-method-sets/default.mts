@@ -175,6 +175,28 @@ export default function defaultMethods(): stringAndTemplate[] {
       footers: ["@public"],
     }],
 
+    ["getDefault", {
+      description: "Guarantee a value for a key set.",
+      includeArgs: "excludeValue",
+      paramFooters: [
+        ["____className___GetDefaultCallback__", "__default__", "A function to provide a default value if necessary."],
+      ],
+      returnType: "__valueType__",
+      returnDescription: "__valueDesc__",
+      footers: ["@public"],
+    }],
+
+    ["getDefaultCallback", {
+      returnVoid: true,
+      description: "Provide a default value for .getDefault().",
+      includeArgs: "none",
+      headers: [
+        "@callback ____className___GetDefaultCallback__"
+      ],
+      returnType: "__valueType__",
+      returnDescription: "__valueDesc__",
+    }],
+
     ["has", {
       description: "Report if the collection has a value for a key set.",
       includeArgs: "excludeValue",

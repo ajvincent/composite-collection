@@ -449,6 +449,29 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
+    it("getDefault", () => {
+      const generated = generator.buildBlock("getDefault", 2);
+      expect(generated).toEqual(`  /**
+   * Guarantee a value for a key set.
+   *
+   * @param {Car}                                  car         The car.
+   * @param {Person}                               driver      The driver of the car.
+   * @param {__SoloStrongMap_GetDefaultCallback__} __default__ A function to provide a default value if necessary.
+   * @returns {*} The value.
+   * @public
+   */`);
+    });
+
+    it("getDefaultCallback", () => {
+      const generated = generator.buildBlock("getDefaultCallback", 2);
+      expect(generated).toEqual(`  /**
+   * Provide a default value for .getDefault().
+   *
+   * @callback __SoloStrongMap_GetDefaultCallback__
+   * @returns {*} The value.
+   */`);
+    });
+
     it("has", () => {
       const generated = generator.buildBlock("has", 2);
       expect(generated).toEqual(`  /**

@@ -58,6 +58,22 @@ declare class StrongStrongMap<__MK0__, __MK1__, __V__> {
      */
     get(key1: __MK0__, key2: __MK1__): __V__ | undefined;
     /**
+     * Provide a default value for .getDefault().
+     *
+     * @callback __StrongStrongMap_GetDefaultCallback__
+     * @returns {*} The value.
+     */
+    /**
+     * Guarantee a value for a key set.
+     *
+     * @param {*}                                      key1        The first key.
+     * @param {*}                                      key2        The second key.
+     * @param {__StrongStrongMap_GetDefaultCallback__} __default__ A function to provide a default value if necessary.
+     * @returns {*} The value.
+     * @public
+     */
+    getDefault(key1: __MK0__, key2: __MK1__, __default__: () => __V__): __V__;
+    /**
      * Report if the collection has a value for a key set.
      *
      * @param {*} key1 The first key.

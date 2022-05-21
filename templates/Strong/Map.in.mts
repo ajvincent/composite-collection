@@ -46,28 +46,32 @@ ${docs.buildBlock("rootContainerMap", 2)}
   }
 
 ${docs.buildBlock("getSize", 2)}
-  get size() : number {
+  get size() : number
+  {
     return this.#root.size;
   }
 
 ${docs.buildBlock("clear", 2)}
-  clear() : void {
+  clear() : void
+  {
     this.#root.clear();
   }
 
 ${docs.buildBlock("delete", 2)}
-  delete(${defines.tsMapKeys}) : boolean {
+  delete(${defines.tsMapKeys}) : boolean
+  {
     ${invokeValidate}
     const __hash__ = this.#hasher.getHashIfExists(${defines.argList});
     return __hash__ ? this.#root.delete(__hash__) : false;
   }
 
 ${docs.buildBlock("entries", 2)}
-  * entries() : Iterator<[${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}]> {
-    for (let valueAndKeySet of this.#root.values()) {
+  * entries() : Iterator<[${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}]>
+  {
+    for (let __valueAndKeySet__ of this.#root.values()) {
       yield [
-        ...valueAndKeySet.keySet,
-        valueAndKeySet.value
+        ...__valueAndKeySet__.keySet,
+        __valueAndKeySet__.value
       ];
     }
   }
@@ -103,18 +107,41 @@ ${docs.buildBlock("forEachMap", 2)}
   }
 
 ${docs.buildBlock("get", 2)}
-  get(${defines.tsMapKeys.join(", ")}) : __V__ | undefined {
+  get(${defines.tsMapKeys.join(", ")}) : __V__ | undefined
+  {
     ${invokeValidate}
     const __hash__ = this.#hasher.getHashIfExists(${defines.argList});
     if (!__hash__)
       return undefined;
 
-    const valueAndKeySet = this.#root.get(__hash__);
-    return valueAndKeySet?.value;
+    const __valueAndKeySet__ = this.#root.get(__hash__);
+    return __valueAndKeySet__?.value;
+  }
+
+${docs.buildBlock("getDefaultCallback", 2)}
+
+${docs.buildBlock("getDefault", 2)}
+  getDefault(${defines.tsMapKeys.join(", ")}, __default__: () => __V__) : __V__
+  {
+    ${invokeValidate}
+    const __hash__ = this.#hasher.getHash(${defines.mapKeys});
+    {
+      const __valueAndKeySet__ = this.#root.get(__hash__);
+      if (__valueAndKeySet__)
+        return __valueAndKeySet__.value;
+    }
+
+    const __keySet__: [${defines.tsMapTypes}] = [${defines.mapKeys}];
+    Object.freeze(__keySet__);
+    const value = __default__();
+    this.#root.set(__hash__, {value, keySet: __keySet__});
+
+    return value;
   }
 
 ${docs.buildBlock("has", 2)}
-  has(${defines.tsMapKeys.join(", ")}) : boolean {
+  has(${defines.tsMapKeys.join(", ")}) : boolean
+  {
     ${invokeValidate}
     const __hash__ = this.#hasher.getHashIfExists(${defines.argList});
     return __hash__ ? this.#root.has(__hash__) : false;
@@ -122,14 +149,16 @@ ${docs.buildBlock("has", 2)}
 
 ${defines.validateArguments ? `
 ${docs.buildBlock("isValidKeyPublic", 2)}
-  isValidKey(${defines.tsMapKeys.join(", ")}) : boolean {
+  isValidKey(${defines.tsMapKeys.join(", ")}) : boolean
+  {
     return this.#isValidKey(${defines.argList});
   }
 
 ${
   defines.validateValue ? `
 ${docs.buildBlock("isValidValuePublic", 2)}
-  isValidValue(value: __V__) : boolean {
+  isValidValue(value: __V__) : boolean
+  {
     return this.#isValidValue(value);
   }
   ` : ``
@@ -138,17 +167,18 @@ ${docs.buildBlock("isValidValuePublic", 2)}
 ` : ``}
 
 ${docs.buildBlock("keys", 2)}
-  * keys() : Iterator<[${defines.tsMapTypes.join(", ")}]> {
-    for (let valueAndKeySet of this.#root.values()) {
-      const [${defines.mapKeys.join(", ")}] : [${defines.tsMapTypes.join(", ")}] = valueAndKeySet.keySet;
+  * keys() : Iterator<[${defines.tsMapTypes.join(", ")}]>
+  {
+    for (let __valueAndKeySet__ of this.#root.values()) {
+      const [${defines.mapKeys.join(", ")}] : [${defines.tsMapTypes.join(", ")}] = __valueAndKeySet__.keySet;
       yield [${defines.mapKeys.join(", ")}];
     }
   }
 
 ${docs.buildBlock("set", 2)}
-  set(${defines.tsMapKeys}, ${defines.tsValueKey}) : this {${
-    invokeValidate
-  }
+  set(${defines.tsMapKeys}, ${defines.tsValueKey}) : this
+  {
+    ${invokeValidate}
 ${
   defines.validateValue ? `
   if (!this.#isValidValue(value))
@@ -164,32 +194,37 @@ ${
   }
 
 ${docs.buildBlock("values", 2)}
-  * values() : Iterator<${defines.tsValueType}> {
-    for (let valueAndKeySet of this.#root.values())
-      yield valueAndKeySet.value;
+  * values() : Iterator<${defines.tsValueType}>
+  {
+    for (let __valueAndKeySet__ of this.#root.values())
+      yield __valueAndKeySet__.value;
   }
 ${defines.validateArguments ? `
 ${docs.buildBlock("requireValidKey", 2)}
-  #requireValidKey(${defines.tsMapKeys}) : void {
+  #requireValidKey(${defines.tsMapKeys}) : void
+  {
     if (!this.#isValidKey(${defines.argList}))
       throw new Error("The ordered key set is not valid!");
   }
 
 ${docs.buildBlock("isValidKeyPrivate", 2)}
-  #isValidKey(${defines.tsMapKeys}) : boolean {
+  #isValidKey(${defines.tsMapKeys}) : boolean
+  {
 ${defines.validateArguments}
     return true;
   }
 ` : ``}
 ${defines.validateValue ? `
 ${docs.buildBlock("isValidValuePrivate", 2)}
-  #isValidValue(${defines.tsValueKey}) : boolean {
+  #isValidValue(${defines.tsValueKey}) : boolean
+  {
     ${defines.validateValue}
     return true;
   }
   ` : ``}
 
-  [Symbol.iterator]() : Iterator<[${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}]> {
+  [Symbol.iterator]() : Iterator<[${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}]>
+  {
     return this.entries();
   }
 

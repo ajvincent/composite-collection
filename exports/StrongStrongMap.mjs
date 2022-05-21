@@ -76,10 +76,10 @@ class StrongStrongMap {
      * @public
      */
     *entries() {
-        for (let valueAndKeySet of this.#root.values()) {
+        for (let __valueAndKeySet__ of this.#root.values()) {
             yield [
-                ...valueAndKeySet.keySet,
-                valueAndKeySet.value
+                ...__valueAndKeySet__.keySet,
+                __valueAndKeySet__.value
             ];
         }
     }
@@ -121,8 +121,36 @@ class StrongStrongMap {
         const __hash__ = this.#hasher.getHashIfExists(key1, key2);
         if (!__hash__)
             return undefined;
-        const valueAndKeySet = this.#root.get(__hash__);
-        return valueAndKeySet?.value;
+        const __valueAndKeySet__ = this.#root.get(__hash__);
+        return __valueAndKeySet__?.value;
+    }
+    /**
+     * Provide a default value for .getDefault().
+     *
+     * @callback __StrongStrongMap_GetDefaultCallback__
+     * @returns {*} The value.
+     */
+    /**
+     * Guarantee a value for a key set.
+     *
+     * @param {*}                                      key1        The first key.
+     * @param {*}                                      key2        The second key.
+     * @param {__StrongStrongMap_GetDefaultCallback__} __default__ A function to provide a default value if necessary.
+     * @returns {*} The value.
+     * @public
+     */
+    getDefault(key1, key2, __default__) {
+        const __hash__ = this.#hasher.getHash(key1, key2);
+        {
+            const __valueAndKeySet__ = this.#root.get(__hash__);
+            if (__valueAndKeySet__)
+                return __valueAndKeySet__.value;
+        }
+        const __keySet__ = [key1, key2];
+        Object.freeze(__keySet__);
+        const value = __default__();
+        this.#root.set(__hash__, { value, keySet: __keySet__ });
+        return value;
     }
     /**
      * Report if the collection has a value for a key set.
@@ -143,8 +171,8 @@ class StrongStrongMap {
      * @public
      */
     *keys() {
-        for (let valueAndKeySet of this.#root.values()) {
-            const [key1, key2] = valueAndKeySet.keySet;
+        for (let __valueAndKeySet__ of this.#root.values()) {
+            const [key1, key2] = __valueAndKeySet__.keySet;
             yield [key1, key2];
         }
     }
@@ -171,8 +199,8 @@ class StrongStrongMap {
      * @public
      */
     *values() {
-        for (let valueAndKeySet of this.#root.values())
-            yield valueAndKeySet.value;
+        for (let __valueAndKeySet__ of this.#root.values())
+            yield __valueAndKeySet__.value;
     }
     [Symbol.iterator]() {
         return this.entries();
