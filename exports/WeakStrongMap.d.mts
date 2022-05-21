@@ -20,6 +20,22 @@ declare class WeakStrongMap<__MK0__ extends object, __MK1__, __V__> {
      */
     get(weakKey: __MK0__, strongKey: __MK1__): __V__ | undefined;
     /**
+     * Provide a default value for .getDefault().
+     *
+     * @callback __WeakStrongMap_GetDefaultCallback__
+     * @returns {*} The value.
+     */
+    /**
+     * Guarantee a value for a key set.
+     *
+     * @param {object}                               weakKey     The weakly held key.
+     * @param {*}                                    strongKey   The strongly held key.
+     * @param {__WeakStrongMap_GetDefaultCallback__} __default__ A function to provide a default value if necessary.
+     * @returns {*} The value.
+     * @public
+     */
+    getDefault(weakKey: __MK0__, strongKey: __MK1__, __default__: () => __V__): __V__;
+    /**
      * Report if the collection has a value for a key set.
      *
      * @param {object} weakKey   The weakly held key.

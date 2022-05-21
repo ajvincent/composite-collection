@@ -67,6 +67,27 @@ ${docs.buildBlock("get", 2)}
     return __key__ ? this.#root.get(__key__) : undefined;
   }
 
+${docs.buildBlock("getDefaultCallback", 2)}
+
+${docs.buildBlock("getDefault", 2)}
+  getDefault(${defines.tsMapKeys.join(", ")}, __default__: () => __V__) : __V__
+  {
+    this.#requireValidKey(${defines.argList});
+    const __key__ = this.#keyComposer.getKey([${
+      defines.weakMapKeys.join(", ")
+    }], [${
+      defines.strongMapKeys.join(", ")
+    }]);
+
+    if (this.#root.has(__key__))
+      return this.#root.get(__key__) as __V__;
+
+    const value = __default__();
+    this.#root.set(__key__, value);
+
+    return value;
+  }
+
 ${docs.buildBlock("has", 2)}
   has(${defines.tsMapKeys.join(", ")}) : boolean
   {

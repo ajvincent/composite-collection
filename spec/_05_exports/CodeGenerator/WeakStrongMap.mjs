@@ -4,6 +4,12 @@ import WeakStrongMap from "../generated/WeakStrongMap.mjs";
 
 describe("CodeGenerator(WeakStrongMap.mjs),", () => {
   let testMap, refMap = new Map;
+
+  const defaultValue1 = Symbol("default value one");
+  const defaultGetter1 = () => defaultValue1;
+  const defaultValue2 = Symbol("default value two");
+  const defaultGetter2 = () => defaultValue2;
+
   beforeEach(() => {
     refMap.clear();
     testMap = new WeakStrongMap();
@@ -19,6 +25,7 @@ describe("CodeGenerator(WeakStrongMap.mjs),", () => {
       "constructor",
       "delete",
       "get",
+      "getDefault",
       "has",
       "isValidKey",
       "set",
@@ -61,6 +68,7 @@ describe("CodeGenerator(WeakStrongMap.mjs),", () => {
     expect(testMap.set(key1, key2, value)).toBe(testMap);
     expect(testMap.has(key1, key2)).toBe(refMap.has(key1));
     expect(testMap.get(key1, key2)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key1, key2, defaultGetter1)).toBe(refMap.get(key1));
 
     expect(testMap.delete(key1, key2)).toBe(true);
     expect(testMap.delete(key1, key2)).toBe(false);
@@ -68,6 +76,7 @@ describe("CodeGenerator(WeakStrongMap.mjs),", () => {
     expect(testMap.set(key1, key2, value)).toBe(testMap);
     expect(testMap.has(key1, key2)).toBe(refMap.has(key1));
     expect(testMap.get(key1, key2)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key1, key2, defaultGetter1)).toBe(refMap.get(key1));
   });
 
   it("setting two values with a constant second key", () => {
@@ -79,10 +88,12 @@ describe("CodeGenerator(WeakStrongMap.mjs),", () => {
     expect(testMap.set(key1, key3, value1)).toBe(testMap);
     expect(testMap.has(key1, key3)).toBe(refMap.has(key1));
     expect(testMap.get(key1, key3)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key1, key3, defaultGetter1)).toBe(refMap.get(key1));
 
     expect(testMap.set(key2, key3, value2)).toBe(testMap);
     expect(testMap.has(key2, key3)).toBe(refMap.has(key2));
     expect(testMap.get(key2, key3)).toBe(refMap.get(key2));
+    expect(testMap.getDefault(key2, key3, defaultGetter1)).toBe(refMap.get(key2));
 
     expect(testMap.delete(key1, key3)).toBe(true);
     expect(testMap.delete(key1, key3)).toBe(false);
@@ -93,6 +104,7 @@ describe("CodeGenerator(WeakStrongMap.mjs),", () => {
     expect(testMap.set(key1, key3, value1)).toBe(testMap);
     expect(testMap.has(key1, key3)).toBe(refMap.has(key1));
     expect(testMap.get(key1, key3)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key1, key3, defaultGetter1)).toBe(refMap.get(key1));
   });
 
   it("setting two values with a constant first key", () => {
@@ -104,10 +116,12 @@ describe("CodeGenerator(WeakStrongMap.mjs),", () => {
     expect(testMap.set(key3, key1, value1)).toBe(testMap);
     expect(testMap.has(key3, key1)).toBe(refMap.has(key1));
     expect(testMap.get(key3, key1)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key3, key1, defaultGetter1)).toBe(refMap.get(key1));
 
     expect(testMap.set(key3, key2, value2)).toBe(testMap);
     expect(testMap.has(key3, key2)).toBe(refMap.has(key2));
     expect(testMap.get(key3, key2)).toBe(refMap.get(key2));
+    expect(testMap.getDefault(key3, key2, defaultGetter1)).toBe(refMap.get(key2));
 
     expect(testMap.delete(key3, key1)).toBe(true);
     expect(testMap.delete(key3, key1)).toBe(false);
@@ -118,6 +132,7 @@ describe("CodeGenerator(WeakStrongMap.mjs),", () => {
     expect(testMap.set(key3, key1, value1)).toBe(testMap);
     expect(testMap.has(key3, key1)).toBe(refMap.has(key1));
     expect(testMap.get(key3, key1)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key3, key1, defaultGetter1)).toBe(refMap.get(key1));
   });
 
   it("setting two values with swapping keys", () => {
@@ -129,10 +144,12 @@ describe("CodeGenerator(WeakStrongMap.mjs),", () => {
     expect(testMap.set(key1, key2, value1)).toBe(testMap);
     expect(testMap.has(key1, key2)).toBe(refMap.has(key1));
     expect(testMap.get(key1, key2)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key1, key2, defaultGetter1)).toBe(refMap.get(key1));
 
     expect(testMap.set(key2, key1, value2)).toBe(testMap);
     expect(testMap.has(key2, key1)).toBe(refMap.has(key2));
     expect(testMap.get(key2, key1)).toBe(refMap.get(key2));
+    expect(testMap.getDefault(key2, key1, defaultGetter1)).toBe(refMap.get(key2));
 
     expect(testMap.delete(key1, key2)).toBe(true);
     expect(testMap.delete(key1, key2)).toBe(false);
@@ -143,6 +160,16 @@ describe("CodeGenerator(WeakStrongMap.mjs),", () => {
     expect(testMap.set(key1, key2, value1)).toBe(testMap);
     expect(testMap.has(key1, key2)).toBe(refMap.has(key1));
     expect(testMap.get(key1, key2)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key1, key2, defaultGetter1)).toBe(refMap.get(key1));
+  });
+
+  it("calling .getDefault() returns default values for undefined key sets", () => {
+    const key1 = {isKey1: true}, key2 = {isKey2: true};
+    refMap.set(key1, defaultGetter1());
+    refMap.set(key2, defaultGetter2());
+
+    expect(testMap.getDefault(key1, key2, defaultGetter1)).toBe(refMap.get(key1));
+    expect(testMap.getDefault(key2, key1, defaultGetter2)).toBe(refMap.get(key2));
   });
 
   it("constructor initializes with iterator of first argument", () => {

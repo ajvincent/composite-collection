@@ -82,6 +82,36 @@ class WeakWeakMap<
   }
 
   /**
+   * Provide a default value for .getDefault().
+   *
+   * @callback __WeakWeakMap_GetDefaultCallback__
+   * @returns {*} The value.
+   */
+
+  /**
+   * Guarantee a value for a key set.
+   *
+   * @param {object}                             key1        The first key.
+   * @param {object}                             key2        The second key.
+   * @param {__WeakWeakMap_GetDefaultCallback__} __default__ A function to provide a default value if necessary.
+   * @returns {*} The value.
+   * @public
+   */
+  getDefault(key1: __MK0__, key2: __MK1__, __default__: () => __V__) : __V__
+  {
+    this.#requireValidKey(key1, key2);
+    const __key__ = this.#keyComposer.getKey([key1, key2], []);
+
+    if (this.#root.has(__key__))
+      return this.#root.get(__key__) as __V__;
+
+    const value = __default__();
+    this.#root.set(__key__, value);
+
+    return value;
+  }
+
+  /**
    * Report if the collection has a value for a key set.
    *
    * @param {object} key1 The first key.

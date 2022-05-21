@@ -19,6 +19,7 @@ describe("CodeGenerator(StrongWeakMap.mjs),", () => {
       "constructor",
       "delete",
       "get",
+      "getDefault",
       "has",
       "isValidKey",
       "set",
