@@ -1,9 +1,6 @@
 import JSDocGenerator from "./JSDocGenerator.mjs";
 import type { ReadonlyDefines } from "./PreprocessorDefines.mjs";
 export declare type TemplateFunction = (defines: ReadonlyDefines, ...docGenerators: JSDocGenerator[]) => string;
-/**
- * @type {Map<string, Function>}
- * @package
- */
-declare const TemplateGenerators: Map<string, TemplateFunction>;
+import { ReadonlyRequiredMap } from "../utilities/RequiredMap.mjs";
+declare const TemplateGenerators: ReadonlyRequiredMap<string, TemplateFunction>;
 export default TemplateGenerators;

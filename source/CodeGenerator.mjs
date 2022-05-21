@@ -389,7 +389,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
     }
     #generateSource() {
         this.#configurationData.collectionTemplate = this.#chooseCollectionTemplate();
-        const generator = TemplateGenerators.get(this.#configurationData.collectionTemplate);
+        const generator = TemplateGenerators.getRequired(this.#configurationData.collectionTemplate);
         let codeSegments = [
             this.#generatedCode,
             generator(this.#defines, ...this.#docGenerators),

@@ -4,6 +4,8 @@ import defaultMethods from "../jsdoc-method-sets/default.mjs";
 import MethodTemplate from "../jsdoc-method-sets/MethodTemplateType.mjs";
 import type { stringAndTemplate } from "../jsdoc-method-sets/MethodTemplateType.mjs";
 
+import { RequiredMap } from "../utilities/RequiredMap.mjs";
+
 void(MethodTemplate);
 void(CollectionType);
 
@@ -81,7 +83,7 @@ class ParamBlock {
  */
 export default class JSDocGenerator {
   /** @type {Map<string, MethodTemplate>} */
-  #methodTemplates: Map<string, MethodTemplate> = new Map;
+  #methodTemplates: RequiredMap<string, MethodTemplate> = new RequiredMap;
 
   /** @type {boolean} */
   #templateKeysReplaced = false;
@@ -143,7 +145,7 @@ export default class JSDocGenerator {
       }
     });
 
-    this.#methodTemplates = new Map(iterable);
+    this.#methodTemplates = new RequiredMap(iterable);
     this.#templateKeysReplaced = false;
   }
 
@@ -231,7 +233,8 @@ export default class JSDocGenerator {
    * @param {CollectionType} parameter The parameter type information.
    * @public
    */
-  addParameter(parameter: CollectionType) : void {
+  addParameter(parameter: CollectionType) : void
+  {
     this.#params.add(parameter);
     if (parameter.argumentName === "value") {
       this.#valueType = parameter.jsDocType;
@@ -242,7 +245,8 @@ export default class JSDocGenerator {
   /**
    * Replace all keys in our method templates.
    */
-  #replaceAllKeys() : void {
+  #replaceAllKeys() : void
+  {
     if (this.#templateKeysReplaced)
       return;
 
@@ -312,7 +316,8 @@ export default class JSDocGenerator {
    * @param {Map<RegExp, string>} keyMap  The directions on what to replace.
    * @returns {string} The revised value.
    */
-  static #replaceKeys(value: string, keyMap: Map<RegExp, string>): string {
+  static #replaceKeys(value: string, keyMap: Map<RegExp, string>): string
+  {
     keyMap.forEach(
       (newKey: string, regexp: RegExp) => {
         value = value.replace(regexp, newKey)
@@ -331,11 +336,7 @@ export default class JSDocGenerator {
    */
   buildBlock(templateName: string, baseIndent: number) : string
   {
-    const template = this.#methodTemplates.get(templateName);
-
-    if (!template)
-      throw new Error("Missing template: " + templateName);
-
+    const template = this.#methodTemplates.getRequired(templateName);
     this.#replaceAllKeys();
 
     const lines = ["/**"];

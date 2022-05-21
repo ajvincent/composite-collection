@@ -1,6 +1,7 @@
 import { DefaultMap, DefaultWeakMap } from "./DefaultMap.mjs";
 
-export class RequiredMap<K, V> extends DefaultMap<K, V> {
+export class RequiredMap<K, V> extends DefaultMap<K, V>
+{
   getRequired(key: K) : V {
     const value = this.get(key);
     if (!value)
@@ -9,7 +10,8 @@ export class RequiredMap<K, V> extends DefaultMap<K, V> {
   }
 }
 
-export class RequiredWeakMap<K extends object, V> extends DefaultWeakMap<K, V> {
+export class RequiredWeakMap<K extends object, V> extends DefaultWeakMap<K, V>
+{
   getRequired(key: K) : V {
     const value = this.get(key);
     if (!value)
@@ -18,7 +20,8 @@ export class RequiredWeakMap<K extends object, V> extends DefaultWeakMap<K, V> {
   }
 }
 
-export type ReadonlyRequiredMap<K, V> = Omit<ReadonlyMap<K, V>, "get"> & {
+export type ReadonlyRequiredMap<K, V> = Omit<ReadonlyMap<K, V>, "get"> &
+{
   getRequired(key: K) : V;
 }
 

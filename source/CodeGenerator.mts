@@ -10,7 +10,8 @@ import CompileTimeOptions from "./CompileTimeOptions.mjs";
 import CollectionType from "./generatorTools/CollectionType.mjs";
 import ConfigurationData from "./generatorTools/ConfigurationData.mjs";
 import JSDocGenerator from "./generatorTools/JSDocGenerator.mjs";
-import TemplateGenerators, { TemplateFunction } from "./generatorTools/TemplateGenerators.mjs";
+import TemplateGenerators from "./generatorTools/TemplateGenerators.mjs";
+
 import {
   GeneratorPromiseSet,
   CodeGeneratorBase,
@@ -566,7 +567,7 @@ export default class CodeGenerator extends CodeGeneratorBase
 
   #generateSource() : void {
     this.#configurationData.collectionTemplate = this.#chooseCollectionTemplate();
-    const generator = TemplateGenerators.get(this.#configurationData.collectionTemplate) as TemplateFunction;
+    const generator = TemplateGenerators.getRequired(this.#configurationData.collectionTemplate);
 
     let codeSegments = [
       this.#generatedCode,

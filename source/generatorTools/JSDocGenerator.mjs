@@ -1,6 +1,7 @@
 import CollectionType from "./CollectionType.mjs";
 import defaultMethods from "../jsdoc-method-sets/default.mjs";
 import MethodTemplate from "../jsdoc-method-sets/MethodTemplateType.mjs";
+import { RequiredMap } from "../utilities/RequiredMap.mjs";
 void (MethodTemplate);
 void (CollectionType);
 /**
@@ -67,7 +68,7 @@ class ParamBlock {
  */
 export default class JSDocGenerator {
     /** @type {Map<string, MethodTemplate>} */
-    #methodTemplates = new Map;
+    #methodTemplates = new RequiredMap;
     /** @type {boolean} */
     #templateKeysReplaced = false;
     /** @type {string} */
@@ -115,7 +116,7 @@ export default class JSDocGenerator {
                 throw new Error(`At row ${index} ("${row[0]}"), ${msg}`);
             }
         });
-        this.#methodTemplates = new Map(iterable);
+        this.#methodTemplates = new RequiredMap(iterable);
         this.#templateKeysReplaced = false;
     }
     static #validateMethodTemplate(template) {
@@ -260,9 +261,7 @@ export default class JSDocGenerator {
      * @public
      */
     buildBlock(templateName, baseIndent) {
-        const template = this.#methodTemplates.get(templateName);
-        if (!template)
-            throw new Error("Missing template: " + templateName);
+        const template = this.#methodTemplates.getRequired(templateName);
         this.#replaceAllKeys();
         const lines = ["/**"];
         if (template.description) {
