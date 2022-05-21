@@ -204,7 +204,7 @@ async function buildCollections(sourceDir, targetDir) {
    */
   const configMap = new Map(/* */)
 
-  const sourceString = `import CollectionConfiguration from "composite-collection/Configuration";`
+  const sourceString = `import CollectionConfiguration from "../CollectionConfiguration.mjs";`
   const targetString = `import CollectionConfiguration from "${urlToClass}"`;
 
   /* The import module resolvers in each target stage directory refer to their own CollectionConfiguration
