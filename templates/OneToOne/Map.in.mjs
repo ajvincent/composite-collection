@@ -190,11 +190,8 @@ ${soloDocs.buildBlock("delete", 2)}
     if (!${weakKeyName})
       return false;
 
-    if (!this.#baseMap.has(${baseMapArgs}))
-      return false;
-
     const __target__ = this.#baseMap.get(${baseMapArgs});
-    if (!__target__) // this should never happen
+    if (!__target__)
       return false;
 
     const __returnValue__ = this.#baseMap.delete(${baseMapArgs});
