@@ -9,7 +9,8 @@ import { Deferred } from "./PromiseTypes.mjs";
 const projectRoot = url.fileURLToPath(new URL("../..", import.meta.url));
 const TSC = path.resolve(projectRoot, "node_modules/typescript/bin/tsc");
 
-export default class InvokeTSC {
+export default class InvokeTSC
+{
   static async withConfigurationFile(
     pathToConfig: string,
     pathToStdOut = ""
@@ -77,7 +78,8 @@ export default class InvokeTSC {
   }
 
   // eslint-disable-next-line
-  static defaultConfiguration() : any {
+  static defaultConfiguration() : any
+  {
     return {
       "compilerOptions": {
         "lib": ["es2021"],

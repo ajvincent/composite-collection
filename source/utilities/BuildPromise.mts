@@ -5,7 +5,8 @@ import type { PromiseResolver } from "./PromiseTypes.mjs";
 
 type setStatusCallback = (value: string) => void
 
-export class BuildPromise {
+export class BuildPromise
+{
   #ownerSet: Readonly<BuildPromiseSet>;
 
   /** @type {string[]} @constant */
@@ -65,10 +66,12 @@ export class BuildPromise {
   #description = "";
 
   /** @type {string} */
-  get description(): string {
+  get description(): string
+  {
     return this.#description;
   }
-  set description(value) {
+  set description(value)
+  {
     if (this.#description)
       throw new Error("Description already set for target " + this.target);
     if (this.#ownerSet.status !== "not started")
@@ -79,7 +82,8 @@ export class BuildPromise {
   /**
    * @param {Function} callback The task.
    */
-  addTask(callback: (() => void)): void {
+  addTask(callback: (() => void)): void
+  {
     if (this.#ownerSet.status !== "not started")
       throw new Error("Build step has started");
     this.#tasks.push(callback);
@@ -88,7 +92,8 @@ export class BuildPromise {
   /**
    * @param {string} target The subtarget.
    */
-  addSubtarget(target: Readonly<string>): void {
+  addSubtarget(target: Readonly<string>): void
+  {
     if (target === "main")
       throw new Error("Cannot include main target");
 
@@ -111,7 +116,8 @@ export class BuildPromise {
   }
 
   /** @type {string[]} */
-  get deepTargets(): string[] {
+  get deepTargets(): string[]
+  {
     let targets = this.#subtargets.slice();
     for (let i = 0; i < targets.length; i++) {
       targets.push(...this.#ownerSet.get(targets[i]).deepTargets);
@@ -119,7 +125,8 @@ export class BuildPromise {
     return targets;
   }
 
-  async #run(): Promise<void> {
+  async #run(): Promise<void>
+  {
     if (this.#writeToConsole) {
       // eslint-disable-next-line no-console
       console.log("Starting " + this.target + "...");
@@ -164,7 +171,8 @@ export class BuildPromise {
     }
   }
 
-  async run(): Promise<void> {
+  async run(): Promise<void>
+  {
     this.#pendingStart(null);
     return await this.#runPromise;
   }
@@ -176,16 +184,19 @@ Object.freeze(BuildPromise);
 export class BuildPromiseSet {
   #status = "not started";
 
-  markReady(): void {
+  markReady(): void
+  {
     if (this.#status === "not started")
       this.#status = "ready";
   }
 
-  markClosed(): void {
+  markClosed(): void
+  {
     this.#status = "closed";
   }
 
-  get status(): string {
+  get status(): string
+  {
     return this.#status;
   }
 
@@ -200,7 +211,8 @@ export class BuildPromiseSet {
   /** @type {boolean} @constant */
   #writeToConsole;
 
-  constructor(writeToConsole = false) {
+  constructor(writeToConsole = false)
+  {
     this.#setStatusCallback = (value: string): void => {
       this.#status = value;
     };
@@ -212,14 +224,16 @@ export class BuildPromiseSet {
    * @param {string} targetName The target name.
    * @returns {BuildPromise} The build promise.
    */
-  get(targetName: string) : BuildPromise {
+  get(targetName: string) : BuildPromise
+  {
     return this.#map.getDefault(
       targetName,
       () => this.#createPromise(targetName)
     );
   }
 
-  #createPromise(targetName: string) : BuildPromise {
+  #createPromise(targetName: string) : BuildPromise
+  {
     return new BuildPromise(this, this.#setStatusCallback, targetName, this.#writeToConsole)
   }
 }

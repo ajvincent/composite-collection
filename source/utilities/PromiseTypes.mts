@@ -9,12 +9,14 @@ TypeScript apparently doesn't recognize arrow functions in constructors.
       this.reject = rej;
   });
 */
-export class Deferred<T> {
+export class Deferred<T>
+{
   resolve: PromiseResolver<T>;
   reject: PromiseRejecter;
   promise: Promise<T>;
 
-  constructor() {
+  constructor()
+  {
     this.resolve = (value): void => {
       void(value);
     };
@@ -28,8 +30,10 @@ export class Deferred<T> {
   }
 }
 
-export class TimeoutPromise<T> extends Deferred<T> {
-  constructor(limit = 5000) {
+export class TimeoutPromise<T> extends Deferred<T>
+{
+  constructor(limit = 5000)
+  {
     super();
     setTimeout(() => this.reject("Time limit expired"), limit);
   }

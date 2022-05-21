@@ -11,7 +11,8 @@ import type { PromiseResolver } from "./PromiseTypes.mjs";
  * @property {Function} resolve The resolver for the cleanup promise.
  * @property {Promise}  promise The cleanup promise.
  */
-export abstract class TemporaryDirWithPromise {
+export abstract class TemporaryDirWithPromise
+{
   tempDir = "";
   resolve: PromiseResolver<unknown>;
   promise: Promise<unknown>
@@ -28,7 +29,8 @@ void(TemporaryDirWithPromise);
  *
  * @returns {TemporaryDirWithPromise} The directory and promise.
  */
-export default async function tempDirWithCleanup() : Promise<TemporaryDirWithPromise> {
+export default async function tempDirWithCleanup() : Promise<TemporaryDirWithPromise>
+{
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "composite-collection-"));
   let { resolve, promise } = new Deferred;
   promise = promise.then(() => fs.rm(tempDir, { recursive: true }));
