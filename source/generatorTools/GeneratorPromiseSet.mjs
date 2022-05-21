@@ -1,5 +1,6 @@
 import { BuildPromise, BuildPromiseSet } from "../utilities/BuildPromise.mjs";
 import { PromiseAllParallel } from "../utilities/PromiseTypes.mjs";
+import { RequiredWeakMap } from "../utilities/RequiredMap.mjs";
 import { TemporaryDirWithPromise } from "../utilities/tempDirWithCleanup.mjs";
 import url from "url";
 import fs from "fs/promises";
@@ -96,5 +97,5 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
 // This is here so the TypeScript generator can derive from it.
 export class CodeGeneratorBase {
 }
-export const generatorToPromiseSet = new WeakMap;
+export const generatorToPromiseSet = new RequiredWeakMap;
 //# sourceMappingURL=GeneratorPromiseSet.mjs.map

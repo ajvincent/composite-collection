@@ -258,7 +258,8 @@ export default class CollectionConfiguration {
         }
         if (this.#configurationData.parameterToTypeMap.has(argumentName))
             throw new Error(`Argument name "${argumentName}" has already been defined!`);
-        if ((argumentName === "value") && !this.#configurationData.collectionTemplate.includes("Set"))
+        if ((argumentName === "value") &&
+            !this.#configurationData.collectionTemplate.includes("Set"))
             throw new Error(`The argument name "value" is reserved!`);
         if (typeof holdWeak !== "boolean")
             throw new Error("holdWeak must be true or false!");

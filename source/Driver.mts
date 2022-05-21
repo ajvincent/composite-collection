@@ -46,7 +46,8 @@ export default class Driver extends InMemoryDriver {
   /**
    * @returns {Promise<void>}
    */
-  async run() : Promise<void> {
+  async run() : Promise<void>
+  {
     this.#pendingStart(null);
     return await this.#runPromise;
   }
@@ -56,7 +57,8 @@ export default class Driver extends InMemoryDriver {
    *
    * @returns {void}
    */
-  async #run(): Promise<void> {
+  async #run(): Promise<void>
+  {
     const fullPaths: string[] = (await readDirsDeep(this.#sourcesPath)).files.filter(
       filePath => path.extname(filePath) === ".mjs"
     );

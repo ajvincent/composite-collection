@@ -1,4 +1,5 @@
 import { BuildPromise, BuildPromiseSet } from "../utilities/BuildPromise.mjs";
+import { RequiredWeakMap } from "../utilities/RequiredMap.mjs";
 export declare class GeneratorPromiseSet extends BuildPromiseSet {
     #private;
     /** @type {BuildPromise} @constant */
@@ -22,4 +23,4 @@ export declare class GeneratorPromiseSet extends BuildPromiseSet {
 }
 export declare class CodeGeneratorBase {
 }
-export declare const generatorToPromiseSet: WeakMap<CodeGeneratorBase, GeneratorPromiseSet>;
+export declare const generatorToPromiseSet: RequiredWeakMap<CodeGeneratorBase, GeneratorPromiseSet>;

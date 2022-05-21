@@ -12,7 +12,6 @@ import { GeneratorPromiseSet, CodeGeneratorBase, generatorToPromiseSet, } from "
 import { Deferred } from "./utilities/PromiseTypes.mjs";
 import fs from "fs/promises";
 import path from "path";
-import { RequiredMap } from "./utilities/RequiredMap.mjs";
 import PreprocessorDefines from "./generatorTools/PreprocessorDefines.mjs";
 class TypeScriptDefs {
     typeConstraint;
@@ -135,7 +134,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
             if (flags)
                 this.#internalFlagSet = flags;
         }
-        const gpSet = generatorToPromiseSet.get(this);
+        const gpSet = generatorToPromiseSet.getRequired(this);
         const hasInitialTasks = gpSet.has(this.#targetPath);
         const bp = gpSet.get(this.#targetPath);
         if (!hasInitialTasks) {
@@ -181,7 +180,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
         }
         this.#buildTypeScriptDefines();
         this.#generateSource();
-        const gpSet = generatorToPromiseSet.get(this);
+        const gpSet = generatorToPromiseSet.getRequired(this);
         if (this.requiresKeyHasher)
             gpSet.requireKeyHasher();
         if (this.requiresWeakKeyComposer)
@@ -256,11 +255,11 @@ export default class CodeGenerator extends CodeGeneratorBase {
         this.#defineValidatorCode(paramsData, "validateMapArguments", pd => mapKeys.includes(pd.argumentName));
         this.#defineValidatorCode(paramsData, "validateSetArguments", pd => setKeys.includes(pd.argumentName));
         if (mapKeys.length) {
-            const collection = data.parameterToTypeMap.get(mapKeys[0]);
+            const collection = data.parameterToTypeMap.getRequired(mapKeys[0]);
             defines.mapArgument0Type = collection.jsDocType;
         }
         if (setKeys.length) {
-            const collection = data.parameterToTypeMap.get(setKeys[0]);
+            const collection = data.parameterToTypeMap.getRequired(setKeys[0]);
             defines.setArgument0Type = collection.jsDocType;
         }
         if (data.valueType) {
@@ -281,7 +280,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
             if (baseData === data)
                 throw new Error("How'd we get here?");
         }
-        const typeDefs = new RequiredMap;
+        const typeDefs = new Map;
         let mapCount = 0, setCount = 0;
         baseData.parameterToTypeMap.forEach((typeMap, arg) => {
             let def, typeArray, keyArray;
@@ -312,8 +311,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
             typeDefs.set("value", new TypeScriptDefs("__V__", data.valueType?.tsType || "unknown"));
             defines.tsValueKey = "value: __V__";
         }
-        const readDefs = typeDefs;
-        defines.tsGenericFull = `<\n  ${Array.from(readDefs.values()).map(def => `${def.typeConstraint}${def.extendsConstraint === "unknown" || def.typeConstraint === "any" ?
+        defines.tsGenericFull = `<\n  ${Array.from(typeDefs.values()).map(def => `${def.typeConstraint}${def.extendsConstraint === "unknown" || def.typeConstraint === "any" ?
             "" :
             " extends " + def.extendsConstraint}`).join(",\n  ")}\n>`.trim();
     }

@@ -1,5 +1,6 @@
 import CollectionConfiguration from "../CollectionConfiguration.mjs";
 import CollectionType from "./CollectionType.mjs";
+import { RequiredMap } from "../utilities/RequiredMap.mjs";
 export declare type oneToOneOptions = {
     pathToBaseModule?: string;
 };
@@ -19,7 +20,7 @@ export default class ConfigurationData {
     /** @type {string} */
     importLines: string;
     /** @type {Map<string, CollectionType>} */
-    parameterToTypeMap: Map<string, CollectionType>;
+    parameterToTypeMap: RequiredMap<string, CollectionType>;
     /** @type {CollectionType | null} */
     valueType: CollectionType | null;
     constructor(className: string, collectionTemplate: string);

@@ -24,7 +24,6 @@ import type { PromiseResolver } from "./utilities/PromiseTypes.mjs";
 
 import fs from "fs/promises";
 import path from "path";
-import { RequiredMap } from "./utilities/RequiredMap.mjs";
 import PreprocessorDefines from "./generatorTools/PreprocessorDefines.mjs";
 
 type InternalFlags = Set<string>;
@@ -190,7 +189,7 @@ export default class CodeGenerator extends CodeGeneratorBase
         this.#internalFlagSet = flags;
     }
 
-    const gpSet = generatorToPromiseSet.get(this) as GeneratorPromiseSet;
+    const gpSet = generatorToPromiseSet.getRequired(this);
     const hasInitialTasks = gpSet.has(this.#targetPath);
     const bp = gpSet.get(this.#targetPath);
 
@@ -248,7 +247,7 @@ export default class CodeGenerator extends CodeGeneratorBase
     this.#buildTypeScriptDefines();
 
     this.#generateSource();
-    const gpSet = generatorToPromiseSet.get(this) as GeneratorPromiseSet;
+    const gpSet = generatorToPromiseSet.getRequired(this);
     if (this.requiresKeyHasher)
       gpSet.requireKeyHasher();
     if (this.requiresWeakKeyComposer)
@@ -261,7 +260,8 @@ export default class CodeGenerator extends CodeGeneratorBase
     return this.#configurationData.className;
   }
 
-  #filePrologue() : string {
+  #filePrologue() : string
+  {
     let fileOverview = "";
     if (!this.#internalFlagSet?.has("no @file") && this.#configurationData.fileOverview) {
       fileOverview = this.#configurationData.fileOverview;
@@ -295,7 +295,8 @@ export default class CodeGenerator extends CodeGeneratorBase
     return prologue.filter(Boolean).join("\n\n");
   }
 
-  #buildDefines() : void {
+  #buildDefines() : void
+  {
     const data = this.#configurationData;
     const defines = this.#defines;
     defines.className = data.className;
@@ -342,12 +343,12 @@ export default class CodeGenerator extends CodeGeneratorBase
     this.#defineValidatorCode(paramsData, "validateSetArguments", pd => setKeys.includes(pd.argumentName));
 
     if (mapKeys.length) {
-      const collection = data.parameterToTypeMap.get(mapKeys[0]) as CollectionType
+      const collection = data.parameterToTypeMap.getRequired(mapKeys[0])
       defines.mapArgument0Type = collection.jsDocType;
     }
 
     if (setKeys.length) {
-      const collection = data.parameterToTypeMap.get(setKeys[0]) as CollectionType;
+      const collection = data.parameterToTypeMap.getRequired(setKeys[0]);
       defines.setArgument0Type = collection.jsDocType;
     }
 
@@ -360,7 +361,8 @@ export default class CodeGenerator extends CodeGeneratorBase
     }
   }
 
-  #buildTypeScriptDefines() : void {
+  #buildTypeScriptDefines() : void
+  {
     const defines = this.#defines;
     let data = this.#configurationData;
     let baseData = data;
@@ -373,7 +375,7 @@ export default class CodeGenerator extends CodeGeneratorBase
         throw new Error("How'd we get here?");
     }
 
-    const typeDefs: RequiredMap<string, TypeScriptDefs> = new RequiredMap;
+    const typeDefs: Map<string, TypeScriptDefs> = new Map;
 
     let mapCount = 0, setCount = 0;
     baseData.parameterToTypeMap.forEach((typeMap, arg) => {
@@ -416,11 +418,9 @@ export default class CodeGenerator extends CodeGeneratorBase
       defines.tsValueKey = "value: __V__";
     }
 
-    const readDefs: RequiredMap<string, TypeScriptDefs> = typeDefs;
-
     defines.tsGenericFull = `<\n  ${
       Array.from(
-        readDefs.values()
+        typeDefs.values()
       ).map(
         def => `${def.typeConstraint}${
           def.extendsConstraint === "unknown" || def.typeConstraint === "any" ?
@@ -447,7 +447,10 @@ export default class CodeGenerator extends CodeGeneratorBase
     return Boolean(validatorCode);
   }
 
-  #buildOneToOneDefines(base: CollectionConfiguration | symbol) : void {
+  #buildOneToOneDefines(
+    base: CollectionConfiguration | symbol
+  ) : void
+  {
     const data = this.#configurationData;
     const baseData = ConfigurationData.cloneData(base) as ConfigurationData;
     const defines = this.#defines;
@@ -475,7 +478,8 @@ export default class CodeGenerator extends CodeGeneratorBase
     defines.baseClassValidatesValue = Boolean(baseData.valueType?.argumentValidator);
   }
 
-  #buildDocGenerator() : void {
+  #buildDocGenerator() : void
+  {
     const generator = new JSDocGenerator(
       this.#configurationData.className,
       !this.#configurationData.collectionTemplate.endsWith("Map")
@@ -492,7 +496,10 @@ export default class CodeGenerator extends CodeGeneratorBase
     this.#docGenerators.push(generator);
   }
 
-  async #buildOneToOneDocGenerators(base: CollectionConfiguration | symbol) : Promise<void> {
+  async #buildOneToOneDocGenerators(
+    base: CollectionConfiguration | symbol
+  ) : Promise<void>
+  {
     const baseData = ConfigurationData.cloneData(base) as ConfigurationData;
 
     // For the solo doc generator, the value argument comes first.
@@ -509,7 +516,8 @@ export default class CodeGenerator extends CodeGeneratorBase
     this.#appendTypesToDocGenerator(base, generator, "_2", true);
   }
 
-  async #createOneToOneGenerator(moduleName: string) : Promise<JSDocGenerator> {
+  async #createOneToOneGenerator(moduleName: string) : Promise<JSDocGenerator>
+  {
     const generator = new JSDocGenerator(
       this.#configurationData.className,
       false
@@ -565,7 +573,8 @@ export default class CodeGenerator extends CodeGeneratorBase
     }
   }
 
-  #generateSource() : void {
+  #generateSource() : void
+  {
     this.#configurationData.collectionTemplate = this.#chooseCollectionTemplate();
     const generator = TemplateGenerators.getRequired(this.#configurationData.collectionTemplate);
 
@@ -583,12 +592,11 @@ export default class CodeGenerator extends CodeGeneratorBase
     }
 
     this.#generatedCode = codeSegments.flat(Infinity).filter(Boolean).join("\n\n") + "\n";
-
-
     this.#generatedCode = this.#generatedCode.replace(/\n{3,}/g, "\n\n");
   }
 
-  #chooseCollectionTemplate() : string {
+  #chooseCollectionTemplate() : string
+  {
     let startTemplate = this.#configurationData.collectionTemplate;
 
     const weakMapCount = this.#configurationData.weakMapKeys?.length || 0,
@@ -619,7 +627,8 @@ export default class CodeGenerator extends CodeGeneratorBase
    * @param {GeneratorPromiseSet} gpSet The current promise set.
    * @returns {Promise<void>}
    */
-  async #writeSource(gpSet: GeneratorPromiseSet) : Promise<void> {
+  async #writeSource(gpSet: GeneratorPromiseSet) : Promise<void>
+  {
     const targetPath = this.#targetPath.replace(/\.mjs$/, ".mts");
     gpSet.scheduleTSC(targetPath);
 
@@ -630,7 +639,10 @@ export default class CodeGenerator extends CodeGeneratorBase
     );
   }
 
-  async #buildOneToOneBase(base: CollectionConfiguration | symbol) : Promise<void> {
+  async #buildOneToOneBase(
+    base: CollectionConfiguration | symbol
+  ) : Promise<void>
+  {
     const baseData = ConfigurationData.cloneData(base) as ConfigurationData;
     if (baseData.className === "WeakMap")
       return;
@@ -638,7 +650,9 @@ export default class CodeGenerator extends CodeGeneratorBase
       throw new Error("assertion: unreachable");
 
     if (this.#configurationData.oneToOneOptions?.pathToBaseModule) {
-      this.#generatedCode += `import ${baseData.className} from "${this.#configurationData.oneToOneOptions.pathToBaseModule}"\n\n`;
+      this.#generatedCode += `import ${baseData.className} from "${
+        this.#configurationData.oneToOneOptions.pathToBaseModule
+      }"\n\n`;
       this.#generatedCode += baseData.importLines;
       this.#generatedCode += "\n";
       return;

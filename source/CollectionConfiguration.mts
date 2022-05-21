@@ -71,7 +71,8 @@ export default class CollectionConfiguration {
    * @param {string}  argumentName The name of the argument.
    * @param {string}  value        The argument value.
    */
-  static #stringArg(argumentName: string, value: string) : void {
+  static #stringArg(argumentName: string, value: string) : void
+  {
     if ((typeof value !== "string") || (value.length === 0))
       throw new Error(`${argumentName} must be a non-empty string!`);
   }
@@ -83,7 +84,8 @@ export default class CollectionConfiguration {
    * @param {identifier} identifier  The identifier to insert into the generated code.
    * @throws
    */
-  static #identifierArg(argName: string, identifier: string) : void {
+  static #identifierArg(argName: string, identifier: string) : void
+  {
     CollectionConfiguration.#stringArg(argName, identifier);
     if (identifier !== identifier.trim())
       throw new Error(argName + " must not have leading or trailing whitespace!");
@@ -127,7 +129,8 @@ export default class CollectionConfiguration {
     return source.substring(body.start, body.end + 1);
   }
 
-  static #jsdocField(argumentName: string, value: string) : void {
+  static #jsdocField(argumentName: string, value: string) : void
+  {
     CollectionConfiguration.#stringArg(argumentName, value);
     if (value.includes("*/"))
       throw new Error(argumentName + " contains a comment that would end the JSDoc block!");
@@ -208,7 +211,8 @@ export default class CollectionConfiguration {
   }
 
   /** @type {string} @package */
-  get currentState() : string {
+  get currentState() : string
+  {
     return this.#stateMachine.currentState;
   }
 
@@ -218,7 +222,8 @@ export default class CollectionConfiguration {
    * @type {string} fileOverview The overview.
    * @public
    */
-  setFileOverview(fileOverview: string) : void {
+  setFileOverview(fileOverview: string) : void
+  {
     return this.#stateMachine.catchErrorState(() => {
       if (!this.#stateMachine.doStateTransition("fileOverview")) {
         this.#throwIfLocked();
@@ -235,7 +240,8 @@ export default class CollectionConfiguration {
    * @param {string} lines The JavaScript code to inject.
    * @returns {void}
    */
-  importLines(lines: string) : void {
+  importLines(lines: string) : void
+  {
     return this.#stateMachine.catchErrorState(() => {
       if (!this.#stateMachine.doStateTransition("importLines")) {
         this.#throwIfLocked();
@@ -274,7 +280,14 @@ export default class CollectionConfiguration {
         argumentValidator = null,
       } = options;
 
-      this.#validateKey(argumentName, holdWeak, jsDocType, tsType, description, argumentValidator);
+      this.#validateKey(
+        argumentName,
+        holdWeak,
+        jsDocType,
+        tsType,
+        description,
+        argumentValidator
+      );
       if (holdWeak && !this.#configurationData.collectionTemplate.startsWith("Weak/Map"))
         throw new Error("Strong maps cannot have weak map keys!");
 
@@ -327,7 +340,14 @@ export default class CollectionConfiguration {
         argumentValidator = null,
       } = options;
 
-      this.#validateKey(argumentName, holdWeak, jsDocType, tsType, description, argumentValidator);
+      this.#validateKey(
+        argumentName,
+        holdWeak,
+        jsDocType,
+        tsType,
+        description,
+        argumentValidator
+      );
       if (holdWeak && !/Weak\/?Set/.test(this.#configurationData.collectionTemplate))
         throw new Error("Strong sets cannot have weak set keys!");
 
@@ -378,7 +398,8 @@ export default class CollectionConfiguration {
     if (this.#configurationData.parameterToTypeMap.has(argumentName))
       throw new Error(`Argument name "${argumentName}" has already been defined!`);
 
-    if ((argumentName === "value") && !this.#configurationData.collectionTemplate.includes("Set"))
+    if ((argumentName === "value") &&
+        !this.#configurationData.collectionTemplate.includes("Set"))
       throw new Error(`The argument name "value" is reserved!`);
 
     if (typeof holdWeak !== "boolean")
@@ -418,7 +439,9 @@ export default class CollectionConfiguration {
 
       let validatorSource = null;
       if (argumentValidator) {
-        validatorSource = CollectionConfiguration.#validatorArg("validator", argumentValidator, "value", true);
+        validatorSource = CollectionConfiguration.#validatorArg(
+          "validator", argumentValidator, "value", true
+        );
       }
 
       this.#configurationData.valueType = new CollectionType(
@@ -518,7 +541,8 @@ export default class CollectionConfiguration {
 
   // #endregion One-to-one map configuration and static helpers.
 
-  lock() : void {
+  lock() : void
+  {
     return this.#stateMachine.catchErrorState(() => {
       if (!this.#stateMachine.doStateTransition("locked"))
         throw new Error("You must define a map key or set element first!");
@@ -546,7 +570,8 @@ export default class CollectionConfiguration {
     });
   }
 
-  #throwIfLocked() : void {
+  #throwIfLocked() : void
+  {
     if (this.#stateMachine.currentState === "locked") {
       throw new Error("You have already locked this configuration!");
     }

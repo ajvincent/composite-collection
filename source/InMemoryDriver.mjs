@@ -3,6 +3,7 @@ import CollectionConfiguration from "./CollectionConfiguration.mjs";
 import CompileTimeOptions from "./CompileTimeOptions.mjs";
 import { GeneratorPromiseSet, generatorToPromiseSet } from "./generatorTools/GeneratorPromiseSet.mjs";
 import { Deferred, PromiseAllParallel } from "./utilities/PromiseTypes.mjs";
+import { RequiredMap } from "./utilities/RequiredMap.mjs";
 import fs from "fs/promises";
 import path from "path";
 void (CollectionConfiguration); // TypeScript drops "unused" modules... needed for JSDoc
@@ -14,7 +15,7 @@ export default class InMemoryDriver {
     /** @type {GeneratorPromiseSet} @constant */
     #generatorPromiseSet;
     // The string is the relativePath.
-    #configs = new Map;
+    #configs = new RequiredMap;
     #pendingStart;
     #runPromise;
     /**
@@ -23,7 +24,9 @@ export default class InMemoryDriver {
      */
     constructor(targetDir, compileOptions) {
         this.#targetsPath = targetDir;
-        this.#compileTimeOptions = compileOptions instanceof CompileTimeOptions ? compileOptions : new CompileTimeOptions(compileOptions);
+        this.#compileTimeOptions = compileOptions instanceof CompileTimeOptions ?
+            compileOptions :
+            new CompileTimeOptions(compileOptions);
         this.#generatorPromiseSet = new GeneratorPromiseSet(this, targetDir);
         let deferred = new Deferred;
         this.#pendingStart = deferred.resolve;
@@ -50,7 +53,7 @@ export default class InMemoryDriver {
         await fs.mkdir(this.#targetsPath, { recursive: true });
         const targetPaths = [];
         await PromiseAllParallel(Array.from(this.#configs.keys()), async (config) => {
-            const relativePath = this.#configs.get(config);
+            const relativePath = this.#configs.getRequired(config);
             try {
                 // XXX ajvincent This path.join call could be problematic.  Why?
                 const targetPath = path.normalize(path.join(this.#targetsPath, relativePath));

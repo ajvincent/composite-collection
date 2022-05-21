@@ -4,6 +4,7 @@ import CompileTimeOptions from "./CompileTimeOptions.mjs";
 
 import { GeneratorPromiseSet, generatorToPromiseSet } from "./generatorTools/GeneratorPromiseSet.mjs";
 import { Deferred, PromiseAllParallel } from "./utilities/PromiseTypes.mjs";
+import { RequiredMap } from "./utilities/RequiredMap.mjs";
 
 import fs from "fs/promises";
 import path from "path";
@@ -23,7 +24,7 @@ export default class InMemoryDriver {
   #generatorPromiseSet: GeneratorPromiseSet;
 
   // The string is the relativePath.
-  #configs: Map<CollectionConfiguration, string> = new Map;
+  #configs: RequiredMap<CollectionConfiguration, string> = new RequiredMap;
 
   #pendingStart: PromiseResolver<null>;
 
@@ -39,7 +40,9 @@ export default class InMemoryDriver {
   )
   {
     this.#targetsPath = targetDir;
-    this.#compileTimeOptions = compileOptions instanceof CompileTimeOptions ? compileOptions : new CompileTimeOptions(compileOptions);
+    this.#compileTimeOptions = compileOptions instanceof CompileTimeOptions ?
+                               compileOptions :
+                               new CompileTimeOptions(compileOptions);
 
     this.#generatorPromiseSet = new GeneratorPromiseSet(this, targetDir);
 
@@ -75,29 +78,32 @@ export default class InMemoryDriver {
     await fs.mkdir(this.#targetsPath, { recursive: true });
     const targetPaths: string[] = [];
 
-    await PromiseAllParallel(Array.from(this.#configs.keys()), async (config: CollectionConfiguration) => {
-      const relativePath = this.#configs.get(config) as string;
-      try {
-        // XXX ajvincent This path.join call could be problematic.  Why?
-        const targetPath = path.normalize(path.join(
-          this.#targetsPath, relativePath
-        ));
-        const generator = new CodeGenerator(
-          config, targetPath, this.#compileTimeOptions
-        );
+    await PromiseAllParallel(
+      Array.from(this.#configs.keys()),
+      async (config: CollectionConfiguration) => {
+        const relativePath = this.#configs.getRequired(config);
+        try {
+          // XXX ajvincent This path.join call could be problematic.  Why?
+          const targetPath = path.normalize(path.join(
+            this.#targetsPath, relativePath
+          ));
+          const generator = new CodeGenerator(
+            config, targetPath, this.#compileTimeOptions
+          );
 
-        generatorToPromiseSet.set(generator, this.#generatorPromiseSet);
-        targetPaths.push(targetPath);
+          generatorToPromiseSet.set(generator, this.#generatorPromiseSet);
+          targetPaths.push(targetPath);
 
-        await generator.run();
-        return generator;
+          await generator.run();
+          return generator;
+        }
+        catch (ex) {
+          // eslint-disable-next-line no-console
+          console.error("Failed on " + relativePath);
+          throw ex;
+        }
       }
-      catch (ex) {
-        // eslint-disable-next-line no-console
-        console.error("Failed on " + relativePath);
-        throw ex;
-      }
-    });
+    );
 
     targetPaths.forEach(t => this.#generatorPromiseSet.generatorsTarget.addSubtarget(t));
     await this.#generatorPromiseSet.runMain();

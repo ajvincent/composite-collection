@@ -1,5 +1,6 @@
 import CollectionType from "./CollectionType.mjs";
 void (CollectionType);
+import { RequiredMap } from "../utilities/RequiredMap.mjs";
 class ParameterNames {
     WeakMap = [];
     Map = [];
@@ -50,7 +51,7 @@ export default class ConfigurationData {
     /** @type {string} */
     importLines = "";
     /** @type {Map<string, CollectionType>} */
-    parameterToTypeMap = new Map;
+    parameterToTypeMap = new RequiredMap;
     /** @type {ParameterNames} */
     #parameterNames = new ParameterNames;
     /** @type {CollectionType | null} */
