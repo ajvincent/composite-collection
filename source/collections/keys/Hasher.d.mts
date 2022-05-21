@@ -11,10 +11,7 @@
  */
 export default class KeyHasher {
     #private;
-    /**
-     * @param {boolean} sortKeys True if we should sort the keys we generate.
-     */
-    constructor(sortKeys?: boolean);
+    constructor();
     getHash(...args: unknown[]): string;
     getHashIfExists(...args: unknown[]): string;
 }

@@ -25,38 +25,33 @@ export default class KeyHasher {
   /** @type {Map<*, string>} @constant */
   #strongValueToHash: StrongRefMap = new DefaultMap();
 
-  /** @type {boolean} @constant */
-  #sortKeys = false;
-
   #incrementer: (() => string) = () => {
     return (++this.#hashCount).toString(36);
   }
 
-  #requireKey(key: unknown) : string {
+  #requireKey(key: unknown) : string
+  {
     if (Object(key) === key) {
       return this.#weakValueToHash.getDefault(key as object, this.#incrementer);
     }
     return this.#strongValueToHash.getDefault(key, this.#incrementer);
   }
 
-  /**
-   * @param {boolean} sortKeys True if we should sort the keys we generate.
-   */
-  constructor(sortKeys = false) {
+  constructor()
+  {
     if (new.target !== KeyHasher)
       throw new Error("You cannot subclass KeyHasher!");
-    this.#sortKeys = Boolean(sortKeys);
     Object.freeze(this);
   }
 
-  getHash(...args: unknown[]) : string {
+  getHash(...args: unknown[]) : string
+  {
     const rv = args.map(arg => this.#requireKey(arg));
-    if (this.#sortKeys)
-      rv.sort();
     return rv.join(",");
   }
 
-  getHashIfExists(...args: unknown[]) : string {
+  getHashIfExists(...args: unknown[]) : string
+  {
     const values: string[] = [];
     const result = args.every(arg => {
       let rv: string | undefined;
@@ -70,13 +65,7 @@ export default class KeyHasher {
       return rv;
     });
 
-    if (!result)
-      return "";
-
-    if (this.#sortKeys)
-      values.sort();
-
-    return values.join(",");
+    return result ? values.join(",") : "";
   }
 }
 
