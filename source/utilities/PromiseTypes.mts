@@ -39,6 +39,23 @@ export class TimeoutPromise<T> extends Deferred<T>
   }
 }
 
+export class SingletonPromise {
+  #resolve: PromiseResolver<void>;
+  #promise;
+  constructor(thenable: () => Promise<unknown>) {
+    this.#resolve = (value): void => {
+      void(value);
+    };
+    this.#promise = (new Promise(res => this.#resolve = res)).then(thenable);
+  }
+
+  async run() : Promise<unknown>
+  {
+    this.#resolve();
+    return await this.#promise;
+  }
+}
+
 /**
  * Evaluate a callback asynchronously for every element of an array, sequentially.
  *

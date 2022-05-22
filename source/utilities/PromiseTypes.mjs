@@ -28,6 +28,20 @@ export class TimeoutPromise extends Deferred {
         setTimeout(() => this.reject("Time limit expired"), limit);
     }
 }
+export class SingletonPromise {
+    #resolve;
+    #promise;
+    constructor(thenable) {
+        this.#resolve = (value) => {
+            void (value);
+        };
+        this.#promise = (new Promise(res => this.#resolve = res)).then(thenable);
+    }
+    async run() {
+        this.#resolve();
+        return await this.#promise;
+    }
+}
 /**
  * Evaluate a callback asynchronously for every element of an array, sequentially.
  *
