@@ -4,6 +4,8 @@ import { fork } from 'child_process';
 import fs from "fs/promises";
 import path from "path";
 
+import runSpecsParallel from "./jasmine-parallel/parent.mjs";
+
 import cleanTree from "./tools/clean.mjs";
 import bootstrapRun from "./tools/bootstrap.mjs";
 import buildExportedCollections from "./tools/buildExportedCollections.mjs";
@@ -68,7 +70,7 @@ const BPSet = new BuildPromiseSet(true);
   const target = BPSet.get("test:run");
   target.description = "Execute Jasmine tests";
   target.addSubtarget("test:build");
-  target.addTask(() => runModule("./node_modules/jasmine/bin/jasmine.js", [], []));
+  target.addTask(() => runSpecsParallel());
 }
 
 { // debug
