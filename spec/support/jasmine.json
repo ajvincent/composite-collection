@@ -3,9 +3,9 @@
   "spec_files": [
     "**/*.mjs",
     "!*/fixtures/**/*.mjs",
-    "!*/generated/**/*.mjs",
-    "!**/support/**/*.mjs",
-    "!/support/**/*.mjs"
+    "!**/configurations/**/*.mjs",
+    "!**/generated/**/*.mjs",
+    "!**/support/**/*.mjs"
   ],
   "stopSpecOnExpectationFailure": false,
   "random": false

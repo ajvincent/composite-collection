@@ -68,4 +68,4 @@ it("Driver generates a valid set of classes", async () => {
     cleanup.resolve();
     await cleanup.promise;
   }
-});
+}, 1000 * 30);
