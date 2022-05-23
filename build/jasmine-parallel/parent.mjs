@@ -106,6 +106,7 @@ class AggregateReporter {
   ]);
 
   static incompletedSpecs = [];
+  static longSpecs = [];
 
   async #run() {
     const startTime = (new Date).getTime();
@@ -118,13 +119,23 @@ class AggregateReporter {
       process.stdout.write(AggregateReporter.statusChars.get(jasmineDone.overallStatus));
       if (jasmineDone.overallStatus === "incomplete")
         AggregateReporter.incompletedSpecs.push(...child.specs);
+
+      if (jasmineDone.totalTime > 10000) {
+        AggregateReporter.longSpecs.push(...child.specs);
+      }
     }));
     console.log("\n\n");
 
     if (AggregateReporter.incompletedSpecs.length) {
-      const incompletedSpecs = AggregateReporter.incompletedSpecs.slice();
-      incompletedSpecs.sort();
-      console.log("Incompleted specs:", incompletedSpecs);
+      const specs = AggregateReporter.incompletedSpecs.slice();
+      specs.sort();
+      console.log("Incompleted specs:", specs);
+    }
+
+    if (AggregateReporter.longSpecs.length) {
+      const specs = AggregateReporter.longSpecs.slice();
+      specs.sort();
+      console.log("Long-running specs:", specs);
     }
 
     const endTime = (new Date).getTime();
