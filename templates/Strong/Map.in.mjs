@@ -71,7 +71,7 @@ ${docs.buildBlock("entries", 2)}
     }
   }
 
-${docs.buildBlock("forEachCallbackMap", 2)}
+${docs.buildBlock("forEach_Map_callback", 2)}
 
 ${docs.buildBlock("forEach_Map", 2)}
   forEach(

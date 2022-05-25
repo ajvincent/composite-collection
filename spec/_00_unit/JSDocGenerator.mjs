@@ -448,8 +448,8 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
-    it("forEachCallbackMap", () => {
-      const generated = generator.buildBlock("forEachCallbackMap", 2);
+    it("forEach_Map_callback", () => {
+      const generated = generator.buildBlock("forEach_Map_callback", 2);
       expect(generated).toEqual(`  /**
    * An user-provided callback to .forEach().
    *
@@ -677,8 +677,8 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
-    it("forEachCallbackMap", () => {
-      const generated = generator.buildBlock("forEachCallbackMap", 2);
+    it("forEach_Map_callback", () => {
+      const generated = generator.buildBlock("forEach_Map_callback", 2);
       expect(generated).toEqual(`  /**
    * An user-provided callback to .forEach().
    *

@@ -123,7 +123,7 @@ export default function defaultMethods() {
                 includeArgs: "mapArguments",
                 footers: ["@public"],
             }],
-        ["forEachCallbackMap", {
+        ["forEach_Map_callback", {
                 returnVoid: true,
                 description: "An user-provided callback to .forEach().",
                 includeArgs: "excludeValue",
