@@ -129,7 +129,7 @@ export default function defaultMethods(): stringAndTemplate[] {
       footers: ["@public"],
     }],
 
-    ["forEachMapSet", {
+    ["forEach_MapSet_callback", {
       returnVoid: true,
       description: "Iterate over the keys under a map in this collection.",
       paramFooters: [

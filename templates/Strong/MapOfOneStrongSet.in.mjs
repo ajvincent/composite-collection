@@ -157,7 +157,7 @@ ${docs.buildBlock("forEachSet", 2)}
     );
   }
 
-${docs.buildBlock("forEachMapSet", 2)}
+${docs.buildBlock("forEach_MapSet_callback", 2)}
   forEachSet(
     ${tsMapKeys},
     __callback__: (

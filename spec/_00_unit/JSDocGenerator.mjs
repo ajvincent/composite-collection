@@ -435,8 +435,8 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
-    it("forEachMapSet", () => {
-      const generated = generator.buildBlock("forEachMapSet", 2);
+    it("forEach_MapSet_callback", () => {
+      const generated = generator.buildBlock("forEach_MapSet_callback", 2);
       expect(generated).toEqual(`  /**
    * Iterate over the keys under a map in this collection.
    *
