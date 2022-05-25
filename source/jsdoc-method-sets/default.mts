@@ -107,7 +107,7 @@ export default function defaultMethods(): stringAndTemplate[] {
       footers: ["@public"],
     }],
 
-    ["forEachMap", {
+    ["forEach_Map", {
       returnVoid: true,
       description: "Iterate over the keys and values.",
       paramFooters: [

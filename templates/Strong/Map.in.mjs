@@ -73,7 +73,7 @@ ${docs.buildBlock("entries", 2)}
 
 ${docs.buildBlock("forEachCallbackMap", 2)}
 
-${docs.buildBlock("forEachMap", 2)}
+${docs.buildBlock("forEach_Map", 2)}
   forEach(
     __callback__: (
       ${defines.tsValueKey},

@@ -413,8 +413,8 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
-    it("forEachMap", () => {
-      const generated = generator.buildBlock("forEachMap", 2);
+    it("forEach_Map", () => {
+      const generated = generator.buildBlock("forEach_Map", 2);
       expect(generated).toEqual(`  /**
    * Iterate over the keys and values.
    *
@@ -666,8 +666,8 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
-    it("forEachMap", () => {
-      const generated = generator.buildBlock("forEachMap", 2);
+    it("forEach_Map", () => {
+      const generated = generator.buildBlock("forEach_Map", 2);
       expect(generated).toEqual(`  /**
    * Iterate over the keys and values.
    *

@@ -93,7 +93,7 @@ export default function defaultMethods() {
                 isGenerator: true,
                 footers: ["@public"],
             }],
-        ["forEachMap", {
+        ["forEach_Map", {
                 returnVoid: true,
                 description: "Iterate over the keys and values.",
                 paramFooters: [
