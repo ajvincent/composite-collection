@@ -9,9 +9,9 @@ import { Deferred } from "./PromiseTypes.mjs";
 const projectRoot = url.fileURLToPath(new URL("../..", import.meta.url));
 const TSC = path.resolve(projectRoot, "node_modules/typescript/bin/tsc");
 
-export default class InvokeTSC
+const InvokeTSC =
 {
-  static async withConfigurationFile(
+  withConfigurationFile: async function(
     pathToConfig: string,
     pathToStdOut = ""
   ) : Promise<number>
@@ -47,9 +47,9 @@ export default class InvokeTSC
         deferred.resolve(code);
     });
     return await deferred.promise;
-  }
+  },
 
-  static async withCustomConfiguration(
+  withCustomConfiguration: async function(
     configLocation: string,
     removeConfigAfter: boolean,
     // eslint-disable-next-line
@@ -75,10 +75,10 @@ export default class InvokeTSC
     }
 
     return result;
-  }
+  },
 
   // eslint-disable-next-line
-  static defaultConfiguration() : any
+  defaultConfiguration: function() : object
   {
     return {
       "compilerOptions": {
@@ -91,3 +91,5 @@ export default class InvokeTSC
     }
   }
 }
+
+export default InvokeTSC;

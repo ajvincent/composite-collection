@@ -6,8 +6,8 @@ import { fork } from "child_process";
 import { Deferred } from "./PromiseTypes.mjs";
 const projectRoot = url.fileURLToPath(new URL("../..", import.meta.url));
 const TSC = path.resolve(projectRoot, "node_modules/typescript/bin/tsc");
-export default class InvokeTSC {
-    static async withConfigurationFile(pathToConfig, pathToStdOut = "") {
+const InvokeTSC = {
+    withConfigurationFile: async function (pathToConfig, pathToStdOut = "") {
         pathToConfig = path.resolve(projectRoot, pathToConfig);
         let stdout = "inherit";
         if (pathToStdOut) {
@@ -30,8 +30,8 @@ export default class InvokeTSC {
                 deferred.resolve(code);
         });
         return await deferred.promise;
-    }
-    static async withCustomConfiguration(configLocation, removeConfigAfter, 
+    },
+    withCustomConfiguration: async function (configLocation, removeConfigAfter, 
     // eslint-disable-next-line
     modifier, pathToStdOut = "") {
         const config = InvokeTSC.defaultConfiguration();
@@ -43,9 +43,9 @@ export default class InvokeTSC {
             await fs.rm(configLocation);
         }
         return result;
-    }
+    },
     // eslint-disable-next-line
-    static defaultConfiguration() {
+    defaultConfiguration: function () {
         return {
             "compilerOptions": {
                 "lib": ["es2021"],
@@ -56,5 +56,6 @@ export default class InvokeTSC {
             },
         };
     }
-}
+};
+export default InvokeTSC;
 //# sourceMappingURL=InvokeTSC.mjs.map
