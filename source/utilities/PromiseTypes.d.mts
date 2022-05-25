@@ -9,10 +9,10 @@ export declare class Deferred<T> {
 export declare class TimeoutPromise<T> extends Deferred<T> {
     constructor(limit?: number);
 }
-export declare class SingletonPromise {
+export declare class SingletonPromise<T> {
     #private;
-    constructor(thenable: () => Promise<unknown>);
-    run(): Promise<unknown>;
+    constructor(thenable: () => Promise<T>);
+    run(): Promise<T>;
 }
 /**
  * Evaluate a callback asynchronously for every element of an array, sequentially.

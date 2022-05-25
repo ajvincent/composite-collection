@@ -9,7 +9,7 @@ import ConfigurationData from "./generatorTools/ConfigurationData.mjs";
 import JSDocGenerator from "./generatorTools/JSDocGenerator.mjs";
 import TemplateGenerators from "./generatorTools/TemplateGenerators.mjs";
 import { GeneratorPromiseSet, CodeGeneratorBase, generatorToPromiseSet, } from "./generatorTools/GeneratorPromiseSet.mjs";
-import { Deferred } from "./utilities/PromiseTypes.mjs";
+import { SingletonPromise } from "./utilities/PromiseTypes.mjs";
 import fs from "fs/promises";
 import path from "path";
 import PreprocessorDefines from "./generatorTools/PreprocessorDefines.mjs";
@@ -63,7 +63,6 @@ export default class CodeGenerator extends CodeGeneratorBase {
     #targetPath;
     /** @type {CompileTimeOptions} @constant */
     #compileOptions;
-    #pendingStart;
     #runPromise;
     /** @type {string} */
     #status = "not started yet";
@@ -97,9 +96,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
         this.#targetPath = targetPath;
         const gpSet = new GeneratorPromiseSet(this, path.dirname(targetPath));
         generatorToPromiseSet.set(this, gpSet);
-        let deferred = new Deferred;
-        this.#pendingStart = deferred.resolve;
-        this.#runPromise = deferred.promise.then(async () => await this.#run());
+        this.#runPromise = new SingletonPromise(async () => await this.#run());
         Object.seal(this);
     }
     /** @type {string} */
@@ -126,8 +123,7 @@ export default class CodeGenerator extends CodeGeneratorBase {
         return this.#generatedCode?.includes(" new WeakKeyComposer(");
     }
     async run() {
-        this.#pendingStart(null);
-        return await this.#runPromise;
+        return await this.#runPromise.run();
     }
     /**
      * @returns {Promise<identifier>} The class name.

@@ -1,7 +1,5 @@
-import { Deferred } from "./PromiseTypes.mjs";
+import { SingletonPromise } from "./PromiseTypes.mjs";
 import { DefaultMap } from "./DefaultMap.mjs";
-
-import type { PromiseResolver } from "./PromiseTypes.mjs";
 
 type setStatusCallback = (value: string) => void
 
@@ -15,9 +13,7 @@ export class BuildPromise
   /** @type {Function[]} @constant */
   #tasks: (() => void)[] = [];
 
-  #pendingStart: PromiseResolver<null>;
-
-  #runPromise: Readonly<Promise<void>>;
+  #runPromise: Readonly<SingletonPromise<void>>;
 
   target: Readonly<string>;
 
@@ -55,10 +51,7 @@ export class BuildPromise
     this.target = target;
     this.description = "";
 
-    let deferred = new Deferred;
-    this.#pendingStart = deferred.resolve;
-    this.#runPromise = deferred.promise.then(() => this.#run());
-
+    this.#runPromise = new SingletonPromise(async () => this.#run());
     this.#writeToConsole = writeToConsole;
   }
 
@@ -125,6 +118,11 @@ export class BuildPromise
     return targets;
   }
 
+  async run(): Promise<void>
+  {
+    await this.#runPromise.run();
+  }
+
   async #run(): Promise<void>
   {
     if (this.#writeToConsole) {
@@ -169,12 +167,6 @@ export class BuildPromise
       // eslint-disable-next-line no-console
       console.log("Completed " + this.target + "!");
     }
-  }
-
-  async run(): Promise<void>
-  {
-    this.#pendingStart(null);
-    return await this.#runPromise;
   }
 }
 

@@ -3,13 +3,14 @@ import CollectionConfiguration from "./CollectionConfiguration.mjs";
 import CompileTimeOptions from "./CompileTimeOptions.mjs";
 
 import { GeneratorPromiseSet, generatorToPromiseSet } from "./generatorTools/GeneratorPromiseSet.mjs";
-import { Deferred, PromiseAllParallel } from "./utilities/PromiseTypes.mjs";
+import {
+  PromiseAllParallel,
+  SingletonPromise
+} from "./utilities/PromiseTypes.mjs";
 import { RequiredMap } from "./utilities/RequiredMap.mjs";
 
 import fs from "fs/promises";
 import path from "path";
-
-import type { PromiseResolver } from "./utilities/PromiseTypes.mjs";
 
 void(CollectionConfiguration); // TypeScript drops "unused" modules... needed for JSDoc
 
@@ -26,9 +27,7 @@ export default class InMemoryDriver {
   // The string is the relativePath.
   #configs: RequiredMap<CollectionConfiguration, string> = new RequiredMap;
 
-  #pendingStart: PromiseResolver<null>;
-
-  #runPromise: Readonly<Promise<void>>;
+  #runPromise: Readonly<SingletonPromise<void>>;
 
   /**
    * @param {string}             targetDir      The destination directory.
@@ -45,10 +44,7 @@ export default class InMemoryDriver {
                                new CompileTimeOptions(compileOptions);
 
     this.#generatorPromiseSet = new GeneratorPromiseSet(this, targetDir);
-
-    let deferred = new Deferred;
-    this.#pendingStart = deferred.resolve;
-    this.#runPromise = deferred.promise.then(async () => await this.#run());
+    this.#runPromise = new SingletonPromise(async () => await this.#run());
   }
 
   /**
@@ -66,9 +62,9 @@ export default class InMemoryDriver {
   /**
    * @returns {Promise<void>}
    */
-  async run() : Promise<void> {
-    this.#pendingStart(null);
-    return await this.#runPromise;
+  async run() : Promise<void>
+  {
+    return await this.#runPromise.run();
   }
 
   /**

@@ -1,4 +1,4 @@
-import { Deferred, PromiseAllParallel } from "./utilities/PromiseTypes.mjs";
+import { SingletonPromise, PromiseAllParallel } from "./utilities/PromiseTypes.mjs";
 import path from "path";
 import readDirsDeep from "./utilities/readDirsDeep.mjs";
 import CompileTimeOptions from "./CompileTimeOptions.mjs";
@@ -7,7 +7,6 @@ void (CompileTimeOptions); // TypeScript drops "unused" modules... needed for JS
 export default class Driver extends InMemoryDriver {
     /** @type {string} @constant */
     #sourcesPath;
-    #pendingStart;
     #runPromise;
     /**
      * @param {string}             configDir The configurations directory.
@@ -23,16 +22,13 @@ export default class Driver extends InMemoryDriver {
         else {
             this.#sourcesPath = configDir;
         }
-        let deferred = new Deferred;
-        this.#pendingStart = deferred.resolve;
-        this.#runPromise = deferred.promise.then(() => this.#run());
+        this.#runPromise = new SingletonPromise(async () => await this.#run());
     }
     /**
      * @returns {Promise<void>}
      */
     async run() {
-        this.#pendingStart(null);
-        return await this.#runPromise;
+        return await this.#runPromise.run();
     }
     /**
      * Build and write the collections for the target directory, based on a source directory of configurations.

@@ -2,7 +2,7 @@ import CodeGenerator from "./CodeGenerator.mjs";
 import CollectionConfiguration from "./CollectionConfiguration.mjs";
 import CompileTimeOptions from "./CompileTimeOptions.mjs";
 import { GeneratorPromiseSet, generatorToPromiseSet } from "./generatorTools/GeneratorPromiseSet.mjs";
-import { Deferred, PromiseAllParallel } from "./utilities/PromiseTypes.mjs";
+import { PromiseAllParallel, SingletonPromise } from "./utilities/PromiseTypes.mjs";
 import { RequiredMap } from "./utilities/RequiredMap.mjs";
 import fs from "fs/promises";
 import path from "path";
@@ -16,7 +16,6 @@ export default class InMemoryDriver {
     #generatorPromiseSet;
     // The string is the relativePath.
     #configs = new RequiredMap;
-    #pendingStart;
     #runPromise;
     /**
      * @param {string}             targetDir      The destination directory.
@@ -28,9 +27,7 @@ export default class InMemoryDriver {
             compileOptions :
             new CompileTimeOptions(compileOptions);
         this.#generatorPromiseSet = new GeneratorPromiseSet(this, targetDir);
-        let deferred = new Deferred;
-        this.#pendingStart = deferred.resolve;
-        this.#runPromise = deferred.promise.then(async () => await this.#run());
+        this.#runPromise = new SingletonPromise(async () => await this.#run());
     }
     /**
      * @param {CollectionConfiguration} configuration The configuration to add.
@@ -43,8 +40,7 @@ export default class InMemoryDriver {
      * @returns {Promise<void>}
      */
     async run() {
-        this.#pendingStart(null);
-        return await this.#runPromise;
+        return await this.#runPromise.run();
     }
     /**
      * Build and write the collections for the target directory, based on a source directory of configurations.

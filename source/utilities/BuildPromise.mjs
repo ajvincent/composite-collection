@@ -1,4 +1,4 @@
-import { Deferred } from "./PromiseTypes.mjs";
+import { SingletonPromise } from "./PromiseTypes.mjs";
 import { DefaultMap } from "./DefaultMap.mjs";
 export class BuildPromise {
     #ownerSet;
@@ -6,7 +6,6 @@ export class BuildPromise {
     #subtargets = [];
     /** @type {Function[]} @constant */
     #tasks = [];
-    #pendingStart;
     #runPromise;
     target;
     #setStatus;
@@ -32,9 +31,7 @@ export class BuildPromise {
             throw new Error("Build step has started");
         this.target = target;
         this.description = "";
-        let deferred = new Deferred;
-        this.#pendingStart = deferred.resolve;
-        this.#runPromise = deferred.promise.then(() => this.#run());
+        this.#runPromise = new SingletonPromise(async () => this.#run());
         this.#writeToConsole = writeToConsole;
     }
     /** @type {string} */
@@ -86,6 +83,9 @@ export class BuildPromise {
         }
         return targets;
     }
+    async run() {
+        await this.#runPromise.run();
+    }
     async #run() {
         if (this.#writeToConsole) {
             // eslint-disable-next-line no-console
@@ -125,10 +125,6 @@ export class BuildPromise {
             // eslint-disable-next-line no-console
             console.log("Completed " + this.target + "!");
         }
-    }
-    async run() {
-        this.#pendingStart(null);
-        return await this.#runPromise;
     }
 }
 Object.freeze(BuildPromise.prototype);

@@ -1,5 +1,4 @@
-import { Deferred, PromiseAllParallel } from "./utilities/PromiseTypes.mjs";
-import type { PromiseResolver } from "./utilities/PromiseTypes.mjs";
+import { SingletonPromise, PromiseAllParallel } from "./utilities/PromiseTypes.mjs";
 
 import path from "path";
 import readDirsDeep from "./utilities/readDirsDeep.mjs";
@@ -13,9 +12,7 @@ export default class Driver extends InMemoryDriver {
   /** @type {string} @constant */
   #sourcesPath: string;
 
-  #pendingStart: PromiseResolver<null>;
-
-  #runPromise: Readonly<Promise<void>>;
+  #runPromise: SingletonPromise<void>;
 
   /**
    * @param {string}             configDir The configurations directory.
@@ -38,9 +35,7 @@ export default class Driver extends InMemoryDriver {
       this.#sourcesPath = configDir;
     }
 
-    let deferred = new Deferred;
-    this.#pendingStart = deferred.resolve;
-    this.#runPromise = deferred.promise.then(() => this.#run());
+    this.#runPromise = new SingletonPromise(async () => await this.#run());
   }
 
   /**
@@ -48,8 +43,7 @@ export default class Driver extends InMemoryDriver {
    */
   async run() : Promise<void>
   {
-    this.#pendingStart(null);
-    return await this.#runPromise;
+    return await this.#runPromise.run();
   }
 
   /**

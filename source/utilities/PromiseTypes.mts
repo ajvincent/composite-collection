@@ -39,17 +39,17 @@ export class TimeoutPromise<T> extends Deferred<T>
   }
 }
 
-export class SingletonPromise {
+export class SingletonPromise<T> {
   #resolve: PromiseResolver<void>;
   #promise;
-  constructor(thenable: () => Promise<unknown>) {
+  constructor(thenable: () => Promise<T>) {
     this.#resolve = (value): void => {
       void(value);
     };
     this.#promise = (new Promise(res => this.#resolve = res)).then(thenable);
   }
 
-  async run() : Promise<unknown>
+  async run() : Promise<T>
   {
     this.#resolve();
     return await this.#promise;

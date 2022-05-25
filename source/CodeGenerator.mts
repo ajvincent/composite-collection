@@ -18,9 +18,7 @@ import {
   generatorToPromiseSet,
 } from "./generatorTools/GeneratorPromiseSet.mjs";
 
-import { Deferred } from "./utilities/PromiseTypes.mjs";
-import type { PromiseResolver } from "./utilities/PromiseTypes.mjs";
-
+import { SingletonPromise } from "./utilities/PromiseTypes.mjs";
 
 import fs from "fs/promises";
 import path from "path";
@@ -89,9 +87,7 @@ export default class CodeGenerator extends CodeGeneratorBase
   /** @type {CompileTimeOptions} @constant */
   #compileOptions: CompileTimeOptions;
 
-  #pendingStart: PromiseResolver<null>;
-
-  #runPromise: Readonly<Promise<string>>;
+  #runPromise: SingletonPromise<string>;
 
   /** @type {string} */
   #status = "not started yet";
@@ -144,9 +140,7 @@ export default class CodeGenerator extends CodeGeneratorBase
     const gpSet = new GeneratorPromiseSet(this, path.dirname(targetPath));
     generatorToPromiseSet.set(this, gpSet);
 
-    let deferred = new Deferred;
-    this.#pendingStart = deferred.resolve;
-    this.#runPromise = deferred.promise.then(async () => await this.#run());
+    this.#runPromise = new SingletonPromise(async () => await this.#run());
 
     Object.seal(this);
   }
@@ -180,8 +174,7 @@ export default class CodeGenerator extends CodeGeneratorBase
   }
 
   async run(): Promise<string> {
-    this.#pendingStart(null);
-    return await this.#runPromise;
+    return await this.#runPromise.run();
   }
 
   /**
