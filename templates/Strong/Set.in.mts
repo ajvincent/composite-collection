@@ -70,7 +70,7 @@ ${docs.buildBlock("delete", 2)}
     return __hash__ ? this.#root.delete(__hash__) : false;
   }
 
-${docs.buildBlock("forEachCallbackSet", 2)}
+${docs.buildBlock("forEach_Set_callback", 2)}
 
 ${docs.buildBlock("forEach_Set", 2)}
   forEach(

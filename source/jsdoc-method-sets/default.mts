@@ -155,7 +155,7 @@ export default function defaultMethods(): stringAndTemplate[] {
       ]
     }],
 
-    ["forEachCallbackSet", {
+    ["forEach_Set_callback", {
       returnVoid: true,
       description: "An user-provided callback to .forEach().",
       includeArgs: "all",

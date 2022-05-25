@@ -137,7 +137,7 @@ export default function defaultMethods() {
                     "@callback ____className___ForEachCallback__"
                 ]
             }],
-        ["forEachCallbackSet", {
+        ["forEach_Set_callback", {
                 returnVoid: true,
                 description: "An user-provided callback to .forEach().",
                 includeArgs: "all",

@@ -797,7 +797,7 @@ describe("JSDocGenerator for maps", () => {
   it(".buildBlock() with no arguments and no value type builds a valid comment block for the template name forEachCallbackSet", () => {
     generator = new JSDocGenerator("SoloStrongMap", false);
 
-    const generated = generator.buildBlock("forEachCallbackSet", 2);
+    const generated = generator.buildBlock("forEach_Set_callback", 2);
     expect(generated).toEqual(`  /**
    * An user-provided callback to .forEach().
    *
@@ -902,8 +902,8 @@ describe("JSDocGenerator for sets", () => {
    */`);
     });
 
-    it("forEachCallbackSet", () => {
-      const generated = generator.buildBlock("forEachCallbackSet", 2);
+    it("forEach_Set_callback", () => {
+      const generated = generator.buildBlock("forEach_Set_callback", 2);
       expect(generated).toEqual(`  /**
    * An user-provided callback to .forEach().
    *
@@ -1063,8 +1063,8 @@ describe("JSDocGenerator for sets", () => {
    */`);
     });
 
-    it("forEachCallbackSet", () => {
-      const generated = generator.buildBlock("forEachCallbackSet", 2);
+    it("forEach_Set_callback", () => {
+      const generated = generator.buildBlock("forEach_Set_callback", 2);
       expect(generated).toEqual(`  /**
    * An user-provided callback to .forEach().
    *
@@ -1153,7 +1153,7 @@ describe("JSDocGenerator for sets", () => {
   it(".buildBlock() with no arguments and a value type builds a valid comment block for the template name forEachCallbackSet", () => {
     generator.addParameter(new CollectionType("value", "Set", "State", "object", "The state of registration."));
 
-    const generated = generator.buildBlock("forEachCallbackSet", 2);
+    const generated = generator.buildBlock("forEach_Set_callback", 2);
     expect(generated).toEqual(`  /**
    * An user-provided callback to .forEach().
    *

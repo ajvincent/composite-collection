@@ -113,7 +113,7 @@ ${docs.buildBlock("forEachSet_MapSet", 2)}
     );
   }
 
-${docs.buildBlock("forEachCallbackSet", 2)}
+${docs.buildBlock("forEach_Set_callback", 2)}
 
 ${docs.buildBlock("getSizeOfSet", 2)}
   getSizeOfSet(${tsMapKeys}) : number
