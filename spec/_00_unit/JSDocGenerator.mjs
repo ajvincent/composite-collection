@@ -424,6 +424,30 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
+    it("forEachSet", () => {
+      const generated = generator.buildBlock("forEachSet", 2);
+      expect(generated).toEqual(`  /**
+   * Iterate over the keys.
+   *
+   * @param {__SoloStrongMap_ForEachCallback__} __callback__ A function to invoke for each iteration.
+   * @param {object}                            __thisArg__  Value to use as this when executing callback.
+   * @public
+   */`);
+    });
+
+    it("forEachMapSet", () => {
+      const generated = generator.buildBlock("forEachMapSet", 2);
+      expect(generated).toEqual(`  /**
+   * Iterate over the keys under a map in this collection.
+   *
+   * @param {Car}                               car          The car.
+   * @param {Person}                            driver       The driver of the car.
+   * @param {__SoloStrongMap_ForEachCallback__} __callback__ A function to invoke for each iteration.
+   * @param {object}                            __thisArg__  Value to use as this when executing callback.
+   * @public
+   */`);
+    });
+
     it("forEachCallbackMap", () => {
       const generated = generator.buildBlock("forEachCallbackMap", 2);
       expect(generated).toEqual(`  /**
