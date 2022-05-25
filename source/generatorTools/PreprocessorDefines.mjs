@@ -2,7 +2,6 @@ export default class PreprocessorDefines {
     className = "";
     importLines = "";
     argList = "";
-    argNameList = "";
     mapArgList = "";
     setArgList = "";
     weakMapKeys = [];
@@ -19,10 +18,8 @@ export default class PreprocessorDefines {
     validateValue = "";
     mapArgument0Type = "";
     setArgument0Type = "";
-    valueType = "";
     // one-to-one
     baseClassName = "";
-    configureOptions = null;
     weakKeyName = "";
     baseArgList = [];
     bindArgList = [];

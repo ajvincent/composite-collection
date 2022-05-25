@@ -231,7 +231,6 @@ export default class CodeGenerator extends CodeGeneratorBase {
         {
             const keys = Array.from(data.parameterToTypeMap.keys());
             defines.argList = keys.join(", ");
-            defines.argNameList = CodeGenerator.buildArgNameList(keys);
         }
         {
             const mapArgs = [], setArgs = [];
@@ -268,7 +267,6 @@ export default class CodeGenerator extends CodeGeneratorBase {
             let filter = (data.valueType.argumentValidator || "").trim();
             if (filter)
                 defines.validateValue = filter + "\n    ";
-            defines.valueType = data.valueType.jsDocType;
         }
     }
     #buildTypeScriptDefines() {
@@ -332,7 +330,6 @@ export default class CodeGenerator extends CodeGeneratorBase {
         const defines = this.#defines;
         defines.className = data.className;
         defines.baseClassName = baseData.className;
-        defines.configureOptions = data.oneToOneOptions;
         defines.importLines = data.importLines;
         const weakKeyName = data.oneToOneKeyName;
         defines.weakKeyName = weakKeyName;

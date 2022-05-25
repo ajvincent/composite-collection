@@ -1,10 +1,7 @@
-import type { oneToOneOptions } from "./ConfigurationData.mjs";
-
 export default class PreprocessorDefines {
   className = "";
   importLines = "";
   argList = "";
-  argNameList = "";
 
   mapArgList = "";
   setArgList = "";
@@ -25,11 +22,9 @@ export default class PreprocessorDefines {
 
   mapArgument0Type = "";
   setArgument0Type = "";
-  valueType = "";
 
   // one-to-one
   baseClassName = "";
-  configureOptions: oneToOneOptions | null = null;
   weakKeyName = "";
   baseArgList: string[] = [];
   bindArgList: string[] = [];
