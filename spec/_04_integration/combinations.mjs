@@ -11,7 +11,7 @@ import url from "url";
 const key8 = {}, key4 = {}, key2 = {}, key1 = {}, value = {};
 
 describe("Combinations of auto-generated configurations:", () => {
-  let cleanup
+  let cleanup;
   beforeAll(async () => {
     cleanup = await tempDirWithCleanup();
   });
