@@ -118,7 +118,7 @@ export default function defaultMethods(): stringAndTemplate[] {
       footers: ["@public"],
     }],
 
-    ["forEachSet", {
+    ["forEach_Set", {
       returnVoid: true,
       description: "Iterate over the keys.",
       paramFooters: [

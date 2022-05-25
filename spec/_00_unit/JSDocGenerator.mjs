@@ -424,8 +424,8 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
-    it("forEachSet", () => {
-      const generated = generator.buildBlock("forEachSet", 2);
+    it("forEach_Set", () => {
+      const generated = generator.buildBlock("forEach_Set", 2);
       expect(generated).toEqual(`  /**
    * Iterate over the keys.
    *
@@ -891,8 +891,8 @@ describe("JSDocGenerator for sets", () => {
    */`);
     });
 
-    it("forEachSet", () => {
-      const generated = generator.buildBlock("forEachSet", 2);
+    it("forEach_Set", () => {
+      const generated = generator.buildBlock("forEach_Set", 2);
       expect(generated).toEqual(`  /**
    * Iterate over the keys.
    *
@@ -1052,8 +1052,8 @@ describe("JSDocGenerator for sets", () => {
    */`);
     });
 
-    it("forEachSet", () => {
-      const generated = generator.buildBlock("forEachSet", 2);
+    it("forEach_Set", () => {
+      const generated = generator.buildBlock("forEach_Set", 2);
       expect(generated).toEqual(`  /**
    * Iterate over the keys.
    *

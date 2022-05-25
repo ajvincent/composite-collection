@@ -67,7 +67,7 @@ ${docs.buildBlock("delete", 2)}
 
 ${docs.buildBlock("forEachCallbackSet", 2)}
 
-${docs.buildBlock("forEachSet", 2)}
+${docs.buildBlock("forEach_Set", 2)}
   forEach(
     __callback__: (
       ${defines.tsSetKeys.join(",\n      ")},

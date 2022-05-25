@@ -103,7 +103,7 @@ export default function defaultMethods() {
                 includeArgs: "none",
                 footers: ["@public"],
             }],
-        ["forEachSet", {
+        ["forEach_Set", {
                 returnVoid: true,
                 description: "Iterate over the keys.",
                 paramFooters: [

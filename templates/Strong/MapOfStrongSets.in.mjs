@@ -149,7 +149,7 @@ ${docs.buildBlock("deleteSets", 2)}
     return true;
   }
 
-${docs.buildBlock("forEachSet", 2)}
+${docs.buildBlock("forEach_Set", 2)}
   forEach(
     __callback__: (
       ${defines.tsMapTypes.join(",\n      ")},
