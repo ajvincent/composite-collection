@@ -17,7 +17,7 @@ export class GeneratorPromiseSet extends BuildPromiseSet
 {
   #knownTargets: Set<string> = new Set;
 
-  #owner: object;
+  owner: object;
   #targetDir: string;
 
   #TypeScriptModules: string[] = [];
@@ -32,7 +32,12 @@ export class GeneratorPromiseSet extends BuildPromiseSet
   constructor(owner: object, targetDir: string)
   {
     super();
-    this.#owner = owner;
+    this.owner = owner;
+    Reflect.defineProperty(this, "owner", {
+      writable: false,
+      enumerable: true,
+      configurable: false
+    });
     this.#knownTargets.add(this.main.target);
 
     this.#targetDir = targetDir;
@@ -49,11 +54,6 @@ export class GeneratorPromiseSet extends BuildPromiseSet
 
     const invokeTSCTarget = this.get("(invoke TypeScript compiler)");
     invokeTSCTarget.addTask(() => this.#invokeTSC());
-  }
-
-  get owner() : object
-  {
-    return this.#owner;
   }
 
   /**

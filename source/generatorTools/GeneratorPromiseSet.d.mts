@@ -2,10 +2,10 @@ import { BuildPromise, BuildPromiseSet } from "../utilities/BuildPromise.mjs";
 import { RequiredWeakMap } from "../utilities/RequiredMap.mjs";
 export declare class GeneratorPromiseSet extends BuildPromiseSet {
     #private;
+    owner: object;
     /** @type {BuildPromise} @constant */
     generatorsTarget: BuildPromise;
     constructor(owner: object, targetDir: string);
-    get owner(): object;
     /**
      * @param {string} targetName The target name.
      * @returns {BuildPromise} The build promise.

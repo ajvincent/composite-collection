@@ -11,7 +11,7 @@ void (BuildPromise); // necessary for type checking in eslint on the generated m
 void (TemporaryDirWithPromise);
 export class GeneratorPromiseSet extends BuildPromiseSet {
     #knownTargets = new Set;
-    #owner;
+    owner;
     #targetDir;
     #TypeScriptModules = [];
     #requireDefaultMap = false;
@@ -21,7 +21,12 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
     generatorsTarget;
     constructor(owner, targetDir) {
         super();
-        this.#owner = owner;
+        this.owner = owner;
+        Reflect.defineProperty(this, "owner", {
+            writable: false,
+            enumerable: true,
+            configurable: false
+        });
         this.#knownTargets.add(this.main.target);
         this.#targetDir = targetDir;
         this.generatorsTarget = this.get("(generators)");
@@ -34,9 +39,6 @@ export class GeneratorPromiseSet extends BuildPromiseSet {
         exportKeysTarget.addTask(() => this.#exportKeyFiles());
         const invokeTSCTarget = this.get("(invoke TypeScript compiler)");
         invokeTSCTarget.addTask(() => this.#invokeTSC());
-    }
-    get owner() {
-        return this.#owner;
     }
     /**
      * @param {string} targetName The target name.
