@@ -111,7 +111,7 @@ ${docs.buildBlock("deleteSets", 2)}
     return this.#root.delete(${mapKeys});
   }
 
-${docs.buildBlock("forEach_MapSet_callback", 2)}
+${docs.buildBlock("forEachSet_MapSet", 2)}
   forEachSet(
     ${tsMapKeys},
     __callback__: (

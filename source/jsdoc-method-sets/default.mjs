@@ -113,7 +113,7 @@ export default function defaultMethods() {
                 includeArgs: "none",
                 footers: ["@public"],
             }],
-        ["forEach_MapSet_callback", {
+        ["forEachSet_MapSet", {
                 returnVoid: true,
                 description: "Iterate over the keys under a map in this collection.",
                 paramFooters: [

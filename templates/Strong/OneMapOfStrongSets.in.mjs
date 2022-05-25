@@ -160,7 +160,7 @@ ${docs.buildBlock("forEach_Set", 2)}
     );
   }
 
-${docs.buildBlock("forEach_MapSet_callback", 2)}
+${docs.buildBlock("forEachSet_MapSet", 2)}
   forEachSet(
     ${tsMapKeys},
     __callback__: (
