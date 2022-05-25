@@ -383,7 +383,9 @@ export default class CollectionConfiguration {
   {
     CollectionConfiguration.#identifierArg("argumentName", argumentName);
     CollectionConfiguration.#jsdocField("jsDocType", jsDocType);
-    CollectionConfiguration.#identifierArg("tsType", tsType);
+    CollectionConfiguration.#stringArg("tsType", tsType);
+    if (/^__.*__$/.test(tsType))
+      throw new Error("This module reserves variable names starting and ending with a double underscore for itself.");
     CollectionConfiguration.#jsdocField("description", description);
 
     if (argumentValidator !== null) {
