@@ -48,8 +48,8 @@ it("Driver generates a valid set of classes", async () => {
 
       await fs.mkdir(configTargetDir, { recursive: true });
       await fs.copyFile(
-        path.join(configSourceDir, "WeakFunctionMultiMap.mjs"),
-        path.join(configTargetDir, "WeakFunctionMultiMap.mjs")
+        path.join(configSourceDir, "WeakMapOfStrongSets.mjs"),
+        path.join(configTargetDir, "WeakMapOfStrongSets.mjs")
       );
     }
 

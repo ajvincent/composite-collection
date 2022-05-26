@@ -65,7 +65,6 @@
     "./WeakStrongSet": "./exports/WeakStrongSet.mjs",
     "./StrongMapOfStrongSets": "./exports/StrongMapOfStrongSets.mjs",
     "./WeakMapOfStrongSets": "./exports/WeakMapOfStrongSets.mjs",
-    "./WeakFunctionMultiMap": "./exports/WeakFunctionMultiMap.mjs",
     "./OneToOneSimpleMap": "./exports/OneToOneSimpleMap.mjs",
     "./OneToOneStrongMap": "./exports/OneToOneStrongMap.mjs",
     "./OneToOneWeakMap": "./exports/OneToOneWeakMap.mjs"

@@ -7,9 +7,9 @@ const driver = new CompositeDriver(
 );
 await driver.run();
 
-const WeakFunctionMultiMap = (await import(new URL("collections/WeakFunctionMultiMap.mjs", import.meta.url))).default;
+const WeakMapOfStrongSets = (await import(new URL("collections/WeakMapOfStrongSets.mjs", import.meta.url))).default;
 
-const wfMM = new WeakFunctionMultiMap();
+const wfMM = new WeakMapOfStrongSets();
 const key1 = {}, callback1 = function() {}, callback2 = function() {};
 wfMM.add(key1, callback1);
 wfMM.add(key1, callback2);
