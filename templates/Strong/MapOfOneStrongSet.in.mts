@@ -16,6 +16,7 @@ const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefine
 
   const tsAllTypes = [...defines.tsMapTypes, ...defines.tsSetTypes].join(", ");
   const tsAllKeys = [...defines.tsMapKeys, ...defines.tsSetKeys].join(", ");
+  const tsMapTypes = defines.tsMapTypes.join(", ");
   const tsSetTypes = defines.tsSetTypes.join(", ");
   const tsMapKeys = defines.tsMapKeys.join(", ");
   const allKeys = [...defines.mapKeys, ...defines.setKeys].join(", ");
@@ -32,6 +33,9 @@ class ${defines.className}${defines.tsGenericFull} {
 
   /** @type {Map<hash, Map<${defines.setArgument0Type}, *[]>>} @constant */
   #outerMap: DefaultMap<string, Map<${tsSetTypes}, [${tsAllTypes}]>> = new DefaultMap();
+
+  /** @type {Map<hash, *[]>} @constant */
+  #hashToMapKeys: Map<string, [${tsMapTypes}]> = new Map;
 
   /** @type {KeyHasher} @constant */
   #mapHasher = new KeyHasher();
@@ -76,6 +80,7 @@ ${docs.buildBlock("add", 2)}
 
     if (!__innerMap__.has(${setKeys})) {
       __innerMap__.set(${setKeys}, [${allKeys}]);
+      this.#hashToMapKeys.set(__mapHash__, [${mapKeys}]);
       this.#sizeOfAll++;
     }
 
@@ -101,6 +106,7 @@ ${docs.buildBlock("addSets", 2)}
       }
     });
 
+    this.#hashToMapKeys.set(__mapHash__, [${mapKeys}]);
     return this;
   }
 
@@ -127,6 +133,7 @@ ${docs.buildBlock("delete", 2)}
 
     if (__innerMap__.size === 0) {
       this.#outerMap.delete(__mapHash__);
+      this.#hashToMapKeys.delete(__mapHash__);
     }
 
     return true;
@@ -140,6 +147,7 @@ ${docs.buildBlock("deleteSets", 2)}
       return false;
 
     this.#outerMap.delete(__mapHash__);
+    this.#hashToMapKeys.delete(__mapHash__);
     this.#sizeOfAll -= __innerMap__.size;
     return true;
   }
@@ -161,6 +169,24 @@ ${docs.buildBlock("forEach_Set", 2)}
     );
   }
 
+${docs.buildBlock("forEach_Set_callback", 2)}
+
+${docs.buildBlock("forEachMap_MapSet", 2)}
+  forEachMap(
+    __callback__: (
+      ${defines.tsMapKeys.join(",\n      ")},
+      __collection__: ${defines.className}<${tsAllTypes}>
+    ) => void,
+    __thisArg__: unknown
+  ) : void
+  {
+    this.#hashToMapKeys.forEach(([${mapKeys}]) => {
+      __callback__.apply(__thisArg__, [${mapKeys}, this]);
+    });
+  }
+
+${docs.buildBlock("forEachMap_MapSet_callback", 2)}
+
 ${docs.buildBlock("forEachSet_MapSet", 2)}
   forEachSet(
     ${tsMapKeys},
@@ -181,8 +207,6 @@ ${docs.buildBlock("forEachSet_MapSet", 2)}
       __keySet__ => __callback__.apply(__thisArg__, [...__keySet__, this])
     );
   }
-
-${docs.buildBlock("forEach_Set_callback", 2)}
 
 ${docs.buildBlock("has", 2)}
   has(${tsAllKeys}) : boolean

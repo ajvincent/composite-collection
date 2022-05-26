@@ -160,6 +160,24 @@ ${docs.buildBlock("forEach_Set", 2)}
     );
   }
 
+${docs.buildBlock("forEach_Set_callback", 2)}
+
+${docs.buildBlock("forEachMap_MapSet", 2)}
+  forEachMap(
+    __callback__: (
+      ${defines.tsMapKeys.join(",\n      ")},
+      __collection__: ${defines.className}<${tsAllTypes}>
+    ) => void,
+    __thisArg__: unknown
+  ) : void
+  {
+    for (let ${mapKeys} of this.#outerMap.keys()) {
+      __callback__.apply(__thisArg__, [${mapKeys}, this]);
+    }
+  }
+
+${docs.buildBlock("forEachMap_MapSet_callback", 2)}
+
 ${docs.buildBlock("forEachSet_MapSet", 2)}
   forEachSet(
     ${tsMapKeys},
@@ -180,8 +198,6 @@ ${docs.buildBlock("forEachSet_MapSet", 2)}
       __keySet__ => __callback__.apply(__thisArg__, [...__keySet__, this])
     );
   }
-
-${docs.buildBlock("forEach_Set_callback", 2)}
 
 ${docs.buildBlock("has", 2)}
   has(${tsAllKeys}) : boolean

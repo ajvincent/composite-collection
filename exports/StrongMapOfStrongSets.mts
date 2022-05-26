@@ -205,6 +205,43 @@ class StrongMapOfStrongSets<
   }
 
   /**
+   * An user-provided callback to .forEach().
+   *
+   * @callback __StrongMapOfStrongSets_ForEachCallback__
+   * @param {*}                     mapKey         The map key.
+   * @param {*}                     setKey         The set key.
+   * @param {StrongMapOfStrongSets} __collection__ This collection.
+   */
+
+  /**
+   * Iterate over the map keys.
+   *
+   * @param {__StrongMapOfStrongSets_ForEachMapCallback__} __callback__ A function to invoke for each iteration.
+   * @param {object}                                       __thisArg__  Value to use as this when executing callback.
+   * @public
+   */
+  forEachMap(
+    __callback__: (
+      mapKey: __MK0__,
+      __collection__: StrongMapOfStrongSets<__MK0__, __SK0__>
+    ) => void,
+    __thisArg__: unknown
+  ) : void
+  {
+    for (let mapKey of this.#outerMap.keys()) {
+      __callback__.apply(__thisArg__, [mapKey, this]);
+    }
+  }
+
+  /**
+   * An user-provided callback to .forEachMap().
+   *
+   * @callback __StrongMapOfStrongSets_ForEachMapCallback__
+   * @param {*}                     mapKey         The map key.
+   * @param {StrongMapOfStrongSets} __collection__ This collection.
+   */
+
+  /**
    * Iterate over the keys under a map in this collection.
    *
    * @param {*}                                         mapKey       The map key.
@@ -231,15 +268,6 @@ class StrongMapOfStrongSets<
       setKey => __callback__.apply(__thisArg__, [mapKey, setKey, this])
     );
   }
-
-  /**
-   * An user-provided callback to .forEach().
-   *
-   * @callback __StrongMapOfStrongSets_ForEachCallback__
-   * @param {*}                     mapKey         The map key.
-   * @param {*}                     setKey         The set key.
-   * @param {StrongMapOfStrongSets} __collection__ This collection.
-   */
 
   /**
    * Report if the collection has a value for a key set.

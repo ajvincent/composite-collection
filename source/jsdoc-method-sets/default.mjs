@@ -113,6 +113,16 @@ export default function defaultMethods() {
                 includeArgs: "none",
                 footers: ["@public"],
             }],
+        ["forEachMap_MapSet", {
+                returnVoid: true,
+                description: "Iterate over the map keys.",
+                paramFooters: [
+                    ["____className___ForEachMapCallback__", "__callback__", "A function to invoke for each iteration."],
+                    ["object", "__thisArg__", "Value to use as this when executing callback."],
+                ],
+                includeArgs: "none",
+                footers: ["@public"],
+            }],
         ["forEachSet_MapSet", {
                 returnVoid: true,
                 description: "Iterate over the keys under a map in this collection.",
@@ -136,6 +146,17 @@ export default function defaultMethods() {
                 headers: [
                     "@callback ____className___ForEachCallback__"
                 ]
+            }],
+        ["forEachMap_MapSet_callback", {
+                returnVoid: true,
+                description: "An user-provided callback to .forEachMap().",
+                includeArgs: "mapArguments",
+                paramFooters: [
+                    ["__className__", "__collection__", "This collection."]
+                ],
+                headers: [
+                    "@callback ____className___ForEachMapCallback__",
+                ],
             }],
         ["forEach_Set_callback", {
                 returnVoid: true,

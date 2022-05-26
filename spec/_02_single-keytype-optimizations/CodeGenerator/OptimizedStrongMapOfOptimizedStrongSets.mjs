@@ -21,6 +21,40 @@ describeForAllThree("OptimizedStrongMapOfOptimizedStrongSets", (modules, mapMod,
     firstSetKey = null;
   });
 
+  it("class is frozen", () => {
+    expect(Object.isFrozen(OptimizedStrongMapOfOptimizedStrongSets)).toBe(true);
+    expect(Object.isFrozen(OptimizedStrongMapOfOptimizedStrongSets.prototype)).toBe(true);
+  });
+
+  it("class only exposes public methods", () => {
+    expect(Reflect.ownKeys(OptimizedStrongMapOfOptimizedStrongSets.prototype)).toEqual([
+      "constructor",
+      "size",
+      "getSizeOfSet",
+      "mapSize",
+      "add",
+      "addSets",
+      "clear",
+      "delete",
+      "deleteSets",
+      "forEach",
+      "forEachMap",
+      "forEachSet",
+      "has",
+      "hasSets",
+      "isValidKey",
+      "values",
+      "valuesSet",
+      Symbol.iterator,
+    ]);
+  });
+
+  it("instances have only symbol public properties", () => {
+    expect(Reflect.ownKeys(mapOfSets)).toEqual([
+      Symbol.toStringTag,
+    ]);
+  });
+
   it("starts out empty", () => {
     expect(mapOfSets.size).toBe(0);
     expect(mapOfSets.getSizeOfSet(...firstMapKey)).toBe(0);
@@ -34,6 +68,9 @@ describeForAllThree("OptimizedStrongMapOfOptimizedStrongSets", (modules, mapMod,
 
     let spy = jasmine.createSpy(), thisObj = {};
     mapOfSets.forEach(spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(0);
+
+    mapOfSets.forEachMap(spy, thisObj);
     expect(spy).toHaveBeenCalledTimes(0);
 
     mapOfSets.forEachSet(...firstMapKey, spy, thisObj);
@@ -60,6 +97,12 @@ describeForAllThree("OptimizedStrongMapOfOptimizedStrongSets", (modules, mapMod,
     mapOfSets.forEach(spy, thisObj);
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, ...firstSetKey, mapOfSets]);
+    expect(spy.calls.thisFor(0)).toBe(thisObj);
+    spy.calls.reset();
+
+    mapOfSets.forEachMap(spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, mapOfSets]);
     expect(spy.calls.thisFor(0)).toBe(thisObj);
     spy.calls.reset();
 
@@ -98,6 +141,9 @@ describeForAllThree("OptimizedStrongMapOfOptimizedStrongSets", (modules, mapMod,
     mapOfSets.forEach(spy, thisObj);
     expect(spy).toHaveBeenCalledTimes(0);
 
+    mapOfSets.forEachMap(spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(0);
+
     mapOfSets.forEachSet(...firstMapKey, spy, thisObj);
     expect(spy).toHaveBeenCalledTimes(0);
 
@@ -121,6 +167,9 @@ describeForAllThree("OptimizedStrongMapOfOptimizedStrongSets", (modules, mapMod,
 
     let spy = jasmine.createSpy(), thisObj = {};
     mapOfSets.forEach(spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(0);
+
+    mapOfSets.forEachMap(spy, thisObj);
     expect(spy).toHaveBeenCalledTimes(0);
 
     mapOfSets.forEachSet(...firstMapKey, spy, thisObj);
@@ -154,6 +203,12 @@ describeForAllThree("OptimizedStrongMapOfOptimizedStrongSets", (modules, mapMod,
     expect(spy.calls.thisFor(1)).toBe(thisObj);
     spy.calls.reset();
 
+    mapOfSets.forEachMap(spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, mapOfSets]);
+    expect(spy.calls.thisFor(0)).toBe(thisObj);
+    spy.calls.reset();
+
     mapOfSets.forEachSet(...firstMapKey, spy, thisObj);
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, ...firstSetKey, mapOfSets]);
@@ -182,6 +237,10 @@ describeForAllThree("OptimizedStrongMapOfOptimizedStrongSets", (modules, mapMod,
 
     let spy = jasmine.createSpy(), thisObj = {};
     mapOfSets.forEach(spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(0);
+    spy.calls.reset();
+
+    mapOfSets.forEachMap(...firstMapKey, spy, thisObj);
     expect(spy).toHaveBeenCalledTimes(0);
     spy.calls.reset();
 
@@ -214,6 +273,12 @@ describeForAllThree("OptimizedStrongMapOfOptimizedStrongSets", (modules, mapMod,
     expect(spy.calls.thisFor(0)).toBe(thisObj);
     expect(spy.calls.argsFor(1)).toEqual([...firstMapKey, ...secondSetKey, mapOfSets]);
     expect(spy.calls.thisFor(1)).toBe(thisObj);
+    spy.calls.reset();
+
+    mapOfSets.forEachMap(spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, mapOfSets]);
+    expect(spy.calls.thisFor(0)).toBe(thisObj);
     spy.calls.reset();
 
     mapOfSets.forEachSet(...firstMapKey, spy, thisObj);
@@ -269,6 +334,12 @@ describeForAllThree("OptimizedStrongMapOfOptimizedStrongSets", (modules, mapMod,
     expect(spy.calls.thisFor(1)).toBe(thisObj);
     spy.calls.reset();
 
+    mapOfSets.forEachMap(spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, mapOfSets]);
+    expect(spy.calls.thisFor(0)).toBe(thisObj);
+    spy.calls.reset();
+
     mapOfSets.forEachSet(...firstMapKey, spy, thisObj);
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, ...firstSetKey, mapOfSets]);
@@ -310,6 +381,14 @@ describeForAllThree("OptimizedStrongMapOfOptimizedStrongSets", (modules, mapMod,
     expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, ...firstSetKey, mapOfSets]);
     expect(spy.calls.thisFor(0)).toBe(thisObj);
     expect(spy.calls.argsFor(1)).toEqual([...secondMapKey, ...firstSetKey, mapOfSets]);
+    expect(spy.calls.thisFor(1)).toBe(thisObj);
+    spy.calls.reset();
+
+    mapOfSets.forEachMap(spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, mapOfSets]);
+    expect(spy.calls.thisFor(0)).toBe(thisObj);
+    expect(spy.calls.argsFor(1)).toEqual([...secondMapKey, mapOfSets]);
     expect(spy.calls.thisFor(1)).toBe(thisObj);
     spy.calls.reset();
 
@@ -374,6 +453,14 @@ describeForAllThree("OptimizedStrongMapOfOptimizedStrongSets", (modules, mapMod,
     expect(spy.calls.thisFor(1)).toBe(thisObj);
     spy.calls.reset();
 
+    mapOfSets.forEachMap(spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, mapOfSets]);
+    expect(spy.calls.thisFor(0)).toBe(thisObj);
+    expect(spy.calls.argsFor(1)).toEqual([...secondMapKey, mapOfSets]);
+    expect(spy.calls.thisFor(1)).toBe(thisObj);
+    spy.calls.reset();
+
     mapOfSets.forEachSet(...firstMapKey, spy, thisObj);
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, ...firstSetKey, mapOfSets]);
@@ -422,6 +509,14 @@ describeForAllThree("OptimizedStrongMapOfOptimizedStrongSets", (modules, mapMod,
     expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, ...firstSetKey, mapOfSets]);
     expect(spy.calls.thisFor(0)).toBe(thisObj);
     expect(spy.calls.argsFor(1)).toEqual([...secondMapKey, ...secondSetKey, mapOfSets]);
+    expect(spy.calls.thisFor(1)).toBe(thisObj);
+    spy.calls.reset();
+
+    mapOfSets.forEachMap(spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, mapOfSets]);
+    expect(spy.calls.thisFor(0)).toBe(thisObj);
+    expect(spy.calls.argsFor(1)).toEqual([...secondMapKey, mapOfSets]);
     expect(spy.calls.thisFor(1)).toBe(thisObj);
     spy.calls.reset();
 
@@ -484,6 +579,14 @@ describeForAllThree("OptimizedStrongMapOfOptimizedStrongSets", (modules, mapMod,
     expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, ...firstSetKey, mapOfSets]);
     expect(spy.calls.thisFor(0)).toBe(thisObj);
     expect(spy.calls.argsFor(1)).toEqual([...secondMapKey, ...secondSetKey, mapOfSets]);
+    expect(spy.calls.thisFor(1)).toBe(thisObj);
+    spy.calls.reset();
+
+    mapOfSets.forEachMap(spy, thisObj);
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.calls.argsFor(0)).toEqual([...firstMapKey, mapOfSets]);
+    expect(spy.calls.thisFor(0)).toBe(thisObj);
+    expect(spy.calls.argsFor(1)).toEqual([...secondMapKey, mapOfSets]);
     expect(spy.calls.thisFor(1)).toBe(thisObj);
     spy.calls.reset();
 

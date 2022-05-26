@@ -31,6 +31,7 @@ describe("CodeGenerator(StrongMapSetImportable.mjs)", () => {
       "delete",
       "deleteSets",
       "forEach",
+      "forEachMap",
       "forEachSet",
       "has",
       "hasSets",
@@ -113,6 +114,10 @@ describe("CodeGenerator(StrongMapSetImportable.mjs)", () => {
     const spy = jasmine.createSpy("forEach");
     testSet.forEach(spy, thisObj);
     expect(spy).toHaveBeenCalledOnceWith(key1, key2, testSet);
+
+    spy.calls.reset()
+    testSet.forEachMap(spy, thisObj);
+    expect(spy).toHaveBeenCalledOnceWith(key1, testSet);
 
     spy.calls.reset();
     testSet.forEachSet(key1, spy, thisObj);

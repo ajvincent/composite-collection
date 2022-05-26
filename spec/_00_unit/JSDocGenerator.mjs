@@ -435,6 +435,17 @@ describe("JSDocGenerator for maps", () => {
    */`);
     });
 
+    it("forEachMap_MapSet", () => {
+      const generated = generator.buildBlock("forEachMap_MapSet", 2);
+      expect(generated).toEqual(`  /**
+   * Iterate over the map keys.
+   *
+   * @param {__SoloStrongMap_ForEachMapCallback__} __callback__ A function to invoke for each iteration.
+   * @param {object}                               __thisArg__  Value to use as this when executing callback.
+   * @public
+   */`);
+    });
+
     it("forEachSet_MapSet", () => {
       const generated = generator.buildBlock("forEachSet_MapSet", 2);
       expect(generated).toEqual(`  /**
@@ -455,6 +466,18 @@ describe("JSDocGenerator for maps", () => {
    *
    * @callback __SoloStrongMap_ForEachCallback__
    * @param {*}             value          The value.
+   * @param {Car}           car            The car.
+   * @param {Person}        driver         The driver of the car.
+   * @param {SoloStrongMap} __collection__ This collection.
+   */`);
+    });
+
+    it("forEachMap_MapSet_callback", () => {
+      const generated = generator.buildBlock("forEachMap_MapSet_callback", 2);
+      expect(generated).toEqual(`  /**
+   * An user-provided callback to .forEachMap().
+   *
+   * @callback __SoloStrongMap_ForEachMapCallback__
    * @param {Car}           car            The car.
    * @param {Person}        driver         The driver of the car.
    * @param {SoloStrongMap} __collection__ This collection.

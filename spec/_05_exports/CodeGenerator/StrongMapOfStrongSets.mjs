@@ -32,6 +32,7 @@ describe("CodeGenerator(StrongMapOfStrongSets.mjs)", () => {
       "delete",
       "deleteSets",
       "forEach",
+      "forEachMap",
       "forEachSet",
       "has",
       "hasSets",
@@ -115,10 +116,15 @@ describe("CodeGenerator(StrongMapOfStrongSets.mjs)", () => {
     const spy = jasmine.createSpy("forEach");
     testSet.forEach(spy, thisObj);
     expect(spy).toHaveBeenCalledOnceWith(key1, key2, testSet);
-
     spy.calls.reset();
+
+    testSet.forEachMap(spy, thisObj);
+    expect(spy).toHaveBeenCalledOnceWith(key1, testSet);
+    spy.calls.reset();
+
     testSet.forEachSet(key1, spy, thisObj);
     expect(spy).toHaveBeenCalledOnceWith(key1, key2, testSet);
+    spy.calls.reset();
 
     expect(() => testSet.clear()).not.toThrow();
     expect(testSet.size).toBe(0);
@@ -235,14 +241,21 @@ describe("CodeGenerator(StrongMapOfStrongSets.mjs)", () => {
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.calls.argsFor(0)).toEqual([key2, key3, testSet]);
     expect(spy.calls.argsFor(1)).toEqual([key1, key3, testSet]);
-
     spy.calls.reset();
+
+    testSet.forEachMap(spy);
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.calls.argsFor(0)).toEqual([key2, testSet]);
+    expect(spy.calls.argsFor(1)).toEqual([key1, testSet]);
+    spy.calls.reset();
+
     testSet.forEachSet(key1, spy, thisObj);
     expect(spy).toHaveBeenCalledOnceWith(key1, key3, testSet);
-
     spy.calls.reset();
+
     testSet.forEachSet(key2, spy, thisObj);
     expect(spy).toHaveBeenCalledOnceWith(key2, key3, testSet);
+    spy.calls.reset();
 
     expect(() => testSet.clear()).not.toThrow();
     expect(testSet.size).toBe(0);
@@ -385,20 +398,26 @@ describe("CodeGenerator(StrongMapOfStrongSets.mjs)", () => {
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.calls.argsFor(0)).toEqual([key3, key2, testSet]);
     expect(spy.calls.argsFor(1)).toEqual([key3, key1, testSet]);
-
     spy.calls.reset();
+
+    testSet.forEachMap(spy);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.calls.argsFor(0)).toEqual([key3, testSet]);
+    spy.calls.reset();
+
     testSet.forEachSet(key3, spy, thisObj);
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.calls.argsFor(0)).toEqual([key3, key2, testSet]);
     expect(spy.calls.argsFor(1)).toEqual([key3, key1, testSet]);
-
     spy.calls.reset();
+
     testSet.forEachSet(key1, spy, thisObj);
     expect(spy).toHaveBeenCalledTimes(0);
-
     spy.calls.reset();
+
     testSet.forEachSet(key2, spy, thisObj);
     expect(spy).toHaveBeenCalledTimes(0);
+    spy.calls.reset();
 
     expect(() => testSet.clear()).not.toThrow();
     expect(testSet.size).toBe(0);
@@ -526,12 +545,18 @@ describe("CodeGenerator(StrongMapOfStrongSets.mjs)", () => {
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.calls.argsFor(0)).toEqual([key2, key1, testSet]);
     expect(spy.calls.argsFor(1)).toEqual([key1, key2, testSet]);
-
     spy.calls.reset();
+
+    testSet.forEachMap(spy);
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.calls.argsFor(0)).toEqual([key2, testSet]);
+    expect(spy.calls.argsFor(1)).toEqual([key1, testSet]);
+    spy.calls.reset();
+
     testSet.forEachSet(key1, spy, thisObj);
     expect(spy).toHaveBeenCalledOnceWith(key1, key2, testSet);
-
     spy.calls.reset();
+
     testSet.forEachSet(key2, spy, thisObj);
     expect(spy).toHaveBeenCalledOnceWith(key2, key1, testSet);
   });
