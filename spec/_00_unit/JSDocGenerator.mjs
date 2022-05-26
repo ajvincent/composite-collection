@@ -1259,3 +1259,20 @@ describe("JSDocGenerator for maps of sets", () => {
    */`);
   });
 });
+
+xdescribe("JSDocGenerator for one-to-one maps", () => {
+  let generator;
+  afterEach(() => generator = null);
+
+  it("hasIdentity", () => {
+    const generated = generator.buildBlock("hasIdentity", 2);
+    expect(generated).toEqual(`  /**
+ * Report if the collection has a value for a key set.
+ *
+ * @param {Car}    car    The car.
+ * @param {Person} driver The driver of the car.
+ * @returns {boolean} True if the key set refers to a value in the collection.
+ * @public
+ */`);
+  });
+});
