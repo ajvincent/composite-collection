@@ -44,32 +44,32 @@ class OneToOneWeakMap<
     this.#requireValidKey("(key2_2)", key2_2);
     this.#requireValidValue("value_2", value_2);
 
-  let key1 = this.#weakValueToInternalKeyMap.get(value_1);
-  const __otherWeakKey__ = this.#weakValueToInternalKeyMap.get(value_2);
-  if (!key1) {
-    key1 = __otherWeakKey__ || {};
+    let key1 = this.#weakValueToInternalKeyMap.get(value_1);
+    const __otherWeakKey__ = this.#weakValueToInternalKeyMap.get(value_2);
+    if (!key1) {
+      key1 = __otherWeakKey__ || {};
+    }
+    else if (__otherWeakKey__ && (__otherWeakKey__ !== key1)) {
+      throw new Error("value_1 and value_2 are already in different one-to-one mappings!");
+    }
+
+    const __hasKeySet1__  = this.#baseMap.has(key1, key2_1);
+    const __hasKeySet2__  = this.#baseMap.has(key1, key2_2);
+
+    if (__hasKeySet1__ && (this.#baseMap.get(key1, key2_1) !== value_1))
+      throw new Error("value_1 mismatch!");
+    if (__hasKeySet2__ && (this.#baseMap.get(key1, key2_2) !== value_2))
+      throw new Error("value_2 mismatch!");
+
+    this.#weakValueToInternalKeyMap.set(value_1, key1);
+    this.#weakValueToInternalKeyMap.set(value_2, key1);
+
+    if (!__hasKeySet1__)
+      this.#baseMap.set(key1, key2_1, value_1);
+
+    if (!__hasKeySet2__)
+      this.#baseMap.set(key1, key2_2, value_2);
   }
-  else if (__otherWeakKey__ && (__otherWeakKey__ !== key1)) {
-    throw new Error("value_1 and value_2 are already in different one-to-one mappings!");
-  }
-
-  const __hasKeySet1__  = this.#baseMap.has(key1, key2_1);
-  const __hasKeySet2__  = this.#baseMap.has(key1, key2_2);
-
-  if (__hasKeySet1__ && (this.#baseMap.get(key1, key2_1) !== value_1))
-    throw new Error("value_1 mismatch!");
-  if (__hasKeySet2__ && (this.#baseMap.get(key1, key2_2) !== value_2))
-    throw new Error("value_2 mismatch!");
-
-  this.#weakValueToInternalKeyMap.set(value_1, key1);
-  this.#weakValueToInternalKeyMap.set(value_2, key1);
-
-  if (!__hasKeySet1__)
-    this.#baseMap.set(key1, key2_1, value_1);
-
-  if (!__hasKeySet2__)
-    this.#baseMap.set(key1, key2_2, value_2);
-}
 
   /**
    * Delete a target value.
@@ -121,6 +121,24 @@ class OneToOneWeakMap<
   {
     const key1 = this.#weakValueToInternalKeyMap.get(value);
     return key1 ? this.#baseMap.has(key1, key2) : false;
+  }
+
+  /**
+   * Determine if a target value is an identity in this map.
+   *
+   * @param {*}       value           The value.
+   * @param {object}  key2            The second key.
+   * @param {boolean} allowNotDefined If true, treat the absence of the value as an identity.
+   * @returns {boolean} True if the target value exists.
+   * @public
+   */
+  hasIdentity(value: __V__, key2: __MK1__, allowNotDefined: boolean) : boolean
+  {
+    const key1 = this.#weakValueToInternalKeyMap.get(value);
+    if (!key1) {
+      return Boolean(allowNotDefined);
+    }
+    return this.#baseMap.get(key1, key2) === value;
   }
 
   /**

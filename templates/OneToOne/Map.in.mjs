@@ -90,21 +90,21 @@ ${duoDocs.buildBlock("bindOneToOne", 2)}
     this.#requireValidValue("value_1", value_1);
     this.#requireValidValue("value_2", value_2);
 `}
-  let ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value_1);
-  const __otherWeakKey__ = this.#weakValueToInternalKeyMap.get(value_2);
-  if (!${weakKeyName}) {
-    ${weakKeyName} = __otherWeakKey__ || {};
-  }
-  else if (__otherWeakKey__ && (__otherWeakKey__ !== ${weakKeyName})) {
-    throw new Error(${
+    let ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value_1);
+    const __otherWeakKey__ = this.#weakValueToInternalKeyMap.get(value_2);
+    if (!${weakKeyName}) {
+      ${weakKeyName} = __otherWeakKey__ || {};
+    }
+    else if (__otherWeakKey__ && (__otherWeakKey__ !== ${weakKeyName})) {
+      throw new Error(${
         /*
         If we get here, we have a potentially unresolvable conflict.
         
         In the simplest case,
         
-        map.bindOneToOne(red, green);
-        map.bindOneToOne(blue, yellow);
-        map.bindOneToOne(red, blue);
+        map.bindOneToOne(red, "one", green: "two");
+        map.bindOneToOne(blue, "two", yellow, "one");
+        map.bindOneToOne(red, "one", blue, "two");
         
         This last can't be allowed because red is already bound to green, and blue is
         already bound to yellow.
@@ -163,25 +163,25 @@ ${duoDocs.buildBlock("bindOneToOne", 2)}
         -- Alex Vincent, Jan. 4, 2022
         */
         `"value_1 and value_2 are already in different one-to-one mappings!"`});
+    }
+
+    const __hasKeySet1__  = this.#baseMap.has(${baseMapArgs1});
+    const __hasKeySet2__  = this.#baseMap.has(${baseMapArgs2});
+
+    if (__hasKeySet1__ && (this.#baseMap.get(${baseMapArgs1}) !== value_1))
+      throw new Error("value_1 mismatch!");
+    if (__hasKeySet2__ && (this.#baseMap.get(${baseMapArgs2}) !== value_2))
+      throw new Error("value_2 mismatch!");
+
+    this.#weakValueToInternalKeyMap.set(value_1, ${weakKeyName});
+    this.#weakValueToInternalKeyMap.set(value_2, ${weakKeyName});
+
+    if (!__hasKeySet1__)
+      this.#baseMap.set(${baseMapArgs1}, value_1);
+
+    if (!__hasKeySet2__)
+      this.#baseMap.set(${baseMapArgs2}, value_2);
   }
-
-  const __hasKeySet1__  = this.#baseMap.has(${baseMapArgs1});
-  const __hasKeySet2__  = this.#baseMap.has(${baseMapArgs2});
-
-  if (__hasKeySet1__ && (this.#baseMap.get(${baseMapArgs1}) !== value_1))
-    throw new Error("value_1 mismatch!");
-  if (__hasKeySet2__ && (this.#baseMap.get(${baseMapArgs2}) !== value_2))
-    throw new Error("value_2 mismatch!");
-
-  this.#weakValueToInternalKeyMap.set(value_1, ${weakKeyName});
-  this.#weakValueToInternalKeyMap.set(value_2, ${weakKeyName});
-
-  if (!__hasKeySet1__)
-    this.#baseMap.set(${baseMapArgs1}, value_1);
-
-  if (!__hasKeySet2__)
-    this.#baseMap.set(${baseMapArgs2}, value_2);
-}
 
 ${soloDocs.buildBlock("delete", 2)}
   delete(value: __V__, ${bindMapArgsWithTypes}) : boolean
@@ -212,6 +212,16 @@ ${soloDocs.buildBlock("has", 2)}
   {
     const ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value);
     return ${weakKeyName} ? this.#baseMap.has(${baseMapArgs}) : false;
+  }
+
+${soloDocs.buildBlock("hasIdentity", 2)}
+  hasIdentity(value: __V__, ${bindMapArgsWithTypes}, allowNotDefined: boolean) : boolean
+  {
+    const ${weakKeyName} = this.#weakValueToInternalKeyMap.get(value);
+    if (!${weakKeyName}) {
+      return Boolean(allowNotDefined);
+    }
+    return this.#baseMap.get(${baseMapArgs}) === value;
   }
 
 ${soloDocs.buildBlock("isValidKey", 2)}
@@ -281,6 +291,17 @@ ${duoDocs.buildBlock("bindOneToOneSimple", 2)}
       super.set(value_1, value_2);
     if (!__hasValue2__)
       super.set(value_2, value_1);
+  }
+
+${soloDocs.buildBlock("hasIdentity", 2)}
+  hasIdentity(value: __V__, allowNotDefined: boolean) : boolean
+  {
+    if (!this.has(value)) {
+      return Boolean(allowNotDefined);
+    }
+    // Beyond this point we should return true.
+    const __other__ = this.get(value) as __V__;
+    return this.get(__other__) === value;
   }
 
   /**

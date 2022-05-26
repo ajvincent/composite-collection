@@ -32,6 +32,17 @@ export default function OneToOneMethodParameters(): stringAndTemplate[] {
       footers: ["@public"],
     }],
 
+    ["hasIdentity", {
+      description: "Determine if a target value is an identity in this map.",
+      includeArgs: "all",
+      paramFooters: [
+        ["boolean", "allowNotDefined", "If true, treat the absence of the value as an identity."]
+      ],
+      returnType: "boolean",
+      returnDescription: "True if the target value exists.",
+      footers: ["@public"],
+    }],
+
     ["isValidKey", {
       description: "Determine if a key is valid.",
       includeArgs: "excludeValue",

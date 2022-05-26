@@ -18,6 +18,15 @@ declare class OneToOneSimpleMap<__V__ extends object> extends WeakMap<__V__, __V
      */
     bindOneToOne(value_1: __V__, value_2: __V__): void;
     /**
+     * Determine if a target value is an identity in this map.
+     *
+     * @param {*}       value           The value.
+     * @param {boolean} allowNotDefined If true, treat the absence of the value as an identity.
+     * @returns {boolean} True if the target value exists.
+     * @public
+     */
+    hasIdentity(value: __V__, allowNotDefined: boolean): boolean;
+    /**
      * Determine if a value is valid.
      *
      * @param {*} value The value.

@@ -38,6 +38,16 @@ declare class OneToOneWeakMap<__MK1__ extends object, __V__ extends object> {
      */
     has(value: __V__, key2: __MK1__): boolean;
     /**
+     * Determine if a target value is an identity in this map.
+     *
+     * @param {*}       value           The value.
+     * @param {object}  key2            The second key.
+     * @param {boolean} allowNotDefined If true, treat the absence of the value as an identity.
+     * @returns {boolean} True if the target value exists.
+     * @public
+     */
+    hasIdentity(value: __V__, key2: __MK1__, allowNotDefined: boolean): boolean;
+    /**
      * Determine if a key is valid.
      *
      * @param {object} key2 The second key.

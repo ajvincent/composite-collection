@@ -38,6 +38,22 @@ class OneToOneSimpleMap extends WeakMap {
             super.set(value_2, value_1);
     }
     /**
+     * Determine if a target value is an identity in this map.
+     *
+     * @param {*}       value           The value.
+     * @param {boolean} allowNotDefined If true, treat the absence of the value as an identity.
+     * @returns {boolean} True if the target value exists.
+     * @public
+     */
+    hasIdentity(value, allowNotDefined) {
+        if (!this.has(value)) {
+            return Boolean(allowNotDefined);
+        }
+        // Beyond this point we should return true.
+        const __other__ = this.get(value);
+        return this.get(__other__) === value;
+    }
+    /**
      * Determine if a value is valid.
      *
      * @param {*} value The value.

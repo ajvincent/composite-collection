@@ -38,6 +38,16 @@ declare class OneToOneStrongMap<__MK1__, __V__ extends object> {
      */
     has(value: __V__, strongKey: __MK1__): boolean;
     /**
+     * Determine if a target value is an identity in this map.
+     *
+     * @param {*}       value           The value.
+     * @param {*}       strongKey       The strongly held key.
+     * @param {boolean} allowNotDefined If true, treat the absence of the value as an identity.
+     * @returns {boolean} True if the target value exists.
+     * @public
+     */
+    hasIdentity(value: __V__, strongKey: __MK1__, allowNotDefined: boolean): boolean;
+    /**
      * Determine if a key is valid.
      *
      * @param {*} strongKey The strongly held key.

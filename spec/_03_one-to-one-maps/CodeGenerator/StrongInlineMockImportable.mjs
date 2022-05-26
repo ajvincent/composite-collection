@@ -30,6 +30,7 @@ describe("CodeGenerator(OneToOneStrongInlineMockImportable.mjs)", () => {
       "delete",
       "get",
       "has",
+      "hasIdentity",
       "isValidKey",
       "isValidValue"
     ]);
@@ -84,6 +85,23 @@ describe("CodeGenerator(OneToOneStrongInlineMockImportable.mjs)", () => {
     expect(map.get(redObj, blueKey)).toBe(blueObj);
     expect(map.get(blueObj, redKey)).toBe(redObj);
     expect(map.get(greenObj, blueKey)).toBe(blueObj);
+  });
+
+  it(".hasIdentity() returns true for a known identity", () => {
+    map.bindOneToOne(redKey, redObj, blueKey, blueObj);
+    expect(map.hasIdentity(redObj, redKey, false)).toBe(true);
+    expect(map.hasIdentity(redObj, redKey, true)).toBe(true);
+
+    expect(map.hasIdentity(redObj, blueKey, false)).toBe(false);
+    expect(map.hasIdentity(redObj, blueKey, true)).toBe(false);
+  });
+
+  it(".hasIdentity returns the boolean value of allowNotDefined for an unknown identity", () => {
+    expect(map.hasIdentity(redObj, redKey, false)).toBe(false);
+    expect(map.hasIdentity(redObj, redKey, true)).toBe(true);
+
+    expect(map.hasIdentity(redObj, blueKey, false)).toBe(false);
+    expect(map.hasIdentity(redObj, blueKey, true)).toBe(true);
   });
 
   it(".isValidValue() returns true for objects", () => {

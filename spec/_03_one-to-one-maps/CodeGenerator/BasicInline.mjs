@@ -22,6 +22,7 @@ describe("CodeGenerator(OneToOneBasicInlineMap.mjs)", () => {
     expect(Reflect.ownKeys(OneToOneMap.prototype)).toEqual([
       "constructor",
       "bindOneToOne",
+      "hasIdentity",
       "isValidValue",
       "set"
     ]);
@@ -80,6 +81,17 @@ describe("CodeGenerator(OneToOneBasicInlineMap.mjs)", () => {
     expect(map.get(redObj)).toBe(blueObj);
     expect(map.get(blueObj)).toBe(redObj);
     expect(map.has(yellowObj)).toBe(false);
+  });
+
+  it(".hasIdentity() returns true for a known identity", () => {
+    map.bindOneToOne(redObj, blueObj);
+    expect(map.hasIdentity(redObj, false)).toBe(true);
+    expect(map.hasIdentity(redObj, true)).toBe(true);
+  });
+
+  it(".hasIdentity returns the boolean value of allowNotDefined for an unknown identity", () => {
+    expect(map.hasIdentity(redObj, false)).toBe(false);
+    expect(map.hasIdentity(redObj, true)).toBe(true);
   });
 
   it(".isValidValue() returns true for objects", () => {

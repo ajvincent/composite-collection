@@ -23,6 +23,7 @@ describe("CodeGenerator(OneToOneBasicStrongInline.mjs)", () => {
       "delete",
       "get",
       "has",
+      "hasIdentity",
       "isValidKey",
       "isValidValue"
     ]);
@@ -77,6 +78,23 @@ describe("CodeGenerator(OneToOneBasicStrongInline.mjs)", () => {
     expect(map.get(redObj, "blue")).toBe(blueObj);
     expect(map.get(blueObj, "red")).toBe(redObj);
     expect(map.get(greenObj, "blue")).toBe(blueObj);
+  });
+
+  it(".hasIdentity() returns true for a known identity", () => {
+    map.bindOneToOne("red", redObj, "blue", blueObj);
+    expect(map.hasIdentity(redObj, "red", false)).toBe(true);
+    expect(map.hasIdentity(redObj, "red", true)).toBe(true);
+
+    expect(map.hasIdentity(redObj, "blue", false)).toBe(false);
+    expect(map.hasIdentity(redObj, "blue", true)).toBe(false);
+  });
+
+  it(".hasIdentity returns the boolean value of allowNotDefined for an unknown identity", () => {
+    expect(map.hasIdentity(redObj, "red", false)).toBe(false);
+    expect(map.hasIdentity(redObj, "red", true)).toBe(true);
+
+    expect(map.hasIdentity(redObj, "blue", false)).toBe(false);
+    expect(map.hasIdentity(redObj, "blue", true)).toBe(true);
   });
 
   it(".isValidValue() returns true for objects", () => {

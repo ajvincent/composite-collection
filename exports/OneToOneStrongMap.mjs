@@ -99,6 +99,22 @@ class OneToOneStrongMap {
         return weakKey ? this.#baseMap.has(weakKey, strongKey) : false;
     }
     /**
+     * Determine if a target value is an identity in this map.
+     *
+     * @param {*}       value           The value.
+     * @param {*}       strongKey       The strongly held key.
+     * @param {boolean} allowNotDefined If true, treat the absence of the value as an identity.
+     * @returns {boolean} True if the target value exists.
+     * @public
+     */
+    hasIdentity(value, strongKey, allowNotDefined) {
+        const weakKey = this.#weakValueToInternalKeyMap.get(value);
+        if (!weakKey) {
+            return Boolean(allowNotDefined);
+        }
+        return this.#baseMap.get(weakKey, strongKey) === value;
+    }
+    /**
      * Determine if a key is valid.
      *
      * @param {*} strongKey The strongly held key.
