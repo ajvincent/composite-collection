@@ -2,15 +2,16 @@ import JSDocGenerator from "#source/generatorTools/JSDocGenerator.mjs";
 import CollectionType from "#source/generatorTools/CollectionType.mjs";
 import { ESLint } from "eslint";
 
-/**
- * Run template code against ESLint.
- *
- * @param {JSDocGenerator} doc The code generator we're exercising.
- * @param {boolean} useYield Provide a generator memmber function instead.
- * @returns {string[]} The ESLint rules we broke.
- */
-async function runAgainstESLint(doc, useYield = false) {
-  const source = `
+describe("JSDocGenerator validation: ", () => {
+  /**
+   * Run template code against ESLint.
+   *
+   * @param {JSDocGenerator} doc The code generator we're exercising.
+   * @param {boolean} useYield Provide a generator memmber function instead.
+   * @returns {string[]} The ESLint rules we broke.
+   */
+  async function runAgainstESLint(doc, useYield = false) {
+    const source = `
 class DeliveryToken {}
 
 class Vehicle {
@@ -27,14 +28,13 @@ ${doc.buildBlock("deliver", 2)}
 void Vehicle;
 `.trim();
 
-  const eslint = new ESLint;
-  let result = (await eslint.lintText(source))[0];
-  result = result.messages.map(message => message.ruleId);
-  result.sort();
-  return result;
-}
+    const eslint = new ESLint;
+    let result = (await eslint.lintText(source))[0];
+    result = result.messages.map(message => message.ruleId);
+    result.sort();
+    return result;
+  }
 
-describe("JSDocGenerator validation: ", () => {
   let methodParameter;
 
   /** @private */
@@ -1260,19 +1260,127 @@ describe("JSDocGenerator for maps of sets", () => {
   });
 });
 
-xdescribe("JSDocGenerator for one-to-one maps", () => {
+describe("JSDocGenerator for one-to-one maps (solo)", () => {
   let generator;
+  beforeEach(async () => {
+    generator = new JSDocGenerator("WeakWeakMap", false);
+    await generator.setMethodParametersByModule("oneToOneSoloArg");
+    generator.addParameter(new CollectionType("value", "Map", "Car", "CarType", "The value.", ""));
+    generator.addParameter(new CollectionType("field", "Map", "string", "string", "The target field name.", ""));
+  });
   afterEach(() => generator = null);
+
+  it("delete", () => {
+    const generated = generator.buildBlock("delete", 2);
+    expect(generated).toEqual(`  /**
+   * Delete a target value.
+   *
+   * @param {Car}    value The value.
+   * @param {string} field The target field name.
+   * @returns {boolean} True if the target value was deleted.
+   * @public
+   */`);
+  });
+
+  it("get", () => {
+    const generated = generator.buildBlock("get", 2);
+    expect(generated).toEqual(`  /**
+   * Get a target value.
+   *
+   * @param {Car}    value The value.
+   * @param {string} field The target field name.
+   * @returns {*} The target value.
+   * @public
+   */`);
+  });
+
+  it("has", () => {
+    const generated = generator.buildBlock("has", 2);
+    expect(generated).toEqual(`  /**
+   * Determine if a target value exists.
+   *
+   * @param {Car}    value The value.
+   * @param {string} field The target field name.
+   * @returns {boolean} True if the target value exists.
+   * @public
+   */`);
+  });
 
   it("hasIdentity", () => {
     const generated = generator.buildBlock("hasIdentity", 2);
     expect(generated).toEqual(`  /**
- * Report if the collection has a value for a key set.
- *
- * @param {Car}    car    The car.
- * @param {Person} driver The driver of the car.
- * @returns {boolean} True if the key set refers to a value in the collection.
- * @public
- */`);
+   * Determine if a target value is an identity in this map.
+   *
+   * @param {Car}     value           The value.
+   * @param {string}  field           The target field name.
+   * @param {boolean} allowNotDefined If true, treat the absence of the value as an identity.
+   * @returns {boolean} True if the target value exists.
+   * @public
+   */`);
+  });
+
+  it("isValidKey", () => {
+    const generated = generator.buildBlock("isValidKey", 2);
+    expect(generated).toEqual(`  /**
+   * Determine if a key is valid.
+   *
+   * @param {string} field The target field name.
+   * @returns {boolean} True if the key is valid.
+   * @see the base map class for further constraints.
+   * @public
+   */`);
+  });
+
+  it("isValidValue", () => {
+    const generated = generator.buildBlock("isValidValue", 2);
+    expect(generated).toEqual(`  /**
+   * Determine if a value is valid.
+   *
+   * @param {Car} value The value.
+   * @returns {boolean} True if the value is valid.
+   * @see the base map class for further constraints.
+   * @public
+   */`);
+  });
+});
+
+describe("JSDocGenerator for one-to-one maps (duo)", () => {
+  let generator;
+  beforeEach(async () => {
+    generator = new JSDocGenerator("WeakStrongMap", false);
+    await generator.setMethodParametersByModule("oneToOneDuoArg");
+  });
+  afterEach(() => generator = null);
+
+  it("bindOneToOne", () => {
+    generator.addParameter(new CollectionType("field_1", "Map", "string", "string", "The one-to-one field."));
+    generator.addParameter(new CollectionType("value_1", "Map", "Car", "CarType", "The value.", ""));
+    generator.addParameter(new CollectionType("field_2", "Map", "string", "string", "The one-to-one field."));
+    generator.addParameter(new CollectionType("value_2", "Map", "Car", "CarType", "The value.", ""));
+
+    const generated = generator.buildBlock("bindOneToOne", 2);
+    expect(generated).toEqual(`  /**
+   * Bind two sets of keys and values together.
+   *
+   * @param {string} field_1 The one-to-one field.
+   * @param {Car}    value_1 The value.
+   * @param {string} field_2 The one-to-one field.
+   * @param {Car}    value_2 The value.
+   * @public
+   */`);
+  });
+
+  it("bindOneToOneSimple", () => {
+    generator.addParameter(new CollectionType("value_1", "Map", "Car", "CarType", "The value.", ""));
+    generator.addParameter(new CollectionType("value_2", "Map", "Car", "CarType", "The value.", ""));
+
+    const generated = generator.buildBlock("bindOneToOneSimple", 2);
+    expect(generated).toEqual(`  /**
+   * Bind two values together.
+   *
+   * @param {Car} value_1 The value.
+   * @param {Car} value_2 The value.
+   * @public
+   */`);
   });
 });

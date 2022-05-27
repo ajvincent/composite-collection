@@ -96,7 +96,7 @@ export default class JSDocGenerator {
         this.setMethodParametersDirectly(defaultMethods());
     }
     async setMethodParametersByModule(moduleName) {
-        const paramFunction = (await import("#source/jsdoc-method-sets/" + moduleName + ".mjs")).default;
+        const paramFunction = (await import(`#source/jsdoc-method-sets/${moduleName}.mjs`)).default;
         this.setMethodParametersDirectly(paramFunction());
     }
     setMethodParametersDirectly(iterable) {

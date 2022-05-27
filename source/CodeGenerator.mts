@@ -502,7 +502,7 @@ export default class CodeGenerator extends CodeGeneratorBase
     let generator = await this.#createOneToOneGenerator("oneToOneSoloArg");
     generator.addParameter(
       baseData.valueType ||
-      new CollectionType("value", "Map", "*", "unknown", "The value.", "")
+      new CollectionType("value", "Map", "object", "object", "The value.", "")
     );
     this.#appendTypesToDocGenerator(base, generator, "", false);
 
@@ -550,8 +550,8 @@ export default class CodeGenerator extends CodeGeneratorBase
       let {
         argumentName = "value",
         mapOrSetType = "Map",
-        jsDocType = "*",
-        tsType = "unknown",
+        jsDocType = baseData.valueType?.jsDocType || "object",
+        tsType = baseData.valueType?.tsType || "object",
         description = "The value.",
         argumentValidator = ""
       } = baseData.valueType || {};

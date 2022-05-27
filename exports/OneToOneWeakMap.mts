@@ -32,9 +32,9 @@ class OneToOneWeakMap<
    * Bind two sets of keys and values together.
    *
    * @param {object} key2_1  The second key.
-   * @param {*}      value_1 The value.
+   * @param {object} value_1 The value.
    * @param {object} key2_2  The second key.
-   * @param {*}      value_2 The value.
+   * @param {object} value_2 The value.
    * @public
    */
   bindOneToOne(key2_1: __MK1__, value_1: __V__, key2_2: __MK1__, value_2: __V__) : void
@@ -74,7 +74,7 @@ class OneToOneWeakMap<
   /**
    * Delete a target value.
    *
-   * @param {*}      value The value.
+   * @param {object} value The value.
    * @param {object} key2  The second key.
    * @returns {boolean} True if the target value was deleted.
    * @public
@@ -98,7 +98,7 @@ class OneToOneWeakMap<
   /**
    * Get a target value.
    *
-   * @param {*}      value The value.
+   * @param {object} value The value.
    * @param {object} key2  The second key.
    * @returns {*} The target value.
    * @public
@@ -112,7 +112,7 @@ class OneToOneWeakMap<
   /**
    * Determine if a target value exists.
    *
-   * @param {*}      value The value.
+   * @param {object} value The value.
    * @param {object} key2  The second key.
    * @returns {boolean} True if the target value exists.
    * @public
@@ -126,7 +126,7 @@ class OneToOneWeakMap<
   /**
    * Determine if a target value is an identity in this map.
    *
-   * @param {*}       value           The value.
+   * @param {object}  value           The value.
    * @param {object}  key2            The second key.
    * @param {boolean} allowNotDefined If true, treat the absence of the value as an identity.
    * @returns {boolean} True if the target value exists.
@@ -163,7 +163,7 @@ class OneToOneWeakMap<
   /**
    * Determine if a value is valid.
    *
-   * @param {*} value The value.
+   * @param {object} value The value.
    * @returns {boolean} True if the value is valid.
    * @see the base map class for further constraints.
    * @public

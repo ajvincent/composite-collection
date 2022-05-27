@@ -22,8 +22,8 @@ class OneToOneSimpleMap<
   /**
    * Bind two values together.
    *
-   * @param {*} value_1 The value.
-   * @param {*} value_2 The value.
+   * @param {object} value_1 The value.
+   * @param {object} value_2 The value.
    * @public
    */
   bindOneToOne(value_1: __V__, value_2: __V__) : void
@@ -49,7 +49,7 @@ class OneToOneSimpleMap<
   /**
    * Determine if a target value is an identity in this map.
    *
-   * @param {*}       value           The value.
+   * @param {object}  value           The value.
    * @param {boolean} allowNotDefined If true, treat the absence of the value as an identity.
    * @returns {boolean} True if the target value exists.
    * @public
