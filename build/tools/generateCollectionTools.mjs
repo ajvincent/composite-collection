@@ -1,7 +1,7 @@
 import CompileTimeOptions from "composite-collection/CompileTimeOptions";
 import InMemoryDriver from "#source/InMemoryDriver.mjs";
 
-import { PromiseAllSequence } from "#source/utilities/PromiseTypes.mjs";
+import { PromiseAllParallel } from "#source/utilities/PromiseTypes.mjs";
 
 import path from "path";
 import fs from 'fs/promises';
@@ -32,7 +32,7 @@ export async function generateCollections(sourceDir, targetDir, leafNames) {
   }
 
   const driver = new InMemoryDriver(targetDir, compileOptions);
-  await PromiseAllSequence(leafNames, async leaf => {
+  await PromiseAllParallel(leafNames, async leaf => {
     const configFile = sourceDir + "/" + leaf;
     const sourceFileURL = url.pathToFileURL(path.join(process.cwd(), configFile));
     const configuration = (await import(sourceFileURL)).default;

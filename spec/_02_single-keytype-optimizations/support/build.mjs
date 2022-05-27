@@ -147,7 +147,9 @@ async function createCollectionFiles(dirName, extraKeyCount, disableKeyOptimizat
  * Build the composite collections we need.
  */
 export default async function() {
-  await createCollectionFiles("multiple-reference", 1, true);
-  await createCollectionFiles("solo-fullbuild", 0, true);
-  await createCollectionFiles("solo-optbuild", 0, false);  
+  await Promise.all([
+    createCollectionFiles("multiple-reference", 1, true),
+    createCollectionFiles("solo-fullbuild", 0, true),
+    createCollectionFiles("solo-optbuild", 0, false),
+  ])
 }

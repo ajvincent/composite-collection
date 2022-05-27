@@ -4,7 +4,6 @@ import url from "url";
 
 import runDriver from "./runDriver.mjs";
 import {
-  PromiseAllSequence,
   PromiseAllParallel,
   TimeoutPromise
 } from "#source/utilities/PromiseTypes.mjs";
@@ -85,7 +84,7 @@ async function iterateOverSpecDirs(filter, action) {
   const directories = (await PromiseAllParallel(specDirs, filter)).filter(Boolean);
 
   // Ensure the generated directory exists.
-  await PromiseAllSequence(directories, async specDir => {
+  await PromiseAllParallel(directories, async specDir => {
     const generatedDir = path.join(specDir, "generated");
     let stats;
     try {
@@ -98,7 +97,7 @@ async function iterateOverSpecDirs(filter, action) {
       await fs.mkdir(generatedDir, { recursive: true });
   });
 
-  await PromiseAllSequence(directories, action);
+  await PromiseAllParallel(directories, action);
 }
 
 await iterateOverSpecDirs(
