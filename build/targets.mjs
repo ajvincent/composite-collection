@@ -11,6 +11,8 @@ import bootstrapRun from "./tools/bootstrap.mjs";
 import buildExportedCollections from "./tools/buildExportedCollections.mjs";
 import buildSpecGeneratedCode from './tools/buildSpecGeneratedCode.mjs';
 
+import { build_TSCoverage } from "#spec/_06_typescript-coverage/support/build-coverage.mjs";
+
 /**
  * Run a specific submodule.
  *
@@ -70,7 +72,15 @@ const BPSet = new BuildPromiseSet(true);
   const target = BPSet.get("test:run");
   target.description = "Execute Jasmine tests";
   target.addSubtarget("test:build");
+  target.addSubtarget("test:build:spec_06_typescript-coverage")
   target.addTask(() => runSpecsParallel());
+}
+
+{ // test:build:spec_06_typescript-coverage
+  const target = BPSet.get("test:build:spec_06_typescript-coverage");
+  target.description = "TypeScript coverage build tests";
+  target.addSubtarget("test:build");
+  target.addTask(() => build_TSCoverage());
 }
 
 { // debug
