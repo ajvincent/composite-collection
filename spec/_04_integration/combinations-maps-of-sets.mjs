@@ -1,10 +1,8 @@
 import CollectionConfiguration from "#source/CollectionConfiguration.mjs";
-//import ConfigurationData from "../../source/generatorTools/ConfigurationData.mjs";
-import CodeGenerator from "#source/CodeGenerator.mjs";
+import InMemoryDriver from "#source/InMemoryDriver.mjs";
 
 import tempDirWithCleanup from "#source/utilities/tempDirWithCleanup.mjs";
 
-import fs from "fs/promises";
 import path from "path";
 import url from "url";
 
@@ -22,6 +20,9 @@ describe("Combinations of auto-generated configurations for maps of sets:", () =
   });
 
   it("2 part map keys followed by 2 part set keys", async () => {
+    const driver = new InMemoryDriver(cleanup.tempDir, {});
+    const leafNames = [];
+
     let generatedCount = 0;
     for (let i = 0; i < 16; i++) {
       let config = null;
@@ -120,11 +121,16 @@ describe("Combinations of auto-generated configurations for maps of sets:", () =
       }
 
       leafName += ".mjs";
+
+      leafNames.push(leafName);
+
+      driver.addConfiguration(config, leafName);
+    }
+
+    await driver.run();
+
+    await Promise.all(leafNames.map(async leafName => {
       const outFilePath = path.join(cleanup.tempDir, leafName);
-
-      const generator = new CodeGenerator(config, outFilePath);
-      await generator.run();
-
       const outFileURL = url.pathToFileURL(outFilePath);
 
       const outModule = (await import(outFileURL)).default;
@@ -134,10 +140,8 @@ describe("Combinations of auto-generated configurations for maps of sets:", () =
         [key8, key4, key2, key1]
       ]);
       expect(generatedSet.has(key8, key4, key2, key1)).toBe(true);
-
-      await fs.rm(outFilePath);
       generatedCount++;
-    }
+    }));
 
     /* Strong map of strong sets: 1
        Strong map of weak sets:   0

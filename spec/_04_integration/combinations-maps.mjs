@@ -1,10 +1,8 @@
 import CollectionConfiguration from "#source/CollectionConfiguration.mjs";
-//import ConfigurationData from "../../source/generatorTools/ConfigurationData.mjs";
-import CodeGenerator from "#source/CodeGenerator.mjs";
+import InMemoryDriver from "#source/InMemoryDriver.mjs";
 
 import tempDirWithCleanup from "#source/utilities/tempDirWithCleanup.mjs";
 
-import fs from "fs/promises";
 import path from "path";
 import url from "url";
 
@@ -22,19 +20,27 @@ describe("Combinations of auto-generated configurations for maps:", () => {
   });
 
   it("3 part keys", async () => {
+    const driver = new InMemoryDriver(cleanup.tempDir, {});
+    const leafNames = [];
+
     for (let i = 0; i < 8; i++) {
       let leafName = "combo_" + i.toString(2);
       const config = new CollectionConfiguration(leafName, i === 0 ? "Map" : "WeakMap");
+
       config.addMapKey("key4", "A key.", Boolean(i & 4));
       config.addMapKey("key2", "A key.", Boolean(i & 2));
       config.addMapKey("key1", "A key.", Boolean(i & 1));
 
       leafName += ".mjs";
+      leafNames.push(leafName);
+
+      driver.addConfiguration(config, leafName);
+    }
+
+    await driver.run();
+
+    await Promise.all(leafNames.map(async leafName => {
       const outFilePath = path.join(cleanup.tempDir, leafName);
-
-      const generator = new CodeGenerator(config, outFilePath);
-      await generator.run();
-
       const outFileURL = url.pathToFileURL(outFilePath);
 
       const outModule = (await import(outFileURL)).default;
@@ -45,8 +51,6 @@ describe("Combinations of auto-generated configurations for maps:", () => {
       ]);
       expect(generatedMap.has(key4, key2, key1)).toBe(true);
       expect(generatedMap.get(key4, key2, key1)).toBe(value);
-
-      await fs.rm(outFilePath);
-    }
+    }));
   }, 30000);
 });
