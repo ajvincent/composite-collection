@@ -132,6 +132,12 @@ ${docs.buildBlock("isValidValuePrivate", 2)}
   [Symbol.toStringTag] = "${defines.className}";
 }
 
+export type Readonly${defines.className}${defines.tsGenericFull}
+= Pick<
+  ${defines.className}<${defines.tsMapTypes}, ${defines.tsValueType}>,
+  "get" | "has" | "isValidKey"
+>
+
 Object.freeze(${defines.className});
 Object.freeze(${defines.className}.prototype);
 `;

@@ -65,4 +65,5 @@ declare class WeakStrongMap<__MK0__ extends object, __MK1__, __V__> {
     set(weakKey: __MK0__, strongKey: __MK1__, value: __V__): this;
     [Symbol.toStringTag]: string;
 }
+export declare type ReadonlyWeakStrongMap<__MK0__ extends object, __MK1__, __V__> = Pick<WeakStrongMap<__MK0__, __MK1__, __V__>, "get" | "has" | "isValidKey">;
 export default WeakStrongMap;
