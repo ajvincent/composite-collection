@@ -628,6 +628,109 @@ describeForAllThree("OptimizedStrongMapOfStrongSets", (modules, mapMod, setMod) 
     ).toThrowError("The ordered key set is not valid!");
   });
 
+  it(".forEach() immediately propagates an exception from its callback", () => {
+    const thirdMapKey = mapMod([new MockImportable]);
+    const thirdSetKey = [new MockImportable, new MockImportable];
+
+    mapOfSets.add(...firstMapKey, ...firstSetKey);
+    mapOfSets.add(...secondMapKey, ...secondSetKey);
+    mapOfSets.add(...thirdMapKey, ...thirdSetKey);
+
+    const exn = {type: "exception"};
+    const spy0 = jasmine.createSpy();
+    const spy1 = jasmine.createSpy();
+    let count = 0;
+    spy1.and.callFake(() => {
+      count++;
+      if (count === 2)
+        throw exn;
+    });
+
+    expect(
+      () => mapOfSets.forEach((...args) => {
+        spy0(...args);
+        spy1(...args);
+      })
+    ).toThrow(exn);
+
+    expect(spy0).toHaveBeenCalledTimes(2);
+    expect(spy0).toHaveBeenCalledWith(...firstMapKey, ...firstSetKey, mapOfSets);
+    expect(spy0).toHaveBeenCalledWith(...secondMapKey, ...secondSetKey, mapOfSets);
+
+    expect(spy1).toHaveBeenCalledTimes(2);
+    expect(spy1).toHaveBeenCalledWith(...firstMapKey, ...firstSetKey, mapOfSets);
+    expect(spy1).toHaveBeenCalledWith(...secondMapKey, ...secondSetKey, mapOfSets);
+  });
+
+  it(".forEachMap() immediately propagates an exception from its callback", () => {
+    const thirdMapKey = mapMod([new MockImportable]);
+    const thirdSetKey = [new MockImportable, new MockImportable];
+
+    mapOfSets.add(...firstMapKey, ...firstSetKey);
+    mapOfSets.add(...secondMapKey, ...secondSetKey);
+    mapOfSets.add(...thirdMapKey, ...thirdSetKey);
+
+    const exn = {type: "exception"};
+    const spy0 = jasmine.createSpy();
+    const spy1 = jasmine.createSpy();
+    let count = 0;
+    spy1.and.callFake(() => {
+      count++;
+      if (count === 2)
+        throw exn;
+    });
+
+    expect(
+      () => mapOfSets.forEachMap((...args) => {
+        spy0(...args);
+        spy1(...args);
+      })
+    ).toThrow(exn);
+
+    expect(spy0).toHaveBeenCalledTimes(2);
+    expect(spy0).toHaveBeenCalledWith(...firstMapKey, mapOfSets);
+    expect(spy0).toHaveBeenCalledWith(...secondMapKey, mapOfSets);
+
+    expect(spy1).toHaveBeenCalledTimes(2);
+    expect(spy1).toHaveBeenCalledWith(...firstMapKey, mapOfSets);
+    expect(spy1).toHaveBeenCalledWith(...secondMapKey, mapOfSets);
+  });
+
+  it(".forEachSet() immediately propagates an exception from its callback", () => {
+    const thirdSetKey = [new MockImportable, new MockImportable];
+
+    mapOfSets.addSets(...firstMapKey, [
+      firstSetKey,
+      secondSetKey,
+      thirdSetKey
+    ]);
+
+    const exn = {type: "exception"};
+    const spy0 = jasmine.createSpy();
+    const spy1 = jasmine.createSpy();
+    let count = 0;
+    spy1.and.callFake(() => {
+      count++;
+      if (count === 2)
+        throw exn;
+    });
+
+    expect(() => {
+      mapOfSets.forEachSet(...firstMapKey, (...args) => {
+        spy0(...args);
+        spy1(...args);
+      })
+    }).toThrow(exn);
+
+    expect(spy0).toHaveBeenCalledTimes(2);
+    expect(spy0).toHaveBeenCalledWith(...firstMapKey, ...firstSetKey, mapOfSets);
+    expect(spy0).toHaveBeenCalledWith(...firstMapKey, ...secondSetKey, mapOfSets);
+
+    expect(spy1).toHaveBeenCalledTimes(2);
+    expect(spy1).toHaveBeenCalledWith(...firstMapKey, ...firstSetKey, mapOfSets);
+    expect(spy1).toHaveBeenCalledWith(...firstMapKey, ...secondSetKey, mapOfSets);
+  });
+
   describe("to hold references strongly", () => {
     beforeEach(() => {
       jasmine.addAsyncMatchers(ToHoldRefsMatchers);

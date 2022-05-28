@@ -497,6 +497,41 @@ describe("CodeGenerator(StrongStrongMap.mjs),", () => {
     });
   });
 
+  it(".forEach() immediately propagates an exception from its callback", () => {
+    const key1 = {type: "key1"}, key2 = {type: "key2"}, key3 = {type: "key3"},
+          value1 = "value1", value2 = "value2", value3 = "value3";
+    testMap = new StrongStrongMap([
+      [key1, key2, value1],
+      [key2, key3, value2],
+      [key3, key1, value3],
+    ]);
+
+    const exn = {type: "exception"};
+    const spy0 = jasmine.createSpy();
+    const spy1 = jasmine.createSpy();
+    spy1.and.callFake(value => {
+      if (value === value2)
+        throw exn;
+    });
+
+    expect(
+      () => {
+        testMap.forEach((...args) => {
+          spy0(...args);
+          spy1(...args);
+        });
+      }
+    ).toThrow(exn);
+
+    expect(spy0).toHaveBeenCalledTimes(2);
+    expect(spy0).toHaveBeenCalledWith(value1, key1, key2, testMap);
+    expect(spy0).toHaveBeenCalledWith(value2, key2, key3, testMap);
+
+    expect(spy1).toHaveBeenCalledTimes(2);
+    expect(spy1).toHaveBeenCalledWith(value1, key1, key2, testMap);
+    expect(spy1).toHaveBeenCalledWith(value2, key2, key3, testMap);
+  });
+
   describe("holds references to objects", () => {
     beforeEach(() => {
       jasmine.addAsyncMatchers(ToHoldRefsMatchers);

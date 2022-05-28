@@ -348,6 +348,41 @@ describeForAllThree("OptimizedWeakMapOfStrongSets", (modules, mapMod, setMod) =>
     ).toThrowError("The ordered key set is not valid!");
   });
 
+  it(".forEachSet() immediately propagates an exception from its callback", () => {
+    const thirdSetKey = [new MockImportable, new MockImportable];
+
+    mapOfSets.addSets(...firstMapKey, [
+      firstSetKey,
+      secondSetKey,
+      thirdSetKey
+    ]);
+
+    const exn = {type: "exception"};
+    const spy0 = jasmine.createSpy();
+    const spy1 = jasmine.createSpy();
+    let count = 0;
+    spy1.and.callFake(() => {
+      count++;
+      if (count === 2)
+        throw exn;
+    });
+
+    expect(() => {
+      mapOfSets.forEachSet(...firstMapKey, (...args) => {
+        spy0(...args);
+        spy1(...args);
+      })
+    }).toThrow(exn);
+
+    expect(spy0).toHaveBeenCalledTimes(2);
+    expect(spy0).toHaveBeenCalledWith(...firstMapKey, ...firstSetKey, mapOfSets);
+    expect(spy0).toHaveBeenCalledWith(...firstMapKey, ...secondSetKey, mapOfSets);
+
+    expect(spy1).toHaveBeenCalledTimes(2);
+    expect(spy1).toHaveBeenCalledWith(...firstMapKey, ...firstSetKey, mapOfSets);
+    expect(spy1).toHaveBeenCalledWith(...firstMapKey, ...secondSetKey, mapOfSets);
+  });
+
   describe("to hold references", () => {
     beforeEach(() => {
       jasmine.addAsyncMatchers(ToHoldRefsMatchers);
