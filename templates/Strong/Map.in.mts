@@ -89,7 +89,7 @@ ${docs.buildBlock("forEach_Map", 2)}
         defines.tsValueType
       }>
     ) => void,
-    __thisArg__: unknown
+    __thisArg__?: unknown
   ) : void
   {
     this.#root.forEach((__valueAndKeySet__) => {
@@ -254,7 +254,7 @@ export type Readonly${defines.className}${defines.tsGenericFull} =
           defines.tsValueType
         }>
       ) => void,
-      __thisArg__: unknown
+      __thisArg__?: unknown
     ) : void
   }
 `}

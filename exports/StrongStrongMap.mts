@@ -139,7 +139,7 @@ class StrongStrongMap<
       key2: __MK1__,
       __collection__: StrongStrongMap<__MK0__, __MK1__, __V__>
     ) => void,
-    __thisArg__: unknown
+    __thisArg__?: unknown
   ) : void
   {
     this.#root.forEach((__valueAndKeySet__) => {
@@ -295,7 +295,7 @@ export type ReadonlyStrongStrongMap<
       key2: __MK1__,
         __collection__: ReadonlyStrongStrongMap<__MK0__, __MK1__, __V__>
       ) => void,
-      __thisArg__: unknown
+      __thisArg__?: unknown
     ) : void
   }
 

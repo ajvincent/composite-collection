@@ -15,7 +15,21 @@ const b: StrongStrongMap<ClassOne, ClassTwo, number> = new StrongStrongMap([
   [key1a, key1b, 0],
   [key2a, key2b, 1],
 ]);
-void(b);
+
+b.forEach((num, key1, key2, map) => {
+  void(num);
+  void(key1);
+  void(key2);
+  void(map);
+}, {});
+
+
+b.forEach((num, key1, key2, map) => {
+  void(num);
+  void(key1);
+  void(key2);
+  void(map);
+});
 
 const rb: ReadonlyStrongStrongMap<ClassOne, ClassTwo, number> = b;
 
@@ -55,3 +69,10 @@ rb.forEach((value, key1, key2, map) => {
   void(key2);
   void(map);
 }, {});
+
+rb.forEach((value, key1, key2, map) => {
+  void(value);
+  void(key1);
+  void(key2);
+  void(map);
+});

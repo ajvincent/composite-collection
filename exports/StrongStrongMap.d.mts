@@ -47,7 +47,7 @@ declare class StrongStrongMap<__MK0__, __MK1__, __V__> {
      * @param {object}                              __thisArg__  Value to use as this when executing callback.
      * @public
      */
-    forEach(__callback__: (value: __V__, key1: __MK0__, key2: __MK1__, __collection__: StrongStrongMap<__MK0__, __MK1__, __V__>) => void, __thisArg__: unknown): void;
+    forEach(__callback__: (value: __V__, key1: __MK0__, key2: __MK1__, __collection__: StrongStrongMap<__MK0__, __MK1__, __V__>) => void, __thisArg__?: unknown): void;
     /**
      * Get a value for a key set.
      *
@@ -110,6 +110,6 @@ declare class StrongStrongMap<__MK0__, __MK1__, __V__> {
     [Symbol.toStringTag]: string;
 }
 export declare type ReadonlyStrongStrongMap<__MK0__, __MK1__, __V__> = Pick<StrongStrongMap<__MK0__, __MK1__, __V__>, "size" | "entries" | "get" | "has" | "keys" | "values"> & {
-    forEach(__callback__: (value: __V__, key1: __MK0__, key2: __MK1__, __collection__: ReadonlyStrongStrongMap<__MK0__, __MK1__, __V__>) => void, __thisArg__: unknown): void;
+    forEach(__callback__: (value: __V__, key1: __MK0__, key2: __MK1__, __collection__: ReadonlyStrongStrongMap<__MK0__, __MK1__, __V__>) => void, __thisArg__?: unknown): void;
 };
 export default StrongStrongMap;

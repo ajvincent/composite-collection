@@ -80,7 +80,7 @@ ${docs.buildBlock("forEach_Map", 2)}
       ${defines.tsMapKeys.join(",\n      ")},
       __collection__: ${defines.className}<${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}>
     ) => void,
-    __thisArg__: unknown
+    __thisArg__?: unknown
   ) : void
   {
     this.#root.forEach((__valueAndKeySet__) => {
@@ -229,7 +229,7 @@ export type Readonly${defines.className}${defines.tsGenericFull} =
         ${defines.tsMapKeys.join(",\n      ")},
         __collection__: Readonly${defines.className}<${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}>
       ) => void,
-      __thisArg__: unknown
+      __thisArg__?: unknown
     ) : void
   }
 `;
