@@ -198,7 +198,7 @@ export type ReadonlyWeakStrongMap<
 = Pick<
   WeakStrongMap<__MK0__,__MK1__, __V__>,
   "get" | "has" | "isValidKey"
->
+>;
 
 Object.freeze(WeakStrongMap);
 Object.freeze(WeakStrongMap.prototype);

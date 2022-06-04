@@ -66,7 +66,7 @@ ${docs.buildBlock("delete", 2)}
   }
 
 ${docs.buildBlock("entries", 2)}
-  * entries() : Iterator<[${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}]>
+  * entries() : IterableIterator<[${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}]>
   {
     for (let __valueAndKeySet__ of this.#root.values()) {
       yield [
@@ -167,7 +167,7 @@ ${docs.buildBlock("isValidValuePublic", 2)}
 ` : ``}
 
 ${docs.buildBlock("keys", 2)}
-  * keys() : Iterator<[${defines.tsMapTypes.join(", ")}]>
+  * keys() : IterableIterator<[${defines.tsMapTypes.join(", ")}]>
   {
     for (let __valueAndKeySet__ of this.#root.values()) {
       const [${defines.mapKeys.join(", ")}] : [${defines.tsMapTypes.join(", ")}] = __valueAndKeySet__.keySet;
@@ -194,7 +194,7 @@ ${
   }
 
 ${docs.buildBlock("values", 2)}
-  * values() : Iterator<${defines.tsValueType}>
+  * values() : IterableIterator<${defines.tsValueType}>
   {
     for (let __valueAndKeySet__ of this.#root.values())
       yield __valueAndKeySet__.value;
@@ -223,7 +223,7 @@ ${docs.buildBlock("isValidValuePrivate", 2)}
   }
   ` : ``}
 
-  [Symbol.iterator]() : Iterator<[${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}]>
+  [Symbol.iterator]() : IterableIterator<[${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}]>
   {
     return this.entries();
   }
@@ -233,6 +233,30 @@ ${docs.buildBlock("isValidValuePrivate", 2)}
 
 Object.freeze(${defines.className});
 Object.freeze(${defines.className}.prototype);
+
+export type Readonly${defines.className}${defines.tsGenericFull} =
+  Pick<
+    ${defines.className}<${defines.tsMapTypes}, ${defines.tsValueType}>,
+    "size" | "entries" | "get" | "has"${
+  defines.validateArguments ? ` | "isValidKey"` : ``
+}${
+  defines.validateValue ? ` | "isValidValue"` : ``
+} | "keys" | "values"
+  > &
+  {
+    forEach(
+      __callback__: (
+        ${defines.tsValueKey},
+        ${defines.tsMapKeys.join(",\n      ")},
+        __collection__: Readonly${defines.className}<${
+          defines.tsMapTypes.join(", ")
+        }, ${
+          defines.tsValueType
+        }>
+      ) => void,
+      __thisArg__: unknown
+    ) : void
+  }
 `}
 
 export default preprocess;

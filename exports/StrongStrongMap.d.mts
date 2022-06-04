@@ -30,7 +30,7 @@ declare class StrongStrongMap<__MK0__, __MK1__, __V__> {
      * @yields {*[]} The keys and values.
      * @public
      */
-    entries(): Iterator<[__MK0__, __MK1__, __V__]>;
+    entries(): IterableIterator<[__MK0__, __MK1__, __V__]>;
     /**
      * An user-provided callback to .forEach().
      *
@@ -88,7 +88,7 @@ declare class StrongStrongMap<__MK0__, __MK1__, __V__> {
      * @yields {*[]} The key sets.
      * @public
      */
-    keys(): Iterator<[__MK0__, __MK1__]>;
+    keys(): IterableIterator<[__MK0__, __MK1__]>;
     /**
      * Set a value for a key set.
      *
@@ -105,8 +105,11 @@ declare class StrongStrongMap<__MK0__, __MK1__, __V__> {
      * @yields {*} The value.
      * @public
      */
-    values(): Iterator<__V__>;
-    [Symbol.iterator](): Iterator<[__MK0__, __MK1__, __V__]>;
+    values(): IterableIterator<__V__>;
+    [Symbol.iterator](): IterableIterator<[__MK0__, __MK1__, __V__]>;
     [Symbol.toStringTag]: string;
 }
+export declare type ReadonlyStrongStrongMap<__MK0__, __MK1__, __V__> = Pick<StrongStrongMap<__MK0__, __MK1__, __V__>, "size" | "entries" | "get" | "has" | "keys" | "values"> & {
+    forEach(__callback__: (value: __V__, key1: __MK0__, key2: __MK1__, __collection__: ReadonlyStrongStrongMap<__MK0__, __MK1__, __V__>) => void, __thisArg__: unknown): void;
+};
 export default StrongStrongMap;

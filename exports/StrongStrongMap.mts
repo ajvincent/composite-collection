@@ -105,7 +105,7 @@ class StrongStrongMap<
    * @yields {*[]} The keys and values.
    * @public
    */
-  * entries() : Iterator<[__MK0__, __MK1__, __V__]>
+  * entries() : IterableIterator<[__MK0__, __MK1__, __V__]>
   {
     for (let __valueAndKeySet__ of this.#root.values()) {
       yield [
@@ -226,7 +226,7 @@ class StrongStrongMap<
    * @yields {*[]} The key sets.
    * @public
    */
-  * keys() : Iterator<[__MK0__, __MK1__]>
+  * keys() : IterableIterator<[__MK0__, __MK1__]>
   {
     for (let __valueAndKeySet__ of this.#root.values()) {
       const [key1, key2] : [__MK0__, __MK1__] = __valueAndKeySet__.keySet;
@@ -261,13 +261,13 @@ class StrongStrongMap<
    * @yields {*} The value.
    * @public
    */
-  * values() : Iterator<__V__>
+  * values() : IterableIterator<__V__>
   {
     for (let __valueAndKeySet__ of this.#root.values())
       yield __valueAndKeySet__.value;
   }
 
-  [Symbol.iterator]() : Iterator<[__MK0__, __MK1__, __V__]>
+  [Symbol.iterator]() : IterableIterator<[__MK0__, __MK1__, __V__]>
   {
     return this.entries();
   }
@@ -277,5 +277,26 @@ class StrongStrongMap<
 
 Object.freeze(StrongStrongMap);
 Object.freeze(StrongStrongMap.prototype);
+
+export type ReadonlyStrongStrongMap<
+  __MK0__,
+  __MK1__,
+  __V__
+> =
+  Pick<
+    StrongStrongMap<__MK0__,__MK1__, __V__>,
+    "size" | "entries" | "get" | "has" | "keys" | "values"
+  > &
+  {
+    forEach(
+      __callback__: (
+        value: __V__,
+        key1: __MK0__,
+      key2: __MK1__,
+        __collection__: ReadonlyStrongStrongMap<__MK0__, __MK1__, __V__>
+      ) => void,
+      __thisArg__: unknown
+    ) : void
+  }
 
 export default StrongStrongMap;

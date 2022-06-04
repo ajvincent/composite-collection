@@ -156,6 +156,8 @@ export default class CollectionConfiguration {
       throw new Error("You cannot subclass CollectionConfiguration!");
 
     CollectionConfiguration.#identifierArg("className", className);
+    if (className.startsWith("Readonly"))
+      throw new Error(`You can't start a class name with "Readonly"!`);
     if (PREDEFINED_TYPES.has(className))
       throw new Error(`You can't override the ${className} primordial!`);
 

@@ -46,6 +46,12 @@ describe("CollectionConfiguration", () => {
       }).toThrowError(`You can't override the WeakSet primordial!`);
     });
 
+    it(`throws for names starting with "Readonly"`, () => {
+      expect(() => {
+        void(new CollectionConfiguration("ReadonlyWeakWeakMap", "Map"))
+      }).toThrowError(`You can't start a class name with "Readonly"!`);
+    });
+
     it("throws for StrongMapOfWeakSets", () => {
       expect(() => {
         void(new CollectionConfiguration("FooMap", "Map", "WeakSet"))
