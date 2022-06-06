@@ -100,7 +100,7 @@ ${docs.buildBlock("forEachSet_MapSet", 2)}
       ${tsSetKeys},
       __collection__: ${defines.className}<${tsAllTypes}>
     ) => void,
-    __thisArg__: unknown
+    __thisArg__?: unknown
   ) : void
   {
     this.#requireValidMapKey(${mapKeys});
@@ -148,7 +148,7 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
   }
 
 ${docs.buildBlock("valuesSet", 2)}
-  * valuesSet(${tsMapKeys}) : Iterator<[${tsAllTypes}]>
+  * valuesSet(${tsMapKeys}) : IterableIterator<[${tsAllTypes}]>
   {
     this.#requireValidMapKey(${mapKeys});
 
@@ -204,6 +204,23 @@ ${docs.buildBlock("isValidSetKeyPrivate", 2)}
 
 Object.freeze(${defines.className});
 Object.freeze(${defines.className}.prototype);
+
+export type Readonly${defines.className}${defines.tsGenericFull} =
+  Pick<
+    ${defines.className}<${tsAllTypes}>,
+    "getSizeOfSet" | "has" | "hasSets" | "isValidKey" | "valuesSet"
+  > &
+  {
+    forEachSet(
+      ${tsMapKeys},
+      __callback__: (
+        ${defines.tsMapKeys.join(",\n        ")},
+        ${defines.tsSetKeys.join(",\n        ")},
+        __collection__: Readonly${defines.className}<${tsAllTypes}>
+      ) => void,
+      __thisArg__?: unknown
+    ): void;
+  }
 `;
 }
 

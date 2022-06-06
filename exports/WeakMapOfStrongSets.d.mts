@@ -44,7 +44,7 @@ declare class WeakMapOfStrongSets<__MK0__ extends object, __SK0__> {
      * @param {object}                                  __thisArg__  Value to use as this when executing callback.
      * @public
      */
-    forEachSet(mapKey: __MK0__, __callback__: (mapKey: __MK0__, setKey: __SK0__, __collection__: WeakMapOfStrongSets<__MK0__, __SK0__>) => void, __thisArg__: unknown): void;
+    forEachSet(mapKey: __MK0__, __callback__: (mapKey: __MK0__, setKey: __SK0__, __collection__: WeakMapOfStrongSets<__MK0__, __SK0__>) => void, __thisArg__?: unknown): void;
     /**
      * An user-provided callback to .forEach().
      *
@@ -94,7 +94,10 @@ declare class WeakMapOfStrongSets<__MK0__ extends object, __SK0__> {
      * @yields {*} The sets.
      * @public
      */
-    valuesSet(mapKey: __MK0__): Iterator<[__MK0__, __SK0__]>;
+    valuesSet(mapKey: __MK0__): IterableIterator<[__MK0__, __SK0__]>;
     [Symbol.toStringTag]: string;
 }
+export declare type ReadonlyWeakMapOfStrongSets<__MK0__ extends object, __SK0__> = Pick<WeakMapOfStrongSets<__MK0__, __SK0__>, "getSizeOfSet" | "has" | "hasSets" | "isValidKey" | "valuesSet"> & {
+    forEachSet(mapKey: __MK0__, __callback__: (mapKey: __MK0__, setKey: __SK0__, __collection__: ReadonlyWeakMapOfStrongSets<__MK0__, __SK0__>) => void, __thisArg__?: unknown): void;
+};
 export default WeakMapOfStrongSets;

@@ -134,7 +134,7 @@ class WeakMapOfStrongSets<
       setKey: __SK0__,
       __collection__: WeakMapOfStrongSets<__MK0__, __SK0__>
     ) => void,
-    __thisArg__: unknown
+    __thisArg__?: unknown
   ) : void
   {
     this.#requireValidMapKey(mapKey);
@@ -221,7 +221,7 @@ class WeakMapOfStrongSets<
    * @yields {*} The sets.
    * @public
    */
-  * valuesSet(mapKey: __MK0__) : Iterator<[__MK0__, __SK0__]>
+  * valuesSet(mapKey: __MK0__) : IterableIterator<[__MK0__, __SK0__]>
   {
     this.#requireValidMapKey(mapKey);
 
@@ -304,5 +304,25 @@ class WeakMapOfStrongSets<
 
 Object.freeze(WeakMapOfStrongSets);
 Object.freeze(WeakMapOfStrongSets.prototype);
+
+export type ReadonlyWeakMapOfStrongSets<
+  __MK0__ extends object,
+  __SK0__
+> =
+  Pick<
+    WeakMapOfStrongSets<__MK0__, __SK0__>,
+    "getSizeOfSet" | "has" | "hasSets" | "isValidKey" | "valuesSet"
+  > &
+  {
+    forEachSet(
+      mapKey: __MK0__,
+      __callback__: (
+        mapKey: __MK0__,
+        setKey: __SK0__,
+        __collection__: ReadonlyWeakMapOfStrongSets<__MK0__, __SK0__>
+      ) => void,
+      __thisArg__?: unknown
+    ): void;
+  }
 
 export default WeakMapOfStrongSets;
