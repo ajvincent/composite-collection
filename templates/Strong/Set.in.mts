@@ -80,7 +80,7 @@ ${docs.buildBlock("forEach_Set", 2)}
         defines.tsSetTypes.join(", ")
       }>
     ) => void,
-    __thisArg__: unknown
+    __thisArg__?: unknown
   ) : void
   {
     this.#root.forEach(valueSet => {
@@ -108,7 +108,7 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
 ` : ``}
 
 ${docs.buildBlock("values", 2)}
-  * values() : Iterator<[${defines.tsSetTypes.join(", ")}]>
+  * values() : IterableIterator<[${defines.tsSetTypes.join(", ")}]>
   {
     for (let __value__ of this.#root.values()) {
       yield __value__;
@@ -131,7 +131,7 @@ ${defines.validateArguments}
   }
 ` : ``}
 
-  [Symbol.iterator]() : Iterator<[${defines.tsSetTypes.join(", ")}]> {
+  [Symbol.iterator]() : IterableIterator<[${defines.tsSetTypes.join(", ")}]> {
     return this.values();
   }
 
@@ -140,6 +140,25 @@ ${defines.validateArguments}
 
 Object.freeze(${defines.className});
 Object.freeze(${defines.className}.prototype);
+
+export type Readonly${defines.className}${defines.tsGenericFull} =
+  Pick<
+    ${defines.className}<${defines.tsSetTypes}>,
+    "size" | "has"${
+      defines.validateArguments ? ` | "isValidKey"` : ``
+    } | "values"
+  > &
+  {
+    forEach(
+      __callback__: (
+        ${defines.tsSetKeys.join(",\n      ")},
+        __collection__: Readonly${defines.className}<${
+          defines.tsSetTypes.join(", ")
+        }>
+      ) => void,
+      __thisArg__?: unknown
+    ) : void
+  }
 `;
 }
 

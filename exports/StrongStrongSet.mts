@@ -132,7 +132,7 @@ class StrongStrongSet<
       key2: __SK1__,
       __collection__: StrongStrongSet<__SK0__, __SK1__>
     ) => void,
-    __thisArg__: unknown
+    __thisArg__?: unknown
   ) : void
   {
     this.#root.forEach(valueSet => {
@@ -163,14 +163,14 @@ class StrongStrongSet<
    * @yields {*} The value.
    * @public
    */
-  * values() : Iterator<[__SK0__, __SK1__]>
+  * values() : IterableIterator<[__SK0__, __SK1__]>
   {
     for (let __value__ of this.#root.values()) {
       yield __value__;
     }
   }
 
-  [Symbol.iterator]() : Iterator<[__SK0__, __SK1__]> {
+  [Symbol.iterator]() : IterableIterator<[__SK0__, __SK1__]> {
     return this.values();
   }
 
@@ -179,5 +179,24 @@ class StrongStrongSet<
 
 Object.freeze(StrongStrongSet);
 Object.freeze(StrongStrongSet.prototype);
+
+export type ReadonlyStrongStrongSet<
+  __SK0__,
+  __SK1__
+> =
+  Pick<
+    StrongStrongSet<__SK0__,__SK1__>,
+    "size" | "has" | "values"
+  > &
+  {
+    forEach(
+      __callback__: (
+        key1: __SK0__,
+      key2: __SK1__,
+        __collection__: ReadonlyStrongStrongSet<__SK0__, __SK1__>
+      ) => void,
+      __thisArg__?: unknown
+    ) : void
+  }
 
 export default StrongStrongSet;

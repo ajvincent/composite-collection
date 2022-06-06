@@ -132,7 +132,7 @@ class StringStateMachine<
       nextState: __SK1__,
       __collection__: StringStateMachine<__SK0__, __SK1__>
     ) => void,
-    __thisArg__: unknown
+    __thisArg__?: unknown
   ) : void
   {
     this.#root.forEach(valueSet => {
@@ -163,14 +163,14 @@ class StringStateMachine<
    * @yields {*} The value.
    * @public
    */
-  * values() : Iterator<[__SK0__, __SK1__]>
+  * values() : IterableIterator<[__SK0__, __SK1__]>
   {
     for (let __value__ of this.#root.values()) {
       yield __value__;
     }
   }
 
-  [Symbol.iterator]() : Iterator<[__SK0__, __SK1__]> {
+  [Symbol.iterator]() : IterableIterator<[__SK0__, __SK1__]> {
     return this.values();
   }
 
@@ -179,5 +179,24 @@ class StringStateMachine<
 
 Object.freeze(StringStateMachine);
 Object.freeze(StringStateMachine.prototype);
+
+export type ReadonlyStringStateMachine<
+  __SK0__ extends string,
+  __SK1__ extends string
+> =
+  Pick<
+    StringStateMachine<__SK0__,__SK1__>,
+    "size" | "has" | "values"
+  > &
+  {
+    forEach(
+      __callback__: (
+        currentState: __SK0__,
+      nextState: __SK1__,
+        __collection__: ReadonlyStringStateMachine<__SK0__, __SK1__>
+      ) => void,
+      __thisArg__?: unknown
+    ) : void
+  }
 
 export default StringStateMachine;

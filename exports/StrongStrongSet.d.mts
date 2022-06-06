@@ -48,7 +48,7 @@ declare class StrongStrongSet<__SK0__, __SK1__> {
      * @param {object}                              __thisArg__  Value to use as this when executing callback.
      * @public
      */
-    forEach(__callback__: (key1: __SK0__, key2: __SK1__, __collection__: StrongStrongSet<__SK0__, __SK1__>) => void, __thisArg__: unknown): void;
+    forEach(__callback__: (key1: __SK0__, key2: __SK1__, __collection__: StrongStrongSet<__SK0__, __SK1__>) => void, __thisArg__?: unknown): void;
     /**
      * Report if the collection has a value for a key set.
      *
@@ -64,8 +64,11 @@ declare class StrongStrongSet<__SK0__, __SK1__> {
      * @yields {*} The value.
      * @public
      */
-    values(): Iterator<[__SK0__, __SK1__]>;
-    [Symbol.iterator](): Iterator<[__SK0__, __SK1__]>;
+    values(): IterableIterator<[__SK0__, __SK1__]>;
+    [Symbol.iterator](): IterableIterator<[__SK0__, __SK1__]>;
     [Symbol.toStringTag]: string;
 }
+export declare type ReadonlyStrongStrongSet<__SK0__, __SK1__> = Pick<StrongStrongSet<__SK0__, __SK1__>, "size" | "has" | "values"> & {
+    forEach(__callback__: (key1: __SK0__, key2: __SK1__, __collection__: ReadonlyStrongStrongSet<__SK0__, __SK1__>) => void, __thisArg__?: unknown): void;
+};
 export default StrongStrongSet;
