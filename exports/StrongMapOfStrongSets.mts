@@ -194,7 +194,7 @@ class StrongMapOfStrongSets<
       setKey: __SK0__,
       __collection__: StrongMapOfStrongSets<__MK0__, __SK0__>
     ) => void,
-    __thisArg__: unknown
+    __thisArg__?: unknown
   ) : void
   {
     this.#outerMap.forEach(
@@ -225,7 +225,7 @@ class StrongMapOfStrongSets<
       mapKey: __MK0__,
       __collection__: StrongMapOfStrongSets<__MK0__, __SK0__>
     ) => void,
-    __thisArg__: unknown
+    __thisArg__?: unknown
   ) : void
   {
     for (let mapKey of this.#outerMap.keys()) {
@@ -256,7 +256,7 @@ class StrongMapOfStrongSets<
       setKey: __SK0__,
       __collection__: StrongMapOfStrongSets<__MK0__, __SK0__>
     ) => void,
-    __thisArg__: unknown
+    __thisArg__?: unknown
   ): void
   {
     
@@ -307,7 +307,7 @@ class StrongMapOfStrongSets<
    * @yields {*} The value.
    * @public
    */
-  * values() : Iterator<[__MK0__, __SK0__]>
+  * values() : IterableIterator<[__MK0__, __SK0__]>
   {
     const __outerIter__ = this.#outerMap.entries();
 
@@ -324,7 +324,7 @@ class StrongMapOfStrongSets<
    * @yields {*} The sets.
    * @public
    */
-  * valuesSet(mapKey: __MK0__) : Iterator<[__MK0__, __SK0__]>
+  * valuesSet(mapKey: __MK0__) : IterableIterator<[__MK0__, __SK0__]>
   {
     
     const __innerSet__ = this.#outerMap.get(mapKey)
@@ -335,7 +335,7 @@ class StrongMapOfStrongSets<
       yield [mapKey, setKey];
   }
 
-  [Symbol.iterator]() : Iterator<[__MK0__, __SK0__]>
+  [Symbol.iterator]() : IterableIterator<[__MK0__, __SK0__]>
   {
     return this.values();
   }
@@ -345,5 +345,42 @@ class StrongMapOfStrongSets<
 
 Object.freeze(StrongMapOfStrongSets);
 Object.freeze(StrongMapOfStrongSets.prototype);
+
+export type ReadonlyStrongMapOfStrongSets<
+  __MK0__,
+  __SK0__
+> =
+  Pick<
+    StrongMapOfStrongSets<__MK0__, __SK0__>,
+    "size" | "getSizeOfSet" | "mapSize" | "has" | "hasSets" | "values" | "valuesSet"
+  > &
+  {
+    forEach(
+      __callback__: (
+        mapKey: __MK0__,
+        setKey: __SK0__,
+        __collection__: ReadonlyStrongMapOfStrongSets<__MK0__, __SK0__>
+      ) => void,
+      __thisArg__?: unknown
+    ) : void;
+
+    forEachMap(
+      __callback__: (
+        mapKey: __MK0__,
+        __collection__: ReadonlyStrongMapOfStrongSets<__MK0__, __SK0__>
+      ) => void,
+      __thisArg__?: unknown
+    ) : void;
+
+    forEachSet(
+      mapKey: __MK0__,
+      __callback__: (
+        mapKey: __MK0__,
+        setKey: __SK0__,
+        __collection__: ReadonlyStrongMapOfStrongSets<__MK0__, __SK0__>
+      ) => void,
+      __thisArg__?: unknown
+    ): void;
+  }
 
 export default StrongMapOfStrongSets;

@@ -154,7 +154,7 @@ ${docs.buildBlock("forEach_Set", 2)}
       ${defines.tsSetTypes.join(",\n      ")},
       __collection__: ${defines.className}<${tsAllTypes}>
     ) => void,
-    __thisArg__: unknown
+    __thisArg__?: unknown
   ) : void
   {
     this.#outerMap.forEach(
@@ -172,7 +172,7 @@ ${docs.buildBlock("forEachMap_MapSet", 2)}
       ${defines.tsMapKeys.join(",\n      ")},
       __collection__: ${defines.className}<${tsAllTypes}>
     ) => void,
-    __thisArg__: unknown
+    __thisArg__?: unknown
   ) : void
   {
     for (let ${mapKeys} of this.#outerMap.keys()) {
@@ -190,7 +190,7 @@ ${docs.buildBlock("forEachSet_MapSet", 2)}
       ${defines.tsSetTypes.join(",\n      ")},
       __collection__: ${defines.className}<${tsAllTypes}>
     ) => void,
-    __thisArg__: unknown
+    __thisArg__?: unknown
   ): void
   {
     ${invokeMapValidate}
@@ -231,7 +231,7 @@ ${docs.buildBlock("isValidKeyPublic", 2)}
 
   ` : ``}
 ${docs.buildBlock("values", 2)}
-  * values() : Iterator<[${tsAllTypes}]>
+  * values() : IterableIterator<[${tsAllTypes}]>
   {
     const __outerIter__ = this.#outerMap.values();
 
@@ -242,7 +242,7 @@ ${docs.buildBlock("values", 2)}
   }
 
 ${docs.buildBlock("valuesSet", 2)}
-  * valuesSet(${tsMapKeys}) : Iterator<[${tsAllTypes}]>
+  * valuesSet(${tsMapKeys}) : IterableIterator<[${tsAllTypes}]>
   {
     ${invokeMapValidate}
     const __innerMap__ = this.#outerMap.get(${mapKeys})
@@ -296,7 +296,7 @@ ${docs.buildBlock("isValidMapKeyPrivate", 2)}
   }
   ` : ``}
 
-  [Symbol.iterator]() : Iterator<[${tsAllTypes}]>
+  [Symbol.iterator]() : IterableIterator<[${tsAllTypes}]>
   {
     return this.values();
   }
@@ -304,9 +304,44 @@ ${docs.buildBlock("isValidMapKeyPrivate", 2)}
   [Symbol.toStringTag] = "${defines.className}";
 }
 
-
 Object.freeze(${defines.className});
 Object.freeze(${defines.className}.prototype);
+
+export type Readonly${defines.className}${defines.tsGenericFull} =
+  Pick<
+    ${defines.className}<${tsAllTypes}>,
+    "size" | "getSizeOfSet" | "mapSize" | "has" | "hasSets"${
+      defines.validateArguments ? ` | "isValidKey"` : ``
+    } | "values" | "valuesSet"
+  > &
+  {
+    forEach(
+      __callback__: (
+        ${defines.tsMapKeys.join(",\n        ")},
+        ${defines.tsSetKeys.join(",\n        ")},
+        __collection__: Readonly${defines.className}<${tsAllTypes}>
+      ) => void,
+      __thisArg__?: unknown
+    ) : void;
+
+    forEachMap(
+      __callback__: (
+        ${defines.tsMapKeys.join(",\n        ")},
+        __collection__: Readonly${defines.className}<${tsAllTypes}>
+      ) => void,
+      __thisArg__?: unknown
+    ) : void;
+
+    forEachSet(
+      ${tsMapKeys},
+      __callback__: (
+        ${defines.tsMapKeys.join(",\n        ")},
+        ${defines.tsSetKeys.join(",\n        ")},
+        __collection__: Readonly${defines.className}<${tsAllTypes}>
+      ) => void,
+      __thisArg__?: unknown
+    ): void;
+  }
 `}
 
 export default preprocess;
