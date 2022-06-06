@@ -190,6 +190,9 @@ class WeakWeakMap<
   [Symbol.toStringTag] = "WeakWeakMap";
 }
 
+Object.freeze(WeakWeakMap);
+Object.freeze(WeakWeakMap.prototype);
+
 export type ReadonlyWeakWeakMap<
   __MK0__ extends object,
   __MK1__ extends object,
@@ -199,8 +202,5 @@ export type ReadonlyWeakWeakMap<
   WeakWeakMap<__MK0__,__MK1__, __V__>,
   "get" | "has" | "isValidKey"
 >;
-
-Object.freeze(WeakWeakMap);
-Object.freeze(WeakWeakMap.prototype);
 
 export default WeakWeakMap;

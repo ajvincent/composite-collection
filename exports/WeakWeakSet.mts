@@ -142,4 +142,13 @@ class WeakWeakSet<
 Object.freeze(WeakWeakSet);
 Object.freeze(WeakWeakSet.prototype);
 
+export type ReadonlyWeakWeakSet<
+  __SK0__ extends object,
+  __SK1__ extends object
+> =
+  Pick<
+    WeakWeakSet<__SK0__,__SK1__>,
+    "has" | "isValidKey"
+  >
+
 export default WeakWeakSet;

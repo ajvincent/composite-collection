@@ -89,6 +89,12 @@ ${defines.validateArguments || ""}
 
 Object.freeze(${defines.className});
 Object.freeze(${defines.className}.prototype);
+
+export type Readonly${defines.className}${defines.tsGenericFull} =
+  Pick<
+    ${defines.className}<${defines.tsSetTypes}>,
+    "has" | "isValidKey"
+  >
 `;
 };
 export default preprocess;

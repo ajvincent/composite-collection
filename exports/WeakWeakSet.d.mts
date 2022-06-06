@@ -39,4 +39,5 @@ declare class WeakWeakSet<__SK0__ extends object, __SK1__ extends object> {
     isValidKey(key1: __SK0__, key2: __SK1__): boolean;
     [Symbol.toStringTag]: string;
 }
+export declare type ReadonlyWeakWeakSet<__SK0__ extends object, __SK1__ extends object> = Pick<WeakWeakSet<__SK0__, __SK1__>, "has" | "isValidKey">;
 export default WeakWeakSet;
