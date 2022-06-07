@@ -1,10 +1,6 @@
 # composite-collection
 
-Composing Maps, WeakMaps, Sets and WeakSets into generated classes
-
-## TypeScript support
-
-See [the TypeScript README](typescript-templates/README.md) for the details.
+Composing Maps, WeakMaps, Sets and WeakSets into generated classes.
 
 ## Summary
 
@@ -27,6 +23,16 @@ If the answer is "a lot", this package is for you.  It'd be much nicer to just w
 compositeWeakWeakMap.set(key1, key2, value);
 ```
 
+[TypeScript](https://www.typescriptlang.org/) has the ability to specify argument types via generic classes.  This package creates and supports generic TypeScript classes too:
+
+```typescript
+import OneToOneStrongMap from "../collections/OneToOneStrongMap.mjs";
+const a: OneToOneStrongMap<ClassOne, string> = new OneToOneStrongMap;
+const oneA = new ClassOne, oneB = new ClassOne;
+a.bindOneToOne("red", oneA, "blue", oneB);
+a.get(oneA, "blue"); // returns oneB
+```
+
 The *composite-collection* package provides several pre-defined two-key collection classes for your use:
 
 - [composite-collection/StrongStrongMap](exports/StrongStrongMap.mjs)
@@ -37,29 +43,21 @@ The *composite-collection* package provides several pre-defined two-key collecti
 - [composite-collection/WeakStrongSet](exports/WeakStrongSet.mjs)
 - [composite-collection/StrongMapOfStrongSets](exports/StrongMapOfStrongSets.mjs)
 - [composite-collection/WeakMapOfStrongSets](exports/WeakMapOfStrongSets.mjs)
-- [composite-collection/WeakFunctionMultiMap](exports/WeakFunctionMultiMap.mjs)
-  - This is a WeakMap of Sets, each of which must contain only functions
 - [composite-collection/OneToOneSimpleMap](exports/OneToOneSimpleMap.mjs)
 - [composite-collection/OneToOneStrongMap](exports/OneToOneStrongMap.mjs)
 - [composite-collection/OneToOneWeakMap](exports/OneToOneWeakMap.mjs)
 
-If you want to generate your own composite collections, this package is also for you.  Each of the above collections comes from [a short configuration file](source/exports), some [hand-written templates](templates), and a [code-generating set of modules](source) to transform the templates into [working collection modules](exports), complete with [JSDoc comments](https://jsdoc.app/).  Here's the [WeakFunctionMultiMap configuration file](source/exports/WeakFunctionMultiMap.mjs):
+If you want to generate your own composite collections, this package is also for you.  Each of the above collections comes from [a short configuration file](source/exports), some [hand-written templates](templates), and a [code-generating set of modules](source) to transform the templates into [working collection modules](exports), complete with [JSDoc comments](https://jsdoc.app/).  Here's the [WeakMapOfStrongSets configuration file](source/exports/WeakMapOfStrongSets.mjs):
 
 ```javascript
 import CollectionConfiguration from "composite-collection/Configuration";
 
-const WeakFunctionMultiMap = new CollectionConfiguration("WeakFunctionMultiMap", "WeakMap", "Set");
+const WeakMapOfStrongSetsConfig = new CollectionConfiguration("WeakMapOfStrongSets", "WeakMap", "Set");
+WeakMapOfStrongSetsConfig.addMapKey("mapKey", "The map key.", true);
+WeakMapOfStrongSetsConfig.addSetKey("setKey", "The set key.", false);
+WeakMapOfStrongSetsConfig.lock();
 
-WeakFunctionMultiMap.addMapKey("key", true);
-WeakFunctionMultiMap.addSetKey("mapFunction", false, {
-  argumentType: "Function",
-  argumentValidator: function(mapFunction) {
-    if (typeof mapFunction !== "function")
-      return false;
-  }
-});
-
-export default WeakFunctionMultiMap;
+export default WeakMapOfStrongSetsConfig;
 ```
 
 Here's code you could use to [generate this collection](spec/integration/fixtures/Driver/test.mjs).
@@ -85,15 +83,15 @@ const driver = new CompositeDriver(
 driver.start();
 await driver.run();
 
-// at this point, "./collections/WeakFunctionMultiMap.mjs" has everything you need
+// at this point, "./collections/WeakMapOfStrongSets.mjs" has everything you need
 ```
 
-To use it:
+To use it (TypeScript):
 
-```javascript
-import WeakFunctionMultiMap from "./collections/WeakFunctionMultiMap.mjs";
+```typescript
+import WeakMapOfStrongSets from "./collections/WeakMapOfStrongSets.mjs";
 
-const wfMM = new WeakFunctionMultiMap();
+const wfMM: WeakMapOfStrongSets<object, () => void> = new WeakMapOfStrongSets();
 const key1 = {}, callback1 = function() {}, callback2 = function() {};
 wfMM.add(key1, callback1);
 wfMM.add(key1, callback2);
@@ -101,7 +99,10 @@ wfMM.add(key1, callback2);
 const key3 = {}, callback3 = function() {};
 wfMM.add(key3, callback3);
 
-wfMM.forEachSet(key1, callback => callback());
+wfMM.forEachSet(key1, (key, callback) => {
+  void(key);
+  callback();
+});
 /*
 This executes callback1() and callback2(), in that order, but not callback3().
 */
@@ -120,8 +121,8 @@ compositeWeakWeakSet.has(key2, key1); // returns false
 compositeWeakWeakSet.has(key1, key2); // returns true
 
 // The user must provide both keys the collection requires, in the right order.
-compositeWeakWeakSet.has(key1); // return false
-compositeWeakWeakSet.has(key2); // return false
+compositeWeakWeakSet.has(key1); // return false. In TypeScript, this will not compile.
+compositeWeakWeakSet.has(key2); // return false. In TypeScript, this will not compile.
 ```
 
 ### Strong and weak references
@@ -142,6 +143,8 @@ A "map of sets" is a special set data structure.  Think of the map keys as the t
 - `.deleteSets(_mapKeys_)`
 - `.getSizeOfSet(_mapKeys_)`
 
+There's also a `.forEachMap()` method which allows you to iterate over the map keys only, and a `.forEach()` method to iterate over all keys.
+
 Currently, this module supports strong maps of strong sets, and weak maps of strong sets.  
 
 Maps of weak sets don't make sense right now:  they turn into glorified composite sets, providing only a little functionality you can replicate via subclassing in exchange for greater internal complexity (and probable memory leaks).
@@ -155,16 +158,19 @@ I suggest the following practices for developers using this package to follow.
 - If you are developing more complex collections, `npm install --save-dev composite-collection` as a development dependency.
   - Maintain a "configurations" subdirectory that has only `CollectionConfiguration` export modules in it.
   - Maintain a "collections" subdirectory to receive the modules which *composite-collection* generates.  Feel free to import modules from this subdirectory and use them, but do not edit them.
-  - Invoke the Driver only when you need to rebuild the modules in your collections subdirectory.  Sure, it's really fast at generating modules, but why add extra build steps?  The collections themselves should be fairly stable.
+  - Invoke the `Driver` only when you need to rebuild the modules in your collections subdirectory.  Sure, it's really fast at generating modules, but why add extra build steps?  The collections themselves should be fairly stable.
 - Consider using [rollup.js](https://rollupjs.org/guide/en/) to bundle files from the collections subdirectory into another subdirectory you import from, particularly if you only use one composite collection.
   - Use `--format=es` to preserve the ECMAScript Modules output.
 - Feel free to file GitHub issues for support!
 
 ## Features
 
-Currently supported (version 1.0.0):
+Currently supported (version 2.0.0):
 
-- ECMAScript class modules with all the pieces you need
+- TypeScript class modules with all the pieces you need
+  - Invoking `tsc` to generate the JavaScript modules from JavaScript directly if you wish
+  - `Readonly` prefixes on TypeScript generic classes for read-only operations (ex. `ReadonlyWeakStrongMap<object, string>`)
+  - Generating `.d.mts` and `.mjs.map` files for declarations and source maps, respectively
 - A simple configuration API
 - Generating code and matching JSDoc comments
   - Comprehensive API in each collection for setting, getting and iterating over entries
@@ -173,19 +179,13 @@ Currently supported (version 1.0.0):
 - Support for multiple weak keys, multiple strong keys
 - Argument validation
   - Including user modules for types
-- Maps, Sets and Maps of Sets available
+- Maps, Sets and Maps of Strong Sets available
 - Weak keys subject to garbage collection
 - Pre-compiled collections available as exports
 - [Private class fields and methods](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_class_fields)
 - Using [WeakRef](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakRef) and [FinalizationRegistry](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/FinalizationRegistry) to reduce the number of WeakMaps
 - One-to-one hash tables with two-part keys:  `("red", redObj) <-> ("blue", blueObj)`
 - Eliminating redundant use of KeyHasher, WeakKeyComposer when there's only one map key and/or one set key
-
-In the future:
-
-- Declaring key groups
-  - Key groups can be equal: `(arg1, arg2) === (arg3, arg4)` for the purpose of this collection
-- Configuring to support unsorted key collections: `(arg1, arg2) === (arg2, arg1)` for the purposes of a specific composite collection
 
 ## A note about one-to-one hashtables
 
@@ -226,7 +226,6 @@ If you want a more complex hashtable structure (multiple keys, argument validati
     - "WeakSet" for weak sets
   - `innerType` is:
     - "Set" for maps of strong sets
-    - "WeakSet" for weak maps of weak sets
     - Maps of weak sets are illegal because it's unclear when we would hold references to the strong map keys.
 - `setFileOverview(overview);` to set a top-level file overview
 - `importLines(blockOfTest);` to specify top-level module imports
@@ -236,9 +235,10 @@ If you want a more complex hashtable structure (multiple keys, argument validati
   - `holdWeak` is true if the key represents a weakly held key, false for a strongly held key.
   - `options` is an object taking optional properties:
     - `jsDocType` is a JSDoc-printable type for the argument.
-    - `argumentValidator` is a lambda function with one argument, the same as argumentName, to validate the argument value in the class's methods.  
+    - `tsType` is a TypeScript type for the argument.
+    - `argumentValidator` is a lambda function with one argument, the same as `argumentName`, to validate the argument value in the class's methods.  
     - The validator *must not throw*, and only return false when the validation for that argument fails.  It must not do - or *return* - anything else.
-    - The CodeGenerator will combine all the argument validators into a single "isValidKey" function.
+    - The CodeGenerator will combine all the argument validators into a single `isValidKey()` function.
 - `addSetKey(argumentName, description, holdWeak, options);` to specify ordered keys for sets
   - The arguments for `addSetKey` are the same as for `addMapKey`.
 - `setValueType(description, options);` for maps, to specify the type of the value to store.
@@ -274,4 +274,5 @@ One-to-one hashtables go through an additional set of steps.
 3. For strongly held keys, the template specifies a [`KeyHasher`](source/exports/keys/Hasher.mjs) module to import, which the [`Driver`](source/Driver.mjs) module copies into the destination directory.  The `KeyHasher` holds weak references to objects, and returns a string hash for the module's use.
 4. For weakly held keys (and strongly held keys associated with them), the template specifies a [`WeakKeyComposer`](exports/keys/Composite.mjs) module to import.  The `Driver` module copies this module into the destination directory.  The `WeakKeyComposer` holds the weak and strong references as the collection specified.  It returns vanilla objects (`WeakKey` objects) for the module's use.
 5. The `CodeGenerator` uses the configuration and fills a [`JSDocGenerator`](source/JSDocGenerator.mjs) instance with the necessary fields to format JSDoc comments for the code it will generate.
-6. The `CodeGenerator` combines the template, the configuration and the `JSDocGenerator` into a [JavaScript module file](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) ready for either web browsers or [NodeJS](https://www.nodejs.org) applications to use.  The module will store `WeakKey` objects in a private WeakMap, and hashes in a private Map.  The module will `export default` the final collection class.
+6. The `CodeGenerator` combines the template, the configuration and the `JSDocGenerator` into a TypeScript module ending in `.mts`.  The module will `export default` the final collection class.
+7. The `CodeGenerator` invokes `tsc` to transform the TypeScript module into a [JavaScript module file](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) ready for either web browsers or [NodeJS](https://www.nodejs.org) applications to use.  The module will store `WeakKey` objects in a private WeakMap, and hashes in a private Map.
