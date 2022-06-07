@@ -67,4 +67,5 @@ declare class OneToOneWeakMap<__MK1__ extends object, __V__ extends object> {
     isValidValue(value: __V__): boolean;
     [Symbol.toStringTag]: string;
 }
+export declare type ReadonlyOneToOneWeakMap<__MK1__ extends object, __V__ extends object> = Pick<OneToOneWeakMap<__MK1__, __V__>, "get" | "has" | "hasIdentity" | "isValidKey" | "isValidValue">;
 export default OneToOneWeakMap;

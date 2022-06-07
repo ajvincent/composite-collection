@@ -89,6 +89,9 @@ const preprocess: TemplateFunction = function(
   let tsMapTypes = defines.tsMapTypes.join(", ").replace(defines.tsOneToOneKeyType, "object");
   let baseClass = defines.baseClassName + "<" + tsMapTypes + ", __V__>";
 
+  let readonlyBaseTypes = defines.tsMapTypes.filter(t => t !== defines.tsOneToOneKeyType);
+  let readonlyBase = defines.className + "<" + readonlyBaseTypes.join(", ") + ", __V__>";
+
   let classDefinition = "";
   if (defines.wrapBaseClass) {
     classDefinition = `
@@ -291,7 +294,16 @@ ${bindArgList.length ? `
 
   [Symbol.toStringTag] = "${defines.className}";
 }
-    `;
+
+Object.freeze(${defines.className});
+Object.freeze(${defines.className}.prototype);
+
+export type Readonly${defines.className}${defines.tsGenericFull} =
+  Pick<
+    ${readonlyBase},
+    "get" | "has" | "hasIdentity" | "isValidKey" | "isValidValue"
+  >
+`;
   }
   else {
     classDefinition = `
@@ -366,12 +378,21 @@ defines.baseClassName !== "WeakMap" ? `
 
   [Symbol.toStringTag] = "${defines.className}";
 }
-    `;
-  }
 
-  return classDefinition + `
 Object.freeze(${defines.className});
 Object.freeze(${defines.className}.prototype);
-`}
+
+export type Readonly${defines.className}${defines.tsGenericFull} =
+  Pick<
+    ${defines.className}<${defines.tsValueType}>,
+    "hasIdentity" | "isValidValue"
+  >${
+    defines.className === "Map" ? `& Readonly${defines.baseClassName}<${defines.tsValueType}, ${defines.tsValueType}>` : ``
+  }
+`;
+  }
+
+  return classDefinition;
+}
 
 export default preprocess;

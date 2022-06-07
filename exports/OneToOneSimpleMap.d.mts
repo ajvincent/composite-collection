@@ -37,4 +37,5 @@ declare class OneToOneSimpleMap<__V__ extends object> extends WeakMap<__V__, __V
     set(key: __V__, value: __V__): never;
     [Symbol.toStringTag]: string;
 }
+export declare type ReadonlyOneToOneSimpleMap<__V__ extends object> = Pick<OneToOneSimpleMap<__V__>, "hasIdentity" | "isValidValue">;
 export default OneToOneSimpleMap;
