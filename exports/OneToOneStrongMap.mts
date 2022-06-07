@@ -187,8 +187,17 @@ class OneToOneStrongMap<
 
   [Symbol.toStringTag] = "OneToOneStrongMap";
 }
-    
+
 Object.freeze(OneToOneStrongMap);
 Object.freeze(OneToOneStrongMap.prototype);
+
+export type ReadonlyOneToOneStrongMap<
+  __MK1__,
+  __V__ extends object
+> =
+  Pick<
+    OneToOneStrongMap<__MK1__, __V__>,
+    "get" | "has" | "hasIdentity" | "isValidKey" | "isValidValue"
+  >
 
 export default OneToOneStrongMap;

@@ -85,8 +85,16 @@ class OneToOneSimpleMap<
 
   [Symbol.toStringTag] = "OneToOneSimpleMap";
 }
-    
+
 Object.freeze(OneToOneSimpleMap);
 Object.freeze(OneToOneSimpleMap.prototype);
+
+export type ReadonlyOneToOneSimpleMap<
+  __V__ extends object
+> =
+  Pick<
+    OneToOneSimpleMap<__V__>,
+    "hasIdentity" | "isValidValue"
+  >
 
 export default OneToOneSimpleMap;

@@ -187,8 +187,17 @@ class OneToOneWeakMap<
 
   [Symbol.toStringTag] = "OneToOneWeakMap";
 }
-    
+
 Object.freeze(OneToOneWeakMap);
 Object.freeze(OneToOneWeakMap.prototype);
+
+export type ReadonlyOneToOneWeakMap<
+  __MK1__ extends object,
+  __V__ extends object
+> =
+  Pick<
+    OneToOneWeakMap<__MK1__, __V__>,
+    "get" | "has" | "hasIdentity" | "isValidKey" | "isValidValue"
+  >
 
 export default OneToOneWeakMap;

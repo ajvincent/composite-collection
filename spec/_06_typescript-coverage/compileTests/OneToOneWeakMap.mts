@@ -1,0 +1,18 @@
+import OneToOneWeakMap, { ReadonlyOneToOneWeakMap } from "../generated/OneToOneWeakMap.mjs";
+import { ClassOne, ClassTwo } from "./stubClasses.mjs";
+
+const key1a = new ClassOne, key1b = new ClassTwo,
+      key2a = new ClassOne, key2b = new ClassTwo,
+      key3a = new ClassOne, key3b = new ClassTwo;
+
+const a: OneToOneWeakMap<ClassOne, ClassTwo> = new OneToOneWeakMap;
+a.bindOneToOne(key1a, key1b, key2a, key2b);
+void(a.delete(key3b, key2a));
+
+const ra: ReadonlyOneToOneWeakMap<ClassOne, ClassTwo> = a;
+void(ra.get(key1b, key2a));
+void(ra.has(key1b, key2a));
+void(ra.hasIdentity(key3b, key3a, false));
+void(ra.hasIdentity(key3b, key3a, true));
+void(ra.isValidKey(key3a));
+void(ra.isValidValue(key3b));
