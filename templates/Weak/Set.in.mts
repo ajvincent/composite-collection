@@ -27,7 +27,7 @@ class ${defines.className}${defines.tsGenericFull}
 
   constructor(iterable? : [${defines.tsSetTypes}][]) {
     if (iterable) {
-      for (let [${defines.argList}] of iterable) {
+      for (const [${defines.argList}] of iterable) {
         this.add(${defines.argList});
       }
     }

@@ -23,7 +23,7 @@ ${docs.buildBlock("rootContainerWeakMap", 2)}
   constructor(iterable?: [${defines.tsMapTypes}, ${defines.tsValueType}][])
   {
     if (iterable) {
-      for (let [${defines.argList}, value] of iterable) {
+      for (const [${defines.argList}, value] of iterable) {
         this.set(${defines.argList}, value);
       }
     }

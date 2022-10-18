@@ -128,7 +128,7 @@ export default class ConfigurationData {
             target.setFileOverview(this.fileOverview);
         target.importLines = this.importLines;
         // Argument parameters
-        for (let value of this.parameterToTypeMap.values())
+        for (const value of this.parameterToTypeMap.values())
             target.defineArgument(value);
         target.valueType = this.valueType;
         if (this.#oneToOneData) {

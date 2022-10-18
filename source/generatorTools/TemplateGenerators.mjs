@@ -10,7 +10,7 @@ const templateDirURL = new URL("../../templates", import.meta.url);
 const templateDir = templateDirURL.pathname;
 const allFiles = (await readDirsDeep(templateDir)).files;
 await PromiseAllParallel(allFiles, async (fullPath) => {
-    let baseName = fullPath.substring(templateDir.length + 1);
+    const baseName = fullPath.substring(templateDir.length + 1);
     if (!baseName.endsWith(".in.mjs"))
         return;
     const generator = (await import(fullPath)).default;

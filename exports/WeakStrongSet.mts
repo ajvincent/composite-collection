@@ -33,7 +33,7 @@ class WeakStrongSet<
 
   constructor(iterable? : [__SK0__,__SK1__][]) {
     if (iterable) {
-      for (let [weakKey, strongKey] of iterable) {
+      for (const [weakKey, strongKey] of iterable) {
         this.add(weakKey, strongKey);
       }
     }

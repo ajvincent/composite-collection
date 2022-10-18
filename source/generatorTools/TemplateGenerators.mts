@@ -21,7 +21,7 @@ const templateDir = templateDirURL.pathname;
 const allFiles = (await readDirsDeep(templateDir)).files;
 
 await PromiseAllParallel(allFiles, async (fullPath: string) => {
-  let baseName = fullPath.substring(templateDir.length + 1);
+  const baseName = fullPath.substring(templateDir.length + 1);
   if (!baseName.endsWith(".in.mjs"))
     return;
 

@@ -45,7 +45,7 @@ class ${defines.className}${defines.tsGenericFull} {
 
   constructor(iterable?: [${tsAllTypes}][]) {
     if (iterable) {
-      for (let [${allKeys}] of iterable) {
+      for (const [${allKeys}] of iterable) {
         this.add(${allKeys});
       }
     }
@@ -240,8 +240,8 @@ ${docs.buildBlock("values", 2)}
   {
     const __outerIter__ = this.#outerMap.values();
 
-    for (let __innerMap__ of __outerIter__) {
-      for (let __value__ of __innerMap__.values())
+    for (const __innerMap__ of __outerIter__) {
+      for (const __value__ of __innerMap__.values())
         yield __value__;
     }
   }
@@ -254,7 +254,7 @@ ${docs.buildBlock("valuesSet", 2)}
     if (!__innerMap__)
       return;
 
-    for (let __value__ of __innerMap__.values())
+    for (const __value__ of __innerMap__.values())
       yield __value__;
   }
 

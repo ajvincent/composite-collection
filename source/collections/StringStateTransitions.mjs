@@ -123,7 +123,7 @@ class StringStateMachine {
      * @public
      */
     *values() {
-        for (let __value__ of this.#root.values()) {
+        for (const __value__ of this.#root.values()) {
             yield __value__;
         }
     }

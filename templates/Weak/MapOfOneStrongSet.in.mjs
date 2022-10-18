@@ -40,7 +40,7 @@ class ${defines.className}${defines.tsGenericFull}
   constructor(iterable? : [${tsAllTypes}][])
   {
     if (iterable) {
-      for (let [${allKeys}] of iterable) {
+      for (const [${allKeys}] of iterable) {
         this.add(${allKeys});
       }
     }
@@ -170,7 +170,7 @@ ${docs.buildBlock("valuesSet", 2)}
       return;
 
     const __outerIter__ = __innerSet__.values();
-    for (let ${setKeys} of __outerIter__)
+    for (const ${setKeys} of __outerIter__)
       yield [${allKeys}];
   }
 

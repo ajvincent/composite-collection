@@ -60,17 +60,17 @@ const rb: ReadonlyStrongMapOfStrongSets<ClassOne, ClassTwo> = b;
 void(rb.has(key2a, key2b));
 
 {
-  let iter = rb.values();
+  const iter = rb.values();
   void(iter); // because for...of doesn't seem to register for eslint
-  for (let value of iter) {
+  for (const value of iter) {
     void(value);
   }
 }
 
 {
-  let iter = rb.valuesSet(key1a);
+  const iter = rb.valuesSet(key1a);
   void(iter); // because for...of doesn't seem to register for eslint
-  for (let value of iter) {
+  for (const value of iter) {
     void(value);
   }
 }

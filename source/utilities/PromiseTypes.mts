@@ -1,4 +1,3 @@
-//
 export type PromiseResolver<T> = (value: T | PromiseLike<T>) => unknown;
 export type PromiseRejecter = (reason?: unknown) => unknown;
 

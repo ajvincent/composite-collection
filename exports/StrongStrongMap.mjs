@@ -76,7 +76,7 @@ class StrongStrongMap {
      * @public
      */
     *entries() {
-        for (let __valueAndKeySet__ of this.#root.values()) {
+        for (const __valueAndKeySet__ of this.#root.values()) {
             yield [
                 ...__valueAndKeySet__.keySet,
                 __valueAndKeySet__.value
@@ -171,7 +171,7 @@ class StrongStrongMap {
      * @public
      */
     *keys() {
-        for (let __valueAndKeySet__ of this.#root.values()) {
+        for (const __valueAndKeySet__ of this.#root.values()) {
             const [key1, key2] = __valueAndKeySet__.keySet;
             yield [key1, key2];
         }
@@ -199,7 +199,7 @@ class StrongStrongMap {
      * @public
      */
     *values() {
-        for (let __valueAndKeySet__ of this.#root.values())
+        for (const __valueAndKeySet__ of this.#root.values())
             yield __valueAndKeySet__.value;
     }
     [Symbol.iterator]() {

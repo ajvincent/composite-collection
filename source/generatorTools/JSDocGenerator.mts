@@ -67,7 +67,7 @@ class ParamBlock {
       const type = `{${row.type}}`.padEnd(this.#typeColumnWidth);
       const name = row.name.padEnd(this.#nameColumnWidth);
 
-      let firstDescLine = `@param ${type} ${name} ${row.firstDescLine}`;
+      const firstDescLine = `@param ${type} ${name} ${row.firstDescLine}`;
       return [firstDescLine, ...row.otherDescLines.map(
         // Why 10?  " * @param ".length.  This is to indent the other description lines.
         desc => " ".repeat(this.#typeColumnWidth + this.#nameColumnWidth + 10) + desc
@@ -254,7 +254,7 @@ export default class JSDocGenerator {
     {
       const argList = Array.from(this.#params.values()).map(param => param.argumentName);
       {
-        let index = argList.indexOf("value");
+        const index = argList.indexOf("value");
         if (index !== -1)
           argList.splice(index, 1);
       }

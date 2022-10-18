@@ -107,7 +107,7 @@ class StrongStrongMap<
    */
   * entries() : IterableIterator<[__MK0__, __MK1__, __V__]>
   {
-    for (let __valueAndKeySet__ of this.#root.values()) {
+    for (const __valueAndKeySet__ of this.#root.values()) {
       yield [
         ...__valueAndKeySet__.keySet,
         __valueAndKeySet__.value
@@ -228,7 +228,7 @@ class StrongStrongMap<
    */
   * keys() : IterableIterator<[__MK0__, __MK1__]>
   {
-    for (let __valueAndKeySet__ of this.#root.values()) {
+    for (const __valueAndKeySet__ of this.#root.values()) {
       const [key1, key2] : [__MK0__, __MK1__] = __valueAndKeySet__.keySet;
       yield [key1, key2];
     }
@@ -263,7 +263,7 @@ class StrongStrongMap<
    */
   * values() : IterableIterator<__V__>
   {
-    for (let __valueAndKeySet__ of this.#root.values())
+    for (const __valueAndKeySet__ of this.#root.values())
       yield __valueAndKeySet__.value;
   }
 

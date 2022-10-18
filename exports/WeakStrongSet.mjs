@@ -23,7 +23,7 @@ class WeakStrongSet {
     #weakKeySet = new WeakSet;
     constructor(iterable) {
         if (iterable) {
-            for (let [weakKey, strongKey] of iterable) {
+            for (const [weakKey, strongKey] of iterable) {
                 this.add(weakKey, strongKey);
             }
         }

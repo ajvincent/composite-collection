@@ -41,7 +41,7 @@ class WeakWeakMap<
   constructor(iterable?: [__MK0__,__MK1__, __V__][])
   {
     if (iterable) {
-      for (let [key1, key2, value] of iterable) {
+      for (const [key1, key2, value] of iterable) {
         this.set(key1, key2, value);
       }
     }

@@ -37,26 +37,26 @@ void(rb.get(key1a, key1b));
 void(rb.has(key2a, key2b));
 
 {
-  let iter = rb.keys();
+  const iter = rb.keys();
   void(iter); // because for...of doesn't seem to register for eslint
-  for (let [c1, c2] of iter) {
+  for (const [c1, c2] of iter) {
     void(c1);
     void(c2);
   }
 }
 
 {
-  let iter = rb.values();
+  const iter = rb.values();
   void(iter); // because for...of doesn't seem to register for eslint
-  for (let value of iter) {
+  for (const value of iter) {
     void(value);
   }
 }
 
 {
-  let iter = rb.entries();
+  const iter = rb.entries();
   void(iter); // because for...of doesn't seem to register for eslint
-  for (let [c1, c2, value] of iter) {
+  for (const [c1, c2, value] of iter) {
     void(c1);
     void(c2);
     void(value);

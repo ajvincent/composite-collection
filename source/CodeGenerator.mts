@@ -287,7 +287,7 @@ export default class CodeGenerator extends CodeGeneratorBase
     lines = lines.filter(Boolean);
     lines = lines.map(line => line === " * " ? " *" : line);
 
-    let generatedCodeNotice = lines.join("\n");
+    const generatedCodeNotice = lines.join("\n");
     const prologue = [
       generatedCodeNotice.trim(),
     ];
@@ -313,7 +313,7 @@ export default class CodeGenerator extends CodeGeneratorBase
 
     {
       const mapArgs: string[] = [], setArgs: string[] = [];
-      for (let [key, typeMap] of data.parameterToTypeMap) {
+      for (const [key, typeMap] of data.parameterToTypeMap) {
         (typeMap.mapOrSetType.endsWith("Map") ? mapArgs : setArgs).push(key);
       }
 
@@ -352,7 +352,7 @@ export default class CodeGenerator extends CodeGeneratorBase
     }
 
     if (data.valueType) {
-      let filter = (data.valueType.argumentValidator || "").trim();
+      const filter = (data.valueType.argumentValidator || "").trim();
       if (filter)
         defines.validateValue = filter + "\n    ";
     }
@@ -361,7 +361,7 @@ export default class CodeGenerator extends CodeGeneratorBase
   #buildTypeScriptDefines() : void
   {
     const defines = this.#defines;
-    let data = this.#configurationData;
+    const data = this.#configurationData;
     let baseData = data;
 
     if (data.collectionTemplate === "OneToOne/Map") {
@@ -460,7 +460,7 @@ export default class CodeGenerator extends CodeGeneratorBase
     defines.weakKeyName = weakKeyName;
 
     // bindOneToOne arguments
-    let keys = Array.from(baseData.parameterToTypeMap.keys());
+    const keys = Array.from(baseData.parameterToTypeMap.keys());
     defines.baseArgList = keys.slice();
 
     keys.splice(keys.indexOf(weakKeyName), 1);
@@ -547,13 +547,16 @@ export default class CodeGenerator extends CodeGeneratorBase
     });
 
     if (addValue) {
-      let {
-        argumentName = "value",
+      const {
         mapOrSetType = "Map",
         jsDocType = baseData.valueType?.jsDocType || "object",
         tsType = baseData.valueType?.tsType || "object",
         description = "The value.",
         argumentValidator = ""
+      } = baseData.valueType || {};
+
+      let {
+        argumentName = "value",
       } = baseData.valueType || {};
 
       argumentName += typeSuffix;
@@ -593,7 +596,7 @@ export default class CodeGenerator extends CodeGeneratorBase
 
   #chooseCollectionTemplate() : string
   {
-    let startTemplate = this.#configurationData.collectionTemplate;
+    const startTemplate = this.#configurationData.collectionTemplate;
 
     const weakMapCount = this.#configurationData.weakMapKeys?.length || 0,
           strongMapCount = this.#configurationData.strongMapKeys?.length || 0,

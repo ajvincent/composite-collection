@@ -25,7 +25,7 @@ class WeakMapOfStrongSets {
     #root = new DefaultWeakMap();
     constructor(iterable) {
         if (iterable) {
-            for (let [mapKey, setKey] of iterable) {
+            for (const [mapKey, setKey] of iterable) {
                 this.add(mapKey, setKey);
             }
         }
@@ -179,7 +179,7 @@ class WeakMapOfStrongSets {
         if (!__innerSet__)
             return;
         const __outerIter__ = __innerSet__.values();
-        for (let setKey of __outerIter__)
+        for (const setKey of __outerIter__)
             yield [mapKey, setKey];
     }
     /**

@@ -28,7 +28,7 @@ class WeakWeakMap {
     #root = new WeakMap;
     constructor(iterable) {
         if (iterable) {
-            for (let [key1, key2, value] of iterable) {
+            for (const [key1, key2, value] of iterable) {
                 this.set(key1, key2, value);
             }
         }

@@ -68,7 +68,7 @@ ${docs.buildBlock("delete", 2)}
 ${docs.buildBlock("entries", 2)}
   * entries() : IterableIterator<[${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}]>
   {
-    for (let __valueAndKeySet__ of this.#root.values()) {
+    for (const __valueAndKeySet__ of this.#root.values()) {
       yield [
         ...__valueAndKeySet__.keySet,
         __valueAndKeySet__.value
@@ -169,7 +169,7 @@ ${docs.buildBlock("isValidValuePublic", 2)}
 ${docs.buildBlock("keys", 2)}
   * keys() : IterableIterator<[${defines.tsMapTypes.join(", ")}]>
   {
-    for (let __valueAndKeySet__ of this.#root.values()) {
+    for (const __valueAndKeySet__ of this.#root.values()) {
       const [${defines.mapKeys.join(", ")}] : [${defines.tsMapTypes.join(", ")}] = __valueAndKeySet__.keySet;
       yield [${defines.mapKeys.join(", ")}];
     }
@@ -196,7 +196,7 @@ ${
 ${docs.buildBlock("values", 2)}
   * values() : IterableIterator<${defines.tsValueType}>
   {
-    for (let __valueAndKeySet__ of this.#root.values())
+    for (const __valueAndKeySet__ of this.#root.values())
       yield __valueAndKeySet__.value;
   }
 ${defines.validateArguments ? `

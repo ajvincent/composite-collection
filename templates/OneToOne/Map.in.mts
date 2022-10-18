@@ -86,11 +86,11 @@ const preprocess: TemplateFunction = function(
   const bindMapArgs = buildArgNameList(bindArgList);
   const bindMapArgsWithTypes = buildNumberedTypes(bindArgList, "", defines.tsMapKeys);
 
-  let tsMapTypes = defines.tsMapTypes.join(", ").replace(defines.tsOneToOneKeyType, "object");
-  let baseClass = defines.baseClassName + "<" + tsMapTypes + ", __V__>";
+  const tsMapTypes = defines.tsMapTypes.join(", ").replace(defines.tsOneToOneKeyType, "object");
+  const baseClass = defines.baseClassName + "<" + tsMapTypes + ", __V__>";
 
-  let readonlyBaseTypes = defines.tsMapTypes.filter(t => t !== defines.tsOneToOneKeyType);
-  let readonlyBase = defines.className + "<" + readonlyBaseTypes.join(", ") + ", __V__>";
+  const readonlyBaseTypes = defines.tsMapTypes.filter(t => t !== defines.tsOneToOneKeyType);
+  const readonlyBase = defines.className + "<" + readonlyBaseTypes.join(", ") + ", __V__>";
 
   let classDefinition = "";
   if (defines.wrapBaseClass) {

@@ -36,7 +36,7 @@ class ${defines.className}${defines.tsGenericFull}
 
   constructor(iterable?: [${tsAllTypes}][]) {
     if (iterable) {
-      for (let [${allKeys}] of iterable) {
+      for (const [${allKeys}] of iterable) {
         this.add(${allKeys});
       }
     }
@@ -164,7 +164,7 @@ ${docs.buildBlock("forEachMap_MapSet", 2)}
     __thisArg__?: unknown
   ) : void
   {
-    for (let ${mapKeys} of this.#outerMap.keys()) {
+    for (const ${mapKeys} of this.#outerMap.keys()) {
       __callback__.apply(__thisArg__, [${mapKeys}, this]);
     }
   }
@@ -224,8 +224,8 @@ ${docs.buildBlock("values", 2)}
   {
     const __outerIter__ = this.#outerMap.entries();
 
-    for (let [${mapKeys}, __innerSet__] of __outerIter__) {
-      for (let ${setKeys} of __innerSet__.values())
+    for (const [${mapKeys}, __innerSet__] of __outerIter__) {
+      for (const ${setKeys} of __innerSet__.values())
         yield [${allKeys}];
     }
   }
@@ -238,7 +238,7 @@ ${docs.buildBlock("valuesSet", 2)}
     if (!__innerSet__)
       return;
 
-    for (let ${setKeys} of __innerSet__.values())
+    for (const ${setKeys} of __innerSet__.values())
       yield [${allKeys}];
   }
 

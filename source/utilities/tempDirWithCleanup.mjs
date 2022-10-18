@@ -13,7 +13,7 @@ export class TemporaryDirWithPromise {
     resolve;
     promise;
     constructor() {
-        let { resolve, promise } = new Deferred;
+        const { resolve, promise } = new Deferred;
         this.resolve = resolve;
         this.promise = promise;
     }
@@ -26,12 +26,11 @@ void (TemporaryDirWithPromise);
  */
 export default async function tempDirWithCleanup() {
     const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "composite-collection-"));
-    let { resolve, promise } = new Deferred;
-    promise = promise.then(() => fs.rm(tempDir, { recursive: true }));
+    const { resolve, promise } = new Deferred;
     return {
         tempDir,
         resolve,
-        promise,
+        promise: promise.then(() => fs.rm(tempDir, { recursive: true })),
     };
 }
 //# sourceMappingURL=tempDirWithCleanup.mjs.map

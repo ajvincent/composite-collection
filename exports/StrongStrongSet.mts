@@ -165,7 +165,7 @@ class StrongStrongSet<
    */
   * values() : IterableIterator<[__SK0__, __SK1__]>
   {
-    for (let __value__ of this.#root.values()) {
+    for (const __value__ of this.#root.values()) {
       yield __value__;
     }
   }

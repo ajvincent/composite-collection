@@ -32,7 +32,7 @@ class StrongMapOfStrongSets<
 
   constructor(iterable?: [__MK0__, __SK0__][]) {
     if (iterable) {
-      for (let [mapKey, setKey] of iterable) {
+      for (const [mapKey, setKey] of iterable) {
         this.add(mapKey, setKey);
       }
     }
@@ -228,7 +228,7 @@ class StrongMapOfStrongSets<
     __thisArg__?: unknown
   ) : void
   {
-    for (let mapKey of this.#outerMap.keys()) {
+    for (const mapKey of this.#outerMap.keys()) {
       __callback__.apply(__thisArg__, [mapKey, this]);
     }
   }
@@ -311,8 +311,8 @@ class StrongMapOfStrongSets<
   {
     const __outerIter__ = this.#outerMap.entries();
 
-    for (let [mapKey, __innerSet__] of __outerIter__) {
-      for (let setKey of __innerSet__.values())
+    for (const [mapKey, __innerSet__] of __outerIter__) {
+      for (const setKey of __innerSet__.values())
         yield [mapKey, setKey];
     }
   }
@@ -331,7 +331,7 @@ class StrongMapOfStrongSets<
     if (!__innerSet__)
       return;
 
-    for (let setKey of __innerSet__.values())
+    for (const setKey of __innerSet__.values())
       yield [mapKey, setKey];
   }
 

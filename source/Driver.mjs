@@ -37,7 +37,7 @@ export default class Driver extends InMemoryDriver {
      */
     async #run() {
         const fullPaths = (await readDirsDeep(this.#sourcesPath)).files.filter(filePath => path.extname(filePath) === ".mjs");
-        let fileList = fullPaths.map(path => path.replace(this.#sourcesPath + "/", ""));
+        const fileList = fullPaths.map(path => path.replace(this.#sourcesPath + "/", ""));
         await PromiseAllParallel(fileList, async (relativePath) => {
             try {
                 const fullPath = path.join(this.#sourcesPath, relativePath);

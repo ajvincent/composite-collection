@@ -157,10 +157,10 @@ export default class WeakKeyComposer {
      * @public
      */
     getKeyIfExists(weakArguments, strongArguments) {
-        let hash = this.#keyHasher.getHashIfExists(...weakArguments, ...strongArguments);
+        const hash = this.#keyHasher.getHashIfExists(...weakArguments, ...strongArguments);
         if (!hash)
             return null;
-        let properties = this.#hashToPropertyMap.get(hash);
+        const properties = this.#hashToPropertyMap.get(hash);
         // Each weak argument indirectly holds a strong reference on the weak key.
         return properties ? properties.weakKeyRef.deref() : null;
     }
