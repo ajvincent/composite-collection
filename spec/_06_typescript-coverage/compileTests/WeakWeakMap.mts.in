@@ -1,4 +1,4 @@
-import WeakWeakMap, { ReadonlyWeakWeakMap } from "../generated/WeakWeakMap.mjs";
+import WeakWeakMap, { ReadonlyWeakWeakMap } from "../WeakWeakMap.mjs";
 import { ClassOne, ClassTwo } from "./stubClasses.mjs";
 
 const key1a = new ClassOne, key1b = new ClassTwo,

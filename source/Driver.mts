@@ -61,7 +61,9 @@ export default class Driver extends InMemoryDriver {
     await PromiseAllParallel(fileList, async relativePath => {
       try {
         const fullPath: string = path.join(this.#sourcesPath, relativePath);
-        const m: CollectionConfiguration = (await import(fullPath)).default;
+        const m: CollectionConfiguration = (
+          await import(fullPath) as {default: CollectionConfiguration}
+        ).default;
         super.addConfiguration(m, relativePath);
       }
       catch (ex) {

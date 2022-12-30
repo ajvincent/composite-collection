@@ -3,7 +3,7 @@ export class RequiredMap extends DefaultMap {
     getRequired(key) {
         const value = this.get(key);
         if (!value)
-            throw new Error("Key not found: " + key);
+            throw new Error("Key not found: " + String(key));
         return value;
     }
 }
@@ -11,7 +11,7 @@ export class RequiredWeakMap extends DefaultWeakMap {
     getRequired(key) {
         const value = this.get(key);
         if (!value)
-            throw new Error("Key not found: " + key);
+            throw new Error("Key not found: " + String(key));
         return value;
     }
 }

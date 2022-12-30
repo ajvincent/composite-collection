@@ -31,7 +31,7 @@ class WeakWeakSet<
   /** @type {WeakSet<WeakKey>} @constant */
   #weakKeySet = new WeakSet;
 
-  constructor(iterable? : [__SK0__,__SK1__][]) {
+  constructor(iterable? : [__SK0__, __SK1__][]) {
     if (iterable) {
       for (const [key1, key2] of iterable) {
         this.add(key1, key2);
@@ -147,7 +147,7 @@ export type ReadonlyWeakWeakSet<
   __SK1__ extends object
 > =
   Pick<
-    WeakWeakSet<__SK0__,__SK1__>,
+    WeakWeakSet<__SK0__, __SK1__>,
     "has" | "isValidKey"
   >
 

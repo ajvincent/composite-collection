@@ -1,0 +1,6 @@
+export class ClassOne {
+  type = "classOne" as const;
+}
+export class ClassTwo {
+  type: "classTwo" = "classTwo" as const;
+}

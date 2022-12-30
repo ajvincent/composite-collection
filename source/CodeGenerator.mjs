@@ -190,7 +190,6 @@ export default class CodeGenerator extends CodeGeneratorBase {
         if (!this.#internalFlagSet?.has("prevent export"))
             await this.#writeSource(gpSet);
         this.#status = "completed";
-        return this.#configurationData.className;
     }
     #filePrologue() {
         let fileOverview = "";
@@ -441,13 +440,12 @@ export default class CodeGenerator extends CodeGeneratorBase {
             this.#generatedCode += "\n";
             return;
         }
-        const subCompileOptions = Object.create(this.#compileOptions);
         const internalFlags = new Set([
             "prevent export",
             "configuration ok",
             "no @file",
         ]);
-        this.#oneToOneSubGenerator = new CodeGenerator(base, this.#targetPath, subCompileOptions);
+        this.#oneToOneSubGenerator = new CodeGenerator(base, this.#targetPath, { ...this.#compileOptions });
         CodeGenerator.#generatorToInternalFlags.set(this.#oneToOneSubGenerator, internalFlags);
         await this.#oneToOneSubGenerator.run();
         this.#generatedCode += this.#oneToOneSubGenerator.generatedCode + "\n";

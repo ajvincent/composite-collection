@@ -74,7 +74,7 @@ try {
     await runStage(stageDirs[0], "clean");
   }
   catch (ex) {
-    console.error("failed at stage 1");
+    console.error("failed stage 1 @ " + stageDirs[0]);
     throw ex;
   }
 
@@ -87,7 +87,7 @@ try {
     await runStage(stageDirs[1], "all");
   }
   catch (ex) {
-    console.error("failed at stage 2");
+    console.error("failed stage 2 @ " + stageDirs[1]);
     throw ex;
   }
 
@@ -102,7 +102,7 @@ try {
     await runStage(stageDirs[2], "all");
   }
   catch (ex) {
-    console.error("failed at stage 3");
+    console.error("failed stage 3 @ " + stageDirs[2]);
     throw ex;
   }
 

@@ -146,8 +146,8 @@ ${docs.buildBlock("deleteSets", 2)}
 ${docs.buildBlock("forEach_Set", 2)}
   forEach(
     __callback__: (
-      ${defines.tsMapTypes.join(",\n      ")},
-      ${defines.tsSetTypes.join(",\n      ")},
+      ${defines.tsMapKeys.join(",\n      ")},
+      ${defines.tsSetKeys.join(",\n      ")},
       __collection__: ${defines.className}<${tsAllTypes}>
     ) => void,
     __thisArg__?: unknown
@@ -182,8 +182,8 @@ ${docs.buildBlock("forEachSet_MapSet", 2)}
   forEachSet(
     ${tsMapKeys},
     __callback__: (
-      ${defines.tsMapTypes.join(",\n      ")},
-      ${defines.tsSetTypes.join(",\n      ")},
+      ${defines.tsMapKeys.join(",\n      ")},
+      ${defines.tsSetKeys.join(",\n      ")},
       __collection__: ${defines.className}<${tsAllTypes}>
     ) => void,
     __thisArg__?: unknown
@@ -212,7 +212,7 @@ ${docs.buildBlock("has", 2)}
   }
 
 ${docs.buildBlock("hasSet", 2)}
-  hasSets(${mapKeys}) : boolean
+  hasSets(${tsMapKeys}) : boolean
   {
     ${invokeMapValidate}
     return this.#outerMap.has(${defines.mapKeys[0]})

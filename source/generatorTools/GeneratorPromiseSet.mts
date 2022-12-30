@@ -103,7 +103,7 @@ export class GeneratorPromiseSet extends BuildPromiseSet
     return await InvokeTSC.withCustomConfiguration(
       path.resolve(this.#targetDir, "tsconfig.json"),
       false,
-      (config) => {
+      (config: { files?: string[] }) => {
         config.files = this.#TypeScriptModules;
       }
     );

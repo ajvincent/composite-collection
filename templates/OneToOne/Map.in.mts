@@ -1,3 +1,4 @@
+import { RequiredMap } from "../../source/utilities/RequiredMap.mjs";
 import type { ReadonlyDefines, JSDocGenerator, TemplateFunction } from "../sharedTypes.mjs";
 
 /**
@@ -6,7 +7,7 @@ import type { ReadonlyDefines, JSDocGenerator, TemplateFunction } from "../share
  * @param {string[]} keys The keys.
  * @returns {string} The keys serialized.
  */
-function buildArgNameList(keys: string[]): string
+function buildArgNameList(keys: ReadonlyArray<string>): string
 {
   return keys.join(", ");
 }
@@ -19,30 +20,38 @@ function buildArgNameList(keys: string[]): string
  * @param {string}     weakKeyName The argument to exclude appending a suffix to.
  * @returns {string[]}             The resulting argument list.
  */
-function buildNumberedArgs(args: string[], suffix: string, weakKeyName: string) : string[]
+function buildNumberedArgs(
+  args: ReadonlyArray<string>,
+  suffix: string,
+  weakKeyName: string
+) : string[]
 {
   return args.map(arg => arg + ((arg === weakKeyName) ? "" : suffix));
 }
 
+
 /**
  * Build an arguments list based on a suffix and a map of types.
  *
- * @param {string[]}   args        The list of argument names.
- * @param {string}     suffix      The suffix to append.
- * @param {string[]}   tsMapKeys   The map keys.
+ * @param {string[]} args      -   The list of argument names.
+ * @param {string}   suffix    -   The suffix to append.
+ * @param {string[]} tsMapKeys -   The map keys.
  * @returns {string}               The resulting argument types.
  */
-function buildNumberedTypes(args: string[], suffix: string, tsMapKeys: ReadonlyArray<string>) : string
+function buildNumberedTypes(
+  args: ReadonlyArray<string>,
+  suffix: string,
+  tsMapKeys: ReadonlyArray<string>
+) : string
 {
-  const map: Map<string, string> = new Map(tsMapKeys.map(argAndType => {
+  const map: RequiredMap<string, string> = new RequiredMap(tsMapKeys.map(argAndType => {
     const [key, type] = argAndType.split(": ");
     return [key, type];
   }));
 
-  const keys: string[] = [];
-  args.forEach(arg => {
-    keys.push(arg + suffix + ": " + map.get(arg));
-  });
+  const keys: string[] = args.map(
+    arg => arg + suffix + ": " + map.getRequired(arg)
+  );
   return keys.join(", ");
 }
 
@@ -58,15 +67,8 @@ const preprocess: TemplateFunction = function(
   duoDocs: JSDocGenerator
 )
 {
-  const bindArgList = defines.bindArgList;
-  if (!Array.isArray(bindArgList))
-    throw new Error("assertion: bindArgList must be an array!");
+  const { bindArgList, baseArgList, weakKeyName} = defines;
 
-  const baseArgList = defines.baseArgList;
-  if (!Array.isArray(baseArgList))
-    throw new Error("assertion: baseArgList must be an array!");
-
-  const weakKeyName = defines.weakKeyName;
   if (typeof weakKeyName !== "string")
     throw new Error("assertion: weakKeyName must be a string!");
 
@@ -113,9 +115,17 @@ ${duoDocs.buildBlock("bindOneToOne", 2)}
     "value_2: __V__"
     ])}) : void
   {${bindArgList.length ? `
-    this.#requireValidKey("(${bindOneToOneArgList1})", ${bindOneToOneArgList1});
+    this.#requireValidKey("(${
+      bindOneToOneArgList1.join(", ")
+    })", ${
+      bindOneToOneArgList1.join(", ")
+    });
     this.#requireValidValue("value_1", value_1);
-    this.#requireValidKey("(${bindOneToOneArgList2})", ${bindOneToOneArgList2});
+    this.#requireValidKey("(${
+      bindOneToOneArgList2.join(", ")
+    })", ${
+      bindOneToOneArgList2.join(", ")
+    });
     this.#requireValidValue("value_2", value_2);
 ` : `
     this.#requireValidValue("value_1", value_1);

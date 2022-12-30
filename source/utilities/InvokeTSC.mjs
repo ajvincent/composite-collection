@@ -23,7 +23,7 @@ const InvokeTSC = {
         const err = new Error(`Failed on "${TSC} ${args.join(" ")}"`);
         child.on("exit", (code) => {
             if (code) {
-                err.message += " with code " + code;
+                err.message += " with code " + code.toString(10);
                 deferred.reject(err);
             }
             else

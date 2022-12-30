@@ -224,7 +224,7 @@ export default class CodeGenerator extends CodeGeneratorBase
    * @returns {identifier} The class name.
    * @see https://www.youtube.com/watch?v=nUCoYcxNMBE s/love/code/g
    */
-  async #buildCollection() : Promise<string>
+  async #buildCollection() : Promise<void>
   {
     this.#status = "in progress";
 
@@ -257,7 +257,6 @@ export default class CodeGenerator extends CodeGeneratorBase
       await this.#writeSource(gpSet);
 
     this.#status = "completed";
-    return this.#configurationData.className;
   }
 
   #filePrologue() : string
@@ -657,7 +656,6 @@ export default class CodeGenerator extends CodeGeneratorBase
       return;
     }
 
-    const subCompileOptions = Object.create(this.#compileOptions);
     const internalFlags: InternalFlags = new Set([
       "prevent export",
       "configuration ok",
@@ -667,7 +665,7 @@ export default class CodeGenerator extends CodeGeneratorBase
     this.#oneToOneSubGenerator = new CodeGenerator(
       base,
       this.#targetPath,
-      subCompileOptions
+      { ...this.#compileOptions }
     );
     CodeGenerator.#generatorToInternalFlags.set(this.#oneToOneSubGenerator, internalFlags);
 

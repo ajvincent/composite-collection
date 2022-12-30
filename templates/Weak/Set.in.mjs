@@ -19,7 +19,7 @@ class ${defines.className}${defines.tsGenericFull}
   /** @type {WeakSet<WeakKey>} @constant */
   #weakKeySet = new WeakSet;
 
-  constructor(iterable? : [${defines.tsSetTypes}][]) {
+  constructor(iterable? : [${defines.tsSetTypes.join(", ")}][]) {
     if (iterable) {
       for (const [${defines.argList}] of iterable) {
         this.add(${defines.argList});
@@ -92,7 +92,7 @@ Object.freeze(${defines.className}.prototype);
 
 export type Readonly${defines.className}${defines.tsGenericFull} =
   Pick<
-    ${defines.className}<${defines.tsSetTypes}>,
+    ${defines.className}<${defines.tsSetTypes.join(", ")}>,
     "has" | "isValidKey"
   >
 `;

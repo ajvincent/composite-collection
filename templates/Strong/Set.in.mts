@@ -34,7 +34,7 @@ ${docs.buildBlock("rootContainerSet", 2)}
   #hasher: KeyHasher = new KeyHasher();
 
   constructor(
-    iterable?: [${defines.tsSetTypes}][]
+    iterable?: [${defines.tsSetTypes.join(", ")}][]
   )
   {
     if (iterable) {
@@ -143,7 +143,7 @@ Object.freeze(${defines.className}.prototype);
 
 export type Readonly${defines.className}${defines.tsGenericFull} =
   Pick<
-    ${defines.className}<${defines.tsSetTypes}>,
+    ${defines.className}<${defines.tsSetTypes.join(", ")}>,
     "size" | "has"${
       defines.validateArguments ? ` | "isValidKey"` : ``
     } | "values"

@@ -50,7 +50,7 @@ class StrongStrongSet<
   #hasher: KeyHasher = new KeyHasher();
 
   constructor(
-    iterable?: [__SK0__,__SK1__][]
+    iterable?: [__SK0__, __SK1__][]
   )
   {
     if (iterable) {
@@ -185,7 +185,7 @@ export type ReadonlyStrongStrongSet<
   __SK1__
 > =
   Pick<
-    StrongStrongSet<__SK0__,__SK1__>,
+    StrongStrongSet<__SK0__, __SK1__>,
     "size" | "has" | "values"
   > &
   {

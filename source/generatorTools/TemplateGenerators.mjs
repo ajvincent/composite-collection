@@ -14,8 +14,6 @@ await PromiseAllParallel(allFiles, async (fullPath) => {
     if (!baseName.endsWith(".in.mjs"))
         return;
     const generator = (await import(fullPath)).default;
-    if (typeof generator !== "function")
-        throw new Error("generator isn't a function?");
     __TemplateGenerators__.set(baseName.replace(/\.in\.mjs$/, ""), generator);
 });
 const TemplateGenerators = __TemplateGenerators__;

@@ -64,6 +64,7 @@ export default class PreprocessorDefines {
 type primitive = string | number | boolean | undefined | null;
 type DeepReadonly<T> =
   T extends primitive ? T :
+  T extends Array<infer U extends primitive> ? ReadonlyArray<U> :
   T extends Array<infer U> ? DeepReadonlyArray<U> :
   DeepReadonlyObject<T>
 

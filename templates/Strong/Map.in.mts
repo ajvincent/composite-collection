@@ -5,7 +5,11 @@ import type { ReadonlyDefines, JSDocGenerator, TemplateFunction } from "../share
  * @param {JSDocGenerator} docs    The primary documentation generator.
  * @returns {string}               The generated source code.
  */
-const preprocess: TemplateFunction = function preprocess(defines: ReadonlyDefines, docs: JSDocGenerator) {
+const preprocess: TemplateFunction = function preprocess(
+  defines: ReadonlyDefines,
+  docs: JSDocGenerator
+)
+{
   let invokeValidate = "";
   if (defines.invokeValidate) {
     invokeValidate = `\n    this.#requireValidKey(${defines.argList});\n`;
@@ -35,7 +39,7 @@ ${docs.buildBlock("rootContainerMap", 2)}
   #hasher: KeyHasher = new KeyHasher();
 
   constructor(
-    iterable?: [${defines.tsMapTypes}, ${defines.tsValueType}][]
+    iterable?: [${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}][]
   )
   {
     if (iterable) {
@@ -58,7 +62,7 @@ ${docs.buildBlock("clear", 2)}
   }
 
 ${docs.buildBlock("delete", 2)}
-  delete(${defines.tsMapKeys}) : boolean
+  delete(${defines.tsMapKeys.join(", ")}) : boolean
   {
     ${invokeValidate}
     const __hash__ = this.#hasher.getHashIfExists(${defines.argList});
@@ -124,14 +128,14 @@ ${docs.buildBlock("getDefault", 2)}
   getDefault(${defines.tsMapKeys.join(", ")}, __default__: () => __V__) : __V__
   {
     ${invokeValidate}
-    const __hash__ = this.#hasher.getHash(${defines.mapKeys});
+    const __hash__ = this.#hasher.getHash(${defines.mapKeys.join(", ")});
     {
       const __valueAndKeySet__ = this.#root.get(__hash__);
       if (__valueAndKeySet__)
         return __valueAndKeySet__.value;
     }
 
-    const __keySet__: [${defines.tsMapTypes}] = [${defines.mapKeys}];
+    const __keySet__: [${defines.tsMapTypes.join(", ")}] = [${defines.mapKeys.join(", ")}];
     Object.freeze(__keySet__);
     const value = __default__();
     this.#root.set(__hash__, {value, keySet: __keySet__});
@@ -176,7 +180,7 @@ ${docs.buildBlock("keys", 2)}
   }
 
 ${docs.buildBlock("set", 2)}
-  set(${defines.tsMapKeys}, ${defines.tsValueKey}) : this
+  set(${defines.tsMapKeys.join(", ")}, ${defines.tsValueKey}) : this
   {
     ${invokeValidate}
 ${
@@ -201,14 +205,14 @@ ${docs.buildBlock("values", 2)}
   }
 ${defines.validateArguments ? `
 ${docs.buildBlock("requireValidKey", 2)}
-  #requireValidKey(${defines.tsMapKeys}) : void
+  #requireValidKey(${defines.tsMapKeys.join(", ")}) : void
   {
     if (!this.#isValidKey(${defines.argList}))
       throw new Error("The ordered key set is not valid!");
   }
 
 ${docs.buildBlock("isValidKeyPrivate", 2)}
-  #isValidKey(${defines.tsMapKeys}) : boolean
+  #isValidKey(${defines.tsMapKeys.join(", ")}) : boolean
   {
 ${defines.validateArguments}
     return true;
@@ -236,7 +240,7 @@ Object.freeze(${defines.className}.prototype);
 
 export type Readonly${defines.className}${defines.tsGenericFull} =
   Pick<
-    ${defines.className}<${defines.tsMapTypes}, ${defines.tsValueType}>,
+    ${defines.className}<${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}>,
     "size" | "entries" | "get" | "has"${
   defines.validateArguments ? ` | "isValidKey"` : ``
 }${

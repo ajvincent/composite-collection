@@ -1,6 +1,6 @@
 {
   "env": {
-    "es2021": true,
+    "es2022": true,
     "jasmine": true,
     "node": true
   },
@@ -8,6 +8,7 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:jsdoc/recommended"
   ],
 
@@ -26,7 +27,9 @@
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2022,
-    "sourceType": "module"
+    "sourceType": "module",
+    "tsconfigRootDir": ".",
+    "project": ["./tsconfig.json"]
   },
   "plugins": [
     "@typescript-eslint",

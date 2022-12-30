@@ -155,8 +155,8 @@ ${docs.buildBlock("deleteSets", 2)}
 ${docs.buildBlock("forEach_Set", 2)}
   forEach(
     __callback__: (
-      ${defines.tsMapTypes.join(",\n      ")},
-      ${defines.tsSetTypes.join(",\n      ")},
+      ${defines.tsMapKeys.join(",\n      ")},
+      ${defines.tsSetKeys.join(",\n      ")},
       __collection__: ${defines.className}<${tsAllTypes}>
     ) => void,
     __thisArg__?: unknown
@@ -191,8 +191,8 @@ ${docs.buildBlock("forEachSet_MapSet", 2)}
   forEachSet(
     ${tsMapKeys},
     __callback__: (
-      ${defines.tsMapTypes.join(",\n      ")},
-      ${defines.tsSetTypes.join(",\n      ")},
+      ${defines.tsMapKeys.join(",\n      ")},
+      ${defines.tsSetKeys.join(",\n      ")},
       __collection__: ${defines.className}<${tsAllTypes}>
     ) => void,
     __thisArg__?: unknown
@@ -261,7 +261,7 @@ ${docs.buildBlock("valuesSet", 2)}
   #getInnerMap(${tsMapKeys}) : [Map<${tsSetTypes}, [${tsAllTypes}]>, string] | [null, ""]
   {
     const __hash__ = this.#mapHasher.getHashIfExists(${mapKeys});
-    return __hash__ ? [this.#outerMap.get(__hash__), __hash__] : [null, ""];
+    return __hash__ ? [this.#outerMap.get(__hash__) as Map<${tsSetTypes}, [${tsAllTypes}]>, __hash__] : [null, ""];
   }
 
 ${defines.validateArguments ? `

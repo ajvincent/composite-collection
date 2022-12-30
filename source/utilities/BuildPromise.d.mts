@@ -15,7 +15,7 @@ export declare class BuildPromise {
     /**
      * @param {Function} callback The task.
      */
-    addTask(callback: (() => void)): void;
+    addTask(callback: (() => Promise<unknown>)): void;
     /**
      * @param {string} target The subtarget.
      */

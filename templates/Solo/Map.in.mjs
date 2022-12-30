@@ -72,7 +72,7 @@ ${docs.buildBlock("requireValidKey", 2)}
   }
 
 ${docs.buildBlock("isValidKeyPrivate", 2)}
-  #isValidKey(${defines.argList.replace(/, /g, ": any, ")}) : boolean
+  #isValidKey(${defines.tsMapKeys.join(", ")}) : boolean
   {
     ${defines.validateArguments}
     return true;

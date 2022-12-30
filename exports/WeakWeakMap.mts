@@ -38,7 +38,7 @@ class WeakWeakMap<
    */
   #root: WeakMap<WeakKey, __V__> = new WeakMap;
 
-  constructor(iterable?: [__MK0__,__MK1__, __V__][])
+  constructor(iterable?: [__MK0__, __MK1__, __V__][])
   {
     if (iterable) {
       for (const [key1, key2, value] of iterable) {
@@ -199,7 +199,7 @@ export type ReadonlyWeakWeakMap<
   __V__
 >
 = Pick<
-  WeakWeakMap<__MK0__,__MK1__, __V__>,
+  WeakWeakMap<__MK0__, __MK1__, __V__>,
   "get" | "has" | "isValidKey"
 >;
 

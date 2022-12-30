@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["es2021"],
+    "lib": ["es2022"],
     "module": "es2022",
     "target": "es2022",
     "moduleResolution": "node",
@@ -8,9 +8,5 @@
     "declaration": true
   },
 
-  "exclude": [
-    "spec/**"
-  ],
-
-  "extends": "@tsconfig/node16/tsconfig.json"
+  "extends": "@tsconfig/node18/tsconfig.json"
 }

@@ -1,3 +1,4 @@
+import { RequiredMap } from "../../source/utilities/RequiredMap.mjs";
 /**
  * Serialize keys.
  *
@@ -21,20 +22,17 @@ function buildNumberedArgs(args, suffix, weakKeyName) {
 /**
  * Build an arguments list based on a suffix and a map of types.
  *
- * @param {string[]}   args        The list of argument names.
- * @param {string}     suffix      The suffix to append.
- * @param {string[]}   tsMapKeys   The map keys.
+ * @param {string[]} args      -   The list of argument names.
+ * @param {string}   suffix    -   The suffix to append.
+ * @param {string[]} tsMapKeys -   The map keys.
  * @returns {string}               The resulting argument types.
  */
 function buildNumberedTypes(args, suffix, tsMapKeys) {
-    const map = new Map(tsMapKeys.map(argAndType => {
+    const map = new RequiredMap(tsMapKeys.map(argAndType => {
         const [key, type] = argAndType.split(": ");
         return [key, type];
     }));
-    const keys = [];
-    args.forEach(arg => {
-        keys.push(arg + suffix + ": " + map.get(arg));
-    });
+    const keys = args.map(arg => arg + suffix + ": " + map.getRequired(arg));
     return keys.join(", ");
 }
 /**
@@ -44,13 +42,7 @@ function buildNumberedTypes(args, suffix, tsMapKeys) {
  * @returns {string}                The generated source code.
  */
 const preprocess = function (defines, soloDocs, duoDocs) {
-    const bindArgList = defines.bindArgList;
-    if (!Array.isArray(bindArgList))
-        throw new Error("assertion: bindArgList must be an array!");
-    const baseArgList = defines.baseArgList;
-    if (!Array.isArray(baseArgList))
-        throw new Error("assertion: baseArgList must be an array!");
-    const weakKeyName = defines.weakKeyName;
+    const { bindArgList, baseArgList, weakKeyName } = defines;
     if (typeof weakKeyName !== "string")
         throw new Error("assertion: weakKeyName must be a string!");
     const bindOneToOneArgList1 = buildNumberedArgs(bindArgList, "_1", weakKeyName), bindOneToOneArgList2 = buildNumberedArgs(bindArgList, "_2", weakKeyName);
@@ -84,9 +76,9 @@ ${duoDocs.buildBlock("bindOneToOne", 2)}
             "value_2: __V__"
         ])}) : void
   {${bindArgList.length ? `
-    this.#requireValidKey("(${bindOneToOneArgList1})", ${bindOneToOneArgList1});
+    this.#requireValidKey("(${bindOneToOneArgList1.join(", ")})", ${bindOneToOneArgList1.join(", ")});
     this.#requireValidValue("value_1", value_1);
-    this.#requireValidKey("(${bindOneToOneArgList2})", ${bindOneToOneArgList2});
+    this.#requireValidKey("(${bindOneToOneArgList2.join(", ")})", ${bindOneToOneArgList2.join(", ")});
     this.#requireValidValue("value_2", value_2);
 ` : `
     this.#requireValidValue("value_1", value_1);

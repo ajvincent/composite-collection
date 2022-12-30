@@ -34,7 +34,7 @@ export default class PreprocessorDefines {
     tsGenericFull: string;
 }
 declare type primitive = string | number | boolean | undefined | null;
-declare type DeepReadonly<T> = T extends primitive ? T : T extends Array<infer U> ? DeepReadonlyArray<U> : DeepReadonlyObject<T>;
+declare type DeepReadonly<T> = T extends primitive ? T : T extends Array<infer U extends primitive> ? ReadonlyArray<U> : T extends Array<infer U> ? DeepReadonlyArray<U> : DeepReadonlyObject<T>;
 interface DeepReadonlyArray<T> extends ReadonlyArray<DeepReadonly<T>> {
 }
 declare type DeepReadonlyObject<T> = {

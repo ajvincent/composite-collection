@@ -52,7 +52,7 @@ class StrongStrongMap<
   #hasher: KeyHasher = new KeyHasher();
 
   constructor(
-    iterable?: [__MK0__,__MK1__, __V__][]
+    iterable?: [__MK0__, __MK1__, __V__][]
   )
   {
     if (iterable) {
@@ -92,7 +92,7 @@ class StrongStrongMap<
    * @returns {boolean} True if we found the value and deleted it.
    * @public
    */
-  delete(key1: __MK0__,key2: __MK1__) : boolean
+  delete(key1: __MK0__, key2: __MK1__) : boolean
   {
     
     const __hash__ = this.#hasher.getHashIfExists(key1, key2);
@@ -190,14 +190,14 @@ class StrongStrongMap<
   getDefault(key1: __MK0__, key2: __MK1__, __default__: () => __V__) : __V__
   {
     
-    const __hash__ = this.#hasher.getHash(key1,key2);
+    const __hash__ = this.#hasher.getHash(key1, key2);
     {
       const __valueAndKeySet__ = this.#root.get(__hash__);
       if (__valueAndKeySet__)
         return __valueAndKeySet__.value;
     }
 
-    const __keySet__: [__MK0__,__MK1__] = [key1,key2];
+    const __keySet__: [__MK0__, __MK1__] = [key1, key2];
     Object.freeze(__keySet__);
     const value = __default__();
     this.#root.set(__hash__, {value, keySet: __keySet__});
@@ -243,7 +243,7 @@ class StrongStrongMap<
    * @returns {StrongStrongMap} This collection.
    * @public
    */
-  set(key1: __MK0__,key2: __MK1__, value: __V__) : this
+  set(key1: __MK0__, key2: __MK1__, value: __V__) : this
   {
     
 
@@ -284,7 +284,7 @@ export type ReadonlyStrongStrongMap<
   __V__
 > =
   Pick<
-    StrongStrongMap<__MK0__,__MK1__, __V__>,
+    StrongStrongMap<__MK0__, __MK1__, __V__>,
     "size" | "entries" | "get" | "has" | "keys" | "values"
   > &
   {

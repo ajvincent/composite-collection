@@ -5,7 +5,7 @@ export class RequiredMap<K, V> extends DefaultMap<K, V>
   getRequired(key: K) : V {
     const value = this.get(key);
     if (!value)
-      throw new Error("Key not found: " + key);
+      throw new Error("Key not found: " + String(key));
     return value;
   }
 }
@@ -15,7 +15,7 @@ export class RequiredWeakMap<K extends object, V> extends DefaultWeakMap<K, V>
   getRequired(key: K) : V {
     const value = this.get(key);
     if (!value)
-      throw new Error("Key not found: " + key);
+      throw new Error("Key not found: " + String(key));
     return value;
   }
 }

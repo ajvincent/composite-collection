@@ -19,10 +19,15 @@ class OneToOneData {
   baseConfig: CollectionConfiguration | symbol;
   options: oneToOneOptions;
 
-  constructor(key: string, baseConfig: CollectionConfiguration | symbol, options: object) {
+  constructor(
+    key: string,
+    baseConfig: CollectionConfiguration | symbol,
+    options: object
+  )
+  {
     this.key = key;
     this.baseConfig = baseConfig;
-    this.options = JSON.parse(JSON.stringify(options));
+    this.options = { ...options };
 
     Object.freeze(this);
     Object.freeze(this.options);

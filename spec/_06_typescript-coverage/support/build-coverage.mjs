@@ -9,14 +9,12 @@ import InvokeTSC from "#source/utilities/InvokeTSC.mjs"
 const specDir = url.fileURLToPath(new URL("..", import.meta.url));
 const projectRoot = url.fileURLToPath(new URL("../../..", import.meta.url));
 
-const ENCODING = { encoding: "utf-8"};
-
 let templatesWithoutModules = new Set;
 const generatedPath = path.resolve(specDir, "generated");
 const tsSupported = path.resolve(generatedPath, "tsconfig.json");
 const supportedFiles = [];
 
-let existingMTS, compileTestPaths;
+let existingMTS;
 
 /**
  * Get the list of templates without modules..
@@ -31,7 +29,9 @@ export function getTemplatesWithoutModules() {
  * Build TypeScript coverage files.
  */
 export async function build_TSCoverage() {
-  const StrongMapOfStrongSets = (await import(`#spec/_06_typescript-coverage/generated/StrongMapOfStrongSets.mjs`)).default;
+  const StrongMapOfStrongSets = (await import(
+    `#spec/_06_typescript-coverage/generated/StrongMapOfStrongSets.mjs`
+  )).default;
 
   class TemplateSet extends StrongMapOfStrongSets {
     templateKeys = new Set;
@@ -40,7 +40,7 @@ export async function build_TSCoverage() {
       super.add(template, relativePath);
       this.templateKeys.add(template);
     }
-  
+
     markDown() {
       const orderTemplateKeys = Array.from(this.templateKeys.values());
       orderTemplateKeys.sort();
@@ -103,7 +103,7 @@ export async function build_TSCoverage() {
   }
 
   { // We just added several modules, so get the files we want to test.
-    let files = await fs.readdir(generatedPath, ENCODING);
+    let { files } = await readDirsDeep(generatedPath);
 
     existingMTS = files.filter(f => /(?<!\.d)\.mts$/.test(f));
   }
@@ -112,32 +112,22 @@ export async function build_TSCoverage() {
     TemplateSet.service.forEach((template, relativePath) => {
       supportedFiles.push(relativePath.replace(".mjs", ".mts"));
     });
+
+    const compileTestSources = await fs.readdir(
+      path.resolve(specDir, "generated/compileTests")
+    );
+
+    supportedFiles.push(...compileTestSources.map(
+      leaf => "compileTests/" + leaf
+    ));
   }
 
-  { // Get the list of compile tests.
-    compileTestPaths = (await fs.readdir(
-      path.resolve(specDir, "compileTests")
-    )).filter(leaf => leaf.endsWith(".mts"));
-  }
-
-  await Promise.all([
-    InvokeTSC.withCustomConfiguration(
-      tsSupported,
-      false,
-      (config) => {
-        config.files = supportedFiles;
-      },
-      "spec/_06_typescript-coverage/ts-supported-stdout.txt"
-    ),
-
-    InvokeTSC.withCustomConfiguration(
-      path.resolve(specDir, "compileTests/tsconfig.json"),
-      false,
-      (config) => {
-        config.files = compileTestPaths;
-        config.compilerOptions.noEmit = true;
-      },
-      "spec/_06_typescript-coverage/compileTests/ts-stdout.txt"
-    ),
-  ]);
+  await InvokeTSC.withCustomConfiguration(
+    tsSupported,
+    false,
+    (config) => {
+      config.files = supportedFiles;
+    },
+    "spec/_06_typescript-coverage/ts-supported-stdout.txt"
+  );
 }

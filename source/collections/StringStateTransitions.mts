@@ -50,7 +50,7 @@ class StringStateMachine<
   #hasher: KeyHasher = new KeyHasher();
 
   constructor(
-    iterable?: [__SK0__,__SK1__][]
+    iterable?: [__SK0__, __SK1__][]
   )
   {
     if (iterable) {
@@ -185,7 +185,7 @@ export type ReadonlyStringStateMachine<
   __SK1__ extends string
 > =
   Pick<
-    StringStateMachine<__SK0__,__SK1__>,
+    StringStateMachine<__SK0__, __SK1__>,
     "size" | "has" | "values"
   > &
   {

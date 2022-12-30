@@ -120,7 +120,9 @@ export default class JSDocGenerator {
   }
 
   async setMethodParametersByModule(moduleName: string) : Promise<void> {
-    const paramFunction = (await import(`#source/jsdoc-method-sets/${moduleName}.mjs`)).default;
+    const paramFunction = (await import(
+      `#source/jsdoc-method-sets/${moduleName}.mjs`
+    ) as { default: () => stringAndTemplate[] }).default;
     this.setMethodParametersDirectly(paramFunction());
   }
 
@@ -141,7 +143,7 @@ export default class JSDocGenerator {
         JSDocGenerator.#validateMethodTemplate(row[1]);
       }
       catch (msg) {
-        throw new Error(`At row ${index} ("${row[0]}"), ${msg}`);
+        throw new Error(`At row ${index} ("${row[0]}"), ${String(msg)}`);
       }
     });
 
@@ -174,7 +176,7 @@ export default class JSDocGenerator {
         JSDocGenerator.#propertyIsNonWhitespaceString("value.returnType", template.returnType);
       }
       catch (ex) {
-        throw ex + "  (Set value.returnVoid if there is no return value.)";
+        throw String(ex) + "  (Set value.returnVoid if there is no return value.)";
       }
       JSDocGenerator.#propertyIsNonWhitespaceString("value.returnDescription", template.returnDescription);
     }

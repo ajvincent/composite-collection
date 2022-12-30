@@ -20,7 +20,7 @@ class ${defines.className}${defines.tsGenericFull}
 ${docs.buildBlock("rootContainerWeakMap", 2)}
   #root: WeakMap<WeakKey, __V__> = new WeakMap;
 
-  constructor(iterable?: [${defines.tsMapTypes}, ${defines.tsValueType}][])
+  constructor(iterable?: [${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}][])
   {
     if (iterable) {
       for (const [${defines.argList}, value] of iterable) {
@@ -137,7 +137,7 @@ Object.freeze(${defines.className}.prototype);
 
 export type Readonly${defines.className}${defines.tsGenericFull}
 = Pick<
-  ${defines.className}<${defines.tsMapTypes}, ${defines.tsValueType}>,
+  ${defines.className}<${defines.tsMapTypes.join(", ")}, ${defines.tsValueType}>,
   "get" | "has" | "isValidKey"${defines.validateValue ? ` | "isValidValue"` : ``}
 >;
 `;

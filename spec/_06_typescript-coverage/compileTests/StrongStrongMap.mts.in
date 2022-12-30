@@ -1,37 +1,32 @@
-import StrongStrongMap, { ReadonlyStrongStrongMap } from "../generated/StrongStrongMap.mjs";
+import StrongStrongMap, { ReadonlyStrongStrongMap } from "../StrongStrongMap.mjs";
 import { ClassOne, ClassTwo } from "./stubClasses.mjs";
 
 const key1a = new ClassOne, key1b = new ClassTwo,
       key2a = new ClassOne, key2b = new ClassTwo;
 
-const a: StrongStrongMap<ClassOne, ClassTwo, number> = new StrongStrongMap;
+type ClassMap = StrongStrongMap<ClassOne, ClassTwo, number>;
+
+const a: ClassMap = new StrongStrongMap;
 a.set(key1a, key1b, 0);
 void(a.get(key2a, key2b));
 void(a.getDefault(key2a, key2b, () => 1));
 void(a.delete(key2a, key1b));
 void(a.has(key1a, key2b));
 
-const b: StrongStrongMap<ClassOne, ClassTwo, number> = new StrongStrongMap([
+const b: ClassMap = new StrongStrongMap([
   [key1a, key1b, 0],
   [key2a, key2b, 1],
 ]);
 
-b.forEach((num, key1, key2, map) => {
+b.forEach((num: number, key1: ClassOne, key2: ClassTwo, map: ClassMap) => {
   void(num);
   void(key1);
   void(key2);
   void(map);
 }, {});
 
-
-b.forEach((num, key1, key2, map) => {
-  void(num);
-  void(key1);
-  void(key2);
-  void(map);
-});
-
-const rb: ReadonlyStrongStrongMap<ClassOne, ClassTwo, number> = b;
+type ReadonlyClassMap = ReadonlyStrongStrongMap<ClassOne, ClassTwo, number>;
+const rb: ReadonlyClassMap = b;
 
 void(rb.get(key1a, key1b));
 void(rb.has(key2a, key2b));
@@ -63,16 +58,9 @@ void(rb.has(key2a, key2b));
   }
 }
 
-rb.forEach((value, key1, key2, map) => {
-  void(value);
+rb.forEach((num: number, key1: ClassOne, key2: ClassTwo, map: ReadonlyClassMap) => {
+  void(num);
   void(key1);
   void(key2);
   void(map);
 }, {});
-
-rb.forEach((value, key1, key2, map) => {
-  void(value);
-  void(key1);
-  void(key2);
-  void(map);
-});
