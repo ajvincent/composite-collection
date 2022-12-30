@@ -1,6 +1,6 @@
 {
   "name": "composite-collection",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Composing Maps, WeakMaps, Sets and WeakSets into generated classes",
   "scripts": {
     "clean": "node ./build/main.mjs clean",
