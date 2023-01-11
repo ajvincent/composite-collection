@@ -1,19 +1,11 @@
-import type { PromiseResolver } from "./PromiseTypes.mjs";
-/**
- * @typedef {object} TemporaryDirWithPromise
- * @property {string}   tempDir The directory's full path.
- * @property {Function} resolve The resolver for the cleanup promise.
- * @property {Promise}  promise The cleanup promise.
- */
-export declare abstract class TemporaryDirWithPromise {
+import { type PromiseResolver } from "./PromiseTypes.mjs";
+export declare type TemporaryDirWithPromise = {
+    /** The directory's full path. */
     tempDir: string;
+    /** The resolver for the cleanup promise. */
     resolve: PromiseResolver<unknown>;
+    /** The cleanup promise. */
     promise: Promise<unknown>;
-    constructor();
-}
-/**
- * Create a temporary directory with a promise to clean it up later.
- *
- * @returns {TemporaryDirWithPromise} The directory and promise.
- */
+};
+/** Create a temporary directory with a promise to clean it up later. */
 export default function tempDirWithCleanup(): Promise<TemporaryDirWithPromise>;

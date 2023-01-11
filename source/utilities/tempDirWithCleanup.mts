@@ -18,11 +18,7 @@ export type TemporaryDirWithPromise = {
   promise: Promise<unknown>
 };
 
-/**
- * Create a temporary directory with a promise to clean it up later.
- *
- * @returns {TemporaryDirWithPromise} The directory and promise.
- */
+/** Create a temporary directory with a promise to clean it up later. */
 export default async function tempDirWithCleanup() : Promise<TemporaryDirWithPromise>
 {
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "composite-collection-"));
