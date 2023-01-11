@@ -1,7 +1,6 @@
 import { BuildPromise, BuildPromiseSet } from "../utilities/BuildPromise.mjs";
 import { PromiseAllParallel } from "../utilities/PromiseTypes.mjs";
 import { RequiredWeakMap } from "../utilities/RequiredMap.mjs";
-import { TemporaryDirWithPromise } from "../utilities/tempDirWithCleanup.mjs";
 
 import url from "url";
 import fs from "fs/promises";
@@ -11,7 +10,6 @@ import InvokeTSC from "../utilities/InvokeTSC.mjs";
 const projectRoot = url.fileURLToPath(new URL("../..", import.meta.url));
 
 void(BuildPromise); // necessary for type checking in eslint on the generated module
-void(TemporaryDirWithPromise);
 
 export class GeneratorPromiseSet extends BuildPromiseSet
 {
