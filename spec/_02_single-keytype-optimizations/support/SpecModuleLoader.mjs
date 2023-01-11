@@ -1,4 +1,6 @@
-import { PromiseAllSequence } from "#source/utilities/PromiseTypes.mjs";
+import {
+  PromiseAllParallel
+} from "#source/utilities/PromiseTypes.mjs";
 import MockImportable from "#spec/_01_collection-generator/fixtures/MockImportable.mjs";
 
 import fs from "fs/promises";
@@ -12,14 +14,16 @@ const directories = [
 ];
 
 const moduleDirMap = new Map;
-await PromiseAllSequence(directories, async dir => {
+
+// Please don't use PromiseAllSequence here.
+await PromiseAllParallel(directories, async dir => {
   const generatedDir = path.join(fileURLToPath(import.meta.url), "../..", dir, "generated");
   let entries = (await fs.readdir(generatedDir, { withFileTypes: true }));
   entries = entries.filter(entry => entry.isFile());
   const moduleLeafs = entries.map(entry => entry.name).filter(name => name.endsWith(".mjs"))
 
   let moduleMap = {};
-  await PromiseAllSequence(moduleLeafs, async moduleName => {
+  await PromiseAllParallel(moduleLeafs, async moduleName => {
     const module = await import(
       pathToFileURL(path.join(generatedDir, moduleName))
     );
